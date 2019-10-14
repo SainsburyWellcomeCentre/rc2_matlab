@@ -19,20 +19,29 @@ classdef AnalogOutput < handle
             obj.task.IsContinuous = 0;
         end
         
+        
+        function delete(obj)
+            obj.close()
+        end
+        
+        
         function write(obj, data)
             %obj.task.NumberOfScans = size(data, 1);
             obj.task.queueOutputData(data);
         end
         
+        
         function start(obj)
             obj.task.startBackground();
         end
+        
         
         function stop(obj)
             if isvalid(obj.task)
                 obj.task.stop()
             end
         end
+        
         
         function close(obj)
             if isvalid(obj.task)

@@ -40,7 +40,8 @@ classdef Controller < handle
         
         function prepare_acq(obj)
             obj.saver.setup_logging()
-            obj.ni.ai.prepare(1000, @(x, y)obj.h_callback(x, y))
+            obj.ni.ai.prepare(@(x, y)obj.h_callback(x, y))
+            obj.plotting.reset_vals();
         end
         
         

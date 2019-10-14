@@ -2,13 +2,14 @@ classdef Plotting < handle
     
     properties
         n_chans
+        chan_names
         rate
         fig
         ax
         lines
         
         dur
-        update_rate
+        update_every
         downsample
         n_points_true
         true_t
@@ -24,24 +25,39 @@ classdef Plotting < handle
         function obj = Plotting(config)
             
             obj.dur = config.plotting.time;
-            obj.update_rate = config.plotting.update_rate;
+            obj.update_every = config.nidaq.log_every;
             obj.downsample = 10;
+            obj.chan_names = config.nidaq.ai.channel_names;
             
-            
-            obj.n_chans = length(config.nidaq.ai.channel_names);
+            obj.n_chans = length(obj.chan_names);
             obj.rate = config.nidaq.rate;
             
             obj.fig = figure();
+            set(obj.fig, 'position', config.plotting.fig.position)
+            set(obj.fig, 'closerequestfcn', @(x, y)obj.close_request(x, y));
             for i = 1 : obj.n_chans
                 obj.ax(i) = subplot(obj.n_chans, 1, i);
-                set(obj.ax(i), 'plotboxaspectratio', [10, 1, 1]);
+                set(obj.ax(i), 'plotboxaspectratio', [20, 1, 1]);
+                if i ~= obj.n_chans
+                    set(obj.ax(i), 'xtick', [])
+                end
             end
             
             obj.reset_vals();
         end
         
         
+        function delete(obj)
+            close(obj.fig);
+        end
+        
+        
+        function close_request(obj, ~, ~)
+            set(obj.fig, 'visible', 'off');
+        end
+        
         function reset_vals(obj)
+            set(obj.fig, 'visible', 'on');
             obj.n_points_true = obj.dur * obj.rate;
             obj.true_t = (0:obj.n_points_true)/obj.rate;
             obj.plot_t = (0:obj.downsample:obj.n_points_true)/obj.rate;
@@ -50,10 +66,13 @@ classdef Plotting < handle
             obj.plot_data = nan(obj.n_points_plot, obj.n_chans);
             obj.n_nan_points = obj.rate/obj.downsample;
             
+            cols = lines(obj.n_chans); %#ok<CPROP>
             for i = 1 : obj.n_chans
                 set(obj.fig, 'currentaxes', obj.ax(i));
-                obj.lines(i) = line(obj.plot_t, obj.plot_data(:, i));
+                obj.lines(i) = line(obj.plot_t, obj.plot_data(:, i), 'color', cols(i, :));
                 set(obj.ax(i), 'xlim', obj.plot_t([1, end]), 'ylim', [-0.1, 5.1]);
+                set(obj.ax(i), 'tickdir', 'out')
+                title(obj.chan_names{i}, 'fontsize', 8, 'interpreter', 'none')
             end
         end
         
@@ -61,7 +80,7 @@ classdef Plotting < handle
         function ni_callback(obj, data)
             
             current_plot_val = ceil(obj.current_t/obj.downsample);
-            n_plot_points = obj.update_rate/obj.downsample;
+            n_plot_points = obj.update_every/obj.downsample;
             
             v_rep = current_plot_val + (0:n_plot_points-1);
             v_rep = mod(v_rep-1, obj.n_points_plot)+1;
@@ -75,7 +94,7 @@ classdef Plotting < handle
                 set(obj.lines(i), 'ydata', obj.plot_data(:, i))
             end
             
-            obj.current_t = mod(obj.current_t + obj.update_rate - 1, obj.n_points_true)+1;
+            obj.current_t = mod(obj.current_t + obj.update_every - 1, obj.n_points_true)+1;
         end
     end
 end

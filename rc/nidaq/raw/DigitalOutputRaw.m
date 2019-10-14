@@ -9,7 +9,6 @@ classdef DigitalOutputRaw < handle
         n_chan
         
         channel_names
-        chan = {}
         state
         ai_chan
     end
@@ -38,11 +37,16 @@ classdef DigitalOutputRaw < handle
             end
             
             status = daq.ni.NIDAQmx.DAQmxCfgSampClkTiming(obj.task_handle, clock_src, double(obj.rate), ...
-                daq.ni.NIDAQmx.DAQmx_Val_Rising, daq.ni.NIDAQmx.DAQmx_Val_Finite, uint64(1000));
+                daq.ni.NIDAQmx.DAQmx_Val_Rising, daq.ni.NIDAQmx.DAQmx_Val_FiniteSamps, uint64(1000));
             obj.handle_fault(status);
             
             %%WRITE HERE
             obj.start(repmat(obj.state, 2, 1));
+        end
+        
+        
+        function delete(obj)
+            obj.close()
         end
         
         
@@ -62,7 +66,7 @@ classdef DigitalOutputRaw < handle
         
         
         function data = get_pulse(obj, chan, dur)
-            n_samples = round(obj.task.Rate*dur*1e-3);
+            n_samples = round(obj.rate*dur*1e-3);
             data = nan(n_samples, obj.n_chan);
             for i = 1 : obj.n_chan
                 if obj.state(i)
@@ -89,7 +93,7 @@ classdef DigitalOutputRaw < handle
                         int32(n_samples), ...
                         uint32(false), ...
                         double(10), ...
-                        daq.ni.NIDAQmx.DAQmx_Val_GroupByChannel, ...
+                        uint32(daq.ni.NIDAQmx.DAQmx_Val_GroupByChannel), ...
                         uint8(data(:)), ...
                         int32(0), ...
                         uint32(0));
@@ -98,12 +102,12 @@ classdef DigitalOutputRaw < handle
             status = daq.ni.NIDAQmx.DAQmxStartTask(obj.task_handle);
             obj.handle_fault(status);
             
-            ai_task_off = obj.ai_task.IsDone;
+            ai_task_off = ~obj.ai_task.IsRunning;
             
             if ai_task_off
                 obj.ai_task.IsContinuous = 0;
                 obj.ai_task.NumberOfScans = n_samples + 10;
-                obj.ai_task.start()
+                obj.ai_task.startBackground()
                 wait(obj.ai_task)
                 obj.ai_task.stop()
                 obj.ai_task.IsContinuous = 1;
@@ -127,6 +131,7 @@ classdef DigitalOutputRaw < handle
         
         function handle_fault(obj, status)
             if status ~= 0
+                fprintf('error: %i\n', status);
                 obj.close()
             end
         end

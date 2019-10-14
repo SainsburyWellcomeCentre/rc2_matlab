@@ -5,6 +5,7 @@ classdef AnalogInput < handle
         channel_names
         chan = {}
         h_listener
+        log_every
     end
     
     
@@ -17,11 +18,18 @@ classdef AnalogInput < handle
             end
             obj.task.Rate = config.nidaq.rate;
             obj.task.IsContinuous = 1;
+            obj.log_every = config.nidaq.log_every;
+            obj.h_listener = addlistener(obj.task, 'DataAvailable', @(x, y)pass(x, y));
         end
         
         
-        function prepare(obj, rate, h_callback)
-            obj.task.NotifyWhenDataAvailableExceeds = rate;
+        function delete(obj)
+            obj.close()
+        end
+        
+        
+        function prepare(obj, h_callback)
+            obj.task.NotifyWhenDataAvailableExceeds = obj.log_every;
             obj.h_listener = addlistener(obj.task, 'DataAvailable', h_callback);
         end
         
@@ -33,6 +41,8 @@ classdef AnalogInput < handle
         function stop(obj)
             if isvalid(obj.task)
                 stop(obj.task)
+                % remove the callback function
+                obj.h_listener = addlistener(obj.task, 'DataAvailable', @(x, y)pass(x, y));
             end
         end
         

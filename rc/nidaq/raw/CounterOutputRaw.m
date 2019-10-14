@@ -30,9 +30,11 @@ classdef CounterOutputRaw < handle
             obj.handle_fault(status);
         end
         
+        
         function delete(obj)
             obj.close();
         end
+        
         
         function start(obj)
             status = daq.ni.NIDAQmx.DAQmxStartTask(obj.task_handle);

@@ -11,6 +11,7 @@ config.stage.ai_offset          = -28.0;
 
 
 config.nidaq.rate               = 10000;
+config.nidaq.log_every          = 1000;
 
 config.nidaq.ai.dev             = 'Dev2';
 config.nidaq.ai.channel_names   = {'filtered_teensy', 'lick', 'pump', 'stage', 'raw_teensy', 'solenoid', 'photodiode'};
@@ -61,5 +62,5 @@ config.soloist_input_src.init_source    = 'teensy';
 config.soloist_input_src.teensy         = 0;
 
 
-config.plotting.time            = 10;
-config.plotting.update_rate     = 1000;
+config.plotting                 = plotting_config();
+
