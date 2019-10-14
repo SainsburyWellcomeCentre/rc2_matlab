@@ -25,7 +25,10 @@ config.nidaq.ao.channel_id      = 0;
 config.nidaq.co.dev             = 'Dev2';
 config.nidaq.co.channel_names   = {'camera'};
 config.nidaq.co.channel_id      = 0;
-config.nidaq.co.freq            = 30;
+config.nidaq.co.init_delay      = 0;
+config.nidaq.co.pulse_high      = 100;
+config.nidaq.co.pulse_dur       = 333;  % 30Hz
+config.nidaq.co.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
 
 
 config.nidaq.do.dev             = 'Dev2';
@@ -52,9 +55,9 @@ config.treadmill.do_name        = 'solenoid';
 config.treadmill.init_state     = 1;
 
 
-config.soloist_input_src.do_name = 'multiplexer';
-config.soloist_input_src.init_source = 'teensy';
-config.soloist_input_src.teensy = 0;
+config.soloist_input_src.do_name        = 'multiplexer';
+config.soloist_input_src.init_source    = 'teensy';
+config.soloist_input_src.teensy         = 0;
 
 
 config.plotting.time            = 10;
