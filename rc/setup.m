@@ -1,3 +1,3 @@
 config = load_config();
-ctl = Controller();
+ctl = Controller(config);
 gui = rc2Controller(ctl);

@@ -5,6 +5,11 @@ classdef Saver < handle
         prefix
         suffix
         index
+        fid
+        
+        ai_min_voltage = -10
+        ai_max_voltage = 10
+        voltage_range
     end
     
     
@@ -15,6 +20,8 @@ classdef Saver < handle
             obj.prefix = datestr(now, 'yyyymmddHHMM');
             obj.suffix = datestr(now, 'SS');
             obj.index = 0;
+            
+            obj.voltage_range = obj.ai_max_voltage - obj.ai_min_voltage;
         end
         
         
@@ -37,23 +44,35 @@ classdef Saver < handle
         
         
         function fname = logging_fname(obj)
-            fname_ = sprintf('%s_%s_%03i', obj.prefix, obj.suffix, obj.index);
+            fname_ = sprintf('%s_%s_%03i.bin', obj.prefix, obj.suffix, obj.index);
             fname = fullfile(obj.save_to, obj.prefix, fname_);
         end
         
         
         function create_directory(obj)
             this_dir = fullfile(obj.save_to, obj.prefix);
-            if ~isdir(this_dir)
+            if ~isfolder(this_dir)
                 mkdir(this_dir);
             end
         end
         
         
-        function save(obj)
+        function setup_logging(obj)
             obj.create_directory();
-            % save config files
             obj.index = obj.index + 1;
+            obj.fid = fopen(obj.logging_fname(), 'w');
+        end
+        
+        
+        function stop_logging(obj)
+            fclose(obj.fid);
+            obj.fid = [];
+        end
+        
+        
+        function log(obj, data)
+            data = int16(-2^15 + ((data' - obj.ai_min_voltage)/obj.voltage_range)*2^16);
+            fwrite(obj.fid, data(:), 'int16');
         end
     end
 end
