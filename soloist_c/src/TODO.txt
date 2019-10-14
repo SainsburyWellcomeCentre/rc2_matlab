@@ -1,0 +1,23 @@
+Soloist C exes to do:
+
+Solist
+1. need error checking of arguments in move_to and listen_until
+
+Teensy
+1. ability to set distance travelled to zero
+2. 
+
+Teensy and Soloist
+1. need to distinguish backward from forward movement
+	4 digital inputs?
+
+
+
+- Display output
+
+- GUI input
+
+
+
+
+
