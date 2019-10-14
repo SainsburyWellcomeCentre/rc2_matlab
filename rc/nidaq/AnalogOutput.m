@@ -2,7 +2,7 @@ classdef AnalogOutput < handle
     
     properties
         task
-        chan
+        chan = {}
         channel_names
     end
     
@@ -13,14 +13,14 @@ classdef AnalogOutput < handle
             obj.task = daq.createSession('ni');
             for i = 1:length(config.nidaq.ao.channel_names)
                 obj.channel_names = config.nidaq.ao.channel_names{i};
-                obj.chan(i) = addAnalogOutputChannel(obj.task, config.nidaq.ao.dev, config.nidaq.ao.channel_id(i), 'Voltage');
+                obj.chan{i} = addAnalogOutputChannel(obj.task, config.nidaq.ao.dev, config.nidaq.ao.channel_id(i), 'Voltage');
             end
             obj.task.Rate = config.nidaq.rate;
             obj.task.IsContinuous = 0;
         end
         
         function write(obj, data)
-            obj.task.NumberOfScans = size(data, 1);
+            %obj.task.NumberOfScans = size(data, 1);
             obj.task.queueOutputData(data);
         end
         
@@ -29,11 +29,15 @@ classdef AnalogOutput < handle
         end
         
         function stop(obj)
-            obj.task.stop()
+            if isvalid(obj.task)
+                obj.task.stop()
+            end
         end
         
         function close(obj)
-            obj.task.close()
+            if isvalid(obj.task)
+                delete(obj.task)
+            end
         end
     end
 end

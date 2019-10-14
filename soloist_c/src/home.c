@@ -18,6 +18,9 @@ main(int argc, char **argv)
     // Reset just in case
     reset_gear(handles, handle_count);
     
+    // Enable axis
+    if(!SoloistMotionEnable(handles[0])) { cleanup(handles, handle_count); }
+    
     // Home the axis
     if(!SoloistMotionHome(handles[0])) { cleanup(handles, handle_count); }
     

@@ -26,7 +26,7 @@ classdef Controller < handle
             obj.reward = Reward(obj.ni, config);
             obj.treadmill = Treadmill(obj.ni, config);
             obj.multiplexer = Multiplexer(obj.ni, config);
-            obj.plotting = Plotting(obj.ni, config);
+            obj.plotting = Plotting(config);
             obj.saver = Saver(config);
         end
         
@@ -76,6 +76,5 @@ classdef Controller < handle
         function move_to(obj, pos)
             obj.soloist.move_to(pos, false);
         end
-        
     end
 end

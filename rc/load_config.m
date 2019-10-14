@@ -29,8 +29,8 @@ config.nidaq.co.freq            = 30;
 
 
 config.nidaq.do.dev             = 'Dev2';
-config.nidaq.do.channel_names   = {'pump', 'solenoid', 'multiplexer'};
-config.nidaq.do.channel_id      = 0:2;
+config.nidaq.do.channel_names   = {'pump', 'multiplexer', 'solenoid'};
+config.nidaq.do.channel_id      = {'port0/line0', 'port0/line1', 'port0/line2'};
 
 
 config.teensy.exe               = 'C:\Program Files (x86)\Arduino\arduino_debug.exe';
@@ -52,7 +52,7 @@ config.treadmill.do_name        = 'solenoid';
 config.treadmill.init_state     = 1;
 
 
-config.soloist_input_src.do_name = 'muliplexer';
+config.soloist_input_src.do_name = 'multiplexer';
 config.soloist_input_src.init_source = 'teensy';
 config.soloist_input_src.teensy = 0;
 

@@ -11,7 +11,7 @@
 #define GEARCAM_SOURCE                  2
 #define DEADBAND                        0.005
 
-#define AI_OFFSET 						-28.0
+#define AI_OFFSET 						-508.0
 #define DEFAULT_GEARSOURCE              1
 #define DEFAULT_GEARSCALEFACTOR         1
 #define DEFAULT_ANALOGDEADBAND          0.05

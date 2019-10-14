@@ -1,7 +1,6 @@
 classdef Plotting < handle
     
     properties
-        ni
         n_chans
         rate
         fig
@@ -22,8 +21,7 @@ classdef Plotting < handle
     
     methods
         
-        function obj = Plotting(ni, config)
-            obj.ni = ni;
+        function obj = Plotting(config)
             
             obj.dur = config.plotting.time;
             obj.update_rate = config.plotting.update_rate;
@@ -36,8 +34,10 @@ classdef Plotting < handle
             obj.fig = figure();
             for i = 1 : obj.n_chans
                 obj.ax(i) = subplot(obj.n_chans, 1, i);
-                set(obj.ax(i), 'plotboxaspectratio', [10, 1, 1])
+                set(obj.ax(i), 'plotboxaspectratio', [10, 1, 1]);
             end
+            
+            obj.reset_vals();
         end
         
         
@@ -53,7 +53,7 @@ classdef Plotting < handle
             for i = 1 : obj.n_chans
                 set(obj.fig, 'currentaxes', obj.ax(i));
                 obj.lines(i) = line(obj.plot_t, obj.plot_data(:, i));
-                set(obj.ax(i), 'xlim', obj.plot_t([1, end]), 'ylim', [-0.1, 5.1])
+                set(obj.ax(i), 'xlim', obj.plot_t([1, end]), 'ylim', [-0.1, 5.1]);
             end
         end
         
@@ -63,12 +63,12 @@ classdef Plotting < handle
             current_plot_val = ceil(obj.current_t/obj.downsample);
             n_plot_points = obj.update_rate/obj.downsample;
             
-            v_rep = current_plot_val + (0:n_plot_points);
+            v_rep = current_plot_val + (0:n_plot_points-1);
             v_rep = mod(v_rep-1, obj.n_points_plot)+1;
-            v_nan = current_plot_val + n_plot_points + (0:obj.n_nan_points);
+            v_nan = current_plot_val + n_plot_points + (0:obj.n_nan_points-1);
             v_nan = mod(v_nan-1, obj.n_points_plot)+1;
             
-            obj.plot_data(v_rep, :) = evt.Data;
+            obj.plot_data(v_rep, :) = evt.Data(1:10:end, :);
             obj.plot_data(v_nan, :) = nan;
             
             for i = 1 : obj.n_chans

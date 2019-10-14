@@ -22,6 +22,9 @@ main(int argc, char **argv)
     // Reset gear parameters
     reset_gear(handles, handle_count);
     
+    // Enable axis
+    if(!SoloistMotionEnable(handles[0])) { cleanup(handles, handle_count); }
+    
     // Move to the default position at the default speed
     if(!SoloistMotionSetupRampRateAccel(handles[0], DEFAULT_RAMPRATE)) { cleanup(handles, handle_count); }
     if(!SoloistMotionSetupRampMode(handles[0], DEFAULT_RAMPMODE)) { cleanup(handles, handle_count); }

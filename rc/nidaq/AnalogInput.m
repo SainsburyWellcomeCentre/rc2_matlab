@@ -3,7 +3,7 @@ classdef AnalogInput < handle
     properties
         task
         channel_names
-        chan
+        chan = {}
         h_listener
     end
     
@@ -13,7 +13,7 @@ classdef AnalogInput < handle
             obj.task = daq.createSession('ni');
             for i = 1:length(config.nidaq.ai.channel_names)
                 obj.channel_names{i} = config.nidaq.ai.channel_names{i};
-                obj.chan(i) = addAnalogInputChannel(obj.task, config.nidaq.ai.dev, config.nidaq.ai.channel_id(i), 'Voltage');
+                obj.chan{i} = addAnalogInputChannel(obj.task, config.nidaq.ai.dev, config.nidaq.ai.channel_id(i), 'Voltage');
             end
             obj.task.Rate = config.nidaq.rate;
             obj.task.IsContinuous = 1;
@@ -31,11 +31,15 @@ classdef AnalogInput < handle
         end
         
         function stop(obj)
-            stop(obj.task)
+            if isvalid(obj.task)
+                stop(obj.task)
+            end
         end
         
         function close(obj)
-            close(obj.task)
+            if isvalid(obj.task)
+                delete(obj.task)
+            end
         end
     end
 end

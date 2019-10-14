@@ -74,9 +74,10 @@ classdef NI < handle
         
         function stop_all(obj)
             obj.ai.stop()
-            obj.co.stop()
-            obj.do.stop()
-            obj.ao.stop()
+                obj.co.stop()
+                obj.do.stop()
+                obj.ao.stop()
+
         end
         
         

@@ -4,9 +4,10 @@ classdef DigitalOutput < handle
         task
         ai_task
         channel_names
-        chan
+        chan = {}
         n_chan
         state
+        ai_chan
     end
     
     
@@ -19,14 +20,15 @@ classdef DigitalOutput < handle
             obj.n_chan = length(config.nidaq.do.channel_names);
             for i = 1 : obj.n_chan
                 obj.channel_names{i} = config.nidaq.do.channel_names{i};
-                obj.chan(i) = addDigitalChannel(obj.task, config.nidaq.do.dev, config.nidaq.do.channel_id(i), 'OutputOnly');
+                obj.chan{i} = addDigitalChannel(obj.task, config.nidaq.do.dev, config.nidaq.do.channel_id{i}, 'OutputOnly');
                 obj.state(i) = false;
             end
+            %obj.ai_chan = addAnalogInputChannel(obj.task, 'Dev2', 15, 'Voltage');
             
-            obj.task.addClockConnection('/Dev2/ai/SampleClock', '/Dev2/do/SampleClock', 'ScanClock');
+            %obj.task.addClockConnection('/Dev2/ai/SampleClock', '/Dev2/do/SampleClock', 'ScanClock');
             
             obj.task.Rate = config.nidaq.rate;
-            obj.task.IsContinuous = 1;
+            obj.task.IsContinuous = 0;
         end
         
         
@@ -46,7 +48,7 @@ classdef DigitalOutput < handle
         
         
         function data = get_pulse(obj, chan, dur)
-            n_samples = round(self.rate*dur*1e-3);
+            n_samples = round(obj.task.Rate*dur*1e-3);
             data = nan(n_samples, obj.n_chan);
             for i = 1 : obj.n_chan
                 if obj.state(i)
@@ -78,11 +80,15 @@ classdef DigitalOutput < handle
         end
         
         function stop(obj)
-            obj.task.stop()
+            if isvalid(obj.task)
+                obj.task.stop();
+            end
         end
         
         function close(obj)
-            obj.task.close()
+            if isvalid(obj.task)
+                delete(obj.task);
+            end
         end
     end
 end

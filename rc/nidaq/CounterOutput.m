@@ -2,7 +2,7 @@ classdef CounterOutput < handle
     
     properties
         task
-        chan
+        chan = {}
         channel_names
     end
     
@@ -12,10 +12,11 @@ classdef CounterOutput < handle
             obj.task = daq.createSession('ni');
             for i = 1:length(config.nidaq.co.channel_names)
                 obj.channel_names{i} = config.nidaq.co.channel_names{i};
-                obj.chan(i) = addCounterOutputChannel(obj.task, config.nidaq.co.dev, config.nidaq.co.channel_id(i), 'PulseGeneration');
-                obj.chan(i).Frequency = config.nidaq.co.freq(i);
+                obj.chan{i} = addCounterOutputChannel(obj.task, config.nidaq.co.dev, config.nidaq.co.channel_id(i), 'PulseGeneration');
+                obj.chan{i}.Frequency = config.nidaq.co.freq(i);
             end
-            obj.task.addClockConnection('/Dev2/ai/SampleClock', '/Dev2/co/SampleClock', 'ScanClock');
+            
+            %obj.task.addClockConnection('/Dev2/ai/SampleClock', '/Dev2/co/SampleClock', 'ScanClock');
             obj.task.Rate = config.nidaq.rate;
             obj.task.IsContinuous = 1;
         end
@@ -25,11 +26,15 @@ classdef CounterOutput < handle
         end
         
         function stop(obj)
-            stop(obj.task)
+            if isvalid(obj.task)
+                stop(obj.task)
+            end
         end
         
         function close(obj)
-            close(obj.task)
+            if isvalid(obj.task)
+                delete(obj.task)
+            end
         end
     end
 end
