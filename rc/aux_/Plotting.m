@@ -58,7 +58,7 @@ classdef Plotting < handle
         end
         
         
-        function ni_callback(obj, ~, evt)
+        function ni_callback(obj, data)
             
             current_plot_val = ceil(obj.current_t/obj.downsample);
             n_plot_points = obj.update_rate/obj.downsample;
@@ -68,7 +68,7 @@ classdef Plotting < handle
             v_nan = current_plot_val + n_plot_points + (0:obj.n_nan_points-1);
             v_nan = mod(v_nan-1, obj.n_points_plot)+1;
             
-            obj.plot_data(v_rep, :) = evt.Data(1:10:end, :);
+            obj.plot_data(v_rep, :) = data(1:10:end, :);
             obj.plot_data(v_nan, :) = nan;
             
             for i = 1 : obj.n_chans

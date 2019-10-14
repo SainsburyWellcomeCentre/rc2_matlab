@@ -39,10 +39,15 @@ classdef Controller < handle
         
         
         function prepare_acq(obj)
-            obj.saver.save()
-            obj.ni.ai.prepare(1000, @(x, y)obj.plotting.ni_callback(x, y))
+            obj.saver.setup_logging()
+            obj.ni.ai.prepare(1000, @(x, y)obj.h_callback(x, y))
         end
         
+        
+        function h_callback(obj, ~, evt)
+            obj.saver.log(evt.Data);
+            obj.plotting.ni_callback(evt.Data);
+        end
         
         function start_acq(obj)
             obj.ni.start_acq()
@@ -51,6 +56,7 @@ classdef Controller < handle
         
         function stop_acq(obj)
             obj.ni.stop_acq()
+            obj.saver.stop_logging();
         end
         
         function close(obj)
