@@ -24,7 +24,7 @@ classdef DigitalOutputRaw < handle
             obj.rate = obj.ai_task.Rate;
             
             [status, obj.task_handle] = daq.ni.NIDAQmx.DAQmxCreateTask(char(0), uint64(0));
-            obj.handle_fault(status);
+            obj.handle_fault(status, 'DAQmxCreateTask');
             
             
             obj.n_chan = length(config.nidaq.do.channel_names);
@@ -32,13 +32,13 @@ classdef DigitalOutputRaw < handle
                 obj.channel_names{i} = config.nidaq.do.channel_names{i};
                 dev_str = sprintf('%s/%s', config.nidaq.do.dev, config.nidaq.do.channel_id{i});
                 status = daq.ni.NIDAQmx.DAQmxCreateDOChan(obj.task_handle, dev_str, char(0), daq.ni.NIDAQmx.DAQmx_Val_ChanForAllLines);
-                obj.handle_fault(status);
+                obj.handle_fault(status, 'DAQmxCreateDOChan');
                 obj.state(i) = false;
             end
             
             status = daq.ni.NIDAQmx.DAQmxCfgSampClkTiming(obj.task_handle, clock_src, double(obj.rate), ...
                 daq.ni.NIDAQmx.DAQmx_Val_Rising, daq.ni.NIDAQmx.DAQmx_Val_FiniteSamps, uint64(1000));
-            obj.handle_fault(status);
+            obj.handle_fault(status, 'DAQmxCfgSampClkTiming');
             
             %%WRITE HERE
             obj.start(repmat(obj.state, 2, 1));
@@ -84,9 +84,8 @@ classdef DigitalOutputRaw < handle
         function start(obj, data)
             
             n_samples = size(data, 1);
-            obj.stop();
             status = daq.ni.NIDAQmx.DAQmxSetSampQuantSampPerChan(obj.task_handle, uint64(n_samples));
-            obj.handle_fault(status);
+            obj.handle_fault(status, 'DAQmxSetSampQuantSampPerChan');
             
             [status, ~, ~] = daq.ni.NIDAQmx.DAQmxWriteDigitalLines( ...
                         obj.task_handle, ...
@@ -97,10 +96,10 @@ classdef DigitalOutputRaw < handle
                         uint8(data(:)), ...
                         int32(0), ...
                         uint32(0));
-            obj.handle_fault(status);
+            obj.handle_fault(status, 'DAQmxWriteDigitalLines');
             
             status = daq.ni.NIDAQmx.DAQmxStartTask(obj.task_handle);
-            obj.handle_fault(status);
+            obj.handle_fault(status, 'start');
             
             ai_task_off = ~obj.ai_task.IsRunning;
             
@@ -113,12 +112,16 @@ classdef DigitalOutputRaw < handle
                 obj.ai_task.IsContinuous = 1;
             end
             
+            status = daq.ni.NIDAQmx.DAQmxWaitUntilTaskDone(obj.task_handle, double(10));
+            obj.handle_fault(status, 'DAQmxWaitUntilTaskDone')
+            obj.stop();
+            
             obj.state = data(end, :);
         end
         
         function stop(obj)
             status = daq.ni.NIDAQmx.DAQmxStopTask(obj.task_handle);
-            obj.handle_fault(status);
+            obj.handle_fault(status, 'DAQmxStopTask');
         end
         
         function close(obj)
@@ -129,9 +132,9 @@ classdef DigitalOutputRaw < handle
         end
         
         
-        function handle_fault(obj, status)
+        function handle_fault(obj, status, loc)
             if status ~= 0
-                fprintf('error: %i\n', status);
+                fprintf('%s: error: %i, %s\n', class(obj), status, loc);
                 obj.close()
             end
         end

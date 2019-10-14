@@ -27,7 +27,7 @@ classdef Reward < handle
         end
         
         
-        function start_reward(obj)
+        function start_reward(obj, block_on)
             
             if ~obj.randomize
                 interval = 0.01;
@@ -43,10 +43,16 @@ classdef Reward < handle
                 end
             end
             
-            obj.rand_timer = timer();
-            obj.rand_timer.StartDelay = interval;
-            obj.rand_timer.TimerFcn = @(src, evt)obj.give_reward(src, evt);
-            start(obj.rand_timer)
+            if block_on
+                pause(interval)
+                obj.give_reward()
+                pause(obj.duration*1e-3+0.5)
+            else
+                obj.rand_timer = timer();
+                obj.rand_timer.StartDelay = interval;
+                obj.rand_timer.TimerFcn = @(src, evt)obj.give_reward(src, evt);
+                start(obj.rand_timer)
+            end
         end
         
         

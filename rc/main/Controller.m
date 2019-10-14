@@ -31,6 +31,11 @@ classdef Controller < handle
         end
         
         
+        function delete(obj)
+            obj.close()
+        end
+        
+        
         function run(obj, prot_caller)
            obj.caller =  prot_caller;
            obj.prepare_acq()
@@ -50,15 +55,17 @@ classdef Controller < handle
             obj.plotting.ni_callback(evt.Data);
         end
         
+        
         function start_acq(obj)
             obj.ni.start_acq()
         end
         
         
         function stop_acq(obj)
-            obj.ni.stop_acq()
+            obj.ni.stop_acq();
             obj.saver.stop_logging();
         end
+        
         
         function close(obj)
             obj.ni.close()

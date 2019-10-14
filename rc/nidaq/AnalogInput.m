@@ -30,6 +30,7 @@ classdef AnalogInput < handle
         
         function prepare(obj, h_callback)
             obj.task.NotifyWhenDataAvailableExceeds = obj.log_every;
+            delete(obj.h_listener);
             obj.h_listener = addlistener(obj.task, 'DataAvailable', h_callback);
         end
         
@@ -42,6 +43,7 @@ classdef AnalogInput < handle
             if isvalid(obj.task)
                 stop(obj.task)
                 % remove the callback function
+                delete(obj.h_listener);
                 obj.h_listener = addlistener(obj.task, 'DataAvailable', @(x, y)pass(x, y));
             end
         end

@@ -16,18 +16,18 @@ classdef CounterOutputRaw < handle
             clock_src = config.nidaq.co.clock_src;
             
             [status, obj.task_handle] = daq.ni.NIDAQmx.DAQmxCreateTask(char(0), uint64(0));
-            obj.handle_fault(status);
+            obj.handle_fault(status, 'DAQmxCreateTask');
             
             for i = 1:length(config.nidaq.co.channel_names)
                 obj.channel_names{i} = config.nidaq.co.channel_names{i};
                 dev_str = sprintf('%s/ctr%i', config.nidaq.co.dev, config.nidaq.co.channel_id(i));
                 status = daq.ni.NIDAQmx.DAQmxCreateCOPulseChanTicks(obj.task_handle, dev_str, char(0), clock_src, ...
                     daq.ni.NIDAQmx.DAQmx_Val_Low, int32(init_delay), int32(low_samps), int32(high_samps));
-                obj.handle_fault(status);
+                obj.handle_fault(status, 'DAQmxCreateCOPulseChanTicks');
             end
             
             status = daq.ni.NIDAQmx.DAQmxCfgImplicitTiming(obj.task_handle, daq.ni.NIDAQmx.DAQmx_Val_ContSamps, uint64(1000));
-            obj.handle_fault(status);
+            obj.handle_fault(status, 'DAQmxCfgImplicitTiming');
         end
         
         
@@ -38,12 +38,12 @@ classdef CounterOutputRaw < handle
         
         function start(obj)
             status = daq.ni.NIDAQmx.DAQmxStartTask(obj.task_handle);
-            obj.handle_fault(status);
+            obj.handle_fault(status, 'DAQmxStartTask');
         end
         
         function stop(obj)
             status = daq.ni.NIDAQmx.DAQmxStopTask(obj.task_handle);
-            obj.handle_fault(status);
+            obj.handle_fault(status, 'DAQmxStopTask');
         end
         
         function close(obj)
@@ -53,8 +53,9 @@ classdef CounterOutputRaw < handle
             end
         end
         
-        function handle_fault(obj, status)
+        function handle_fault(obj, status, loc)
             if status ~= 0
+                fprintf('%s: error: %i, %s\n', class(obj), status, loc);
                 obj.close()
             end
         end
