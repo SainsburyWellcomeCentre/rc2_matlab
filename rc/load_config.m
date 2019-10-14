@@ -34,6 +34,7 @@ config.nidaq.co.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.
 config.nidaq.do.dev             = 'Dev2';
 config.nidaq.do.channel_names   = {'pump', 'multiplexer', 'solenoid'};
 config.nidaq.do.channel_id      = {'port0/line0', 'port0/line1', 'port0/line2'};
+config.nidaq.do.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
 
 
 config.teensy.exe               = 'C:\Program Files (x86)\Arduino\arduino_debug.exe';

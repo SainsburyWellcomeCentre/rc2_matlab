@@ -16,7 +16,7 @@ classdef NI < handle
             obj.ai = AnalogInput(config);
             obj.ao = AnalogOutput(config);
             obj.co = CounterOutputRaw(config);
-            obj.do = DigitalOutput(config, obj.ai);
+            obj.do = DigitalOutputRaw(config, obj.ai.task);
         end
         
         function prepare_acq(obj, fname, rate, h_callback)
