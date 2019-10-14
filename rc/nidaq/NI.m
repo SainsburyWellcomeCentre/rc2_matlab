@@ -15,7 +15,7 @@ classdef NI < handle
             
             obj.ai = AnalogInput(config);
             obj.ao = AnalogOutput(config);
-            obj.co = CounterOutput(config);
+            obj.co = CounterOutputRaw(config);
             obj.do = DigitalOutput(config, obj.ai);
         end
         
