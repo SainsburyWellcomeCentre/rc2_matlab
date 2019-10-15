@@ -23,7 +23,7 @@ classdef Controller < handle
             VariableDefault('home_prompt', true)
             
             obj.config = config;
-            obj.ni = NI(config);
+            obj.ni = NITest(config);
             obj.teensy = Teensy(config);
             obj.soloist = Soloist(config, home_prompt);
             obj.reward = Reward(obj.ni, config);
@@ -36,6 +36,7 @@ classdef Controller < handle
         
         
         function delete(obj)
+            delete(obj.plotting);
             obj.close()
         end
         

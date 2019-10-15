@@ -3,6 +3,7 @@ classdef Sound < handle
     properties
         audio
         looping = false;
+        state = false;
     end
     
     
@@ -19,6 +20,7 @@ classdef Sound < handle
         function start(obj)
             obj.looping = true;
             play(obj.audio)
+            obj.state = true;
         end
         
         
@@ -32,6 +34,7 @@ classdef Sound < handle
         function stop(obj)
             obj.looping = false;
             stop(obj.audio);
+            obj.state = false;
         end
     end
 end

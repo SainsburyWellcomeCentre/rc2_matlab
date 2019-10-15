@@ -33,16 +33,15 @@ classdef Plotting < handle
             obj.rate = config.nidaq.rate;
             
             obj.fig = figure();
-            set(obj.fig, 'position', config.plotting.fig.position)
+            set(obj.fig, 'position', config.plotting.fig.position);
             set(obj.fig, 'closerequestfcn', @(x, y)obj.close_request(x, y));
             for i = 1 : obj.n_chans
                 obj.ax(i) = subplot(obj.n_chans, 1, i);
                 set(obj.ax(i), 'plotboxaspectratio', [20, 1, 1]);
                 p = get(obj.ax(i), 'position');
                 p([1, 3]) = [0.05, 0.9];
-                set(obj.ax(i), 'position');
                 if i ~= obj.n_chans
-                    set(obj.ax(i), 'xtick', [])
+                    set(obj.ax(i), 'xtick', []);
                 end
             end
             

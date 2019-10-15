@@ -18,7 +18,7 @@ classdef TaskTest < handle
         
         
         function val = addDigitalChannel(obj, dev_name, channel, dir)
-            str = sprintf('adding digital channel on %s on chan %i, %s\n', dev_name, channel, dir);
+            str = sprintf('adding digital channel on %s on chan %s, %s\n', dev_name, channel{1}, dir);
             fprintf(str);
             val = ChanTest;
         end

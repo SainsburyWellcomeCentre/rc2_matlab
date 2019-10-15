@@ -3,7 +3,7 @@ classdef Treadmill < handle
     properties
         ni
         chan
-        current_state
+        state
     end
     
     methods
@@ -21,18 +21,19 @@ classdef Treadmill < handle
             else
                 obj.unblock()
             end
-            obj.current_state = config.treadmill.init_state;
+            
+            obj.state = config.treadmill.init_state;
         end
         
         
         function block(obj)
             obj.ni.do_toggle(obj.chan, true);
-            obj.current_state = true;
+            obj.state = true;
         end
         
         function unblock(obj)
             obj.ni.do_toggle(obj.chan, false);
-            obj.current_state = false;
+            obj.state = false;
         end
     end
 end

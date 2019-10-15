@@ -21,7 +21,7 @@ end
 function rc2GUI_OpeningFcn(hObject, ~, handles, varargin)
 handles.output = hObject;
 set(handles.output, 'CloseRequestFcn', @(hObject, eventdata)rc2GUI('figure1_CloseRequestFcn',hObject,eventdata,guidata(hObject)))
-set(handles.output, 'Name', 'rc2GUI');
+set(handles.output, 'Name', 'rollercoaster 2.0');
 handles.controller = varargin{1};
 guidata(hObject, handles);
 
@@ -52,11 +52,61 @@ function pushbutton_move_to_Callback(~, ~, handles)
 handles.controller.move_to();
 
 
+function pushbutton_reset_Callback(~, ~, handles)
+handles.controller.reset();
+
+
 function edit_move_to_Callback(~, ~, handles)
 handles.controller.changed_move_to_pos()
 
+
+function pushbutton_toggle_sound_Callback(~, ~, handles)
+handles.controller.toggle_sound()
+
+
+function pushbutton_change_save_to_Callback(~, ~, handles)
+handles.controller.set_save_to()
+
+
+function edit_file_prefix_Callback(h_obj, ~, handles)
+handles.controller.set_file_prefix(h_obj)
+
+
+function edit_file_suffix_Callback(h_obj, ~, handles)
+handles.controller.set_file_suffix(h_obj)
+
+
+function edit_file_index_Callback(h_obj, ~, handles)
+handles.controller.set_file_index(h_obj)
+
+
+function checkbox_enable_save_Callback(h_obj, ~, handles)
+handles.controller.enable_save(h_obj)
+
+
+function edit_save_to_Callback(~, ~, ~)
+% inactive
 
 function edit_move_to_CreateFcn(hObject, ~, ~)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+function edit_save_to_CreateFcn(hObject, ~, ~)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function edit_file_prefix_CreateFcn(hObject, ~, ~)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function edit_file_suffix_CreateFcn(hObject, ~, ~)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function edit_file_index_CreateFcn(hObject, ~, ~)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+

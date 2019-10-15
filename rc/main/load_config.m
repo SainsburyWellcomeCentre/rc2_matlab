@@ -7,11 +7,12 @@ config.saving.save_to       = 'C:\Users\Mateo\Desktop\DefaultData';
 config.stage.start_pos          = 750;
 config.stage.back_limit         = 1450;
 config.stage.forward_limit      = 250;
-config.stage.ai_offset          = -28.0;
+config.stage.max_limits         = [1470, 15];
 
 
 config.nidaq.rate               = 10000;
 config.nidaq.log_every          = 1000;
+
 
 config.nidaq.ai.dev             = 'Dev2';
 config.nidaq.ai.channel_names   = {'filtered_teensy', 'lick', 'pump', 'stage', 'raw_teensy', 'solenoid', 'photodiode'};

@@ -38,6 +38,16 @@ classdef rc2Controller < handle
         end
         
         
+        function toggle_sound(obj)
+            if obj.setup.sound.state
+                obj.setup.sound.stop()
+                set(obj.view.handles.pushbutton_toggle_sound, 'string', 'PLAY');
+            else
+                obj.setup.sound.start()
+                set(obj.view.handles.pushbutton_toggle_sound, 'string', 'STOP');
+            end
+        end
+        
         
         function move_to(obj)
             val = str2double(get(obj.view.handles.edit_move_to, 'string'));
@@ -45,6 +55,46 @@ classdef rc2Controller < handle
                 error('value is not numeric')
             end
             obj.setup.move_to(val);
+        end
+        
+        
+        function reset(obj)
+            obj.setup.soloist.reset();
+        end
+        
+        
+        function set_save_to(obj)
+            start_dir = obj.setup.saver.save_to;
+            user_dir = uigetdir(start_dir, 'Choose save directory...');
+            if ~user_dir; return; end
+            
+            obj.setup.saver.set_save_to(user_dir);
+            set(obj.view.handles.edit_save_to, 'string', user_dir);
+        end
+        
+        
+        function set_file_prefix(obj, h_obj)
+            str = get(h_obj, 'string');
+            obj.setup.saver.set_prefix(str)
+        end
+        
+        
+        function set_file_suffix(obj, h_obj)
+            str = get(h_obj, 'string');
+            obj.setup.saver.set_suffix(str)
+        end
+        
+        
+        function set_file_index(obj, h_obj)
+            val = str2double(get(h_obj, 'string'));
+            obj.setup.saver.set_index(val);
+            set(obj.view.handles.edit_file_index, 'string', sprintf('%i', obj.setup.saver.index))
+        end
+        
+        
+        function enable_save(obj, h_obj)
+            val = get(h_obj, 'value');
+            obj.setup.saver.set_enable(val);
         end
     end
 end

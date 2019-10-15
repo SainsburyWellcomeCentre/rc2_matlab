@@ -13,7 +13,7 @@ classdef CounterOutputTest < handle
             for i = 1:length(config.nidaq.co.channel_names)
                 obj.channel_names{i} = config.nidaq.co.channel_names{i};
                 obj.chan{i} = addCounterOutputChannel(obj.task, config.nidaq.co.dev, config.nidaq.co.channel_id(i), 'PulseGeneration');
-                obj.chan{i}.Frequency = config.nidaq.co.freq(i);
+                %obj.chan{i}.Frequency = config.nidaq.co.freq(i);
             end
             obj.task.addClockConnection('/Dev2/ai/SampleClock', '/Dev2/co/SampleClock', 'ScanClock');
             obj.task.Rate = config.nidaq.rate;
