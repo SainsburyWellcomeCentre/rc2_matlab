@@ -56,8 +56,8 @@ function pushbutton_reset_Callback(~, ~, handles)
 handles.controller.reset();
 
 
-function edit_move_to_Callback(~, ~, handles)
-handles.controller.changed_move_to_pos()
+function edit_move_to_Callback(h_obj, ~, handles)
+handles.controller.changed_move_to_pos(h_obj)
 
 
 function pushbutton_toggle_sound_Callback(~, ~, handles)

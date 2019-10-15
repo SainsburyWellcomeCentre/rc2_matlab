@@ -49,7 +49,7 @@ classdef CounterOutputRaw < handle
         function close(obj)
             status = daq.ni.NIDAQmx.DAQmxClearTask(obj.task_handle);
             if status ~= 0
-                fprintf('couldn''t clear co task')
+                fprintf('couldn''t clear co task\n')
             end
         end
         

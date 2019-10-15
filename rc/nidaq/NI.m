@@ -19,8 +19,8 @@ classdef NI < handle
         end
         
         
-        function prepare_acq(obj, fname, h_callback)
-            obj.ai.prepare(fname, h_callback)
+        function prepare_acq(obj, h_callback)
+            obj.ai.prepare(h_callback)
         end
         
         

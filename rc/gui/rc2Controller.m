@@ -4,6 +4,9 @@ classdef rc2Controller < handle
         
         setup
         view
+        
+        move_to_pos
+        stage_limits
     end
     
     
@@ -13,6 +16,8 @@ classdef rc2Controller < handle
         function obj = rc2Controller(setup)
             
             obj.setup = setup;
+            obj.stage_limits = setup.config.stage.max_limits;
+            obj.move_to_pos = setup.config.stage.start_pos;
             obj.view = rc2View(obj);
         end
         
@@ -61,6 +66,23 @@ classdef rc2Controller < handle
         end
         
         
+        function changed_move_to_pos(obj, h_obj)
+            val = str2double(get(h_obj, 'string'));
+            if ~isnumeric(val) || isinf(val) || isnan(val)
+                fprintf('%s: %s ''val'' must be numeric\n', class(obj), 'changed_move_to_pos');
+                set(obj.view.handles.edit_move_to, 'string', sprintf('%.1f', obj.move_to_pos))
+                return
+            end
+            
+            if val > obj.stage_limits(1) || val < obj.stage_limits(2)
+                fprintf('%s: %s ''val'' must be within stage limits\n', class(obj), 'changed_move_to_pos');
+                set(obj.view.handles.edit_move_to, 'string', sprintf('%.1f', obj.move_to_pos))
+                return
+            end
+        end
+        
+        
+        
         function move_to(obj)
             val = str2double(get(obj.view.handles.edit_move_to, 'string'));
             if ~isnumeric(val) || isinf(val) || isnan(val)
@@ -80,33 +102,35 @@ classdef rc2Controller < handle
             user_dir = uigetdir(start_dir, 'Choose save directory...');
             if ~user_dir; return; end
             
-            obj.setup.saver.set_save_to(user_dir);
-            set(obj.view.handles.edit_save_to, 'string', user_dir);
+            obj.setup.set_save_save_to(user_dir);
+            obj.view.save_to_updated();
         end
         
         
         function set_file_prefix(obj, h_obj)
             str = get(h_obj, 'string');
-            obj.setup.saver.set_prefix(str)
+            obj.setup.set_save_prefix(str)
+            obj.view.prefix_updated();
         end
         
         
         function set_file_suffix(obj, h_obj)
             str = get(h_obj, 'string');
-            obj.setup.saver.set_suffix(str)
+            obj.setup.set_save_suffix(str)
+            obj.view.suffix_updated();
         end
         
         
         function set_file_index(obj, h_obj)
             val = str2double(get(h_obj, 'string'));
-            obj.setup.saver.set_index(val);
+            obj.setup.set_save_index(val);
             obj.view.index_updated();
         end
         
         
         function enable_save(obj, h_obj)
             val = get(h_obj, 'value');
-            obj.setup.saver.set_enable(val);
+            obj.setup.set_save_enable(val);
             obj.view.enable_updated();
         end
     end

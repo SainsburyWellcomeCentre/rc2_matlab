@@ -42,6 +42,8 @@ classdef Plotting < handle
                 p([1, 3]) = [0.05, 0.9];
                 if i ~= obj.n_chans
                     set(obj.ax(i), 'xtick', []);
+                else
+                    xlabel('Time (s)')
                 end
             end
             

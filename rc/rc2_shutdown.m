@@ -1,2 +1,3 @@
-ctl.close()
+delete(ctl)
+delete(gui)
 clear all

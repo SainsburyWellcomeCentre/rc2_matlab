@@ -64,7 +64,7 @@ classdef TaskTest < handle
         end
         
         function close(obj)
-            fprintf('closing task')
+            fprintf('closing task\n')
         end
     end
 end

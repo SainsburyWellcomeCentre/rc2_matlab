@@ -2,7 +2,7 @@ classdef Soloist < handle
     
     properties
         dir
-        limits
+        max_limits
     end
     
     methods
@@ -16,7 +16,7 @@ classdef Soloist < handle
                     obj.home();
                 end
             end
-            obj.limits = config.stage.max_limits;
+            obj.max_limits = config.stage.max_limits;
         end
         
         
@@ -56,19 +56,19 @@ classdef Soloist < handle
         function move_to(obj, pos, end_enabled)
             % checks go here!
             if ~isnumeric(pos) || isinf(pos) || isnan(pos)
-                fprintf('%s: %s ''pos'' must be numeric', class(obj), 'move_to');
+                fprintf('%s: %s ''pos'' must be numeric\n', class(obj), 'move_to');
                 return
             end
             if pos > obj.max_limits(1) || pos < obj.max_limits(2)
-                fprintf('%s: %s pos must be between %.1f and %.1f', ...
+                fprintf('%s: %s pos must be between %.1f and %.1f\n', ...
                     class(obj), 'move_to', obj.max_limits(2), obj.max_limits(1));
                 return
             end
             
             VariableDefault('end_enabled', false);
             
-            if ~isnumeric(end_enabled) || isinf(end_enabled) || isnan(end_enabled)
-                fprintf('%s: %s ''end_enabled'' must be boolean', class(obj), 'move_to');
+            if ~islogical(end_enabled)
+                fprintf('%s: %s ''end_enabled'' must be boolean\n', class(obj), 'move_to');
                 return
             end
             
@@ -89,19 +89,19 @@ classdef Soloist < handle
         function listen_until(obj, back_pos, forward_pos)
             % checks go here!
             if back_pos > obj.max_limits(1) || back_pos < obj.max_limits(2)
-                fprintf('%s: %s ''back_pos'' must be between %.1f and %.1f', ...
+                fprintf('%s: %s ''back_pos'' must be between %.1f and %.1f\n', ...
                     class(obj), 'listen_until', obj.max_limits(2), obj.max_limits(1));
                 return
             end
             
             if forward_pos > obj.max_limits(1) || forward_pos < obj.max_limits(2)
-                fprintf('%s: %s ''forward_pos'' must be between %.1f and %.1f', ...
+                fprintf('%s: %s ''forward_pos'' must be between %.1f and %.1f\n', ...
                     class(obj), 'listen_until', obj.max_limits(2), obj.max_limits(1));
                 return
             end
             
             if forward_pos > back_pos
-                fprintf('%s: %s ''forward_pos'' must be > ''back_pos''', ...
+                fprintf('%s: %s ''forward_pos'' must be > ''back_pos''\n', ...
                     class(obj), 'listen_until');
                 return
             end

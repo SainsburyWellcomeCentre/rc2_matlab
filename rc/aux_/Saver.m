@@ -4,9 +4,6 @@ classdef Saver < handle
         
         is_logging = false
         
-        save_to
-        prefix
-        suffix
         fid
         
         ai_min_voltage = -10
@@ -15,6 +12,9 @@ classdef Saver < handle
     end
     
     properties (SetObservable = true)
+        save_to
+        prefix
+        suffix
         enable = true
         index
     end
@@ -34,7 +34,7 @@ classdef Saver < handle
         
         function set_enable(obj, val)
             if ~isnumeric(val) || isinf(val) || isnan(val)
-                fprintf('%s: %s ''val'' must be numeric and >= 0', class(obj), 'set_index');
+                fprintf('%s: %s ''val'' must be numeric and >= 0\n', class(obj), 'set_index');
                 return
             end
             if obj.is_logging; return; end
@@ -66,7 +66,7 @@ classdef Saver < handle
         
         function set_index(obj, val)
             if ~isnumeric(val) || isinf(val) || isnan(val) || val < 0
-                fprintf('%s: %s ''val'' must be numeric and >= 0', class(obj), 'set_index');
+                fprintf('%s: %s ''val'' must be numeric and >= 0\n', class(obj), 'set_index');
                 return
             end
             if obj.is_logging; return; end

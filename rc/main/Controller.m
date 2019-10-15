@@ -26,7 +26,7 @@ classdef Controller < handle
             VariableDefault('home_prompt', true)
             
             obj.config = config;
-            obj.ni = NITest(config);
+            obj.ni = NI(config);
             obj.teensy = Teensy(config);
             obj.soloist = Soloist(config, home_prompt);
             obj.reward = Reward(obj.ni, config);
@@ -49,7 +49,7 @@ classdef Controller < handle
                 error('already acquiring data')
             end
             obj.saver.setup_logging();
-            obj.ni.ai.prepare(@(x, y)obj.h_callback(x, y))
+            obj.ni.prepare_acq(@(x, y)obj.h_callback(x, y))
             obj.plotting.reset_vals();
         end
         
@@ -94,8 +94,7 @@ classdef Controller < handle
         
         
         function move_to(obj, pos)
-            proc = obj.soloist.move_to(pos, false);
-            proc.wait_for(0.5);
+            obj.soloist.move_to(pos, false);
         end
         
         
@@ -106,6 +105,36 @@ classdef Controller < handle
         
         function play_velocity_waveform(obj)
             obj.ni.ao_start();
+        end
+        
+        
+        function set_save_save_to(obj, str)
+            if obj.acquiring; return; end
+            obj.saver.set_save_to(str)
+        end
+        
+        
+        function set_save_prefix(obj, str)
+            if obj.acquiring; return; end
+            obj.saver.set_prefix(str)
+        end
+        
+        
+        function set_save_suffix(obj, str)
+            if obj.acquiring; return; end
+            obj.saver.set_suffix(str)
+        end
+        
+        
+        function set_save_index(obj, val)
+            if obj.acquiring; return; end
+            obj.saver.set_index(val)
+        end
+        
+        
+        function set_save_enable(obj, val)
+            if obj.acquiring; return; end
+            obj.saver.set_enable(val)
         end
     end
 end
