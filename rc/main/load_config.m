@@ -39,11 +39,11 @@ config.nidaq.do.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.
 
 
 config.teensy.exe               = 'C:\Program Files (x86)\Arduino\arduino_debug.exe';
-config.teensy.dir               = '..\teensy_ino';
+config.teensy.dir               = 'C:\Users\Mateo\Documents\rc_version_2_0\rc2_matlab\teensy_ino';
 config.teensy.start_script      = 'forward_only';
 
 
-config.soloist.dir              = '..\soloist_c\exe';
+config.soloist.dir              = 'C:\Users\Mateo\Documents\rc_version_2_0\rc2_matlab\soloist_c\exe';
 
 
 config.reward.do_name           = 'pump';

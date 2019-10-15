@@ -21,13 +21,12 @@ classdef Teensy < handle
             VariableDefault('force', false);
             
             if strcmp(obj.current_script, script) && ~force
-                fprintf('no need to load Teensy')
+                disp('no need to load Teensy')
                 return
             end
             
             cmd = sprintf('%s --upload %s', obj.exe, obj.full_script(script));
             disp(cmd)
-            disp('\n')
             %system(cmd)
             
             obj.current_script = script;
