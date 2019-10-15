@@ -47,9 +47,6 @@ classdef Coupled < handle
             
             proc.wait_for(0.5);
             
-            obj.ctl.processes.add_process(proc, 'block_test');
-            obj.ctl.processes.wait_for('block_test');
-            
             obj.ctl.treadmill.block()
             
             if obj.run_once
