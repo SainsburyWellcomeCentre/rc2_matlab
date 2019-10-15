@@ -92,7 +92,18 @@ classdef Controller < handle
         
         
         function move_to(obj, pos)
-            obj.soloist.move_to(pos, false);
+            proc = obj.soloist.move_to(pos, false);
+            proc.wait_for(0.5);
+        end
+        
+        
+        function load_velocity_waveform(obj, waveform)
+            obj.ni.ao_write(waveform);
+        end
+        
+        
+        function play_velocity_waveform(obj)
+            obj.ni.ao_start();
         end
     end
 end
