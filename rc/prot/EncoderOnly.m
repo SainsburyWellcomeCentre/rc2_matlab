@@ -7,7 +7,8 @@ classdef EncoderOnly < handle
         forward_limit
         direction
         vel_source
-        run_once
+        handle_acquisition = true
+        wait_for_reward = true
     end
     
     
@@ -17,14 +18,15 @@ classdef EncoderOnly < handle
             obj.ctl = ctl;
             obj.start_pos = ctl.config.stage.start_pos;
             obj.direction = 'forward_only';
-            obj.run_once = true;
         end
         
         function run(obj)
             
-            if obj.run_once
-                obj.ctl.start_acq()
-                obj.ctl.run(obj)
+            obj.ctl.teensy.load(obj.direction);
+            
+            if obj.handle_acquisition
+                obj.ctl.prepare_acq();
+                obj.ctl.start_acq();
             end
             
             % start a process which will take 5 seconds
@@ -39,8 +41,6 @@ classdef EncoderOnly < handle
             % release block on the treadmill
             obj.ctl.treadmill.unblock()
             
-            
-            
             % start a process which will take 5 seconds
             proc = obj.ctl.soloist.block_test();
             % obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit)
@@ -49,12 +49,11 @@ classdef EncoderOnly < handle
             
             obj.ctl.treadmill.block()
             
-            if obj.run_once
-                % wait for reward to complete then stop acquisition
-                obj.ctl.reward.start_reward(true)
+             % wait for reward to complete then stop acquisition
+            obj.ctl.reward.start_reward(obj.wait_for_reward)
+            
+            if obj.handle_acquisition
                 obj.ctl.stop_acq();
-            else
-                obj.ctl.reward.start_reward(false)
             end
         end
     end

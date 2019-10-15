@@ -7,7 +7,8 @@ classdef Coupled < handle
         forward_limit
         direction
         vel_source
-        run_once
+        handle_acquisition = true
+        wait_for_reward = true
     end
     
     
@@ -20,13 +21,16 @@ classdef Coupled < handle
             obj.forward_limit = ctl.config.stage.forward_limit;
             obj.direction = 'forward_only';
             obj.vel_source = 'teensy';
-            obj.run_once = true;
         end
         
         function run(obj)
             
-            if obj.run_once
-                obj.ctl.run(obj)
+            obj.ctl.teensy.load(obj.direction);
+            obj.ctl.multiplexer.listen_to(obj.vel_source);
+            
+            if obj.handle_acquisition
+                obj.ctl.prepare_acq();
+                obj.ctl.start_acq();
             end
             
             % start a process which will take 5 seconds
@@ -49,12 +53,11 @@ classdef Coupled < handle
             
             obj.ctl.treadmill.block()
             
-            if obj.run_once
-                % wait for reward to complete then stop acquisition
-                obj.ctl.reward.start_reward(true)
+            % wait for reward to complete then stop acquisition
+            obj.ctl.reward.start_reward(obj.wait_for_reward)
+            
+            if obj.handle_acquisition
                 obj.ctl.stop_acq();
-            else
-                obj.ctl.reward.start_reward(false)
             end
         end
     end

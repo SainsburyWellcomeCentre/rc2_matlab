@@ -84,6 +84,10 @@ function checkbox_enable_save_Callback(h_obj, ~, handles)
 handles.controller.enable_save(h_obj)
 
 
+function pushbutton_toggle_acq_Callback(~, ~, handles)
+handles.controller.toggle_acquisition()
+
+
 function edit_save_to_Callback(~, ~, ~)
 % inactive
 
@@ -107,6 +111,3 @@ function edit_file_index_CreateFcn(hObject, ~, ~)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
-

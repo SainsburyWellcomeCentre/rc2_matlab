@@ -30,7 +30,7 @@ classdef Reward < handle
         
         
         
-        function start_reward(obj, block_on)
+        function start_reward(obj, wait_for_reward)
             
             if ~obj.randomize
                 interval = 0.01;
@@ -46,7 +46,8 @@ classdef Reward < handle
                 end
             end
             
-            if block_on
+            % whether to wait for reward to complete before returning
+            if wait_for_reward
                 pause(interval)
                 obj.give_reward()
                 pause(obj.duration*1e-3+0.5)

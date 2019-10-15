@@ -32,6 +32,7 @@ classdef rc2View < hgsetget
             
             addlistener(obj.controller.setup.saver, 'index', 'PostSet', @(src, evnt)obj.index_updated(src, evnt));
             addlistener(obj.controller.setup.saver, 'enable', 'PostSet', @(src, evnt)obj.enable_updated(src, evnt));
+            addlistener(obj.controller.setup, 'acquiring', 'PostSet', @(src, evnt)obj.acquiring_updated(src, evnt));
         end
         
         
@@ -44,6 +45,16 @@ classdef rc2View < hgsetget
         function enable_updated(obj, ~, ~)
             enable = obj.controller.setup.saver.enable;
             set(obj.handles.checkbox_enable_save, 'value', enable);
+        end
+        
+        
+        function acquiring_updated(obj, ~, ~)
+            is_acquiring = obj.controller.setup.acquiring;
+            if is_acquiring
+                set(obj.handles.pushbutton_toggle_acq, 'string', 'STOP');
+            else
+                set(obj.handles.pushbutton_toggle_acq, 'string', 'ACQUIRE');
+            end
         end
         
         

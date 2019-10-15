@@ -23,6 +23,18 @@ classdef rc2Controller < handle
         end
         
         
+        function toggle_acquisition(obj)
+            if obj.setup.acquiring
+                obj.setup.stop_acq()
+                set(obj.view.handles.pushbutton_toggle_acq, 'string', 'ACQUIRE');
+            else
+                obj.setup.prepare_acq()
+                obj.setup.start_acq()
+                set(obj.view.handles.pushbutton_toggle_acq, 'string', 'STOP');
+            end
+        end
+        
+        
         function give_reward(obj)
             obj.setup.give_reward()
         end
@@ -88,13 +100,14 @@ classdef rc2Controller < handle
         function set_file_index(obj, h_obj)
             val = str2double(get(h_obj, 'string'));
             obj.setup.saver.set_index(val);
-            set(obj.view.handles.edit_file_index, 'string', sprintf('%i', obj.setup.saver.index))
+            obj.view.index_updated();
         end
         
         
         function enable_save(obj, h_obj)
             val = get(h_obj, 'value');
             obj.setup.saver.set_enable(val);
+            obj.view.enable_updated();
         end
     end
 end

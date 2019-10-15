@@ -11,8 +11,11 @@ classdef Controller < handle
         multiplexer
         plotting
         saver
-        caller
         sound
+    end
+    
+    properties (SetObservable = true)
+        acquiring = false
     end
     
     
@@ -41,19 +44,19 @@ classdef Controller < handle
         end
         
         
-        function run(obj, prot_caller)
-           obj.caller =  prot_caller;
-           obj.teensy.load(prot_caller.direction);
-           obj.multiplexer.listen_to(prot_caller.vel_source);
-           obj.prepare_acq();
-           obj.start_acq();
-        end
-        
-        
         function prepare_acq(obj)
+            if obj.acquiring
+                error('already acquiring data')
+            end
             obj.saver.setup_logging();
             obj.ni.ai.prepare(@(x, y)obj.h_callback(x, y))
             obj.plotting.reset_vals();
+        end
+        
+        
+        function start_acq(obj)
+            obj.ni.start_acq()
+            obj.acquiring = true;
         end
         
         
@@ -63,12 +66,8 @@ classdef Controller < handle
         end
         
         
-        function start_acq(obj)
-            obj.ni.start_acq()
-        end
-        
-        
         function stop_acq(obj)
+            obj.acquiring = false;
             obj.ni.stop_acq();
             obj.saver.stop_logging();
         end

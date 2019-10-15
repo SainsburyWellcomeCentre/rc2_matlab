@@ -7,9 +7,11 @@ classdef StageOnly < handle
         back_limit
         forward_limit
         direction
-        run_once
         wave_fname
         waveform
+        
+        handle_acquisition = true
+        wait_for_reward = true
     end
     
     
@@ -20,9 +22,7 @@ classdef StageOnly < handle
             obj.start_pos = ctl.config.stage.start_pos;
             obj.vel_source = 'ni';
             obj.direction = 'forward_only';
-            obj.run_once = true;
             obj.wave_fname = fname;
-            
             obj.load_wave();
         end
         
@@ -40,11 +40,15 @@ classdef StageOnly < handle
                 return
             end
             
+            obj.ctl.teensy.load(obj.direction);
+            obj.ctl.multiplexer.listen_to(obj.vel_source);
+            
             % load the velocity waveform
             obj.ctl.load_velocity_waveform(obj.waveform);
             
-            if obj.run_once    
-                obj.ctl.run(obj)
+            if obj.handle_acquisition
+                obj.ctl.prepare_acq();
+                obj.ctl.start_acq();
             end
             
             % start a process which will take 5 seconds
@@ -68,12 +72,11 @@ classdef StageOnly < handle
             
             obj.ctl.treadmill.block()
             
-            if obj.run_once
-                % wait for reward to complete then stop acquisition
-                obj.ctl.reward.start_reward(true)
+             % wait for reward to complete then stop acquisition
+            obj.ctl.reward.start_reward(obj.wait_for_reward)
+            
+            if obj.handle_acquisition
                 obj.ctl.stop_acq();
-            else
-                obj.ctl.reward.start_reward(false)
             end
         end
     end
