@@ -1,6 +1,7 @@
 classdef Reward < handle
     
     properties
+        
         ni
         chan
         randomize
@@ -14,6 +15,7 @@ classdef Reward < handle
     methods
         
         function obj = Reward(ni, config)
+            
             obj.ni = ni;
             
             all_channel_names = obj.ni.do_names();
@@ -25,6 +27,7 @@ classdef Reward < handle
             obj.max_time = config.reward.max_time;
             obj.duration = config.reward.duration;
         end
+        
         
         
         function start_reward(obj, block_on)

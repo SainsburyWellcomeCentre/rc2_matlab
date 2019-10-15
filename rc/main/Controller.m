@@ -1,6 +1,7 @@
 classdef Controller < handle
     
     properties
+        
         config
         ni
         teensy
@@ -14,9 +15,10 @@ classdef Controller < handle
     end
     
     
+    
     methods
-        
         function obj = Controller(config, home_prompt)
+            
             VariableDefault('home_prompt', true)
             
             obj.config = config;
@@ -38,13 +40,15 @@ classdef Controller < handle
         
         function run(obj, prot_caller)
            obj.caller =  prot_caller;
-           obj.prepare_acq()
-           obj.start_acq()
+           obj.teensy.load(prot_caller.direction);
+           obj.multiplexer.listen_to(prot_caller.vel_source);
+           obj.prepare_acq();
+           obj.start_acq();
         end
         
         
         function prepare_acq(obj)
-            obj.saver.setup_logging()
+            obj.saver.setup_logging();
             obj.ni.ai.prepare(@(x, y)obj.h_callback(x, y))
             obj.plotting.reset_vals();
         end
