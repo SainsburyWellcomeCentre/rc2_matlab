@@ -12,6 +12,7 @@ classdef Controller < handle
         plotting
         saver
         caller
+        sound
     end
     
     
@@ -30,6 +31,7 @@ classdef Controller < handle
             obj.multiplexer = Multiplexer(obj.ni, config);
             obj.plotting = Plotting(config);
             obj.saver = Saver(config);
+            obj.sound = Sound();
         end
         
         
