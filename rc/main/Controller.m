@@ -40,9 +40,7 @@ classdef Controller < handle
             obj.plotting = Plotting(config);
             obj.saver = Saver(config);
             obj.sound = Sound();
-            
-            % temp
-            obj.dt = 1/config.nidaq.rate;
+            obj.position = Position(config);
         end
         
         
@@ -72,7 +70,7 @@ classdef Controller < handle
             %TODO: convert data ONCE here and pass this to functions
             obj.saver.log(evt.Data);
             obj.plotting.ni_callback(evt.Data);
-            obj.integrate(evt.Data(:, 1));
+            obj.position.integrate(evt.Data(:, 1));
         end
         
         
@@ -160,21 +158,9 @@ classdef Controller < handle
         end
         
         
-        function integrate(obj, data)
-            if ~obj.integrate_on; return; end
-            % convert to cm/s
-            obj.position = obj.position + sum(data)*obj.dt;
-            fprintf('pos: %.2f\n', obj.position)
-        end
-        
-        
         function integrate_until(obj, back, forward)
-            obj.position = 0;
-            obj.integrate_on = true;
-            while obj.position < forward && obj.position > back
-                pause(0.1);
-            end
-            obj.integrate_on = false;
+            % check limits here
+            obj.position.integrate_until(back, forward);
         end
         
         
