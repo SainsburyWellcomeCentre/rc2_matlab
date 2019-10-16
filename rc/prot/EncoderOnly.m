@@ -17,6 +17,8 @@ classdef EncoderOnly < handle
         function obj = EncoderOnly(ctl)
             obj.ctl = ctl;
             obj.start_pos = ctl.config.stage.start_pos;
+            obj.back_limit = config.stage.back_limit;
+            obj.forward_limit = config.stage.forward_limit;
             obj.direction = 'forward_only';
         end
         
@@ -42,10 +44,7 @@ classdef EncoderOnly < handle
             obj.ctl.treadmill.unblock()
             
             % start a process which will take 5 seconds
-            proc = obj.ctl.soloist.block_test();
-            % obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit)
-            
-            proc.wait_for(0.5);
+            obj.ctl.integrate_until(-100, 100)
             
             obj.ctl.treadmill.block()
             
