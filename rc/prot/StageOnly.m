@@ -17,9 +17,13 @@ classdef StageOnly < handle
     
     methods
         
-        function obj = StageOnly(ctl, fname)
+        function obj = StageOnly(ctl, config, fname)
+            VariableDefault('fname', []);
+            
             obj.ctl = ctl;
-            obj.start_pos = ctl.config.stage.start_pos;
+            obj.start_pos = config.stage.start_pos;
+            obj.back_limit = config.stage.back_limit;
+            obj.forward_limit = config.stage.forward_limit;
             obj.vel_source = 'ni';
             obj.direction = 'forward_only';
             obj.wave_fname = fname;
@@ -28,8 +32,15 @@ classdef StageOnly < handle
         
         
         function load_wave(obj)
-            w = double(read_bin(obj.wave_fname, 1));
-            obj.waveform = -10 + 20*(w + 2^15)/2^16;  %TODO:  config... but StageOnly shouldn't have to worry about it.
+            if isempty(obj.wave_fname); return; end
+            w = double(read_bin(obj.wave_fname, 1)); % file must be single channel
+            obj.waveform = -10 + 20*(w(:, 1) + 2^15)/2^16;  %TODO:  config... but StageOnlys shouldn't have to worry about it.
+        end
+        
+        
+        function set_fname(obj, fname)
+            obj.wave_fname = fname;
+            obj.load_wave();
         end
         
         
@@ -78,6 +89,11 @@ classdef StageOnly < handle
             if obj.handle_acquisition
                 obj.ctl.stop_acq();
             end
+        end
+        
+        
+        function prepare_as_sequence(obj, sequence, i)
+            obj.set_fname(sequence{i-1}.log_trial_fname);
         end
     end
 end

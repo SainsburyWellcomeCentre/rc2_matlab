@@ -24,11 +24,11 @@ classdef Coupled < handle
     
     methods
         
-        function obj = Coupled(ctl)
+        function obj = Coupled(ctl, config)
             obj.ctl = ctl;
-            obj.start_pos = ctl.config.stage.start_pos;
-            obj.back_limit = ctl.config.stage.back_limit;
-            obj.forward_limit = ctl.config.stage.forward_limit;
+            obj.start_pos = config.stage.start_pos;
+            obj.back_limit = config.stage.back_limit;
+            obj.forward_limit = config.stage.forward_limit;
             obj.direction = 'forward_only';
             obj.vel_source = 'teensy';
         end
@@ -80,6 +80,10 @@ classdef Coupled < handle
             if obj.handle_acquisition
                 obj.ctl.stop_acq();
             end
+        end
+        
+        
+        function prepare_as_sequence(obj, sequence, i)
         end
     end
 end

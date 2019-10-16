@@ -2,15 +2,9 @@ classdef Saver < handle
     
     properties (SetObservable = true)
         enable = true
-    end
-    
-    properties
         save_to
         prefix
         suffix
-    end
-    
-    properties (SetObservable = true)
         index = 0
     end
     
@@ -140,7 +134,7 @@ classdef Saver < handle
             data = int16(-2^15 + ((data' - obj.ai_min_voltage)/obj.voltage_range)*2^16);
             fwrite(obj.fid, data(:), 'int16');
             
-            obj.log_single_trial(data);
+            obj.log_single_trial(data(1, :)); %TODO:  channel to save for trial
         end
         
         
@@ -151,22 +145,24 @@ classdef Saver < handle
             if ~obj.enable; return; end
             if ~obj.is_logging; return; end
             
-            
             obj.index_single_trial = obj.index_single_trial + 1;
             fname_single_trial = obj.logging_fname_single_trial();
             obj.fid_single_trial = fopen(fname_single_trial, 'w');
+            disp(obj.fid_single_trial);
             obj.is_logging_single_trial = true;
         end
         
         
         function log_single_trial(obj, data)
             if ~obj.is_logging_single_trial; return; end
+            if isempty(obj.fid_single_trial); return; end
             fwrite(obj.fid_single_trial, data(:), 'int16');
         end
         
         
         function stop_logging_single_trial(obj)
             if ~obj.is_logging_single_trial; return; end
+            obj.is_logging_single_trial = false;
             fclose(obj.fid_single_trial);
             obj.fid_single_trial = [];
         end

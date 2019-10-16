@@ -13,11 +13,11 @@ classdef rc2guiController < handle
     
     methods
         
-        function obj = rc2guiController(setup)
+        function obj = rc2guiController(setup, config)
             
             obj.setup = setup;
-            obj.stage_limits = setup.config.stage.max_limits;
-            obj.move_to_pos = setup.config.stage.start_pos;
+            obj.stage_limits = config.stage.max_limits;
+            obj.move_to_pos = config.stage.start_pos;
             obj.view = rc2guiView(obj);
         end
         

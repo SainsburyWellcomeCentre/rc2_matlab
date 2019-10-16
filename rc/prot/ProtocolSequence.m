@@ -23,6 +23,7 @@ classdef ProtocolSequence < handle
             obj.ctl.start_acq();
             
             for i = 1 : length(obj.sequence)
+                obj.sequence{i}.prepare_as_sequence(obj.sequence, i)
                 obj.sequence{i}.run();
             end
             
