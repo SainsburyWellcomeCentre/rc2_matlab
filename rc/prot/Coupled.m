@@ -1,7 +1,7 @@
 classdef Coupled < handle
     
     properties
-        ctl
+        
         start_pos
         back_limit
         forward_limit
@@ -9,6 +9,16 @@ classdef Coupled < handle
         vel_source
         handle_acquisition = true
         wait_for_reward = true
+        
+        log_trial = false
+    end
+    
+    properties (SetAccess = private)
+        log_trial_fname
+    end
+    
+    properties (Hidden = true)
+        ctl
     end
     
     
@@ -22,6 +32,7 @@ classdef Coupled < handle
             obj.direction = 'forward_only';
             obj.vel_source = 'teensy';
         end
+        
         
         function run(obj)
             
@@ -45,6 +56,12 @@ classdef Coupled < handle
             % release block on the treadmill
             obj.ctl.treadmill.unblock()
             
+            
+            if obj.log_trial
+                obj.log_trial_fname = obj.ctl.start_logging_single_trial();
+            end
+            
+                
             % start a process which will take 5 seconds
             proc = obj.ctl.soloist.block_test();
             % obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit)
@@ -52,6 +69,10 @@ classdef Coupled < handle
             proc.wait_for(0.5);
             
             obj.ctl.treadmill.block()
+            
+            if obj.log_trial
+                obj.ctl.stop_logging_single_trial();
+            end
             
             % wait for reward to complete then stop acquisition
             obj.ctl.reward.start_reward(obj.wait_for_reward)

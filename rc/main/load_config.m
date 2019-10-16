@@ -1,7 +1,7 @@
 function config = load_config()
 
 
-config.saving.save_to       = 'C:\Users\Mateo\Desktop\DefaultData';
+config.saving.save_to           = 'C:\Users\Mateo\Desktop\DefaultData';
 
 
 config.stage.start_pos          = 750;

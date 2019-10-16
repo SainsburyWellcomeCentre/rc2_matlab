@@ -2,7 +2,6 @@ classdef Controller < handle
     
     properties
         
-        config
         ni
         teensy
         soloist
@@ -11,10 +10,11 @@ classdef Controller < handle
         multiplexer
         plotting
         saver
+        trial_save
         sound
     end
     
-    properties (SetObservable = true)
+    properties (SetObservable = true, SetAccess = private, Hidden = true)
         acquiring = false
     end
     
@@ -25,7 +25,6 @@ classdef Controller < handle
             
             VariableDefault('home_prompt', true)
             
-            obj.config = config;
             obj.ni = NI(config);
             obj.teensy = Teensy(config);
             obj.soloist = Soloist(config, home_prompt);
@@ -67,6 +66,7 @@ classdef Controller < handle
         
         
         function stop_acq(obj)
+            if ~obj.acquiring; return; end
             obj.acquiring = false;
             obj.ni.stop_acq();
             obj.saver.stop_logging();
@@ -135,6 +135,28 @@ classdef Controller < handle
         function set_save_enable(obj, val)
             if obj.acquiring; return; end
             obj.saver.set_enable(val)
+        end
+        
+        
+        %%% TRIAL LOGGING
+        function fname = start_logging_single_trial(obj)
+            fname = obj.saver.start_logging_single_trial();
+        end
+        
+        
+        function stop_logging_single_trial(obj)
+            obj.saver.stop_logging_single_trial()
+        end
+        
+        
+        function cfg = get_config(obj)
+            
+            cfg.saving.save_to = obj.saver.save_to;
+            cfg.saving.prefix = obj.saver.save_to;
+            cfg.saving.suffix = obj.saver.save_to;
+            cfg.saving.index = obj.saver.index;
+            cfg.saving.ai_min_voltage = obj.saver.ai_min_voltage;
+            cfg.saving.ai_max_voltage = obj.saver.ai_max_voltage;
         end
     end
 end

@@ -1,4 +1,4 @@
-classdef rc2View < hgsetget
+classdef rc2guiView < hgsetget
     
     properties
         
@@ -11,10 +11,10 @@ classdef rc2View < hgsetget
     
     methods
         
-        function obj = rc2View(controller)
+        function obj = rc2guiView(controller)
             
             obj.controller = controller;
-            obj.gui = rc2GUI(obj.controller);
+            obj.gui = rc2guiGUI(obj.controller);
             obj.handles = guidata(obj.gui);
             
             set(obj.handles.edit_move_to, 'string', sprintf('%.1f', obj.controller.move_to_pos));
