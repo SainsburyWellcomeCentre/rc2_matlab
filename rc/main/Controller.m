@@ -5,6 +5,7 @@ classdef Controller < handle
         ni
         teensy
         soloist
+        pump
         reward
         treadmill
         multiplexer
@@ -12,13 +13,9 @@ classdef Controller < handle
         saver
         trial_save
         sound
+        position
     end
     
-    properties (SetAccess = private)
-        position = 0;
-        integrate_on = false;
-        dt
-    end
     
     properties (SetObservable = true, SetAccess = private, Hidden = true)
         acquiring = false
@@ -34,13 +31,14 @@ classdef Controller < handle
             obj.ni = NI(config);
             obj.teensy = Teensy(config);
             obj.soloist = Soloist(config, home_prompt);
-            obj.reward = Reward(obj.ni, config);
+            obj.pump(obj.ni, config);
+            obj.reward = Reward(obj.pump, config);
             obj.treadmill = Treadmill(obj.ni, config);
             obj.multiplexer = Multiplexer(obj.ni, config);
             obj.plotting = Plotting(config);
-            obj.saver = Saver(config);
             obj.sound = Sound();
             obj.position = Position(config);
+            obj.saver = Saver(obj, config);
         end
         
         
@@ -99,6 +97,16 @@ classdef Controller < handle
         
         function unblock_treadmill(obj)
             obj.treadmill.unblock()
+        end
+        
+        
+        function pump_on(obj)
+            obj.pump.on()
+        end
+        
+        
+        function pump_off(obj)
+            obj.pump.off()
         end
         
         
@@ -166,12 +174,36 @@ classdef Controller < handle
         
         function cfg = get_config(obj)
             
-            cfg.saving.save_to = obj.saver.save_to;
-            cfg.saving.prefix = obj.saver.save_to;
-            cfg.saving.suffix = obj.saver.save_to;
-            cfg.saving.index = obj.saver.index;
-            cfg.saving.ai_min_voltage = obj.saver.ai_min_voltage;
-            cfg.saving.ai_max_voltage = obj.saver.ai_max_voltage;
+            [~, git_version]        = system(sprintf('git --git-dir=%s rev-parse HEAD', ...
+                                                            obj.saver.git_fname));
+            
+            cfg = { 'git_version',              git_version;
+                    'saving.save_to',           obj.saver.save_to;
+                    'saving.prefix',            obj.saver.prefix;
+                    'saving.suffix',            obj.saver.suffix;
+                    'saving.index',             sprintf('%i', obj.saver.index);
+                    'saving.ai_min_voltage',    sprintf('%.1f', obj.saver.ai_min_voltage);
+                    'saving.ai_max_voltage',    sprintf('%.1f', obj.saver.ai_max_voltage);
+            
+                    'nidaq.ai.rate',            sprintf('%.1f', obj.ni.ai.task.Rate);
+                    'nidaq.ai.channel_names',   strjoin(obj.ni.ai.channel_names, ',');
+                    %'nidaq.ai.channel_ids',    obj.ni.ai.chanX
+            
+                    'nidaq.ao.rate',            sprintf('%.1f', obj.ni.ao.task.Rate);
+                    'nidaq.ao.channel_names',   strjoin(obj.ni.ao.channel_names, ',');
+                    %'nidaq.ao.channel_ids',    obj.ni.ao.chanX
+            
+                    'nidaq.co.channel_names',   strjoin(obj.ni.co.channel_names, ',');
+                    %'nidaq.co.channel_ids',    obj.ni.co.chanX
+                    'nidaq.co.init_delay',      sprintf('%i', obj.ni.co.init_delay);
+                    'nidaq.co.low_samps',       sprintf('%i', obj.ni.co.low_samps);
+                    'nidaq.co.high_samps',      sprintf('%i', obj.ni.co.high_samps);
+                    'nidaq.co.clock_src',       obj.ni.co.clock_src;
+            
+                    'nidaq.do.channel_names',   strjoin(obj.ni.do.channel_names, ',');
+                    %'nidaq.do.channel_ids',    obj.ni.ao.chanX
+                    'nidaq.do.clock_src',       obj.ni.do.clock_src};
+            
         end
     end
 end

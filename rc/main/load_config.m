@@ -2,6 +2,9 @@ function config = load_config()
 
 
 config.saving.save_to           = 'C:\Users\Mateo\Desktop\DefaultData';
+config.saving.config_file       = mfilename('fullpath');
+config.saving.main_dir          = fileparts(fileparts(fileparts(config.saving.config_file))); % assume three levels deep
+config.saving.git_fname         = fullfile(config.saving.main_dir, '.git');
 
 
 config.stage.start_pos          = 750;
@@ -47,7 +50,9 @@ config.teensy.start_script      = 'forward_only';
 config.soloist.dir              = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\soloist_c\exe';
 
 
-config.reward.do_name           = 'pump';
+config.pump.do_name             = 'pump';
+config.pump.init_state          = 0;
+
 config.reward.randomize         = true;
 config.reward.min_time          = 3;
 config.reward.max_time          = 7;

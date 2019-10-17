@@ -40,6 +40,10 @@ function pushbutton_give_reward_Callback(~, ~, handles)
 handles.controller.give_reward();
 
 
+function edit_reward_duration_Callback(h_obj, ~, handles)
+handles.controller.changed_reward_duration(h_obj);
+
+
 function pushbutton_block_treadmill_Callback(~, ~, handles) %#ok<*DEFNU>
 handles.controller.block_treadmill();
 
@@ -53,7 +57,11 @@ handles.controller.move_to();
 
 
 function pushbutton_reset_Callback(~, ~, handles)
-handles.controller.reset();
+handles.controller.reset_soloist();
+
+
+function pushbutton_stop_soloist_Callback(~, ~, handles)
+handles.controller.stop_soloist();
 
 
 function edit_move_to_Callback(h_obj, ~, handles)
@@ -91,6 +99,7 @@ handles.controller.toggle_acquisition()
 function edit_save_to_Callback(~, ~, ~)
 % inactive
 
+
 function edit_move_to_CreateFcn(hObject, ~, ~)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
@@ -108,6 +117,10 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 function edit_file_index_CreateFcn(hObject, ~, ~)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function edit_reward_duration_CreateFcn(hObject, ~, ~)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end

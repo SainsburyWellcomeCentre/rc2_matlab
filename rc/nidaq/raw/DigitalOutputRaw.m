@@ -11,6 +11,7 @@ classdef DigitalOutputRaw < handle
         channel_names
         state
         ai_chan
+        clock_src
     end
     
     
@@ -20,7 +21,7 @@ classdef DigitalOutputRaw < handle
             
             obj.ai_task = ai_task;
             
-            clock_src = config.nidaq.do.clock_src;
+            obj.clock_src = config.nidaq.do.clock_src;
             obj.rate = obj.ai_task.Rate;
             
             [status, obj.task_handle] = daq.ni.NIDAQmx.DAQmxCreateTask(char(0), uint64(0));
@@ -36,7 +37,7 @@ classdef DigitalOutputRaw < handle
                 obj.state(i) = false;
             end
             
-            status = daq.ni.NIDAQmx.DAQmxCfgSampClkTiming(obj.task_handle, clock_src, double(obj.rate), ...
+            status = daq.ni.NIDAQmx.DAQmxCfgSampClkTiming(obj.task_handle, obj.clock_src, double(obj.rate), ...
                 daq.ni.NIDAQmx.DAQmx_Val_Rising, daq.ni.NIDAQmx.DAQmx_Val_FiniteSamps, uint64(1000));
             obj.handle_fault(status, 'DAQmxCfgSampClkTiming');
             
