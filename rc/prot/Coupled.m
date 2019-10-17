@@ -40,11 +40,15 @@ classdef Coupled < handle
             
             try
                 
+                cfg = obj.get_config();
+                obj.ctl.save_single_trial_config(cfg);
+                
                 obj.ctl.teensy.load(obj.direction);
                 obj.ctl.multiplexer.listen_to(obj.vel_source);
                 
                 % start integrator
                 obj.ctl.reset_position();
+                
                 
                 if obj.handle_acquisition
                     obj.ctl.prepare_acq();
@@ -101,6 +105,12 @@ classdef Coupled < handle
         
         
         function prepare_as_sequence(~, ~, ~)
+        end
+        
+        
+        function cfg = get_config(obj)
+            
+            
         end
     end
 end

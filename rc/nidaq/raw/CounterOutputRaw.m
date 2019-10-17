@@ -5,15 +5,21 @@ classdef CounterOutputRaw < handle
         channel_names
     end
     
+    properties (SetAccess = private)
+        init_delay
+        low_samps
+        high_samps
+        clock_src
+    end
     
     methods
         
         function obj = CounterOutputRaw(config)
             
-            init_delay = config.nidaq.co.init_delay;
-            low_samps = config.nidaq.co.pulse_dur - config.nidaq.co.pulse_high;
-            high_samps = config.nidaq.co.pulse_high;
-            clock_src = config.nidaq.co.clock_src;
+            obj.init_delay = config.nidaq.co.init_delay;
+            obj.low_samps = config.nidaq.co.pulse_dur - config.nidaq.co.pulse_high;
+            obj.high_samps = config.nidaq.co.pulse_high;
+            obj.clock_src = config.nidaq.co.clock_src;
             
             [status, obj.task_handle] = daq.ni.NIDAQmx.DAQmxCreateTask(char(0), uint64(0));
             obj.handle_fault(status, 'DAQmxCreateTask');
@@ -21,8 +27,8 @@ classdef CounterOutputRaw < handle
             for i = 1:length(config.nidaq.co.channel_names)
                 obj.channel_names{i} = config.nidaq.co.channel_names{i};
                 dev_str = sprintf('%s/ctr%i', config.nidaq.co.dev, config.nidaq.co.channel_id(i));
-                status = daq.ni.NIDAQmx.DAQmxCreateCOPulseChanTicks(obj.task_handle, dev_str, char(0), clock_src, ...
-                    daq.ni.NIDAQmx.DAQmx_Val_Low, int32(init_delay), int32(low_samps), int32(high_samps));
+                status = daq.ni.NIDAQmx.DAQmxCreateCOPulseChanTicks(obj.task_handle, dev_str, char(0), obj.clock_src, ...
+                    daq.ni.NIDAQmx.DAQmx_Val_Low, int32(obj.init_delay), int32(obj.low_samps), int32(obj.high_samps));
                 obj.handle_fault(status, 'DAQmxCreateCOPulseChanTicks');
             end
             

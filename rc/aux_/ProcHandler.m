@@ -7,6 +7,7 @@ classdef ProcHandler < handle
     
     methods
         function obj = ProcHandler(proc)
+            % takes a java.lang.Process (from runtime.exec())
             obj.proc = proc;
         end
         

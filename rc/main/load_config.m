@@ -2,6 +2,9 @@ function config = load_config()
 
 
 config.saving.save_to           = 'C:\Users\Mateo\Desktop\DefaultData';
+config.saving.config_file       = mfilename('fullpath');
+config.saving.main_dir          = fileparts(fileparts(fileparts(config.saving.config_file))); % assume three levels deep
+config.saving.git_fname         = fullfile(config.saving.main_dir, '.git');
 
 
 config.stage.start_pos          = 750;

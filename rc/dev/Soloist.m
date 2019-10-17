@@ -1,19 +1,29 @@
 classdef Soloist < handle
     
     properties
+        proc_array
+        h_abort
         dir
         max_limits
     end
+    
+    
     
     methods
         
         function obj = Soloist(config, home_prompt)
             
             obj.dir = config.soloist.dir;
+            
+            cmd = obj.full_command('abort_');
+            obj.h_abort = SoloistAbortProc(cmd);
+            obj.proc_array = ProcArray();
+            
             if home_prompt
                 user_ans = input('Home soloist? (y/n)', 's');
                 if any(strcmp(user_ans, {'yes', 'y', 'Y'}))
-                    obj.home();
+                    proc = obj.home();
+                    proc.wait_for(0.5);
                 end
             end
             obj.max_limits = config.stage.max_limits;
@@ -21,13 +31,22 @@ classdef Soloist < handle
         
         
         function abort(obj)
-            
+            obj.h_abort.run();
+            obj.proc_array.clear_all();
+            % look for task errors here?
         end
         
         
-        function home(obj)
+        function proc = home(obj)
             cmd = obj.full_command('home_');
             disp(cmd)
+            
+            % start running the process
+            runtime = java.lang.Runtime.getRuntime();
+            p_java = runtime.exec(cmd);
+            proc = ProcHandler(p_java);
+            obj.proc_array.add_process(proc);
+            
 %             % start running the process
 %             runtime = java.lang.Runtime.getRuntime();
 %             proc = runtime.exec(cmd);
@@ -131,6 +150,7 @@ classdef Soloist < handle
             runtime = java.lang.Runtime.getRuntime();
             p_java = runtime.exec(cmd);
             proc = ProcHandler(p_java);
+            obj.proc_array.add_process(proc);
         end
         
         
