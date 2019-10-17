@@ -21,14 +21,21 @@ main () {
     for(std::string line; std::getline(std::cin, line);) {
         
         if (line.compare("abort") == 0) {
-            if (reset_running == false) {
-                threads.emplace_back(reset);
-                reset_running = true;
-            }
+            
+            if(!SoloistMotionAbort(handles[0])) { cleanup(handles, handle_count); }
+            usleep(5000);
+            if(!SoloistMotionDisable(handles[0])) { cleanup(handles, handle_count); }
+            printf("aborted...\n");
+            // Reset gear parameters
+            reset_gear(handles, handle_count);
+            
         } else if (line.compare("close") == 0) {
             
-        } else {
-            
+            // Reset gear parameters
+            reset_gear(handles, handle_count);
+            if(!SoloistMotionDisable(handles[0])) { cleanup(handles, handle_count); }
+            if(!SoloistDisconnect(handles)) { cleanup(handles, handle_count); }
+            printf("shutdown...\n");
         }
     }
     

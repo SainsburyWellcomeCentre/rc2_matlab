@@ -24,6 +24,9 @@ main(int argc, char **argv)
     // Home the axis
     if(!SoloistMotionHome(handles[0])) { cleanup(handles, handle_count); }
     
+    // Home the axis
+    if(!SoloistMotionDisable(handles[0])) { cleanup(handles, handle_count); }
+    
     // Disconnect from Soloist
     if(!SoloistDisconnect(handles)) { cleanup(handles, handle_count); }
 }
