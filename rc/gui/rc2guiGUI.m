@@ -68,6 +68,10 @@ function edit_move_to_Callback(h_obj, ~, handles)
 handles.controller.changed_move_to_pos(h_obj)
 
 
+function edit_speed_Callback(h_obj, ~, handles)
+handles.controller.changed_speed(h_obj);
+
+
 function pushbutton_toggle_sound_Callback(~, ~, handles)
 handles.controller.toggle_sound()
 
@@ -93,7 +97,13 @@ handles.controller.enable_save(h_obj)
 
 
 function pushbutton_toggle_acq_Callback(~, ~, handles)
-handles.controller.toggle_acquisition()
+handles.controller.toggle_acquisition();
+
+
+function pushbutton_home_Callback(~, ~, handles)
+handles.controller.home_soloist();
+
+
 
 
 function edit_save_to_Callback(~, ~, ~)
@@ -121,6 +131,10 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 function edit_reward_duration_CreateFcn(hObject, ~, ~)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function edit_speed_CreateFcn(hObject, ~, ~)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end

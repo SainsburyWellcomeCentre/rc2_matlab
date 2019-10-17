@@ -7,6 +7,7 @@ classdef rc2guiController < handle
         
         move_to_pos
         stage_limits
+        speed_limits
     end
     
     
@@ -17,6 +18,7 @@ classdef rc2guiController < handle
             
             obj.setup = setup;
             obj.stage_limits = config.stage.max_limits;
+            obj.speed_limits = [10, 500];
             obj.move_to_pos = config.stage.start_pos;
             obj.view = rc2guiView(obj);
         end
@@ -99,12 +101,37 @@ classdef rc2guiController < handle
         end
         
         
-        function move_to(obj)
-            val = str2double(get(obj.view.handles.edit_move_to, 'string'));
+        function changed_speed(obj, h_obj)
+            val = str2double(get(h_obj, 'string'));
             if ~isnumeric(val) || isinf(val) || isnan(val)
-                error('value is not numeric')
+                fprintf('%s: %s ''val'' must be numeric\n', class(obj), 'changed_speed');
+                set(obj.view.handles.edit_speed, 'string', sprintf('%.1f', obj.move_to_pos))
+                return
             end
-            obj.setup.move_to(val);
+            
+            if val < obj.speed_limits(1) || val > obj.speed_limits(2)
+                fprintf('%s: %s ''val'' must be within speed limits\n', class(obj), 'changed_speed');
+                set(obj.view.handles.edit_speed, 'string', sprintf('%.1f', obj.setup.soloist.default_speed))
+                return
+            end
+        end
+        
+        
+        function move_to(obj)
+            pos = str2double(get(obj.view.handles.edit_move_to, 'string'));
+            if ~isnumeric(pos) || isinf(pos) || isnan(pos)
+                error('position is not numeric')
+            end
+            speed = str2double(get(obj.view.handles.edit_speed, 'string'));
+            if ~isnumeric(speed) || isinf(speed) || isnan(speed)
+                error('speed is not numeric')
+            end
+            obj.setup.move_to(pos, speed);
+        end
+        
+        
+        function home_soloist(obj)
+            obj.setup.home_soloist();
         end
         
         

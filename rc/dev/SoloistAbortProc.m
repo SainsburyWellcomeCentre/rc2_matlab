@@ -57,7 +57,7 @@ classdef SoloistAbortProc < handle
             
             t = tic;
             while obj.reader.available() == 0
-                if toc(t) > 10
+                if toc(t) > 5
                     fprintf('no return signal, %s, from abort.exe\n', sig);
                     return
                 end

@@ -40,8 +40,8 @@ classdef Coupled < handle
             
             try
                 
-                cfg = obj.get_config();
-                obj.ctl.save_single_trial_config(cfg);
+                %cfg = obj.get_config();
+                %obj.ctl.save_single_trial_config(cfg);
                 
                 obj.ctl.teensy.load(obj.direction);
                 obj.ctl.multiplexer.listen_to(obj.vel_source);
@@ -49,36 +49,35 @@ classdef Coupled < handle
                 % start integrator
                 obj.ctl.reset_position();
                 
-                
                 if obj.handle_acquisition
                     obj.ctl.prepare_acq();
                     obj.ctl.start_acq();
                 end
                 
                 % start a process which will take 5 seconds
-                proc = obj.ctl.soloist.block_test();
-                % proc = obj.ctl.soloist.move_to(obj.start_pos, true);
-                
+%                 proc = obj.ctl.soloist.block_test();
+                proc = obj.ctl.soloist.move_to(obj.start_pos, true);
                 proc.wait_for(0.5);
                 
                 % wait a bit of time before starting the trial
-                pause(5)
+                pause(2)
+                
+                proc = obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit);
+                
+                pause(2)
                 
                 % release block on the treadmill
                 obj.ctl.treadmill.unblock()
-                
                 
                 if obj.log_trial
                     obj.log_trial_fname = obj.ctl.start_logging_single_trial();
                 end
                 
-                
-                % start a process which will take 5 seconds
-                proc = obj.ctl.soloist.block_test();
-                % obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit)
-                
+                % wait for process to terminate.
                 proc.wait_for(0.5);
                 
+                % start a process which will take 5 seconds
+%                 proc = obj.ctl.soloist.block_test();
                 obj.ctl.treadmill.block()
                 
                 if obj.log_trial
@@ -96,7 +95,7 @@ classdef Coupled < handle
                 end
                 
             catch ME
-                obj.ctl.treadmill_block();
+                obj.ctl.block_treadmill();
                 obj.ctl.stop_acq();
                 obj.ctl.stop_logging_single_trial();
                 rethrow(ME)

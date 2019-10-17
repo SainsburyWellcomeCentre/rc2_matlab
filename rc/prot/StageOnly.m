@@ -54,7 +54,7 @@ classdef StageOnly < handle
             obj.ctl.teensy.load(obj.direction);
             obj.ctl.multiplexer.listen_to(obj.vel_source);
             
-            % load the velocity waveform
+            % load the velocity waveform to NIDAQ
             obj.ctl.load_velocity_waveform(obj.waveform);
             
             if obj.handle_acquisition
@@ -63,20 +63,21 @@ classdef StageOnly < handle
             end
             
             % start a process which will take 5 seconds
-            proc = obj.ctl.soloist.block_test();
-            % proc = obj.ctl.soloist.move_to(obj.start_pos, true);
-            
+            %proc = obj.ctl.soloist.block_test();
+            proc = obj.ctl.soloist.move_to(obj.start_pos, true);
             proc.wait_for(0.5);
             
-            pause(5)
+            pause(2)
             
+            proc = obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit);
+            
+            pause(2)
+             
             obj.ctl.treadmill.unblock()
             
             % this needs to be non-blocking
-            proc = obj.ctl.soloist.block_test();
-            % proc = obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit);
-            
-            pause(1)
+            %proc = obj.ctl.soloist.block_test();
+           
             obj.ctl.play_velocity_waveform()
             
             proc.wait_for(0.1);

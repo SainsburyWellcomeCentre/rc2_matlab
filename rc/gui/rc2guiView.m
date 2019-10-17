@@ -1,4 +1,4 @@
-classdef rc2guiView < hgsetget
+classdef rc2guiView < handle
     
     properties
         
@@ -18,6 +18,9 @@ classdef rc2guiView < hgsetget
             obj.handles = guidata(obj.gui);
             
             set(obj.handles.edit_move_to, 'string', sprintf('%.1f', obj.controller.move_to_pos));
+            set(obj.handles.edit_speed, 'string', sprintf('%.1f', obj.controller.setup.soloist.default_speed));
+            set(obj.handles.edit_reward_duration, 'string', sprintf('%i', obj.controller.setup.reward.duration));
+            
             
             save_to = obj.controller.setup.saver.save_to;
             prefix = obj.controller.setup.saver.prefix;
@@ -67,7 +70,7 @@ classdef rc2guiView < hgsetget
         
         function reward_duration_updated(obj, ~, ~)
             duration = obj.controller.setup.reward.duration;
-            set(obj.handles.edit_reward_duration, 'string', duration);
+            set(obj.handles.edit_reward_duration, 'string', sprintf('%i', duration));
         end
         
         

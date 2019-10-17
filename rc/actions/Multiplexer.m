@@ -15,12 +15,13 @@ classdef Multiplexer < handle
             this_name = config.soloist_input_src.do_name;
             obj.chan = find(strcmp(this_name, all_channel_names));
             
+            obj.vals.teensy = logical(config.soloist_input_src.teensy);
+            obj.vals.ni = ~logical(obj.vals.teensy);
+            
             if strcmp(config.soloist_input_src.init_source, 'teensy')
-                obj.vals.teensy = true;
-                obj.vals.ni = false;
+                obj.listen_to('teensy');
             else
-                 obj.vals.teensy = false;
-                obj.vals.ni = true;
+                obj.listen_to('ni');
             end
         end
         

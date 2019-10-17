@@ -21,7 +21,7 @@
 #define DEFAULT_RAMPRATE                200
 #define DEFAULT_RAMPMODE                RAMPMODE_Rate
 #define DEFAULT_POSITION                20
-#define DEFAULT_SPEED					200
+#define DEFAULT_SPEED					300
 
 
 // Common functions in rc_shared.c

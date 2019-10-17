@@ -7,6 +7,10 @@ classdef Soloist < handle
         max_limits
     end
     
+    properties (SetAccess = private, Hidden = true)
+        default_speed
+    end
+    
     
     
     methods
@@ -14,18 +18,18 @@ classdef Soloist < handle
         function obj = Soloist(config, home_prompt)
             
             obj.dir = config.soloist.dir;
+            obj.default_speed = config.soloist.default_speed;
             
-            cmd = obj.full_command('abort_');
+            cmd = obj.full_command('abort');
             obj.h_abort = SoloistAbortProc(cmd);
             obj.proc_array = ProcArray();
             
-            if home_prompt
-                user_ans = input('Home soloist? (y/n)', 's');
-                if any(strcmp(user_ans, {'yes', 'y', 'Y'}))
-                    proc = obj.home();
-                    proc.wait_for(0.5);
-                end
-            end
+%             if home_prompt
+%                 user_ans = input('Home soloist? (y/n)', 's');
+%                 if any(strcmp(user_ans, {'yes', 'y', 'Y'}))
+%                     obj.home();
+%                 end
+%             end
             obj.max_limits = config.stage.max_limits;
         end
         
@@ -37,8 +41,8 @@ classdef Soloist < handle
         end
         
         
-        function proc = home(obj)
-            cmd = obj.full_command('home_');
+        function home(obj)
+            cmd = obj.full_command('home');
             disp(cmd)
             
             % start running the process
@@ -46,10 +50,6 @@ classdef Soloist < handle
             p_java = runtime.exec(cmd);
             proc = ProcHandler(p_java);
             obj.proc_array.add_process(proc);
-            
-%             % start running the process
-%             runtime = java.lang.Runtime.getRuntime();
-%             proc = runtime.exec(cmd);
         end
         
         
@@ -72,12 +72,22 @@ classdef Soloist < handle
         
         
         function reset(obj)
-            cmd = obj.full_command('reset_');
+            cmd = obj.full_command('reset');
             disp(cmd)
+            
+            % start running the process
+            runtime = java.lang.Runtime.getRuntime();
+            p_java = runtime.exec(cmd);
+            proc = ProcHandler(p_java);
+            obj.proc_array.add_process(proc);
         end
         
         
-        function move_to(obj, pos, end_enabled)
+        function proc = move_to(obj, pos, speed, end_enabled)
+            
+            VariableDefault('speed', obj.default_speed);
+            VariableDefault('end_enabled', false);
+            
             % checks go here!
             if ~isnumeric(pos) || isinf(pos) || isnan(pos)
                 fprintf('%s: %s ''pos'' must be numeric\n', class(obj), 'move_to');
@@ -89,7 +99,14 @@ classdef Soloist < handle
                 return
             end
             
-            VariableDefault('end_enabled', false);
+            if ~isnumeric(speed) || isinf(speed) || isnan(speed)
+                fprintf('%s: %s ''speed'' must be numeric\n', class(obj), 'move_to');
+                return
+            end
+            if speed > 500 || speed < 10
+                fprintf('%s: %s speed must be between 10 and 500\n', class(obj), 'move_to');
+                return
+            end
             
             if ~islogical(end_enabled)
                 fprintf('%s: %s ''end_enabled'' must be boolean\n', class(obj), 'move_to');
@@ -99,18 +116,20 @@ classdef Soloist < handle
             % convert to logical
             end_enabled = logical(end_enabled);
             
-            fname = obj.full_command('move_to_');
-            cmd = sprintf('%s %i %i', fname, pos, end_enabled);
+            fname = obj.full_command('move_to');
+            cmd = sprintf('%s %i %i %i', fname, pos, speed, end_enabled);
             disp(cmd)
             
-%             % start running the process
-%             runtime = java.lang.Runtime.getRuntime();
-%             proc = runtime.exec(cmd);
+            % start running the process
+            runtime = java.lang.Runtime.getRuntime();
+            p_java = runtime.exec(cmd);
+            proc = ProcHandler(p_java);
+            obj.proc_array.add_process(proc);
         end
         
         
         
-        function listen_until(obj, back_pos, forward_pos)
+        function proc = listen_until(obj, back_pos, forward_pos)
             % checks go here!
             if back_pos > obj.max_limits(1) || back_pos < obj.max_limits(2)
                 fprintf('%s: %s ''back_pos'' must be between %.1f and %.1f\n', ...
@@ -130,13 +149,15 @@ classdef Soloist < handle
                 return
             end
             
-            fname = obj.full_command('listen_until_');
+            fname = obj.full_command('listen_until');
             cmd = sprintf('%s %i %i', fname, back_pos, forward_pos);
             disp(cmd)
             
-%             % start running the process
-%             runtime = java.lang.Runtime.getRuntime();
-%             proc = runtime.exec(cmd);
+            % start running the process
+            runtime = java.lang.Runtime.getRuntime();
+            p_java = runtime.exec(cmd);
+            proc = ProcHandler(p_java);
+            obj.proc_array.add_process(proc);
         end
         
         

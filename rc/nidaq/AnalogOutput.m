@@ -3,7 +3,7 @@ classdef AnalogOutput < handle
     properties
         task
         chan = {}
-        channel_names
+        channel_names = {}
     end
     
     
@@ -12,7 +12,7 @@ classdef AnalogOutput < handle
         function obj = AnalogOutput(config)
             obj.task = daq.createSession('ni');
             for i = 1:length(config.nidaq.ao.channel_names)
-                obj.channel_names = config.nidaq.ao.channel_names{i};
+                obj.channel_names{i} = config.nidaq.ao.channel_names{i};
                 obj.chan{i} = addAnalogOutputChannel(obj.task, config.nidaq.ao.dev, config.nidaq.ao.channel_id(i), 'Voltage');
             end
             obj.task.Rate = config.nidaq.rate;

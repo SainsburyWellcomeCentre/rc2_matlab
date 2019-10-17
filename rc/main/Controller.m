@@ -31,7 +31,7 @@ classdef Controller < handle
             obj.ni = NI(config);
             obj.teensy = Teensy(config);
             obj.soloist = Soloist(config, home_prompt);
-            obj.pump(obj.ni, config);
+            obj.pump = Pump(obj.ni, config);
             obj.reward = Reward(obj.pump, config);
             obj.treadmill = Treadmill(obj.ni, config);
             obj.multiplexer = Multiplexer(obj.ni, config);
@@ -110,8 +110,14 @@ classdef Controller < handle
         end
         
         
-        function move_to(obj, pos)
-            obj.soloist.move_to(pos, false);
+        function move_to(obj, pos, speed)
+            VariableDefault('speed', obj.soloist.default_speed);
+            obj.soloist.move_to(pos, speed, false);
+        end
+        
+        
+        function home_soloist(obj)
+            obj.soloist.home();
         end
         
         
@@ -166,6 +172,16 @@ classdef Controller < handle
         end
         
         
+        function reset_position(obj)
+            obj.position.reset();
+        end
+        
+        
+        function pos = get_position(obj)
+            pos = obj.position.position;
+        end
+        
+        
         function integrate_until(obj, back, forward)
             % check limits here
             obj.position.integrate_until(back, forward);
@@ -175,7 +191,7 @@ classdef Controller < handle
         function cfg = get_config(obj)
             
             [~, git_version]        = system(sprintf('git --git-dir=%s rev-parse HEAD', ...
-                                                            obj.saver.git_fname));
+                                                            obj.saver.git_dir));
             
             cfg = { 'git_version',              git_version;
                     'saving.save_to',           obj.saver.save_to;
