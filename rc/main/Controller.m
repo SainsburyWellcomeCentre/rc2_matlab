@@ -5,6 +5,7 @@ classdef Controller < handle
         ni
         teensy
         soloist
+        pump
         reward
         treadmill
         multiplexer
@@ -34,7 +35,8 @@ classdef Controller < handle
             obj.ni = NI(config);
             obj.teensy = Teensy(config);
             obj.soloist = Soloist(config, home_prompt);
-            obj.reward = Reward(obj.ni, config);
+            obj.pump(obj.ni, config);
+            obj.reward = Reward(obj.pump, config);
             obj.treadmill = Treadmill(obj.ni, config);
             obj.multiplexer = Multiplexer(obj.ni, config);
             obj.plotting = Plotting(config);
@@ -99,6 +101,21 @@ classdef Controller < handle
         
         function unblock_treadmill(obj)
             obj.treadmill.unblock()
+        end
+        
+        
+        function pump_on(obj)
+            obj.pump.on()
+        end
+        
+        
+        function pump_off(obj)
+            obj.pump.off()
+        end
+        
+        
+        function pump_on(obj)
+            obj.
         end
         
         

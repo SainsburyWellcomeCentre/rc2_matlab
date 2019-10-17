@@ -37,6 +37,7 @@ classdef rc2guiView < hgsetget
             addlistener(obj.controller.setup.saver, 'index', 'PostSet', @(src, evnt)obj.index_updated(src, evnt));
             addlistener(obj.controller.setup.saver, 'enable', 'PostSet', @(src, evnt)obj.enable_updated(src, evnt));
             addlistener(obj.controller.setup, 'acquiring', 'PostSet', @(src, evnt)obj.acquiring_updated(src, evnt));
+            addlistener(obj.controller.setup.reward, 'duration', 'PostSet', @(src, evnt)obj.reward_duration_updated(src, evnt));
         end
         
         
@@ -61,6 +62,12 @@ classdef rc2guiView < hgsetget
         function index_updated(obj, ~, ~)
             index = obj.controller.setup.saver.index;
             set(obj.handles.edit_file_index, 'string', index);
+        end
+        
+        
+        function reward_duration_updated(obj, ~, ~)
+            duration = obj.controller.setup.reward.duration;
+            set(obj.handles.edit_reward_duration, 'string', duration);
         end
         
         

@@ -45,6 +45,23 @@ classdef rc2guiController < handle
         end
         
         
+        function changed_reward_duration(obj, h_obj)
+            val = str2double(get(h_obj, 'string'));
+            if ~isnumeric(val) || isinf(val) || isnan(val)
+                fprintf('%s: %s ''val'' must be numeric\n', class(obj), 'changed_reward_duration');
+                set(obj.view.handles.edit_reward_duration, 'string', sprintf('%.1f', obj.setup.reward.duration))
+                return
+            end
+            
+            status = obj.setup.reward.set_duration(val);
+            if status == -1
+                set(obj.view.handles.edit_reward_duration, 'string', sprintf('%.1f', obj.setup.reward.duration))
+                return
+            end
+        end
+        
+        
+        
         function block_treadmill(obj)
             obj.setup.block_treadmill()
         end
@@ -82,7 +99,6 @@ classdef rc2guiController < handle
         end
         
         
-        
         function move_to(obj)
             val = str2double(get(obj.view.handles.edit_move_to, 'string'));
             if ~isnumeric(val) || isinf(val) || isnan(val)
@@ -92,8 +108,13 @@ classdef rc2guiController < handle
         end
         
         
-        function reset(obj)
+        function reset_soloist(obj)
             obj.setup.soloist.reset();
+        end
+        
+        
+        function stop_soloist(obj)
+            obj.setup.soloist.abort();
         end
         
         

@@ -20,6 +20,11 @@ classdef Soloist < handle
         end
         
         
+        function abort(obj)
+            
+        end
+        
+        
         function home(obj)
             cmd = obj.full_command('home_');
             disp(cmd)

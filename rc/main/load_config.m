@@ -47,7 +47,9 @@ config.teensy.start_script      = 'forward_only';
 config.soloist.dir              = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\soloist_c\exe';
 
 
-config.reward.do_name           = 'pump';
+config.pump.do_name             = 'pump';
+config.pump.init_state          = 0;
+
 config.reward.randomize         = true;
 config.reward.min_time          = 3;
 config.reward.max_time          = 7;

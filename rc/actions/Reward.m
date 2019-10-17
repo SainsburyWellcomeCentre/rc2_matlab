@@ -2,32 +2,33 @@ classdef Reward < handle
     
     properties
         
-        ni
-        chan
+        pump
+        
         randomize
         min_time
         max_time
-        duration
+        
         rand_timer
     end
+    
+    properties (SetObservable = true, SetAccess = private)
+    
+        duration
+    end
+    
     
     
     methods
         
-        function obj = Reward(ni, config)
+        function obj = Reward(pump, config)
             
-            obj.ni = ni;
-            
-            all_channel_names = obj.ni.do_names();
-            this_name = config.reward.do_name;
-            obj.chan = find(strcmp(this_name, all_channel_names));
+            obj.pump = pump;
             
             obj.randomize = config.reward.randomize;
             obj.min_time = config.reward.min_time;
             obj.max_time = config.reward.max_time;
             obj.duration = config.reward.duration;
         end
-        
         
         
         function start_reward(obj, wait_for_reward)
@@ -61,7 +62,18 @@ classdef Reward < handle
         
         
         function give_reward(obj, ~, ~)
-            obj.ni.do_pulse(obj.chan, obj.duration);
+            obj.pump.pulse(obj.duration);
+        end
+        
+        
+        function status = set_duration(obj, val)
+            status = 0;
+            if val < 0 || val > 500
+                fprintf('reward duration must be between 0 and 500 ms\n');
+                status = -1;
+                return
+            end
+            obj.duration = val;
         end
     end
 end
