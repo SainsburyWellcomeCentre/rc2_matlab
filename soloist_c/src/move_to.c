@@ -13,6 +13,11 @@ main(int argc, char **argv)
     SoloistHandle *handles;
 	DWORD handle_count = 0;
     
+    if (argc < 2) {
+        printf("must have at least 2 numeric arguments.\n");
+        return 1;
+    }
+    
     DOUBLE position = atof(argv[1]);
     int leave_enabled = atoi(argv[2]);
     
