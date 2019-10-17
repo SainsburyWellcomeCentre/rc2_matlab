@@ -19,12 +19,20 @@ main(int argc, char **argv)
     double gear_scale;
     int gear_set;
     
+    if (argc < 2) {
+        printf("must have at least 2 numeric arguments.\n");
+        return 1;
+    }
+    
     // Arguments
     DOUBLE backward_limit = atof(argv[1]);
     DOUBLE forward_limit = atof(argv[2]);
     
     // Connect to soloist.
     if(!SoloistConnect(&handles, &handle_count)) { cleanup(handles, handle_count); }
+    
+    // Setup analog output velocity tracking
+    if(!SoloistAdvancedAnalogTrack(handles[0], AO_CHANNEL, AO_SERVO_VALUE, AO_SCALE_FACTOR, 0.0)){ cleanup(handles, handle_count); }
     
     // Get the number of counts per unit.
     if(!SoloistParameterGetValue(handles[0], PARAMETERID_CountsPerUnit, 1, &cnts_per_unit)) { cleanup(handles, handle_count); }

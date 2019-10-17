@@ -4,6 +4,8 @@
 
 #define AI_CHANNEL                      0
 #define AO_CHANNEL                      0
+#define AO_SERVO_VALUE                  4
+#define AO_SCALE_FACTOR                 0.001f
 #define RAMP_RATE                       200
 #define MAX_INPUT_SPEED                 1000
 #define SPEED_LIMIT 					1200
@@ -19,7 +21,7 @@
 #define DEFAULT_RAMPRATE                200
 #define DEFAULT_RAMPMODE                RAMPMODE_Rate
 #define DEFAULT_POSITION                20
-#define DEFAULT_SPEED					40
+#define DEFAULT_SPEED					200
 
 
 // Common functions in rc_shared.c
