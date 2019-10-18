@@ -3,10 +3,10 @@
 
 
 
-class Trigger {
+class TriggerInput {
 
     public:
-        Trigger();
+        TriggerInput();
         void setup();
         void loop();
 

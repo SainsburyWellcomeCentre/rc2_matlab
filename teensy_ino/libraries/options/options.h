@@ -30,6 +30,8 @@
 // PINS
 #define ENC_A_PIN               0
 #define ENC_B_PIN               1
+#define ZERO_POSITION_PIN		6
+#define REWARD_PIN				14
 #define DAC_PIN                 A14
 
 // ANALOG OUTPUT

@@ -4,22 +4,38 @@
 
 
 
-Trigger::Trigger() {
+TriggerInput::TriggerInput() {
 }
 
 
+void
+TriggerInput::_get_state() {
+
+    this->_current_state = digitalRead(ZERO_POSITION_PIN);
+
+    this->delta_state = 0;
+    if (this->_current_state == HIGH && this->_previous_state == LOW) {
+        this->delta_state = 1;
+    }
+    if (this->_current_state == LOW && this->_previous_state == HIGH) {
+        this->delta_state = -1;
+    }
+    this->_previous_state = this->_current_state;
+}
+
 
 void
-Trigger::setup() {
+TriggerInput::setup() {
 
-    pinMode(REWARD_PIN, INPUT);
+    pinMode(ZERO_POSITION_PIN, INPUT);
 
-    this->_current_state = digitalRead(REWARD_PIN);
+    this->_current_state = digitalRead(ZERO_POSITION_PIN);
     this->_previous_state = this->_current_state;
     this->delta_state = 0;
 }
 
 
+void TriggerInput::loop() {
 
-void Trigger::loop() {
+    this->_get_state();
 }

@@ -57,7 +57,7 @@ Encoder::_velocity() {
 
     if ( this->_current_pin == ENC_A_PIN && !this->_direction_change ) {
         if ( this->_current_direction == FORWARDS ) {
-            this->_delta_distance = this->_a_to_b_rising_nm;
+            this->_delta_distance = this->_b_to_a_rising_nm;
         } 
         else if ( this->_current_direction == BACKWARDS ) {
             this->_delta_distance = -this->_b_to_a_rising_nm_back; //-
@@ -65,7 +65,7 @@ Encoder::_velocity() {
     }
     else if ( this->_current_pin == ENC_B_PIN && !this->_direction_change ) {
         if ( this->_current_direction == FORWARDS ) {
-            this->_delta_distance = this->_b_to_a_rising_nm;
+            this->_delta_distance = this->_a_to_b_rising_nm;
         }
         else if ( this->_current_direction == BACKWARDS ) {
             this->_delta_distance = -this->_a_to_b_rising_nm_back; //-
