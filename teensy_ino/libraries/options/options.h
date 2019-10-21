@@ -3,7 +3,7 @@
 
 
 #define FORWARD_DISTANCE         1200   // MM,  distance treadmill travels forwards before distance is reset 
-#define BACKWARD_DISTANCE        100	// MM, distance treadmill travels backwards before distance is reset 
+#define BACKWARD_DISTANCE        -100	// MM, distance treadmill travels backwards before distance is reset 
 
 // VELOCITY
 #define FILTER_ON               1       // BOOL, whether to filter the velocity output with sliding average

@@ -1,0 +1,81 @@
+HEADER
+
+	INCLUDE "AeroBasicInclude.abi"
+	INCLUDE "listen_until_main_loop.abi"
+
+END HEADER
+
+
+
+PROGRAM
+
+	DIM ready AS INTEGER
+	DIM looping AS INTEGER
+
+	DIM fault_status AS INTEGER
+	DIM current_position AS DOUBLE
+	DIM current_velocity AS DOUBLE
+
+	DIM forward_position AS DOUBLE
+	DIM backward_position AS DOUBLE
+	DIM speed_limit AS DOUBLE
+
+	ready = 1
+	looping = 1
+	speed_limit = 1200
+
+	' Wait for start "trigger"
+	'  actually we expect that the trigger goes from high to low
+	STARTSYNC -2
+	WHILE (ready > 0.01)
+		SYNC
+		ready = DIN(0, 0)
+	WEND
+
+	ENABLE
+
+	STARTSYNC 1
+
+	GEAR 1
+
+	' Enter loop to detect position, velocity and faults
+	WHILE (looping = 1)
+		SYNC
+
+		' Check fault output.
+		fault_status = AXISFAULT()
+		IF fault_status NE 0 THEN
+			looping = 0
+		END IF
+
+		' Monitor position
+		current_position = DRIVEINFO (DRIVEINFO_PositionCommandRaw)
+		IF current_position < forward_position THEN
+			looping = 0
+		END IF
+
+		IF current_position > backward_position THEN
+			looping = 0
+		END IF
+
+		' Monitor velocity
+		current_velocity = VFBK()
+
+		IF current_velocity < -speed_limit THEN
+			looping = 0
+		END IF
+
+		IF current_velocity > speed_limit THEN
+			looping = 0
+		END IF
+	WEND
+
+	DISABLE
+
+	' PSO pulse
+	
+
+	' Reset the parameters
+	GEAR 0
+
+END PROGRAM

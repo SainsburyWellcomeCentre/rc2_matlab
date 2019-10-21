@@ -34,33 +34,43 @@ classdef EncoderOnly < handle
         function run(obj)
             
             try
+                
                 obj.ctl.teensy.load(obj.direction);
+                
                 
                 if obj.handle_acquisition
                     obj.ctl.prepare_acq();
                     obj.ctl.start_acq();
                 end
                 
-                % start a process which will take 5 seconds
-                proc = obj.ctl.soloist.block_test();
-                % proc = obj.ctl.soloist.move_to(obj.stage_start_pos, true);
+                % move to position along stage where the trial will take
+                % place
+                proc = obj.ctl.soloist.move_to(obj.stage_start_pos, true);
                 proc.wait_for(0.5);
                 
                 % wait a bit of time before starting the trial
                 pause(5)
                 
-                % release block on the treadmill
-                obj.ctl.treadmill.unblock()
+                % start integrator
+                obj.ctl.reset_teensy_position();
+                obj.ctl.reset_position();
                 
+                
+                % release block on the treadmill
+                obj.ctl.unblock_treadmill()
+                
+                % start logging velocity if required.
                 if obj.log_trial
                     obj.log_trial_fname = obj.ctl.start_logging_single_trial();
                 end
                 
-                %
-                obj.ctl.integrate_until(-100, 100)
+                % wait for trigger from teensy
+                obj.ctl.wait_for_teensy();
                 
-                obj.ctl.treadmill.block()
+                % block the treadmill
+                obj.ctl.block_treadmill()
                 
+                % stop logging single trial
                 if obj.log_trial
                     obj.ctl.stop_logging_single_trial();
                 end

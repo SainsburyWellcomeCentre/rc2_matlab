@@ -31,14 +31,14 @@ config.nidaq.co.dev             = 'Dev2';
 config.nidaq.co.channel_names   = {'camera'};
 config.nidaq.co.channel_id      = 0;
 config.nidaq.co.init_delay      = 0;
-config.nidaq.co.pulse_high      = 100;
-config.nidaq.co.pulse_dur       = 333;  % 30Hz
+config.nidaq.co.pulse_high      = 60;
+config.nidaq.co.pulse_dur       = 125;  % 80Hz
 config.nidaq.co.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
 
 
 config.nidaq.do.dev             = 'Dev2';
-config.nidaq.do.channel_names   = {'pump', 'multiplexer', 'solenoid'};
-config.nidaq.do.channel_id      = {'port0/line0', 'port0/line1', 'port0/line2'};
+config.nidaq.do.channel_names   = {'pump', 'multiplexer', 'solenoid', 'zero_teensy'};
+config.nidaq.do.channel_id      = {'port0/line0', 'port0/line1', 'port0/line2', 'port0/line3'};
 config.nidaq.do.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
 
 
@@ -66,6 +66,9 @@ config.treadmill.init_state     = 1;
 config.soloist_input_src.do_name        = 'multiplexer';
 config.soloist_input_src.init_source    = 'teensy';
 config.soloist_input_src.teensy         = 0;
+
+
+config.zero_teensy.do_name      = 'zero_teensy';
 
 
 config.plotting                 = plotting_config();

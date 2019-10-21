@@ -14,6 +14,7 @@ classdef Controller < handle
         trial_save
         sound
         position
+        zero_teensy
     end
     
     
@@ -39,6 +40,7 @@ classdef Controller < handle
             obj.sound = Sound();
             obj.position = Position(config);
             obj.saver = Saver(obj, config);
+            obj.zero_teensy = ZeroTeensy(config);
         end
         
         
@@ -174,6 +176,11 @@ classdef Controller < handle
         
         function reset_position(obj)
             obj.position.reset();
+        end
+        
+        
+        function reset_teensy_position(obj)
+            obj.zero_teensy.zero();
         end
         
         

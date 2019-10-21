@@ -22,7 +22,7 @@ Controller::Controller() {
 }
 
 
-
+// Setup all objects.
 void
 Controller::setup() {
 
@@ -37,42 +37,52 @@ Controller::setup() {
 
 void
 Controller::loop() {
-    
+
     bool update;
     float volts;
     float encoder_velocity, encoder_distance;
-    
-    // Check to make sure encoder has moved in last Xms
-    enc.loop();
-    
+
     // Check state of the trigger input
     trig_in.loop();
+
     
-    // Fix the encoder velocity for each loop (otherwise it may
-    // change between calls).
     // Disable interrupts so that value is not changed in middle of operation.
     noInterrupts();
+
+    // Check to make sure encoder has moved in last Xms
+    enc.loop();
+
+    // If trigger input received, reset the distance to zero.
     if (trig_in.delta_state) {
         enc.total_distance = 0;
     }
+
+    // Fix the encoder velocity and distance for each loop.
     encoder_velocity = enc.current_velocity;
     encoder_distance = enc.total_distance;
+
+    // Reenable interrupts
     interrupts();
 
     // Compute the velocity as a voltage
     vel.loop(encoder_velocity, this->min_volts, this->dac_offset_volts);
 
+    // Do we need to update the voltage?
     update = vel.update;
     volts = vel.current_volts;
 
+    // If the treadmill has move beyond forward distance or backward distance issue a trigger
+    //  and reset distance to zero.
     if (encoder_distance > FORWARD_DISTANCE || encoder_distance < BACKWARD_DISTANCE) {
-        
         trig_out.start();
         noInterrupts();
         enc.total_distance = 0;
         interrupts();
     }
-    
+
+    // Check status of trigger output.
     trig_out.loop();
+    
+    // Determine whether to update the voltage.
     ao.loop(update, volts);
 }
