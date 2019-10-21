@@ -1,27 +1,24 @@
-classdef DigitalOutputRaw < handle
+classdef DigitalInputRaw < handle
     
     properties
         task_handle
-        ai_task
         
         rate
         
         n_chan
         
         channel_names
-        channel_ids
         state
+        ai_chan
         clock_src
     end
     
     
     methods
         
-        function obj = DigitalOutputRaw(config, ai_task)
+        function obj = DigitalInputRaw(config)
             
-            obj.ai_task = ai_task;
-            
-            obj.clock_src = config.nidaq.do.clock_src;
+            obj.clock_src = config.nidaq.di.clock_src;
             obj.rate = obj.ai_task.Rate;
             
             [status, obj.task_handle] = daq.ni.NIDAQmx.DAQmxCreateTask(char(0), uint64(0));
@@ -31,7 +28,6 @@ classdef DigitalOutputRaw < handle
             obj.n_chan = length(config.nidaq.do.channel_names);
             for i = 1 : obj.n_chan
                 obj.channel_names{i} = config.nidaq.do.channel_names{i};
-                obj.channel_ids{i} = config.nidaq.do.channel_id{i};
                 dev_str = sprintf('%s/%s', config.nidaq.do.dev, config.nidaq.do.channel_id{i});
                 status = daq.ni.NIDAQmx.DAQmxCreateDOChan(obj.task_handle, dev_str, char(0), daq.ni.NIDAQmx.DAQmx_Val_ChanForAllLines);
                 obj.handle_fault(status, 'DAQmxCreateDOChan');
@@ -41,8 +37,6 @@ classdef DigitalOutputRaw < handle
             status = daq.ni.NIDAQmx.DAQmxCfgSampClkTiming(obj.task_handle, obj.clock_src, double(obj.rate), ...
                 daq.ni.NIDAQmx.DAQmx_Val_Rising, daq.ni.NIDAQmx.DAQmx_Val_FiniteSamps, uint64(1000));
             obj.handle_fault(status, 'DAQmxCfgSampClkTiming');
-             status = daq.ni.NIDAQmx.DAQmxCfgDigEdgeStartTrig(obj.task_handle, '/Dev2/PFI0', daq.ni.NIDAQmx.DAQmx_Val_Rising);
-             obj.handle_fault(status, 'DAQmxCfgDigEdgeStartTrig');
             
             %%WRITE HERE
             obj.start(repmat(obj.state, 2, 1));

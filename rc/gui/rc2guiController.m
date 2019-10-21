@@ -76,10 +76,10 @@ classdef rc2guiController < handle
         
         function toggle_sound(obj)
             if obj.setup.sound.state
-                obj.setup.sound.stop()
+                obj.setup.stop_sound()
                 set(obj.view.handles.pushbutton_toggle_sound, 'string', 'PLAY');
             else
-                obj.setup.sound.start()
+                obj.setup.play_sound()
                 set(obj.view.handles.pushbutton_toggle_sound, 'string', 'STOP');
             end
         end

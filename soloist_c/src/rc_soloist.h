@@ -6,6 +6,8 @@
 #define AO_CHANNEL                      0
 #define AO_SERVO_VALUE                  4
 #define AO_SCALE_FACTOR                 0.001f
+#define DI_PORT                         0
+#define DI_BIT                          0
 #define RAMP_RATE                       200
 #define MAX_INPUT_SPEED                 1000
 #define SPEED_LIMIT 					1200

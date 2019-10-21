@@ -17,7 +17,7 @@ classdef Sound < handle
         end
         
         
-        function start(obj)
+        function play(obj)
             obj.looping = true;
             play(obj.audio)
             obj.state = true;

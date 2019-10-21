@@ -4,6 +4,7 @@ classdef AnalogOutput < handle
         task
         chan = {}
         channel_names = {}
+        max_voltage = 3.3;
     end
     
     
@@ -26,7 +27,9 @@ classdef AnalogOutput < handle
         
         
         function write(obj, data)
-            %obj.task.NumberOfScans = size(data, 1);
+            % to avoid DANGER, clip voltage at limits!!
+            data(data > obj.max_voltage) = obj.max_voltage;
+            data(data < -obj.max_voltage) = -obj.max_voltage;
             obj.task.queueOutputData(data);
         end
         
