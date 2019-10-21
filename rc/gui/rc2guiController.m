@@ -6,6 +6,10 @@ classdef rc2guiController < handle
         view
         
         move_to_pos
+        reward_distance
+        reward_location
+        condition
+        
         stage_limits
         speed_limits
     end
@@ -20,14 +24,18 @@ classdef rc2guiController < handle
             obj.stage_limits = config.stage.max_limits;
             obj.speed_limits = [10, 500];
             obj.move_to_pos = config.stage.start_pos;
+            obj.reward_distance = 200; %TODO: config
+            obj.condition = 'closed_loop'; %TODO: config
+            obj.reward_location = 250; %TODO: config
             obj.view = rc2guiView(obj);
         end
         
         
-        function delete(obj)
-            
+        
+        function delete(obj)    
             delete(obj.view);
         end
+        
         
         
         function toggle_acquisition(obj)
@@ -42,9 +50,11 @@ classdef rc2guiController < handle
         end
         
         
+        
         function give_reward(obj)
             obj.setup.give_reward()
         end
+        
         
         
         function changed_reward_duration(obj, h_obj)
@@ -64,14 +74,76 @@ classdef rc2guiController < handle
         
         
         
+        function change_reward_location(obj, h_obj)
+            val = str2double(get(h_obj, 'string'));
+            if ~isnumeric(val) || isinf(val) || isnan(val)
+                fprintf('%s: %s ''val'' must be numeric\n', class(obj), 'change_reward_location');
+                set(obj.view.handles.edit_reward_location, 'string', sprintf('%.1f', obj.reward_location))
+                return
+            end
+            if val < 10 || val > 1400 % TODO: allow config
+                fprintf('%s: %s ''val'' must be within reasonable bounds\n', class(obj), 'change_reward_location');
+                set(obj.view.handles.edit_reward_location, 'string', sprintf('%.1f', obj.reward_location))
+                return
+            end 
+        end
+        
+        
+        
+        function change_reward_distance(obj, h_obj)
+            val = str2double(get(h_obj, 'string'));
+            if ~isnumeric(val) || isinf(val) || isnan(val)
+                fprintf('%s: %s ''val'' must be numeric\n', class(obj), 'change_reward_distance');
+                set(obj.view.handles.edit_reward_distance, 'string', sprintf('%.1f', obj.reward_distance))
+                return
+            end
+            if val < 0 || val > 1400 % TODO: modify this
+                fprintf('%s: %s ''val'' must be within reasonable bounds\n', class(obj), 'change_reward_distance');
+                set(obj.view.handles.edit_reward_distance, 'string', sprintf('%.1f', obj.reward_distance))
+                return
+            end 
+        end
+        
+        
+        
+        function closed_loop(obj, h_obj)
+            val = get(h_obj, 'value');
+            if val
+                set(obj.view.handles.button_open_loop, 'value', false);
+                obj.condition = 'closed_loop';
+            else
+                if strcmp(obj.condition, 'closed_loop')
+                    set(obj.view.handles.button_closed_loop, 'value', true);
+                end
+            end
+        end
+        
+        
+        
+        function open_loop(obj, h_obj)
+            val = get(h_obj, 'value');
+            if val
+                set(obj.view.handles.button_closed_loop, 'value', false);
+                obj.condition = 'open_loop';
+            else
+                if strcmp(obj.condition, 'open_loop')
+                    set(obj.view.handles.button_open_loop, 'value', true);
+                end
+            end
+        end
+        
+        
+        
         function block_treadmill(obj)
             obj.setup.block_treadmill()
         end
         
         
+        
         function unblock_treadmill(obj)
             obj.setup.unblock_treadmill()
         end
+        
         
         
         function toggle_sound(obj)
@@ -83,6 +155,7 @@ classdef rc2guiController < handle
                 set(obj.view.handles.pushbutton_toggle_sound, 'string', 'STOP');
             end
         end
+        
         
         
         function changed_move_to_pos(obj, h_obj)
@@ -101,6 +174,7 @@ classdef rc2guiController < handle
         end
         
         
+        
         function changed_speed(obj, h_obj)
             val = str2double(get(h_obj, 'string'));
             if ~isnumeric(val) || isinf(val) || isnan(val)
@@ -117,6 +191,7 @@ classdef rc2guiController < handle
         end
         
         
+        
         function move_to(obj)
             pos = str2double(get(obj.view.handles.edit_move_to, 'string'));
             if ~isnumeric(pos) || isinf(pos) || isnan(pos)
@@ -130,9 +205,11 @@ classdef rc2guiController < handle
         end
         
         
+        
         function home_soloist(obj)
             obj.setup.home_soloist();
         end
+        
         
         
         function reset_soloist(obj)
@@ -140,9 +217,11 @@ classdef rc2guiController < handle
         end
         
         
+        
         function stop_soloist(obj)
             obj.setup.soloist.abort();
         end
+        
         
         
         function set_save_to(obj)
@@ -155,11 +234,13 @@ classdef rc2guiController < handle
         end
         
         
+        
         function set_file_prefix(obj, h_obj)
             str = get(h_obj, 'string');
             obj.setup.set_save_prefix(str)
             obj.view.prefix_updated();
         end
+        
         
         
         function set_file_suffix(obj, h_obj)
@@ -169,6 +250,7 @@ classdef rc2guiController < handle
         end
         
         
+        
         function set_file_index(obj, h_obj)
             val = str2double(get(h_obj, 'string'));
             obj.setup.set_save_index(val);
@@ -176,10 +258,19 @@ classdef rc2guiController < handle
         end
         
         
+        
         function enable_save(obj, h_obj)
             val = get(h_obj, 'value');
             obj.setup.set_save_enable(val);
             obj.view.enable_updated();
         end
+        
+        
+        
+        function start_training(obj)
+            
+            seq = get_training_sequence(obj.);
+        end
+        
     end
 end

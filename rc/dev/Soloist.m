@@ -15,21 +15,16 @@ classdef Soloist < handle
     
     methods
         
-        function obj = Soloist(config, home_prompt)
+        function obj = Soloist(config)
             
+            % directory in which the soloist commands
             obj.dir = config.soloist.dir;
-            obj.default_speed = config.soloist.default_speed;
             
+            % default speed at which we will move the soloist
+            obj.default_speed = config.soloist.default_speed;
             cmd = obj.full_command('abort');
             obj.h_abort = SoloistAbortProc(cmd);
             obj.proc_array = ProcArray();
-            
-%             if home_prompt
-%                 user_ans = input('Home soloist? (y/n)', 's');
-%                 if any(strcmp(user_ans, {'yes', 'y', 'Y'}))
-%                     obj.home();
-%                 end
-%             end
             obj.max_limits = config.stage.max_limits;
         end
         

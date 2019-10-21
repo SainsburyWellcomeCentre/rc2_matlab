@@ -3,6 +3,7 @@ classdef CounterOutputRaw < handle
     properties
         task_handle
         channel_names
+        channel_ids
     end
     
     properties (SetAccess = private)
@@ -11,6 +12,8 @@ classdef CounterOutputRaw < handle
         high_samps
         clock_src
     end
+    
+    
     
     methods
         
@@ -26,6 +29,7 @@ classdef CounterOutputRaw < handle
             
             for i = 1:length(config.nidaq.co.channel_names)
                 obj.channel_names{i} = config.nidaq.co.channel_names{i};
+                obj.channel_ids{i} = sprintf('ctr%i', config.nidaq.co.channel_id(i));
                 dev_str = sprintf('%s/ctr%i', config.nidaq.co.dev, config.nidaq.co.channel_id(i));
                 status = daq.ni.NIDAQmx.DAQmxCreateCOPulseChanTicks(obj.task_handle, dev_str, char(0), obj.clock_src, ...
                     daq.ni.NIDAQmx.DAQmx_Val_Low, int32(obj.init_delay), int32(obj.low_samps), int32(obj.high_samps));

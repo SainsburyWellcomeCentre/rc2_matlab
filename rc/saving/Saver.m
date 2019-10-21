@@ -133,7 +133,7 @@ classdef Saver < handle
         
         function save_config(obj)
             if ~obj.enable; return; end
-            fname = sprintf('%s.cfg', obj.logging_fname());
+            fname = obj.cfg_fname();
             cfg = obj.ctl.get_config();
             obj.write_config(fname, cfg, 'w');
         end

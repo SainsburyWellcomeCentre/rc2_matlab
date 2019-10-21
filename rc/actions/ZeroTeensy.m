@@ -18,6 +18,7 @@ classdef ZeroTeensy < handle
         
         
         function zero(obj)
+            % Send a 500 ms pulse to tell the Teensy to zero its position.
             obj.ni.do_pulse(obj.chan, 500);
         end
     end

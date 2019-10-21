@@ -5,6 +5,7 @@ classdef NI < handle
         ao
         co
         do
+        di
     end
     
     
@@ -16,6 +17,7 @@ classdef NI < handle
             obj.ao = AnalogOutput(config);
             obj.co = CounterOutputRaw(config);
             obj.do = DigitalOutputRaw(config, obj.ai.task);
+            obj.di = DigitalInput(config);
         end
         
         
@@ -66,6 +68,11 @@ classdef NI < handle
         end
         
         
+        function chan_names = di_names(obj)
+            chan_names = obj.di.channel_names;
+        end
+        
+        
         function stop_all(obj)
             obj.ai.stop()
             obj.co.stop()
@@ -80,6 +87,7 @@ classdef NI < handle
             obj.ao.close()
             obj.co.close()
             obj.do.close()
+            obj.di.close()
         end
     end
 end

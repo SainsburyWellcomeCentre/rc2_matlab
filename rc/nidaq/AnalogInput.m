@@ -3,6 +3,7 @@ classdef AnalogInput < handle
     properties
         task
         channel_names
+        channel_ids
         chan = {}
         h_listener
         log_every
@@ -14,6 +15,7 @@ classdef AnalogInput < handle
             obj.task = daq.createSession('ni');
             for i = 1:length(config.nidaq.ai.channel_names)
                 obj.channel_names{i} = config.nidaq.ai.channel_names{i};
+                obj.channel_ids{i} = sprintf('ai%i', config.nidaq.ai.channel_id(i));
                 obj.chan{i} = addAnalogInputChannel(obj.task, config.nidaq.ai.dev, config.nidaq.ai.channel_id(i), 'Voltage');
             end
             obj.task.Rate = config.nidaq.rate;

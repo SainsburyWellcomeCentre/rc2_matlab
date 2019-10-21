@@ -14,6 +14,7 @@ classdef Controller < handle
         sound
         position
         zero_teensy
+        trigger_input
     end
     
     
@@ -22,15 +23,13 @@ classdef Controller < handle
     end
     
     
-    
     methods
-        function obj = Controller(config, home_prompt)
-            
-            VariableDefault('home_prompt', true)
+        
+        function obj = Controller(config)
             
             obj.ni = NI(config);
             obj.teensy = Teensy(config);
-            obj.soloist = Soloist(config, home_prompt);
+            obj.soloist = Soloist(config);
             obj.pump = Pump(obj.ni, config);
             obj.reward = Reward(obj.pump, config);
             obj.treadmill = Treadmill(obj.ni, config);
@@ -39,7 +38,8 @@ classdef Controller < handle
             obj.sound = Sound();
             obj.position = Position(config);
             obj.saver = Saver(obj, config);
-            obj.zero_teensy = ZeroTeensy(config);
+            obj.zero_teensy = ZeroTeensy(obj.ni, config);
+            obj.trigger_input = TriggerInput(obj.ni, config);
         end
         
         
@@ -221,23 +221,26 @@ classdef Controller < handle
             
                     'nidaq.ai.rate',            sprintf('%.1f', obj.ni.ai.task.Rate);
                     'nidaq.ai.channel_names',   strjoin(obj.ni.ai.channel_names, ',');
-                    %'nidaq.ai.channel_ids',    obj.ni.ai.chanX
+                    'nidaq.ai.channel_ids',     strjoin(obj.ni.ai.channel_ids, ',');
             
                     'nidaq.ao.rate',            sprintf('%.1f', obj.ni.ao.task.Rate);
                     'nidaq.ao.channel_names',   strjoin(obj.ni.ao.channel_names, ',');
-                    %'nidaq.ao.channel_ids',    obj.ni.ao.chanX
+                    'nidaq.ao.channel_ids',     strjoin(obj.ni.ao.channel_ids, ',');
             
                     'nidaq.co.channel_names',   strjoin(obj.ni.co.channel_names, ',');
-                    %'nidaq.co.channel_ids',    obj.ni.co.chanX
+                    'nidaq.co.channel_ids',     strjoin(obj.ni.co.channel_ids, ',');
                     'nidaq.co.init_delay',      sprintf('%i', obj.ni.co.init_delay);
                     'nidaq.co.low_samps',       sprintf('%i', obj.ni.co.low_samps);
                     'nidaq.co.high_samps',      sprintf('%i', obj.ni.co.high_samps);
                     'nidaq.co.clock_src',       obj.ni.co.clock_src;
             
                     'nidaq.do.channel_names',   strjoin(obj.ni.do.channel_names, ',');
-                    %'nidaq.do.channel_ids',    obj.ni.ao.chanX
-                    'nidaq.do.clock_src',       obj.ni.do.clock_src};
-            
+                    'nidaq.do.channel_ids',     strjoin(obj.ni.do.channel_ids, ',');
+                    'nidaq.do.clock_src',       obj.ni.do.clock_src;
+                
+                    'nidaq.di.channel_names',   strjoin(obj.ni.di.channel_names, ',');
+                    'nidaq.di.channel_ids',     strjoin(obj.ni.di.channel_ids, ',')};
+                    
         end
     end
 end

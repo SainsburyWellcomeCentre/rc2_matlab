@@ -41,8 +41,8 @@ classdef DigitalOutputRaw < handle
             status = daq.ni.NIDAQmx.DAQmxCfgSampClkTiming(obj.task_handle, obj.clock_src, double(obj.rate), ...
                 daq.ni.NIDAQmx.DAQmx_Val_Rising, daq.ni.NIDAQmx.DAQmx_Val_FiniteSamps, uint64(1000));
             obj.handle_fault(status, 'DAQmxCfgSampClkTiming');
-             status = daq.ni.NIDAQmx.DAQmxCfgDigEdgeStartTrig(obj.task_handle, '/Dev2/PFI0', daq.ni.NIDAQmx.DAQmx_Val_Rising);
-             obj.handle_fault(status, 'DAQmxCfgDigEdgeStartTrig');
+%              status = daq.ni.NIDAQmx.DAQmxCfgDigEdgeStartTrig(obj.task_handle, '/Dev2/PFI0', daq.ni.NIDAQmx.DAQmx_Val_Rising);
+%              obj.handle_fault(status, 'DAQmxCfgDigEdgeStartTrig');
             
             %%WRITE HERE
             obj.start(repmat(obj.state, 2, 1));

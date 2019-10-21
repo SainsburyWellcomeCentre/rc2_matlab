@@ -2,8 +2,9 @@ classdef AnalogOutput < handle
     
     properties
         task
-        chan = {}
         channel_names = {}
+        channel_ids = {}
+        chan = {}
         max_voltage = 3.3;
     end
     
@@ -14,10 +15,13 @@ classdef AnalogOutput < handle
             obj.task = daq.createSession('ni');
             for i = 1:length(config.nidaq.ao.channel_names)
                 obj.channel_names{i} = config.nidaq.ao.channel_names{i};
+                obj.channel_ids{i} = sprintf('ao%i', config.nidaq.ao.channel_id(i));
                 obj.chan{i} = addAnalogOutputChannel(obj.task, config.nidaq.ao.dev, config.nidaq.ao.channel_id(i), 'Voltage');
             end
             obj.task.Rate = config.nidaq.rate;
             obj.task.IsContinuous = 0;
+            
+            % TODO: WRITE INITIAL VOLTAGE TO AO
         end
         
         

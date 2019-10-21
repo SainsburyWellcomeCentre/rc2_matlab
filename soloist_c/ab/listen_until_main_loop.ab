@@ -26,12 +26,16 @@ PROGRAM
 
 	' Wait for start "trigger"
 	'  actually we expect that the trigger goes from high to low
-	STARTSYNC -2
-	WHILE (ready > 0.01)
-		SYNC
-		ready = DIN(0, 0)
-	WEND
+	'STARTSYNC -2
+	'WHILE (ready > 0.01)
+	'	SYNC
+	'	ready = DIN(0, 0)
+	'WEND
 
+    PSOCONTROL RESET
+    PSOPULSE TIME 10000, 5000 CYCLES 1
+    PSOOUTPUT PULSE
+    
 	ENABLE
 
 	STARTSYNC 1
@@ -50,22 +54,22 @@ PROGRAM
 
 		' Monitor position
 		current_position = DRIVEINFO (DRIVEINFO_PositionCommandRaw)
-		IF current_position < forward_position THEN
+		IF current_position < FORWARD_POSITION THEN
 			looping = 0
 		END IF
 
-		IF current_position > backward_position THEN
+		IF current_position > BACKWARD_POSITION THEN
 			looping = 0
 		END IF
 
 		' Monitor velocity
 		current_velocity = VFBK()
 
-		IF current_velocity < -speed_limit THEN
+		IF (current_velocity < -(speed_limit)) THEN
 			looping = 0
 		END IF
 
-		IF current_velocity > speed_limit THEN
+		IF (current_velocity > speed_limit) THEN
 			looping = 0
 		END IF
 	WEND
@@ -73,7 +77,7 @@ PROGRAM
 	DISABLE
 
 	' PSO pulse
-	
+	PSOCONTROL FIRE
 
 	' Reset the parameters
 	GEAR 0

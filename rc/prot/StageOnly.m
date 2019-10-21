@@ -47,48 +47,55 @@ classdef StageOnly < handle
         function run(obj)
             
             try
-            if isempty(obj.waveform)
-                fprintf('NO WAVEFORM LOADED, SKIPPING\n')
-                return
-            end
-            
-            obj.ctl.teensy.load(obj.direction);
-            obj.ctl.multiplexer.listen_to(obj.vel_source);
-            
-            % load the velocity waveform to NIDAQ
-            obj.ctl.load_velocity_waveform(obj.waveform);
-            
-            if obj.handle_acquisition
-                obj.ctl.prepare_acq();
-                obj.ctl.start_acq();
-            end
-            
-            % start a process which will take 5 seconds
-            proc = obj.ctl.soloist.move_to(obj.start_pos, true);
-            proc.wait_for(0.5);
-            
-            proc = obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit);
-            
-            % wait five seconds
-            % TODO: make general
-            pause(5)
-            
-            % release block on the treadmill
-            obj.ctl.unblock_treadmill()
-           
-            obj.ctl.play_velocity_waveform()
-            
-            % wait for listen_until to finish
-            proc.wait_for(0.1);
-            
-            obj.ctl.block_treadmill()
-            
-             % wait for reward to complete then stop acquisition
-            obj.ctl.reward.start_reward(obj.wait_for_reward)
-            
-            if obj.handle_acquisition
-                obj.ctl.stop_acq();
-            end
+                
+                if isempty(obj.waveform)
+                    fprintf('NO WAVEFORM LOADED, SKIPPING\n')
+                    return
+                end
+                
+                % start sound
+                obj.ctl.play_sound();
+                
+                % load teensy and listen to correct source
+                obj.ctl.teensy.load(obj.direction);
+                obj.ctl.multiplexer.listen_to(obj.vel_source);
+                
+                % load the velocity waveform to NIDAQ
+                obj.ctl.load_velocity_waveform(obj.waveform);
+                
+                if obj.handle_acquisition
+                    obj.ctl.prepare_acq();
+                    obj.ctl.start_acq();
+                end
+                
+                % start a process which will take 5 seconds
+                proc = obj.ctl.move_to(obj.start_pos, [], true);
+                proc.wait_for(0.5);
+                
+                proc = obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit);
+                
+                % wait five seconds
+                % TODO: make general
+                pause(5)
+                
+                % release block on the treadmill
+                obj.ctl.unblock_treadmill()
+                
+                % start playing the waveform
+                obj.ctl.play_velocity_waveform()
+                
+                % wait for listen_until to finish
+                proc.wait_for(0.1);
+                
+                % block treadmill
+                obj.ctl.block_treadmill()
+                
+                % wait for reward to complete then stop acquisition
+                obj.ctl.reward.start_reward(obj.wait_for_reward)
+                
+                if obj.handle_acquisition
+                    obj.ctl.stop_acq();
+                end
             catch ME
                 obj.ctl.block_treadmill();
                 obj.ctl.stop_acq();

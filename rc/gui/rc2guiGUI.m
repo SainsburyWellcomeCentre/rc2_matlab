@@ -104,6 +104,24 @@ function pushbutton_home_Callback(~, ~, handles)
 handles.controller.home_soloist();
 
 
+function edit_reward_distance_Callback(h_obj, ~, handles)
+handles.controller.change_reward_distance(h_obj);
+
+
+function button_closed_loop_Callback(h_obj, ~, handles)
+handles.controller.closed_loop(h_obj);
+
+
+function button_open_loop_Callback(h_obj, ~, handles)
+handles.controller.open_loop(h_obj);
+
+
+function pushbutton_start_training_Callback(~, ~, handles)
+handles.controller.start_training();
+
+
+function edit_reward_location_Callback(h_obj, ~, handles)
+handles.controller.change_reward_location(h_obj)
 
 
 function edit_save_to_Callback(~, ~, ~)
@@ -135,6 +153,14 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 function edit_speed_CreateFcn(hObject, ~, ~)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function edit_reward_distance_CreateFcn(hObject, ~, ~)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function edit_reward_location_CreateFcn(hObject, ~, ~)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end

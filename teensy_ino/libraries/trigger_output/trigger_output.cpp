@@ -37,7 +37,7 @@ TriggerOutput::loop() {
     
     if (this->_on) {    
         if ((millis() - this->_time_started) >= this->_duration) {
-            this._stop();
+            this->_stop();
         }
     }
 }

@@ -14,6 +14,8 @@ class TriggerInput {
         
     private:
         
+        void _get_state();
+        
         int _current_state;
         int _previous_state;
 };

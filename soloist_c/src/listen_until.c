@@ -19,6 +19,7 @@ main(int argc, char **argv)
     double gear_scale;
     int gear_set;
     DWORD ready_to_go = 1; // digital input starts high
+    LPCSTR filename = "C:\\Users\\Mateo\\Documents\\rc_version2_0\\rc2_matlab\\soloist_c\\ab\\listen_until_main_loop.ab";
     
     if (argc < 2) {
         printf("must have at least 2 numeric arguments.\n");
@@ -59,9 +60,9 @@ main(int argc, char **argv)
     if(!SoloistParameterSetValue(handles[0], PARAMETERID_Analog0InputOffset, 1, AI_OFFSET)) { cleanup(handles, handle_count); }
     
     // Wait for a trigger to go low.
-    while (ready_to_go == 1) {
-        if(!SoloistIODigitalInput(handles[0], DI_PORT, &ready_to_go)) { cleanup(handles, handle_count); }
-    }
+    //while (ready_to_go == 1) {
+    //    if(!SoloistIODigitalInput(handles[0], DI_PORT, &ready_to_go)) { cleanup(handles, handle_count); }
+    //}
     
     // Set to gear mode... no turning back now.
     if(!SoloistCommandExecute(handles[0], "GEAR 1", NULL)) { cleanup(handles, handle_count); }

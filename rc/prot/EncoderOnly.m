@@ -2,7 +2,7 @@ classdef EncoderOnly < handle
     
     properties
         
-        stage_start_pos
+        stage_pos
         back_limit
         forward_limit
         direction
@@ -10,6 +10,8 @@ classdef EncoderOnly < handle
         wait_for_reward = true
         
         log_trial = false
+        
+        integrate_using = 'teensy'  % 'teensy' or 'pc'
     end
     
     properties (SetAccess = private)
@@ -25,7 +27,7 @@ classdef EncoderOnly < handle
         
         function obj = EncoderOnly(ctl, config)
             obj.ctl = ctl;
-            obj.stage_start_pos = config.stage.start_pos;
+            obj.stage_pos = config.stage.start_pos;
             obj.back_limit = config.stage.back_limit;
             obj.forward_limit = config.stage.forward_limit;
             obj.direction = 'forward_only';
@@ -35,6 +37,7 @@ classdef EncoderOnly < handle
             
             try
                 
+                % load correct direction on teensy
                 obj.ctl.teensy.load(obj.direction);
                 
                 
@@ -45,16 +48,18 @@ classdef EncoderOnly < handle
                 
                 % move to position along stage where the trial will take
                 % place
-                proc = obj.ctl.soloist.move_to(obj.stage_start_pos, true);
+                proc = obj.ctl.soloist.move_to(obj.stage_pos, true);
                 proc.wait_for(0.5);
                 
                 % wait a bit of time before starting the trial
                 pause(5)
                 
                 % start integrator
-                obj.ctl.reset_teensy_position();
-                obj.ctl.reset_position();
-                
+                if strcmp(obj.integrate_using, 'teensy')
+                    obj.ctl.reset_teensy_position();
+                else
+                    obj.ctl.reset_position();
+                end
                 
                 % release block on the treadmill
                 obj.ctl.unblock_treadmill()
@@ -65,7 +70,11 @@ classdef EncoderOnly < handle
                 end
                 
                 % wait for trigger from teensy
-                obj.ctl.wait_for_teensy();
+                if strcmp(obj.integrate_using, 'teensy')
+                    obj.ctl.wait_for_teensy();
+                else
+                    obj.ctl.integrate_until();
+                end
                 
                 % block the treadmill
                 obj.ctl.block_treadmill()

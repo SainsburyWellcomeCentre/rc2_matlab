@@ -7,8 +7,8 @@ config.saving.main_dir          = fileparts(fileparts(fileparts(config.saving.co
 config.saving.git_dir           = fullfile(config.saving.main_dir, '.git');
 
 
-config.stage.start_pos          = 750;
-config.stage.back_limit         = 1450;
+config.stage.start_pos          = 1450;
+config.stage.back_limit         = 1470;
 config.stage.forward_limit      = 250;
 config.stage.max_limits         = [1470, 15];
 
@@ -18,8 +18,8 @@ config.nidaq.log_every          = 1000;
 
 
 config.nidaq.ai.dev             = 'Dev2';
-config.nidaq.ai.channel_names   = {'filtered_teensy', 'lick', 'pump', 'stage', 'raw_teensy', 'solenoid', 'photodiode'};
-config.nidaq.ai.channel_id      = 0:7;
+config.nidaq.ai.channel_names   = {'filtered_teensy', 'raw_teensy', 'stage', 'lick', 'pump', 'solenoid', 'photodiode'};
+config.nidaq.ai.channel_id      = 0:6;
 
 
 config.nidaq.ao.dev             = 'Dev2';
@@ -40,6 +40,10 @@ config.nidaq.do.dev             = 'Dev2';
 config.nidaq.do.channel_names   = {'pump', 'multiplexer', 'solenoid', 'zero_teensy'};
 config.nidaq.do.channel_id      = {'port0/line0', 'port0/line1', 'port0/line2', 'port0/line3'};
 config.nidaq.do.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
+
+config.nidaq.di.dev             = 'Dev2';
+config.nidaq.di.channel_names   = {'from_soloist', 'from_teensy'};
+config.nidaq.di.channel_id      = {'port1/line0', 'port1/line1'};
 
 
 config.teensy.exe               = 'C:\Program Files (x86)\Arduino\arduino_debug.exe';
@@ -63,12 +67,14 @@ config.treadmill.do_name        = 'solenoid';
 config.treadmill.init_state     = 1;
 
 
-config.soloist_input_src.do_name        = 'multiplexer';
-config.soloist_input_src.init_source    = 'teensy';
-config.soloist_input_src.teensy         = 0;
+config.soloist_input_src.do_name = 'multiplexer';
+config.soloist_input_src.init_source = 'teensy';
+config.soloist_input_src.teensy = 0;
 
 
 config.zero_teensy.do_name      = 'zero_teensy';
+
+config.trigger_input.init_source = 'from_soloist'; % 'from_soloist' or 'from_teensy'
 
 
 config.plotting                 = plotting_config();

@@ -1,4 +1,4 @@
-classdef Coupled < handle
+classdef TestProt < handle
     
     properties
         
@@ -24,7 +24,7 @@ classdef Coupled < handle
     
     methods
         
-        function obj = Coupled(ctl, config)
+        function obj = TestProt(ctl, config)
             
             obj.ctl = ctl;
             obj.start_pos = config.stage.start_pos;
@@ -52,7 +52,7 @@ classdef Coupled < handle
                 % load teensy and listen to correct source
                 obj.ctl.teensy.load(obj.direction);
                 obj.ctl.multiplexer.listen_to(obj.vel_source);
-                
+                obj.ctl.trigger_input.listen_to('from_soloist');
                 
                 if obj.handle_acquisition
                     obj.ctl.prepare_acq();
@@ -61,8 +61,6 @@ classdef Coupled < handle
                 
                 % start the move to operation and wait for the process to
                 % terminate.
-                proc = obj.ctl.move_to(obj.start_pos, [], true);
-                proc.wait_for(0.5);
                 
                 % start integrator
                 obj.ctl.reset_position();
@@ -71,11 +69,9 @@ classdef Coupled < handle
                 % wait for the solenoid signal to go low
                 % we need to give it some time to setup (~2s, but we want
                 % to wait at the start position anyway...
-                proc = obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit);
-                
                 % wait five seconds
                 % TODO: 
-                pause(5)
+                pause(2)
                 
                 % release block on the treadmill
                 obj.ctl.unblock_treadmill()
@@ -89,7 +85,7 @@ classdef Coupled < handle
                 % TODO:  setup an event to unblock treadmill on digital
                 % input.
                 while ~obj.ctl.trigger_input.read()  
-                    pause(0.01);
+                    pause(0.005);
                 end
                 
                 
@@ -100,6 +96,8 @@ classdef Coupled < handle
                 if obj.log_trial
                     obj.ctl.stop_logging_single_trial();
                 end
+                
+                pause(2)
                 
                 % wait for reward to complete then stop acquisition
                 % make sure the stage has moved foward
