@@ -43,6 +43,13 @@ classdef Coupled < handle
                 %cfg = obj.get_config();
                 %obj.ctl.save_single_trial_config(cfg);
                 
+                % make sure the treadmill is blocked
+                obj.ctl.block_treadmill();
+                
+                % start sound
+                obj.ctl.play_sound();
+                
+                % load teensy and listen to 
                 obj.ctl.teensy.load(obj.direction);
                 obj.ctl.multiplexer.listen_to(obj.vel_source);
                 
@@ -54,32 +61,38 @@ classdef Coupled < handle
                     obj.ctl.start_acq();
                 end
                 
-                % start a process which will take 5 seconds
-%                 proc = obj.ctl.soloist.block_test();
-                proc = obj.ctl.soloist.move_to(obj.start_pos, true);
+                % start the move to operation and wait for the process to
+                % terminate.
+                proc = obj.ctl.move_to(obj.start_pos, [], true);
                 proc.wait_for(0.5);
                 
-                % wait a bit of time before starting the trial
-                pause(2)
-                
+                % the soloist will connect, setup some parameters and then
+                % wait for the solenoid signal to go low
+                % we need to give it some time to setup (~2s, but we want
+                % to wait at the start position anyway...
                 proc = obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit);
                 
-                pause(2)
+                % wait five seconds
+                % TODO: 
+                pause(5)
                 
                 % release block on the treadmill
                 obj.ctl.treadmill.unblock()
                 
+                % start logging the single trial
                 if obj.log_trial
                     obj.log_trial_fname = obj.ctl.start_logging_single_trial();
                 end
                 
                 % wait for process to terminate.
-                proc.wait_for(0.5);
+                % TODO:  setup an event to unblock treadmill on digital
+                % input.
+                proc.wait_for(0.1);
                 
-                % start a process which will take 5 seconds
-%                 proc = obj.ctl.soloist.block_test();
+                % block the treadmill
                 obj.ctl.treadmill.block()
                 
+                % stop logging the single trial.
                 if obj.log_trial
                     obj.ctl.stop_logging_single_trial();
                 end

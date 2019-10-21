@@ -18,6 +18,7 @@ main(int argc, char **argv)
     double max_speed_scale;
     double gear_scale;
     int gear_set;
+    DWORD ready_to_go = 1; // digital input starts high
     
     if (argc < 2) {
         printf("must have at least 2 numeric arguments.\n");
@@ -33,6 +34,11 @@ main(int argc, char **argv)
     
     // Setup analog output velocity tracking
     if(!SoloistAdvancedAnalogTrack(handles[0], AO_CHANNEL, AO_SERVO_VALUE, AO_SCALE_FACTOR, 0.0)){ cleanup(handles, handle_count); }
+    
+    // Setup pso output
+    if(!SoloistPSOControl(handles[0], PSOMODE_Reset)) { cleanup(handles, handle_count); }
+    if(!SoloistPSOPulseCyclesAndDelay(handles[0], 10000, 5000, 1, 0)) { cleanup(handles, handle_count); }
+    if(!SoloistPSOOutputPulse(handles[0])) { cleanup(handles, handle_count); }
     
     // Get the number of counts per unit.
     if(!SoloistParameterGetValue(handles[0], PARAMETERID_CountsPerUnit, 1, &cnts_per_unit)) { cleanup(handles, handle_count); }
@@ -52,9 +58,13 @@ main(int argc, char **argv)
     // Subtract offset on analog input
     if(!SoloistParameterSetValue(handles[0], PARAMETERID_Analog0InputOffset, 1, AI_OFFSET)) { cleanup(handles, handle_count); }
     
+    // Wait for a trigger to go low.
+    while (ready_to_go == 1) {
+        if(!SoloistIODigitalInput(handles[0], DI_PORT, &ready_to_go)) { cleanup(handles, handle_count); }
+    }
+    
     // Set to gear mode... no turning back now.
     if(!SoloistCommandExecute(handles[0], "GEAR 1", NULL)) { cleanup(handles, handle_count); }
-    
     
     // Stay in gear mode until one of the following conditions is satisfied
     int looping = 1;
@@ -84,6 +94,9 @@ main(int argc, char **argv)
     
     // Disable the axis.
     if(!SoloistMotionDisable(handles[0])) { cleanup(handles, handle_count); }
+    
+    // Pulse the digital output
+    if(!SoloistPSOControl(handles[0], PSOMODE_Fire)) { cleanup(handles, handle_count); }
     
     // Reset the gear parameters to their defaults.
     reset_gear(handles, handle_count);

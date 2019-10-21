@@ -11,7 +11,6 @@ classdef Controller < handle
         multiplexer
         plotting
         saver
-        trial_save
         sound
         position
         zero_teensy
@@ -87,6 +86,15 @@ classdef Controller < handle
         end
         
         
+        function play_sound(obj)
+            obj.sound.play()
+        end
+        
+        
+        function stop_sound(obj)
+            obj.sound.stop()
+        end
+            
         function give_reward(obj)
             obj.reward.give_reward();
         end
@@ -112,9 +120,12 @@ classdef Controller < handle
         end
         
         
-        function move_to(obj, pos, speed)
+        function move_to(obj, pos, speed, leave_enabled)
+            
             VariableDefault('speed', obj.soloist.default_speed);
-            obj.soloist.move_to(pos, speed, false);
+            VariableDefault('leave_enabled', false);
+            
+            obj.soloist.move_to(pos, speed, leave_enabled);
         end
         
         
