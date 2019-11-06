@@ -24,6 +24,9 @@ classdef rc2guiView < handle
             set(obj.handles.edit_reward_location, 'value', sprintf('%i', obj.controller.reward_location));
             set(obj.handles.button_closed_loop, 'value', strcmp(obj.controller.condition, 'closed_loop'));
             set(obj.handles.button_open_loop, 'value', strcmp(obj.controller.condition, 'open_loop'));
+            set(obj.handles.button_enable_sound, 'value', obj.controller.setup.sound.enabled);
+            set(obj.handles.button_disable_sound, 'value', ~obj.controller.setup.sound.enabled);
+            
             
             save_to = obj.controller.setup.saver.save_to;
             prefix = obj.controller.setup.saver.prefix;
@@ -44,6 +47,8 @@ classdef rc2guiView < handle
             addlistener(obj.controller.setup.saver, 'enable', 'PostSet', @(src, evnt)obj.enable_updated(src, evnt));
             addlistener(obj.controller.setup, 'acquiring', 'PostSet', @(src, evnt)obj.acquiring_updated(src, evnt));
             addlistener(obj.controller.setup.reward, 'duration', 'PostSet', @(src, evnt)obj.reward_duration_updated(src, evnt));
+            addlistener(obj.controller.setup.sound, 'enabled', 'PostSet', @(src, evnt)obj.sound_enabled(src, evnt));
+            
         end
         
         
@@ -89,6 +94,15 @@ classdef rc2guiView < handle
                 set(obj.handles.pushbutton_toggle_acq, 'string', 'STOP');
             else
                 set(obj.handles.pushbutton_toggle_acq, 'string', 'ACQUIRE');
+            end
+        end
+        
+        
+        function sound_enabled(obj, ~, ~)
+            set(obj.handles.button_enable_sound, 'value', obj.controller.setup.sound.enabled);
+            set(obj.handles.button_disable_sound, 'value', ~obj.controller.setup.sound.enabled);
+            if ~obj.controller.setup.sound.enabled
+                set(obj.handles.pushbutton_toggle_sound, 'string', 'PLAY');
             end
         end
         

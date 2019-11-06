@@ -147,6 +147,9 @@ classdef rc2guiController < handle
         
         
         function toggle_sound(obj)
+            if ~obj.setup.sound.enabled
+                return
+            end
             if obj.setup.sound.state
                 obj.setup.stop_sound()
                 set(obj.view.handles.pushbutton_toggle_sound, 'string', 'PLAY');
@@ -154,6 +157,18 @@ classdef rc2guiController < handle
                 obj.setup.play_sound()
                 set(obj.view.handles.pushbutton_toggle_sound, 'string', 'STOP');
             end
+        end
+        
+        
+        
+        function enable_sound(obj)
+            obj.setup.sound.enable();
+        end
+        
+        
+        
+        function disable_sound(obj)
+            obj.setup.sound.disable();
         end
         
         

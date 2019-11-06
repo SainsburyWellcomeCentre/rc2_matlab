@@ -76,6 +76,12 @@ function pushbutton_toggle_sound_Callback(~, ~, handles)
 handles.controller.toggle_sound()
 
 
+function button_enable_sound_Callback(~, ~, handles)
+handles.controller.enable_sound()
+
+function button_disable_sound_Callback(~, ~, handles)
+handles.controller.disable_sound()
+
 function pushbutton_change_save_to_Callback(~, ~, handles)
 handles.controller.set_save_to()
 
