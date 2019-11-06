@@ -27,7 +27,7 @@ config.nidaq.ai.channel_id      = 0:6;
 config.nidaq.ao.dev             = 'Dev2';
 config.nidaq.ao.channel_names   = {'velocity'};
 config.nidaq.ao.channel_id      = 0;
-
+config.nidaq.ao.idle_offset     = 0.5; % offset to apply to analog output
 
 config.nidaq.co.dev             = 'Dev2';
 config.nidaq.co.channel_names   = {'camera'};

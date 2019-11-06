@@ -5,6 +5,7 @@ classdef AnalogOutput < handle
         channel_names = {}
         channel_ids = {}
         chan = {}
+        idle_offset
         max_voltage = 3.3;
     end
     
@@ -20,8 +21,10 @@ classdef AnalogOutput < handle
             end
             obj.task.Rate = config.nidaq.rate;
             obj.task.IsContinuous = 0;
+            obj.idle_offset = config.nidaq.ao.idle_offset;
             
-            % TODO: WRITE INITIAL VOLTAGE TO AO
+            % write initial voltage to AO
+            obj.task.outputSingleScan(obj.idle_offset);
         end
         
         
