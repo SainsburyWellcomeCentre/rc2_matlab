@@ -65,7 +65,7 @@ classdef Coupled < handle
                 proc.wait_for(0.5);
                 
                 % start integrator
-                obj.ctl.reset_position();
+                obj.ctl.reset_pc_position();
                 
                 % the soloist will connect, setup some parameters and then
                 % wait for the solenoid signal to go low

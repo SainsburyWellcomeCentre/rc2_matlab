@@ -185,7 +185,7 @@ classdef Controller < handle
         end
         
         
-        function reset_position(obj)
+        function reset_pc_position(obj)
             obj.position.reset();
         end
         

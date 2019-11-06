@@ -22,16 +22,38 @@ classdef EncoderOnly < handle
         ctl
     end
     
+    properties (Dependent = true)
+        
+        distance_forward
+        distance_backward
+    end
+    
     
     methods
         
         function obj = EncoderOnly(ctl, config)
             obj.ctl = ctl;
+            
+            % forward and backward positions as if on the stage
             obj.stage_pos = config.stage.start_pos;
             obj.back_limit = config.stage.back_limit;
             obj.forward_limit = config.stage.forward_limit;
+            
             obj.direction = 'forward_only';
         end
+        
+        
+        function val = get.distance_forward(obj)
+            
+            val = obj.stage_pos - obj.forward_limit;
+        end
+        
+        
+        function val = get.distance_backward(obj)
+            
+            val = obj.stage_pos - obj.back_limit;
+        end
+        
         
         function run(obj)
             
@@ -54,11 +76,13 @@ classdef EncoderOnly < handle
                 % wait a bit of time before starting the trial
                 pause(5)
                 
-                % start integrator
+                % we want to reset the position anyway
+                obj.ctl.reset_pc_position();
+                
+                % if we are using the teensy to determine position reset
+                % the position onboard teensy
                 if strcmp(obj.integrate_using, 'teensy')
                     obj.ctl.reset_teensy_position();
-                else
-                    obj.ctl.reset_position();
                 end
                 
                 % release block on the treadmill
@@ -73,7 +97,8 @@ classdef EncoderOnly < handle
                 if strcmp(obj.integrate_using, 'teensy')
                     obj.ctl.wait_for_teensy();
                 else
-                    obj.ctl.integrate_until();
+                    % integrate position on PC until the bounds are reached
+                    obj.ctl.integrate_until(obj.distance_backward, obj.distance_forward);
                 end
                 
                 % block the treadmill
@@ -84,16 +109,19 @@ classdef EncoderOnly < handle
                     obj.ctl.stop_logging_single_trial();
                 end
                 
-                % wait for reward to complete then stop acquisition
-                % make sure the stage has moved foward
+                % make sure the stage has moved foward before giving reward
                 if obj.ctl.get_position() > 0
+                    % start reward, block until finished if necessary
                     obj.ctl.reward.start_reward(obj.wait_for_reward)
                 end
                 
+                % stop acquiring data if protocol is handling that
                 if obj.handle_acquisition
                     obj.ctl.stop_acq();
                 end
+                
             catch ME
+                
                 obj.ctl.treadmill_block();
                 obj.ctl.stop_acq();
                 obj.ctl.stop_logging_single_trial();
