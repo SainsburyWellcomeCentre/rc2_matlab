@@ -43,7 +43,7 @@ classdef rc2guiController < handle
         function toggle_acquisition(obj)
             if obj.setup.acquiring
                 obj.setup.stop_acq()
-                set(obj.view.handles.pushbutton_toggle_acq, 'string', 'ACQUIRE');
+                set(obj.view.handles.pushbutton_toggle_acq, 'string', 'PREVIEW');
             else
                 obj.setup.prepare_acq()
                 obj.setup.start_acq()
