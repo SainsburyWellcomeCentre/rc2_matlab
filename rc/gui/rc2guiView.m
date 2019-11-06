@@ -21,7 +21,7 @@ classdef rc2guiView < handle
             set(obj.handles.edit_speed, 'string', sprintf('%.1f', obj.controller.setup.soloist.default_speed));
             set(obj.handles.edit_reward_duration, 'string', sprintf('%i', obj.controller.setup.reward.duration));
             set(obj.handles.edit_reward_distance, 'string', sprintf('%i', obj.controller.reward_distance));
-            set(obj.handles.edit_reward_location, 'value', sprintf('%i', obj.controller.reward_location));
+            set(obj.handles.edit_reward_location, 'string', sprintf('%i', obj.controller.reward_location));
             set(obj.handles.button_closed_loop, 'value', strcmp(obj.controller.condition, 'closed_loop'));
             set(obj.handles.button_open_loop, 'value', strcmp(obj.controller.condition, 'open_loop'));
             set(obj.handles.button_enable_sound, 'value', obj.controller.setup.sound.enabled);

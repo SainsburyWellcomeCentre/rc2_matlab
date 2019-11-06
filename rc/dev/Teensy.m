@@ -25,9 +25,9 @@ classdef Teensy < handle
                 return
             end
             
-            cmd = sprintf('%s --upload %s', obj.exe, obj.full_script(script));
-            disp(cmd)
-            %system(cmd)
+            cmd = sprintf('"%s" --upload %s', obj.exe, obj.full_script(script));
+%             disp(cmd)
+            system(cmd)
             
             obj.current_script = script;
         end
