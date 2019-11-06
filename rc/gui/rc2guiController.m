@@ -286,8 +286,11 @@ classdef rc2guiController < handle
         
         function start_training(obj)
             
+            % are we training in closed loop or open loop
+            closed_loop = strcmp(obj.condition, 'closed_loop');
+            
             % create a protocol sequence
-            seq = setup_training_sequence(obj.setup, config, obj.reward_location, ...
+            seq = setup_training_sequence(obj.setup, closed_loop, obj.reward_location, ...
                 obj.reward_distance, obj.back_distance, obj.n_loops);
             seq.run()
         end
