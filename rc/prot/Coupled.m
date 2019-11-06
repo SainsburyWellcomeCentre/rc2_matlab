@@ -53,6 +53,8 @@ classdef Coupled < handle
                 obj.ctl.teensy.load(obj.direction);
                 obj.ctl.multiplexer.listen_to(obj.vel_source);
                 
+                % start listening to the correct trigger input
+                obj.ctl.trigger_input.listen_to('soloist');
                 
                 if obj.handle_acquisition
                     obj.ctl.prepare_acq();

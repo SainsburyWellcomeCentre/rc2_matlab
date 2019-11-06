@@ -62,7 +62,12 @@ classdef EncoderOnly < handle
                 % load correct direction on teensy
                 obj.ctl.teensy.load(obj.direction);
                 
+                % start listening to the correct trigger input
+                if obj.integrate_using('teensy')
+                    obj.ctl.trigger_input.listen_to('teensy');
+                end
                 
+                % start acquiring data if the protocol is handling that
                 if obj.handle_acquisition
                     obj.ctl.prepare_acq();
                     obj.ctl.start_acq();
@@ -95,7 +100,9 @@ classdef EncoderOnly < handle
                 
                 % wait for trigger from teensy
                 if strcmp(obj.integrate_using, 'teensy')
-                    obj.ctl.wait_for_teensy();
+                    while ~obj.ctl.trigger_input.read()
+                        pause(0.005);
+                    end
                 else
                     % integrate position on PC until the bounds are reached
                     obj.ctl.integrate_until(obj.distance_backward, obj.distance_forward);
