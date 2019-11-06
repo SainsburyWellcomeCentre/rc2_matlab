@@ -72,7 +72,7 @@ classdef StageOnly < handle
                 proc = obj.ctl.move_to(obj.start_pos, [], true);
                 proc.wait_for(0.5);
                 
-                proc = obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit);
+                proc = obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit, 'ni');
                 
                 % wait five seconds
                 % TODO: make general

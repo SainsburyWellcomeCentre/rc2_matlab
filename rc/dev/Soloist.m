@@ -5,6 +5,8 @@ classdef Soloist < handle
         h_abort
         dir
         max_limits
+        teensy_offset
+        ni_offset
     end
     
     properties (SetAccess = private, Hidden = true)
@@ -22,6 +24,8 @@ classdef Soloist < handle
             
             % default speed at which we will move the soloist
             obj.default_speed = config.soloist.default_speed;
+            obj.teensy_offset = config.soloist.teensy_offset;
+            obj.ni_offset = config.soloist.ni_offset;
             cmd = obj.full_command('abort');
             obj.h_abort = SoloistAbortProc(cmd);
             obj.proc_array = ProcArray();
@@ -124,7 +128,7 @@ classdef Soloist < handle
         
         
         
-        function proc = listen_until(obj, back_pos, forward_pos)
+        function proc = listen_until(obj, back_pos, forward_pos, source)
             % checks go here!
             if back_pos > obj.max_limits(1) || back_pos < obj.max_limits(2)
                 fprintf('%s: %s ''back_pos'' must be between %.1f and %.1f\n', ...
@@ -141,6 +145,15 @@ classdef Soloist < handle
             if forward_pos > back_pos
                 fprintf('%s: %s ''forward_pos'' must be > ''back_pos''\n', ...
                     class(obj), 'listen_until');
+                return
+            end
+            
+            if strcmp(source, 'teensy')
+                offset = obj.teensy_offset;
+            elseif strcmp(source, 'ni')
+                offset = obj.ni_offset;
+            else
+                fprintf('unknown source of voltage input (either ''teensy'' or ''ni''');
                 return
             end
             

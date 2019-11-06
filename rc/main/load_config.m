@@ -53,6 +53,9 @@ config.teensy.start_script      = 'forward_only';
 
 config.soloist.dir              = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\soloist_c\exe';
 config.soloist.default_speed    = 200;
+config.soloist.teensy_offset    = -508.0;
+config.soloist.ni_offset        = -508.0;
+
 
 config.pump.do_name             = 'pump';
 config.pump.init_state          = 0;
