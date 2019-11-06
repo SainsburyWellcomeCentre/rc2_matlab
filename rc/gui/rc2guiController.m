@@ -8,6 +8,8 @@ classdef rc2guiController < handle
         move_to_pos
         reward_distance
         reward_location
+        n_loops = 100
+        back_distance = 50
         condition
         
         stage_limits
@@ -284,7 +286,10 @@ classdef rc2guiController < handle
         
         function start_training(obj)
             
-            seq = get_training_sequence(obj.);
+            % create a protocol sequence
+            seq = setup_training_sequence(obj.setup, config, obj.reward_location, ...
+                obj.reward_distance, obj.back_distance, obj.n_loops);
+            seq.run()
         end
         
     end
