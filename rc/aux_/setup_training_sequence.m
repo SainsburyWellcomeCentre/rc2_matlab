@@ -16,10 +16,14 @@ config.stage.start_pos = reward_position + distance;
 config.stage.back_limit = config.stage.start_pos + back_distance;
 config.stage.forward_limit = reward_position;
 
+% during training don't randomize the reward
+ctl.reward.randomize = false;
+
 if closed_loop
     
     prot = Coupled(ctl, config);
     prot.direction = 'forward_and_backward';
+    
 else
     
     prot = EncoderOnly(ctl, config);

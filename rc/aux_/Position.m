@@ -40,7 +40,7 @@ classdef Position < handle
         function integrate_until(obj, back, forward)
             obj.start()
             while obj.position < forward && obj.position > back
-                pause(0.01);
+                pause(0.005);
             end
             obj.stop()
         end

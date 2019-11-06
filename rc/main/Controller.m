@@ -67,7 +67,15 @@ classdef Controller < handle
         
         function h_callback(obj, ~, evt)
             %TODO: convert data ONCE here and pass this to functions
+            
+            % log raw voltage
             obj.saver.log(evt.Data);
+            
+            % TODO: WRITE THIS:
+            % transform data
+            % data = obj.data_transform.transform(evt.Data);
+            
+            % pass transformed data to callbacks
             obj.plotting.ni_callback(evt.Data);
             obj.position.integrate(evt.Data(:, 1));
         end
