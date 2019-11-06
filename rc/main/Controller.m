@@ -15,6 +15,7 @@ classdef Controller < handle
         position
         zero_teensy
         trigger_input
+        data_transform
     end
     
     
@@ -40,6 +41,7 @@ classdef Controller < handle
             obj.saver = Saver(obj, config);
             obj.zero_teensy = ZeroTeensy(obj.ni, config);
             obj.trigger_input = TriggerInput(obj.ni, config);
+            obj.data_transform = DataTransform(config);
         end
         
         
