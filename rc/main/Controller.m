@@ -51,9 +51,50 @@ classdef Controller < handle
         end
         
         
+        function start_preview(obj)
+            
+            % if we are already acquiring don't do anything.
+            if obj.acquiring; return; end
+            
+            % setup the NI-DAQ device for plotting
+            obj.ni.prepare_acq(@(x, y)obj.h_preview_callback(x, y))
+            
+            % reset all display options
+            obj.plotting.reset_vals();
+            
+            % start the NI-DAQ device and set acquiring flag to true
+            obj.ni.start_acq()
+            obj.acquiring = true;
+        end
+        
+        
+        function stop_preview(obj)
+            
+            % if we are not acquiring don't do anything.
+            if ~obj.acquiring; return; end
+            
+            % set acquring flag to false and stop NI-DAQ
+            obj.acquiring = false;
+            obj.ni.stop_acq();
+        end
+        
+        
+        function h_preview_callback(obj, ~, evt)
+            %TODO: convert data ONCE here and pass this to functions
+            
+            % TODO: complete this
+            % transform data
+            % data = obj.data_transform.transform(evt.Data);
+            
+            % pass transformed data to plotter
+            obj.plotting.ni_callback(evt.Data);
+        end
+        
+        
         function prepare_acq(obj)
             if obj.acquiring
                 error('already acquiring data')
+                return %#ok<UNRCH>
             end
             obj.saver.setup_logging();
             obj.ni.prepare_acq(@(x, y)obj.h_callback(x, y))
@@ -62,6 +103,11 @@ classdef Controller < handle
         
         
         function start_acq(obj)
+            
+            % if already acquiring don't do anything
+            if obj.acquiring; return; end
+            
+            % start the NI-DAQ device and set acquiring flag to true
             obj.ni.start_acq()
             obj.acquiring = true;
         end

@@ -93,7 +93,7 @@ classdef rc2guiView < handle
             if is_acquiring
                 set(obj.handles.pushbutton_toggle_acq, 'string', 'STOP');
             else
-                set(obj.handles.pushbutton_toggle_acq, 'string', 'ACQUIRE');
+                set(obj.handles.pushbutton_toggle_acq, 'string', 'PREVIEW');
             end
         end
         
