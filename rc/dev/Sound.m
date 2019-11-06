@@ -9,6 +9,7 @@ classdef Sound < handle
     properties (SetAccess = private)
         
         audio
+        reset
         state = false;
     end
     
@@ -27,6 +28,7 @@ classdef Sound < handle
             try
                 [y, rate] = audioread('white_noise.wav', 'native');
                 obj.audio = audioplayer(y, rate);
+                obj.reset = audioplayer([0, 0, 0], rate);
                 obj.looping = true;
                 set(obj.audio, 'StopFcn', @(x, y)obj.repeat(x, y))
                 obj.enabled = true;
@@ -51,7 +53,10 @@ classdef Sound < handle
         
         
         function repeat(obj, ~, ~)
-            %
+            
+            % if state is false, don't start again.
+            if ~obj.state; return; end
+            
             if obj.looping
                 % set state to false or it won't play again
                 obj.state = false;
@@ -74,14 +79,20 @@ classdef Sound < handle
         
         
         function stop(obj)
+            
             % if sound is currently disabled or it is not running
             % do nothing.
             if ~obj.enabled; return; end
             if ~obj.state; return; end
             
+            % set state to false here... repeat will 
+            obj.state = false;
             % stop sound and set state to false
             stop(obj.audio);
-            obj.state = false;
+            
+            % we need to play a short burst of 0's to reset the output to
+            % zero
+            play(obj.reset);
         end
     end
 end
