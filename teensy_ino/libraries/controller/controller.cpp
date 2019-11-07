@@ -38,19 +38,14 @@ Controller::setup() {
 void
 Controller::loop() {
 
-    bool update;
-    float volts;
-    float encoder_velocity, encoder_distance;
-
-    // Check state of the trigger input
-    trig_in.loop();
-
-    
-    // Disable interrupts so that value is not changed in middle of operation.
-    noInterrupts();
+    bool update = 0;
+    float volts = 0;
 
     // Check to make sure encoder has moved in last Xms
     enc.loop();
+
+    // Check state of the trigger input
+    trig_in.loop();
 
     // If trigger input received, reset the distance to zero.
     if (trig_in.delta_state) {
@@ -58,10 +53,9 @@ Controller::loop() {
     }
 
     // Fix the encoder velocity and distance for each loop.
-    encoder_velocity = enc.current_velocity;
-    encoder_distance = enc.total_distance;
-
-    // Reenable interrupts
+    noInterrupts();
+    float encoder_velocity = enc.current_velocity;
+    float encoder_distance = enc.total_distance;
     interrupts();
 
     // Compute the velocity as a voltage

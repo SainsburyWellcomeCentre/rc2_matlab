@@ -38,8 +38,8 @@ class Encoder {
         const float _nm_per_count = NM_PER_COUNT;
         const float _phase_factor = PHASE_FACTOR;
         const float _phase_factor_back = PHASE_FACTOR_BACK;
-        const float _a_to_b_rising_nm = _phase_factor * _nm_per_count;
-        const float _b_to_a_rising_nm = (1 - _phase_factor) * _nm_per_count;
+        const float _b_to_a_rising_nm = _phase_factor * _nm_per_count;
+        const float _a_to_b_rising_nm = (1 - _phase_factor) * _nm_per_count;
         const float _b_to_a_rising_nm_back = _phase_factor_back * _nm_per_count;
         const float _a_to_b_rising_nm_back = (1 - _phase_factor_back) * _nm_per_count;
         const bool _dual_trigger = DUAL_TRIGGER;
