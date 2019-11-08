@@ -63,7 +63,7 @@ classdef EncoderOnly < handle
                 obj.ctl.teensy.load(obj.direction);
                 
                 % start listening to the correct trigger input
-                if obj.integrate_using('teensy')
+                if strcmp(obj.integrate_using, 'teensy')
                     obj.ctl.trigger_input.listen_to('teensy');
                 end
                 

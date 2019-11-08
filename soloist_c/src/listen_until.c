@@ -38,7 +38,7 @@ main(int argc, char **argv)
     
     // Setup pso output
     if(!SoloistPSOControl(handles[0], PSOMODE_Reset)) { cleanup(handles, handle_count); }
-    if(!SoloistPSOPulseCyclesAndDelay(handles[0], 10000, 5000, 1, 0)) { cleanup(handles, handle_count); }
+    if(!SoloistPSOPulseCyclesAndDelay(handles[0], 1000000, 500000, 1, 0)) { cleanup(handles, handle_count); }
     if(!SoloistPSOOutputPulse(handles[0])) { cleanup(handles, handle_count); }
     
     // Get the number of counts per unit.
