@@ -84,10 +84,10 @@ classdef Controller < handle
             
             % TODO: complete this
             % transform data
-            % data = obj.data_transform.transform(evt.Data);
+            data = obj.data_transform.transform(evt.Data);
             
             % pass transformed data to plotter
-            obj.plotting.ni_callback(evt.Data);
+            obj.plotting.ni_callback(data);
         end
         
         
@@ -121,11 +121,11 @@ classdef Controller < handle
             
             % TODO: WRITE THIS:
             % transform data
-            % data = obj.data_transform.transform(evt.Data);
+            data = obj.data_transform.transform(evt.Data);
             
             % pass transformed data to callbacks
-            obj.plotting.ni_callback(evt.Data);
-            obj.position.integrate(evt.Data(:, 1));
+            obj.plotting.ni_callback(data);
+            obj.position.integrate(data(:, 1));
         end
         
         

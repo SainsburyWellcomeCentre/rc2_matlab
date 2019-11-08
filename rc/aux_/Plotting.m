@@ -18,6 +18,8 @@ classdef Plotting < handle
         current_t
         plot_data
         n_nan_points
+        ylim
+        units
     end
     
     methods
@@ -31,6 +33,9 @@ classdef Plotting < handle
             
             obj.n_chans = length(obj.chan_names);
             obj.rate = config.nidaq.rate;
+            
+            obj.ylim = config.plotting.ylim;
+            obj.units = config.plotting.units;
             
             obj.fig = figure();
             set(obj.fig, 'position', config.plotting.fig.position);
@@ -78,8 +83,9 @@ classdef Plotting < handle
             for i = 1 : obj.n_chans
                 set(obj.fig, 'currentaxes', obj.ax(i));
                 obj.lines(i) = line(obj.plot_t, obj.plot_data(:, i), 'color', cols(i, :));
-                set(obj.ax(i), 'xlim', obj.plot_t([1, end]), 'ylim', [-0.1, 5.1]);
+                set(obj.ax(i), 'xlim', obj.plot_t([1, end]), 'ylim', obj.ylim{i});
                 set(obj.ax(i), 'tickdir', 'out');
+                ylabel(obj.units{i});
                 title(obj.chan_names{i}, 'fontsize', 8, 'interpreter', 'none');
             end
         end
