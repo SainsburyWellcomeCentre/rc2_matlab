@@ -2,7 +2,8 @@ classdef Position < handle
     
     properties
         dt
-        position
+        position = 0
+        deadband
         integrate_on
     end
     
@@ -10,14 +11,16 @@ classdef Position < handle
     methods
         function obj = Position(config)
             obj.dt = 1/config.nidaq.rate;
+            obj.deadband = config.position.deadband;
         end
         
         
         function integrate(obj, data)
             if ~obj.integrate_on; return; end
             
-            % convert to cm/s
-            obj.position = obj.position + sum(data)*obj.dt;
+            % convert to cm
+            obj.position = obj.position + sum(data(abs(data) > obj.deadband))*obj.dt;
+            fprintf('%.2f\n', obj.position);
         end
         
         
@@ -37,9 +40,11 @@ classdef Position < handle
         end
         
         
-        function integrate_until(obj, back, forward)
+        function integrate_until(obj, backward_mm, forward_mm)
+            backward_cm = backward_mm/10;
+            forward_cm = forward_mm/10;
             obj.start()
-            while obj.position < forward && obj.position > back
+            while obj.position < forward_cm && obj.position > backward_cm
                 pause(0.005);
             end
             obj.stop()

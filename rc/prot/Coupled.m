@@ -63,7 +63,7 @@ classdef Coupled < handle
                 
                 % start the move to operation and wait for the process to
                 % terminate.
-                proc = obj.ctl.move_to(obj.start_pos, [], true);
+                proc = obj.ctl.soloist.move_to(obj.start_pos, obj.ctl.soloist.default_speed, true);
                 proc.wait_for(0.5);
                 
                 % start integrator

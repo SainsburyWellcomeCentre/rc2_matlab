@@ -288,9 +288,13 @@ classdef rc2guiController < handle
             % are we training in closed loop or open loop
             closed_loop = strcmp(obj.condition, 'closed_loop');
             
+            % read distances
+            reward_location = str2double(get(obj.view.handles.edit_reward_location, 'string')); %#ok<*PROP>
+            reward_distance = str2double(get(obj.view.handles.edit_reward_distance, 'string'));
+            
             % create a protocol sequence
-            seq = setup_training_sequence(obj.setup, closed_loop, obj.reward_location, ...
-                obj.reward_distance, obj.back_distance, obj.n_loops);
+            seq = setup_training_sequence(obj.setup, closed_loop, reward_location, ...
+                reward_distance, obj.back_distance, obj.n_loops);
             seq.run()
         end
         

@@ -75,7 +75,7 @@ classdef EncoderOnly < handle
                 
                 % move to position along stage where the trial will take
                 % place
-                proc = obj.ctl.soloist.move_to(obj.stage_pos, true);
+                proc = obj.ctl.soloist.move_to(obj.stage_pos, obj.ctl.soloist.default_speed, true);
                 proc.wait_for(0.5);
                 
                 % wait a bit of time before starting the trial
