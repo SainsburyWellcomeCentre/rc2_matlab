@@ -14,6 +14,8 @@ classdef rc2guiController < handle
         
         stage_limits
         speed_limits
+        
+        training_seq
     end
     
     
@@ -41,7 +43,11 @@ classdef rc2guiController < handle
         
         
         function toggle_acquisition(obj)
-            if obj.setup.acquiring
+            % if a acquisition with data-saving is running don't do
+            % anything.
+            if obj.setup.acquiring; return; end
+            
+            if obj.setup.acquiring_preview
                 obj.setup.stop_preview()
                 set(obj.view.handles.pushbutton_toggle_acq, 'string', 'PREVIEW');
             else
@@ -285,17 +291,31 @@ classdef rc2guiController < handle
         
         function start_training(obj)
             
-            % are we training in closed loop or open loop
-            closed_loop = strcmp(obj.condition, 'closed_loop');
+            if isempty(obj.training_seq)
+                is_running = false;
+            else
+                is_running = obj.training_seq.running;
+            end
             
-            % read distances
-            reward_location = str2double(get(obj.view.handles.edit_reward_location, 'string')); %#ok<*PROP>
-            reward_distance = str2double(get(obj.view.handles.edit_reward_distance, 'string'));
-            
-            % create a protocol sequence
-            seq = setup_training_sequence(obj.setup, closed_loop, reward_location, ...
-                reward_distance, obj.back_distance, obj.n_loops);
-            seq.run()
+            if is_running
+                
+                obj.training_seq.stop();
+                set(obj.view.handles.pushbutton_start_training, 'string', 'START TRAINING')
+            else
+                
+                % are we training in closed loop or open loop
+                closed_loop = strcmp(obj.condition, 'closed_loop');
+                
+                % read distances
+                reward_location = str2double(get(obj.view.handles.edit_reward_location, 'string')); %#ok<*PROP>
+                reward_distance = str2double(get(obj.view.handles.edit_reward_distance, 'string'));
+                
+                % create a protocol sequence
+                obj.training_seq = setup_training_sequence(obj.setup, closed_loop, reward_location, ...
+                    reward_distance, obj.back_distance, obj.n_loops);
+                set(obj.view.handles.pushbutton_start_training, 'string', 'STOP TRAINING')
+                obj.training_seq.run()
+            end
         end
         
     end

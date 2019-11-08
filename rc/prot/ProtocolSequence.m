@@ -3,6 +3,9 @@ classdef ProtocolSequence < handle
     properties
         ctl
         sequence = {}
+        running = false;
+        abort = false;
+        current_sequence
     end
     
     methods
@@ -19,17 +22,25 @@ classdef ProtocolSequence < handle
             
             obj.prepare()
             
+            h = onCleanup(@obj.cleanup);
+            
             obj.ctl.play_sound();
             obj.ctl.prepare_acq();
             obj.ctl.start_acq();
+            obj.running = true;
             
             for i = 1 : length(obj.sequence)
+                obj.current_sequence = obj.sequence{i};
                 obj.sequence{i}.prepare_as_sequence(obj.sequence, i)
                 obj.sequence{i}.run();
+                if obj.abort
+                    obj.running = false;
+                    obj.abort = false;
+                    return
+                end
             end
             
-            obj.ctl.stop_acq();
-            obj.ctl.stop_sound();
+            % let cleanup handle the stopping
         end
         
         
@@ -49,6 +60,27 @@ classdef ProtocolSequence < handle
             if length(unique(direction)) ~= 1
                 warning('direction of travel is not the same for all protocols')
             end
+        end
+        
+        
+        function stop(obj)
+            
+            if isempty(obj.current_sequence)
+                return
+            end
+            obj.abort = true;
+            obj.current_sequence.stop();
+            obj.current_sequence = [];
+        end
+        
+        
+        function cleanup(obj)
+            
+            obj.running = false;
+            obj.ctl.soloist.abort();
+            obj.ctl.block_treadmill()
+            obj.ctl.stop_acq();
+            obj.ctl.stop_sound();
         end
     end
 end

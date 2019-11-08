@@ -15,6 +15,8 @@ classdef Coupled < handle
     
     properties (SetAccess = private)
         log_trial_fname
+        running = false
+        abort = false
     end
     
     properties (Hidden = true)
@@ -43,11 +45,13 @@ classdef Coupled < handle
                 %cfg = obj.get_config();
                 %obj.ctl.save_single_trial_config(cfg);
                 
+                obj.running = true;
+                
+                % setup code to handle premature stopping
+                h = onCleanup(@obj.cleanup);
+                
                 % make sure the treadmill is blocked
                 obj.ctl.block_treadmill();
-                
-                % start sound
-                obj.ctl.play_sound();
                 
                 % load teensy and listen to correct source
                 obj.ctl.teensy.load(obj.direction);
@@ -57,6 +61,7 @@ classdef Coupled < handle
                 obj.ctl.trigger_input.listen_to('soloist');
                 
                 if obj.handle_acquisition
+                    obj.ctl.play_sound();
                     obj.ctl.prepare_acq();
                     obj.ctl.start_acq();
                 end
@@ -92,8 +97,12 @@ classdef Coupled < handle
                 % input.
                 while ~obj.ctl.trigger_input.read()  
                     pause(0.005);
+                    if obj.abort
+                        obj.running = false;
+                        obj.abort = false;
+                        return
+                    end
                 end
-                
                 
                 % block the treadmill
                 obj.ctl.block_treadmill()
@@ -114,14 +123,28 @@ classdef Coupled < handle
                     obj.ctl.stop_sound();
                 end
                 
+                obj.running = false;
+                
             catch ME
                 
+                % if an error has occurred, perform the following whether
+                % or not the singple protocol is handling the acquisition
+                obj.running = false;
+                obj.ctl.soloist.abort();
                 obj.ctl.block_treadmill();
                 obj.ctl.stop_acq();
-                obj.ctl.stop_logging_single_trial();
+                if obj.log_trial
+                    obj.ctl.stop_logging_single_trial();
+                end
                 obj.ctl.stop_sound();
                 rethrow(ME)
             end
+        end
+        
+        
+        function stop(obj)
+            
+            obj.abort = true;
         end
         
         
@@ -130,7 +153,25 @@ classdef Coupled < handle
         
         
         function cfg = get_config(obj)
+        end
+        
+        
+        function cleanup(obj)
             
+            obj.running = false;
+            obj.abort = false;
+            
+            obj.ctl.block_treadmill()
+            
+            if obj.handle_acquisition
+                obj.ctl.soloist.abort();
+                obj.ctl.stop_acq();
+                obj.ctl.stop_sound();
+            end
+            
+            if obj.log_trial
+                obj.ctl.stop_logging_single_trial();
+            end
             
         end
     end

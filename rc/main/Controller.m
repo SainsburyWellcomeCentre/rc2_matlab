@@ -21,6 +21,7 @@ classdef Controller < handle
     
     properties (SetObservable = true, SetAccess = private, Hidden = true)
         acquiring = false
+        acquiring_preview = false;
     end
     
     
@@ -54,7 +55,7 @@ classdef Controller < handle
         function start_preview(obj)
             
             % if we are already acquiring don't do anything.
-            if obj.acquiring; return; end
+            if obj.acquiring_preview || obj.acquiring; return; end
             
             % setup the NI-DAQ device for plotting
             obj.ni.prepare_acq(@(x, y)obj.h_preview_callback(x, y))
@@ -64,17 +65,19 @@ classdef Controller < handle
             
             % start the NI-DAQ device and set acquiring flag to true
             obj.ni.start_acq()
-            obj.acquiring = true;
+            obj.acquiring_preview = true;
         end
         
         
         function stop_preview(obj)
             
-            % if we are not acquiring don't do anything.
-            if ~obj.acquiring; return; end
+            % if we are not acquiring preview don't do anything.
+            if ~obj.acquiring_preview; return; end
+            % if we are acquiring and saving don't do anything
+            if obj.acquiring; return; end
             
             % set acquring flag to false and stop NI-DAQ
-            obj.acquiring = false;
+            obj.acquiring_preview = false;
             obj.ni.stop_acq();
         end
         
@@ -92,7 +95,7 @@ classdef Controller < handle
         
         
         function prepare_acq(obj)
-            if obj.acquiring
+            if obj.acquiring || obj.acquiring_preview
                 error('already acquiring data')
                 return %#ok<UNRCH>
             end
@@ -105,7 +108,7 @@ classdef Controller < handle
         function start_acq(obj)
             
             % if already acquiring don't do anything
-            if obj.acquiring; return; end
+            if obj.acquiring || obj.acquiring_preview; return; end
             
             % start the NI-DAQ device and set acquiring flag to true
             obj.ni.start_acq()
@@ -131,6 +134,7 @@ classdef Controller < handle
         
         function stop_acq(obj)
             if ~obj.acquiring; return; end
+            if obj.acquiring_preview; return; end
             obj.acquiring = false;
             obj.ni.stop_acq();
             obj.saver.stop_logging();

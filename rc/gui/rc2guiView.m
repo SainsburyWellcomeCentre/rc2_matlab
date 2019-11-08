@@ -45,7 +45,7 @@ classdef rc2guiView < handle
             addlistener(obj.controller.setup.saver, 'suffix', 'PostSet', @(src, evnt)obj.suffix_updated(src, evnt));
             addlistener(obj.controller.setup.saver, 'index', 'PostSet', @(src, evnt)obj.index_updated(src, evnt));
             addlistener(obj.controller.setup.saver, 'enable', 'PostSet', @(src, evnt)obj.enable_updated(src, evnt));
-            addlistener(obj.controller.setup, 'acquiring', 'PostSet', @(src, evnt)obj.acquiring_updated(src, evnt));
+            addlistener(obj.controller.setup, 'acquiring_preview', 'PostSet', @(src, evnt)obj.acquiring_updated(src, evnt));
             addlistener(obj.controller.setup.reward, 'duration', 'PostSet', @(src, evnt)obj.reward_duration_updated(src, evnt));
             addlistener(obj.controller.setup.sound, 'enabled', 'PostSet', @(src, evnt)obj.sound_enabled(src, evnt));
             
@@ -89,8 +89,7 @@ classdef rc2guiView < handle
         
         
         function acquiring_updated(obj, ~, ~)
-            is_acquiring = obj.controller.setup.acquiring;
-            if is_acquiring
+            if obj.controller.setup.acquiring_preview
                 set(obj.handles.pushbutton_toggle_acq, 'string', 'STOP');
             else
                 set(obj.handles.pushbutton_toggle_acq, 'string', 'PREVIEW');
@@ -101,7 +100,9 @@ classdef rc2guiView < handle
         function sound_enabled(obj, ~, ~)
             set(obj.handles.button_enable_sound, 'value', obj.controller.setup.sound.enabled);
             set(obj.handles.button_disable_sound, 'value', ~obj.controller.setup.sound.enabled);
-            if ~obj.controller.setup.sound.enabled
+            if obj.controller.setup.sound.enabled
+                set(obj.handles.pushbutton_toggle_sound, 'string', 'STOP');
+            else
                 set(obj.handles.pushbutton_toggle_sound, 'string', 'PLAY');
             end
         end

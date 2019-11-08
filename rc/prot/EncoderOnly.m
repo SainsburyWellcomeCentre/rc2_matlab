@@ -16,6 +16,8 @@ classdef EncoderOnly < handle
     
     properties (SetAccess = private)
         log_trial_fname
+        running = false
+        abort = false
     end
     
     properties (Hidden = true)
@@ -58,6 +60,11 @@ classdef EncoderOnly < handle
         function run(obj)
             
             try
+                
+                obj.running = true;
+                
+                % setup code to handle premature stopping
+                h = onCleanup(@obj.cleanup);
                 
                 % load correct direction on teensy
                 obj.ctl.teensy.load(obj.direction);
@@ -103,10 +110,30 @@ classdef EncoderOnly < handle
                 if strcmp(obj.integrate_using, 'teensy')
                     while ~obj.ctl.trigger_input.read()
                         pause(0.005);
+                        if obj.abort
+                            obj.running = false;
+                            obj.abort = false;
+                            return
+                        end
                     end
                 else
+                    
                     % integrate position on PC until the bounds are reached
-                    obj.ctl.integrate_until(obj.distance_backward, obj.distance_forward);
+                    forward_cm = obj.distance_forward/10;
+                    backward_cm = obj.distance_backward/10;
+                    
+                    obj.ctl.position.start();
+                    while ~obj.ctl.position.position < forward_cm && obj.ctl.position.position > backward_cm
+                        pause(0.005);
+                        if obj.abort
+                            obj.running = false;
+                            obj.abort = false;
+                            obj.ctl.position.stop();
+                            return
+                        end
+                    end
+                    obj.ctl.position.stop();
+                    %obj.ctl.integrate_until(obj.distance_backward, obj.distance_forward);
                 end
                 
                 % block the treadmill
@@ -129,18 +156,51 @@ classdef EncoderOnly < handle
                     obj.ctl.stop_sound();
                 end
                 
+                obj.running = false;
                 
             catch ME
                 
+                % if an error has occurred, perform the following whether
+                % or not the singple protocol is handling the acquisition
+                obj.running = false;
+                obj.ctl.soloist.abort();
                 obj.ctl.block_treadmill();
                 obj.ctl.stop_acq();
-                obj.ctl.stop_logging_single_trial();
+                if obj.log_trial
+                    obj.ctl.stop_logging_single_trial();
+                end
                 obj.ctl.stop_sound();
                 rethrow(ME)
             end
         end
         
+        
+        function stop(obj)
+            obj.abort = true;
+        end
+        
+        
         function prepare_as_sequence(~, ~, ~)
+        end
+        
+        
+        function cleanup(obj)
+            
+            obj.running = false;
+            obj.abort = false;
+            
+            obj.ctl.block_treadmill()
+            
+            if obj.handle_acquisition
+                obj.ctl.soloist.abort();
+                obj.ctl.stop_acq();
+                obj.ctl.stop_sound();
+            end
+            
+            if obj.log_trial
+                obj.ctl.stop_logging_single_trial();
+            end
+            
         end
     end
 end
