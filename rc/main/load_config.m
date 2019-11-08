@@ -50,7 +50,7 @@ config.nidaq.di.channel_id      = {'port1/line0', 'port1/line1'};
 
 config.teensy.exe               = 'C:\Program Files (x86)\Arduino\arduino_debug.exe';
 config.teensy.dir               = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\teensy_ino';
-config.teensy.start_script      = 'forward_only';
+config.teensy.start_script      = 'forward_and_backward';
 
 
 config.soloist.dir              = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\soloist_c\exe';

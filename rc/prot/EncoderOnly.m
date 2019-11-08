@@ -129,9 +129,10 @@ classdef EncoderOnly < handle
                     obj.ctl.stop_sound();
                 end
                 
+                
             catch ME
                 
-                obj.ctl.treadmill_block();
+                obj.ctl.block_treadmill();
                 obj.ctl.stop_acq();
                 obj.ctl.stop_logging_single_trial();
                 obj.ctl.stop_sound();

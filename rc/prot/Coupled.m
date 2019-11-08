@@ -91,7 +91,7 @@ classdef Coupled < handle
                 % TODO:  setup an event to unblock treadmill on digital
                 % input.
                 while ~obj.ctl.trigger_input.read()  
-                    pause(0.01);
+                    pause(0.005);
                 end
                 
                 
