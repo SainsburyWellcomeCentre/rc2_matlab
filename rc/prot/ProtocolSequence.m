@@ -19,6 +19,7 @@ classdef ProtocolSequence < handle
             
             obj.prepare()
             
+            obj.ctl.play_sound();
             obj.ctl.prepare_acq();
             obj.ctl.start_acq();
             
@@ -28,6 +29,7 @@ classdef ProtocolSequence < handle
             end
             
             obj.ctl.stop_acq();
+            obj.ctl.stop_sound();
         end
         
         

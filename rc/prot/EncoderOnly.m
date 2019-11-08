@@ -69,6 +69,7 @@ classdef EncoderOnly < handle
                 
                 % start acquiring data if the protocol is handling that
                 if obj.handle_acquisition
+                    obj.ctl.play_sound();
                     obj.ctl.prepare_acq();
                     obj.ctl.start_acq();
                 end
@@ -125,6 +126,7 @@ classdef EncoderOnly < handle
                 % stop acquiring data if protocol is handling that
                 if obj.handle_acquisition
                     obj.ctl.stop_acq();
+                    obj.ctl.stop_sound();
                 end
                 
             catch ME
@@ -132,6 +134,7 @@ classdef EncoderOnly < handle
                 obj.ctl.treadmill_block();
                 obj.ctl.stop_acq();
                 obj.ctl.stop_logging_single_trial();
+                obj.ctl.stop_sound();
                 rethrow(ME)
             end
         end
