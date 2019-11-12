@@ -19,8 +19,8 @@ config.nidaq.log_every          = 1000;
 
 config.nidaq.ai.dev             = 'Dev2';
 config.nidaq.ai.channel_names   = {'filtered_teensy', 'raw_teensy', 'stage', 'lick', 'pump', 'solenoid', 'photodiode'};
-config.nidaq.ai.offset          = [0.506, 0.003, 0, 0, 0, 0, 0];
-config.nidaq.ai.scale           = [40, 40, 1, 1, 1, 1, 1];
+config.nidaq.ai.offset          = [0.503344396983876, 0.002920177684111, -0.013990593443526, 0, 0, 0, 0]; % 
+config.nidaq.ai.scale           = [40.034026111683019, 39.697309817412304, 40, 1, 1, 1, 1];
 config.nidaq.ai.channel_id      = 0:6;
 
 

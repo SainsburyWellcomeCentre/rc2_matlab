@@ -71,8 +71,11 @@ classdef Coupled < handle
                 proc = obj.ctl.soloist.move_to(obj.start_pos, obj.ctl.soloist.default_speed, true);
                 proc.wait_for(0.5);
                 
-                % start integrator
+                % reset position
                 obj.ctl.reset_pc_position();
+                
+                % start integrating position
+                obj.ctl.position.start();
                 
                 % the soloist will connect, setup some parameters and then
                 % wait for the solenoid signal to go low
@@ -106,6 +109,9 @@ classdef Coupled < handle
                 
                 % block the treadmill
                 obj.ctl.block_treadmill()
+                
+                % stop integrating position
+                obj.ctl.position.stop();
                 
                 % stop logging the single trial.
                 if obj.log_trial
