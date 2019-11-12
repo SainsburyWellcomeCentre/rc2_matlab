@@ -128,7 +128,7 @@ classdef Coupled < handle
             catch ME
                 
                 % if an error has occurred, perform the following whether
-                % or not the singple protocol is handling the acquisition
+                % or not the single protocol is handling the acquisition
                 obj.running = false;
                 obj.ctl.soloist.abort();
                 obj.ctl.block_treadmill();

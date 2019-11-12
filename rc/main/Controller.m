@@ -28,7 +28,14 @@ classdef Controller < handle
     methods
         
         function obj = Controller(config)
-            
+        %%obj = CONTROLLER(config)
+        %   Main class for interfacing with the rollercoaster setup.
+        %       config - configuration structure containing necessary
+        %           parameters for setup - usually this is created with
+        %           load_config, but of course you can define your own
+        %           config structure
+        %   For information on each property see the related class.
+        
             obj.ni = NI(config);
             obj.teensy = Teensy(config);
             obj.soloist = Soloist(config);
@@ -47,8 +54,13 @@ classdef Controller < handle
         
         
         function delete(obj)
-            delete(obj.plotting);
-            obj.close()
+            % delete(obj.plotting);
+            
+            % make sure that all devices are stopped properly
+            obj.soloist.abort()
+            obj.sound.stop()
+            obj.stop_acq()
+            obj.ni.close()
         end
         
         
@@ -138,11 +150,6 @@ classdef Controller < handle
             obj.acquiring = false;
             obj.ni.stop_acq();
             obj.saver.stop_logging();
-        end
-        
-        
-        function close(obj)
-            obj.ni.close()
         end
         
         

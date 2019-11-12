@@ -1,3 +1,5 @@
-delete(ctl)
+% Some simple lines for gracefully exiting the rollercoaster program
+
 delete(gui)
-clear all
+delete(ctl)
+clear config ctl gui
