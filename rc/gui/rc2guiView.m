@@ -98,11 +98,14 @@ classdef rc2guiView < handle
         
         
         function sound_enabled(obj, ~, ~)
+            
+            % set the toggle buttons
             set(obj.handles.button_enable_sound, 'value', obj.controller.setup.sound.enabled);
             set(obj.handles.button_disable_sound, 'value', ~obj.controller.setup.sound.enabled);
-            if obj.controller.setup.sound.enabled
-                set(obj.handles.pushbutton_toggle_sound, 'string', 'STOP');
-            else
+            
+            % of the sound has been disabled, make sure the button says
+            % PLAY
+            if ~obj.controller.setup.sound.enabled
                 set(obj.handles.pushbutton_toggle_sound, 'string', 'PLAY');
             end
         end
