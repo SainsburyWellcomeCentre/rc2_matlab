@@ -1,4 +1,4 @@
-% Main startup script for program to interface with the rollercoaster setup
+% Main startup script to interface with the rollercoaster setup
 %
 % leaves 3 variables in the MATLAB workspace
 %       config - general configuration parameters *at startup* (changing
