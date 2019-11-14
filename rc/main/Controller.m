@@ -278,12 +278,6 @@ classdef Controller < handle
         end
         
         
-        function integrate_until(obj, back, forward)
-            % check limits here
-            obj.position.integrate_until(back, forward);
-        end
-        
-        
         function set_ni_ao_idle(obj)
             obj.ni.ao.set_to_idle();
         end

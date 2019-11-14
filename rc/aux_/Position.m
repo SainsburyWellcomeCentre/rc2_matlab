@@ -1,7 +1,9 @@
 classdef Position < handle
     
-    properties
+    properties (SetAccess = private)
+        
         dt
+        
         position = 0
         deadband
         integrate_on
@@ -9,45 +11,54 @@ classdef Position < handle
     
     
     methods
+        
         function obj = Position(config)
+        %%obj = POSITION(config)
+        % This class controls the assessment of "position" as determined on
+        % the PC. It is charged with integrating the velocity trace 
+        % (treadmill position). It is mainly designed for the training
+        % phases where critical assessment of position is not necessary
+        % (i.e. position is not calculated on the teensy and a trigger sent
+        % upon reaching a particular position)
+        % Inputs:
+        %       config - main config structures
+            
+            % require the time interval to calculate position
             obj.dt = 1/config.nidaq.rate;
+            
+            % this ignores any velocity within "deadband" limits
             obj.deadband = config.position.deadband;
         end
         
         
-        function integrate(obj, data)
+        function integrate(obj, velocity)
+        %INTEGRATE(obj, data)
+        %   Take the current velocity vector and integrate it to update 
+        %   the position.
+        
+            % if we are not integrating don't do anything
             if ~obj.integrate_on; return; end
             
-            % convert to cm
-            obj.position = obj.position + sum(data(abs(data) > obj.deadband))*obj.dt;
+            % convert velocity to cm
+            obj.position = obj.position + sum(velocity(abs(velocity) > obj.deadband))*obj.dt;
+            
+            % printing is useful for debugging
             fprintf('%.2f\n', obj.position);
         end
         
         
-        function reset(obj)
-            obj.position = 0;
-        end
-        
-        
         function start(obj)
-            obj.reset()
+        %%START(obj)
+        %   Set the position to zero and set integrate on.
+            obj.position = 0;
             obj.integrate_on = true;
         end
         
         
         function stop(obj)
+        %%STOP(obj)
+        %   Stop integrating.
             obj.integrate_on = false;
-        end
-        
-        
-        function integrate_until(obj, backward_mm, forward_mm)
-            backward_cm = backward_mm/10;
-            forward_cm = forward_mm/10;
-            obj.start()
-            while obj.position < forward_cm && obj.position > backward_cm
-                pause(0.005);
-            end
-            obj.stop()
         end
     end
 end
