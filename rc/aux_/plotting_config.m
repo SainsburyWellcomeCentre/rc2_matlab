@@ -1,4 +1,7 @@
 function config = plotting_config()
+%%config = PLOTTING_CONFIG()
+% Configuration settings for display of traces.
+
 
 config.time = 10; %s
 config.fig.position = [1340, 80, 1333, 630];

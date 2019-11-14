@@ -1,6 +1,7 @@
 function seq = setup_training_sequence(ctl, closed_loop, reward_position, distance, back_distance, n_loops)
 %%seq = SETUP_TRAINING_SEQUENCE(ctl, closed_loop reward_position, distance, back_distance)
-%   Sets up a protocol sequence for training.
+%   Sets up a protocol sequence for training. This is a standard sequence
+%   so contained in the main program.
 %       Inputs:
 %               ctl:                controller object
 %               closed_loop:        true = closed loop, false = open loop
