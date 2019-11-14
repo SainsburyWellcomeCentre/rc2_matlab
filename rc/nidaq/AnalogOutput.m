@@ -23,13 +23,25 @@ classdef AnalogOutput < handle
             obj.task.IsContinuous = 0;
             obj.idle_offset = config.nidaq.ao.idle_offset;
             
-            % write initial voltage to AO
-            obj.task.outputSingleScan(obj.idle_offset);
+            % make sure the idle offset provided is not above max_voltage
+            if abs(obj.idle_offset) > obj.max_voltage
+                obj.idle_offset = 0;
+                return
+            end
+            
+            obj.set_to_idle();
         end
         
         
         function delete(obj)
             obj.close()
+        end
+        
+        
+        function set_to_idle(obj)
+            obj.stop();
+            % write initial voltage to AO
+            obj.task.outputSingleScan(obj.idle_offset);
         end
         
         

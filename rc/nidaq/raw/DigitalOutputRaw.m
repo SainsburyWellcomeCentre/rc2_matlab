@@ -15,6 +15,12 @@ classdef DigitalOutputRaw < handle
     end
     
     
+    properties (SetAccess = private)
+        
+        is_running = false;
+    end
+    
+    
     methods
         
         function obj = DigitalOutputRaw(config, ai_task)
@@ -87,6 +93,11 @@ classdef DigitalOutputRaw < handle
         
         function start(obj, data)
             
+            if obj.is_running
+                fprintf('not running digital output\n');
+                return
+            end
+            
             n_samples = size(data, 1);
             status = daq.ni.NIDAQmx.DAQmxSetSampQuantSampPerChan(obj.task_handle, uint64(n_samples));
             obj.handle_fault(status, 'DAQmxSetSampQuantSampPerChan');
@@ -101,6 +112,8 @@ classdef DigitalOutputRaw < handle
                         int32(0), ...
                         uint32(0));
             obj.handle_fault(status, 'DAQmxWriteDigitalLines');
+            
+            obj.is_running = true;
             
             status = daq.ni.NIDAQmx.DAQmxStartTask(obj.task_handle);
             obj.handle_fault(status, 'start');
@@ -118,6 +131,7 @@ classdef DigitalOutputRaw < handle
             
             status = daq.ni.NIDAQmx.DAQmxWaitUntilTaskDone(obj.task_handle, double(10));
             obj.handle_fault(status, 'DAQmxWaitUntilTaskDone')
+            
             obj.stop();
             
             obj.state = data(end, :);
@@ -126,6 +140,7 @@ classdef DigitalOutputRaw < handle
         function stop(obj)
             status = daq.ni.NIDAQmx.DAQmxStopTask(obj.task_handle);
             obj.handle_fault(status, 'DAQmxStopTask');
+            obj.is_running = false;
         end
         
         function close(obj)
