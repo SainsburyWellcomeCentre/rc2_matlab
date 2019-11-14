@@ -20,7 +20,7 @@ config.nidaq.log_every          = 1000;
 config.nidaq.ai.dev             = 'Dev2';
 config.nidaq.ai.channel_names   = {'filtered_teensy', 'raw_teensy', 'stage', 'lick', 'pump', 'solenoid', 'photodiode'};
 config.nidaq.ai.offset          = [0.503344396983876, 0.002920177684111, -0.013990593443526, 0, 0, 0, 0]; % 
-config.nidaq.ai.scale           = [40.034026111683019, 39.697309817412304, 40, 1, 1, 1, 1];
+config.nidaq.ai.scale           = [40.034026111683019, 39.697309817412304, -40, 1, 1, 1, 1];
 config.nidaq.ai.channel_id      = 0:6;
 
 
@@ -50,14 +50,14 @@ config.nidaq.di.channel_id      = {'port1/line0', 'port1/line1'};
 
 config.teensy.exe               = 'C:\Program Files (x86)\Arduino\arduino_debug.exe';
 config.teensy.dir               = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\teensy_ino';
-config.teensy.start_script      = 'forward_and_backward';
+config.teensy.start_script      = 'forward_only';
 
 
 config.soloist.dir              = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\soloist_c\exe';
 config.soloist.default_speed    = 200;
 config.soloist.teensy_offset    = -508.0;
 config.soloist.ni_offset        = -508.0;
-
+config.soloist.v_per_cm_per_s   = 1/40;
 
 config.pump.do_name             = 'pump';
 config.pump.init_state          = 0;
