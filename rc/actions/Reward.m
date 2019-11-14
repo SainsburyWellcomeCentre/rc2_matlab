@@ -16,6 +16,12 @@ classdef Reward < handle
         duration
     end
     
+    properties (SetAccess = private)
+        
+        min_duration = 1;
+        max_duration = 500;
+    end
+    
     
     
     methods
@@ -68,8 +74,7 @@ classdef Reward < handle
         
         function status = set_duration(obj, val)
             status = 0;
-            if val < 0 || val > 500
-                fprintf('reward duration must be between 0 and 500 ms\n');
+            if val <= obj.min_duration || val > obj.max_duration
                 status = -1;
                 return
             end
