@@ -5,12 +5,13 @@ classdef StageOnly < handle
         start_pos
         back_limit
         forward_limit
-        
+        direction
         wave_fname
         waveform
         
         handle_acquisition = true
         wait_for_reward = true
+        follow_previous_protocol = false
     end
     
     properties (SetAccess = private)
@@ -29,6 +30,7 @@ classdef StageOnly < handle
             obj.start_pos = config.stage.start_pos;
             obj.back_limit = config.stage.back_limit;
             obj.forward_limit = config.stage.forward_limit;
+            obj.direction = 'forward_only';
             obj.wave_fname = fname;
             obj.load_wave();
         end
@@ -87,11 +89,28 @@ classdef StageOnly < handle
                 proc = obj.ctl.soloist.move_to(obj.start_pos, obj.ctl.soloist.default_speed, true);
                 proc.wait_for(0.5);
                 
-                proc = obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit, 'ni');
+                % wait until process controlling movement is finished
+%                 while proc.proc.isAlive()
+%                     pause(0.005);
+%                     if obj.abort
+%                         obj.running = false;
+%                         obj.abort = false;
+%                         return
+%                     end
+%                 end
+                
+                obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit, 'ni');
                 
                 % wait five seconds
-                % TODO: make general
-                pause(5)
+                tic;
+                while toc < 5
+                    pause(0.005);
+                    if obj.abort
+                        obj.running = false;
+                        obj.abort = false;
+                        return
+                    end
+                end
                 
                 % release block on the treadmill
                 obj.ctl.unblock_treadmill()
@@ -99,10 +118,20 @@ classdef StageOnly < handle
                 % start playing the waveform
                 obj.ctl.play_velocity_waveform()
                 
+                % look out for the waveform finishing, but the trigger not
+                % being received
+                premature_end = false;
+                
                 % wait for process to terminate.
                 % TODO:  setup an event to unblock treadmill on digital
                 % input.
                 while ~obj.ctl.trigger_input.read()
+                    
+                    if ~obj.ctl.ni.ao.task.IsRunning
+                        premature_end = true;
+                        break
+                    end
+                    
                     % TODO: if waveform has stopped break out of the loop
                     % otherwise will hang forever...
                     pause(0.005);
@@ -112,6 +141,26 @@ classdef StageOnly < handle
                         return
                     end
                 end
+                
+                % if there was a premature end of the trial play a voltage
+                % ramp
+%                 if premature_end
+%                     obj.ctl.ramp_velocity();
+%                 end
+                
+                % this time we should definitely get to the end
+                while ~obj.ctl.trigger_input.read()
+                    
+                    % TODO: if waveform has stopped break out of the loop
+                    % otherwise will hang forever...
+                    pause(0.005);
+                    if obj.abort
+                        obj.running = false;
+                        obj.abort = false;
+                        return
+                    end
+                end
+                
                 
                 % block treadmill
                 obj.ctl.block_treadmill()
@@ -124,6 +173,10 @@ classdef StageOnly < handle
                     obj.ctl.stop_sound();
                 end
                 
+                % set voltage waveform to the idle value
+                obj.ctl.set_ni_ao_idle();
+                
+                % the protocol is no longer running
                 obj.running = false;
                 
             catch ME
@@ -146,8 +199,10 @@ classdef StageOnly < handle
         end
         
         
-        function prepare_as_sequence(obj, sequence, i)
-            obj.set_fname(sequence{i-1}.log_trial_fname);
+        function prepare_as_sequence(obj, fname)
+            if ~isempty(fname)
+                obj.set_fname(fname);
+            end
         end
         
         

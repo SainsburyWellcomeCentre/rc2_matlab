@@ -86,11 +86,32 @@ classdef EncoderOnly < handle
                 proc = obj.ctl.soloist.move_to(obj.stage_pos, obj.ctl.soloist.default_speed, true);
                 proc.wait_for(0.5);
                 
+                % wait until process controlling movement is finished
+%                 while proc.proc.isAlive()
+%                     pause(0.005);
+%                     if obj.abort
+%                         obj.running = false;
+%                         obj.abort = false;
+%                         return
+%                     end
+%                 end
+                
                 % wait a bit of time before starting the trial
-                pause(5)
+                tic;
+                while toc < 5
+                    pause(0.005);
+                    if obj.abort
+                        obj.running = false;
+                        obj.abort = false;
+                        return
+                    end
+                end
                 
                 % we want to reset the position anyway
                 obj.ctl.reset_pc_position();
+                
+                % start integrating the position
+                obj.ctl.position.stop();
                 
                 % if we are using the teensy to determine position reset
                 % the position onboard teensy
@@ -123,12 +144,11 @@ classdef EncoderOnly < handle
                     backward_cm = obj.distance_backward/10;
                     
                     obj.ctl.position.start();
-                    while ~obj.ctl.position.position < forward_cm && obj.ctl.position.position > backward_cm
+                    while obj.ctl.position.position < forward_cm && obj.ctl.position.position > backward_cm
                         pause(0.005);
                         if obj.abort
                             obj.running = false;
                             obj.abort = false;
-                            obj.ctl.position.stop();
                             return
                         end
                     end
@@ -149,6 +169,9 @@ classdef EncoderOnly < handle
                     % start reward, block until finished if necessary
                     obj.ctl.reward.start_reward(obj.wait_for_reward)
                 end
+                
+                % stop integrating the position
+                obj.ctl.position.stop();
                 
                 % stop acquiring data if protocol is handling that
                 if obj.handle_acquisition

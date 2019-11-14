@@ -8,6 +8,11 @@ classdef ProtocolSequence < handle
         current_sequence
     end
     
+    properties (SetObservable = true)
+        current_trial = 0;
+    end
+    
+    
     methods
         function obj = ProtocolSequence(ctl)
             obj.ctl = ctl;
@@ -31,8 +36,16 @@ classdef ProtocolSequence < handle
             
             for i = 1 : length(obj.sequence)
                 obj.current_sequence = obj.sequence{i};
-                obj.sequence{i}.prepare_as_sequence(obj.sequence, i)
+                obj.current_trial = i;
+                
+                % this is quite specific for the vestibular condition...
+                if isa(obj.sequence{i}, 'StageOnly') && i > 1
+                    obj.sequence{i}.prepare_as_sequence(obj.sequence{i-1}.log_trial_fname)
+                end
+                
+                % start running this protocol
                 obj.sequence{i}.run();
+                
                 if obj.abort
                     obj.running = false;
                     obj.abort = false;
@@ -45,6 +58,8 @@ classdef ProtocolSequence < handle
         
         
         function prepare(obj)
+            
+            obj.current_trial = 0;
             
             % set run_once properties to false
             for i = 1 : length(obj.sequence)

@@ -60,6 +60,8 @@ classdef Coupled < handle
                 % start listening to the correct trigger input
                 obj.ctl.trigger_input.listen_to('soloist');
                 
+                % if this protocol is handling itself start the sound and
+                % prepare the acquisition
                 if obj.handle_acquisition
                     obj.ctl.play_sound();
                     obj.ctl.prepare_acq();
@@ -70,6 +72,15 @@ classdef Coupled < handle
                 % terminate.
                 proc = obj.ctl.soloist.move_to(obj.start_pos, obj.ctl.soloist.default_speed, true);
                 proc.wait_for(0.5);
+                % wait until process controlling movement is finished
+%                 while proc.proc.isAlive()
+%                     pause(0.005);
+%                     if obj.abort
+%                         obj.running = false;
+%                         obj.abort = false;
+%                         return
+%                     end
+%                 end
                 
                 % reset position
                 obj.ctl.reset_pc_position();
@@ -81,11 +92,18 @@ classdef Coupled < handle
                 % wait for the solenoid signal to go low
                 % we need to give it some time to setup (~2s, but we want
                 % to wait at the start position anyway...
-                proc = obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit, 'teensy');
+                obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit, 'teensy');
                 
                 % wait five seconds
-                % TODO: 
-                pause(5)
+                tic;
+                while toc < 5
+                    pause(0.005);
+                    if obj.abort
+                        obj.running = false;
+                        obj.abort = false;
+                        return
+                    end
+                end
                 
                 % release block on the treadmill
                 obj.ctl.unblock_treadmill()
@@ -95,9 +113,7 @@ classdef Coupled < handle
                     obj.log_trial_fname = obj.ctl.start_logging_single_trial();
                 end
                 
-                % wait for process to terminate.
-                % TODO:  setup an event to unblock treadmill on digital
-                % input.
+                % wait for stage to reach the position
                 while ~obj.ctl.trigger_input.read()  
                     pause(0.005);
                     if obj.abort
@@ -107,6 +123,7 @@ classdef Coupled < handle
                     end
                 end
                 
+                disp('read input')
                 % block the treadmill
                 obj.ctl.block_treadmill()
                 
@@ -124,11 +141,13 @@ classdef Coupled < handle
                     obj.ctl.reward.start_reward(obj.wait_for_reward)
                 end
                 
+                % if handling the acquisition stop 
                 if obj.handle_acquisition
                     obj.ctl.stop_acq();
                     obj.ctl.stop_sound();
                 end
                 
+                % the protocol is no longer running
                 obj.running = false;
                 
             catch ME
@@ -149,7 +168,9 @@ classdef Coupled < handle
         
         
         function stop(obj)
-            
+            % if the stop method is called, set the abort property
+            % temporarily to false
+            % the main loop will detect this and abort properly
             obj.abort = true;
         end
         
