@@ -26,7 +26,9 @@ classdef rc2guiView < handle
             set(obj.handles.button_open_loop, 'value', strcmp(obj.controller.condition, 'open_loop'));
             set(obj.handles.button_enable_sound, 'value', obj.controller.setup.sound.enabled);
             set(obj.handles.button_disable_sound, 'value', ~obj.controller.setup.sound.enabled);
-            
+            set(obj.handles.pushbutton_acknowledge_error, 'visible', 'off');
+            set(obj.handles.edit_training_trial, 'string', '0');
+            set(obj.handles.edit_experiment_trial, 'string', '0');
             
             save_to = obj.controller.setup.saver.save_to;
             prefix = obj.controller.setup.saver.prefix;
@@ -49,12 +51,60 @@ classdef rc2guiView < handle
             addlistener(obj.controller.setup.reward, 'duration', 'PostSet', @(src, evnt)obj.reward_duration_updated(src, evnt));
             addlistener(obj.controller.setup.sound, 'enabled', 'PostSet', @(src, evnt)obj.sound_enabled(src, evnt));
             
+            obj.hide_ui();
+        end
+        
+        
+        function hide_ui(obj)
+            
+            set(obj.handles.edit_move_to, 'enable', 'off');
+            set(obj.handles.edit_speed, 'enable', 'off');
+            set(obj.handles.pushbutton_move_to, 'enable', 'off');
+            set(obj.handles.pushbutton_reset, 'enable', 'off');
+            set(obj.handles.edit_reward_location, 'enable', 'off');
+            set(obj.handles.edit_reward_distance, 'enable', 'off');
+            set(obj.handles.pushbutton_start_training, 'enable', 'off');
+            set(obj.handles.button_closed_loop, 'enable', 'off');
+            set(obj.handles.button_open_loop, 'enable', 'off');
+            set(obj.handles.pushbutton_script, 'enable', 'off');
+            set(obj.handles.pushbutton_start_experiment, 'enable', 'off');
+            set(obj.handles.pushbutton_change_save_to, 'enable', 'off');
+            set(obj.handles.edit_file_prefix, 'enable', 'off');
+            set(obj.handles.edit_file_suffix, 'enable', 'off');
+            set(obj.handles.edit_file_index, 'enable', 'off');
+            set(obj.handles.checkbox_enable_save, 'enable', 'off');
+        end
+        
+        
+        function show_ui_after_home(obj)
+            
+            set(obj.handles.edit_move_to, 'enable', 'on');
+            set(obj.handles.edit_speed, 'enable', 'on');
+            set(obj.handles.pushbutton_move_to, 'enable', 'on');
+            set(obj.handles.pushbutton_reset, 'enable', 'on');
+            set(obj.handles.edit_reward_location, 'enable', 'on');
+            set(obj.handles.edit_reward_distance, 'enable', 'on');
+            set(obj.handles.pushbutton_start_training, 'enable', 'on');
+            set(obj.handles.button_closed_loop, 'enable', 'on');
+            set(obj.handles.button_open_loop, 'enable', 'on');
+            set(obj.handles.pushbutton_script, 'enable', 'on');
+            set(obj.handles.pushbutton_start_experiment, 'enable', 'on');
+            set(obj.handles.pushbutton_change_save_to, 'enable', 'on');
+            set(obj.handles.edit_file_prefix, 'enable', 'on');
+            set(obj.handles.edit_file_suffix, 'enable', 'on');
+            set(obj.handles.edit_file_index, 'enable', 'on');
+            set(obj.handles.checkbox_enable_save, 'enable', 'on');
         end
         
         
         function save_to_updated(obj, ~, ~)
             str = obj.controller.setup.saver.save_to;
             set(obj.handles.edit_save_to, 'string', str);
+        end
+        
+        
+        function script_updated(obj)
+            set(obj.handles.edit_script, 'string', obj.controller.current_script);
         end
         
         

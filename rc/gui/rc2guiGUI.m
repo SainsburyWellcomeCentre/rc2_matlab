@@ -52,6 +52,17 @@ function pushbutton_unblock_treadmill_Callback(~, ~, handles)
 handles.controller.unblock_treadmill();
 
 
+function pushbutton_pump_on_Callback(~, ~, handles)
+handles.controller.pump_on();
+
+
+function pushbutton_pump_off_Callback(~, ~, handles)
+handles.controller.pump_off();
+
+
+function pushbutton_start_experiment_Callback(~, ~, handles)
+handles.controller.start_experiment();
+
 function pushbutton_move_to_Callback(~, ~, handles)
 handles.controller.move_to();
 
@@ -130,9 +141,18 @@ function edit_reward_location_Callback(h_obj, ~, handles)
 handles.controller.change_reward_location(h_obj)
 
 
+function pushbutton_script_Callback(~, ~, handles)
+handles.controller.set_script()
+
+
+function edit_experiment_trial_Callback(~, ~, ~)
+function edit_training_trial_Callback(~, ~, ~)
+function edit_script_Callback(~, ~, ~)
 function edit_save_to_Callback(~, ~, ~)
 % inactive
 
+function pushbutton_acknowledge_error_Callback(hObject, eventdata, handles)
+handles.controller.acknowledge_error();
 
 function edit_move_to_CreateFcn(hObject, ~, ~)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
@@ -167,6 +187,21 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 function edit_reward_location_CreateFcn(hObject, ~, ~)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function edit_script_CreateFcn(hObject, ~, ~)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+function edit_training_trial_CreateFcn(hObject, ~, ~)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit_experiment_trial_CreateFcn(hObject, ~, ~)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end

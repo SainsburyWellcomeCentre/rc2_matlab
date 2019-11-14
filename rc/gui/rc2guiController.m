@@ -16,6 +16,15 @@ classdef rc2guiController < handle
         speed_limits
         
         training_seq
+        experiment_seq
+        
+        current_script
+    end
+    
+    properties (SetAccess = private)
+        
+        preview_on
+        sequence_on
     end
     
     
@@ -26,11 +35,16 @@ classdef rc2guiController < handle
             
             obj.setup = setup;
             obj.stage_limits = config.stage.max_limits;
-            obj.speed_limits = [10, 500];
+            
+            obj.speed_limits = [10, 500]; %TODO: config?
+            
             obj.move_to_pos = config.stage.start_pos;
-            obj.reward_distance = 200; %TODO: config
-            obj.condition = 'closed_loop'; %TODO: config
-            obj.reward_location = 250; %TODO: config
+            
+            obj.condition = 'closed_loop'; %TODO: config?
+            
+            obj.reward_location = 250; %TODO: config?
+            obj.reward_distance = 200; %TODO: config?
+            
             obj.view = rc2guiView(obj);
         end
         
@@ -50,9 +64,11 @@ classdef rc2guiController < handle
             if obj.setup.acquiring_preview
                 obj.setup.stop_preview()
                 set(obj.view.handles.pushbutton_toggle_acq, 'string', 'PREVIEW');
+                obj.preview_on = false;
             else
                 obj.setup.start_preview()
                 set(obj.view.handles.pushbutton_toggle_acq, 'string', 'STOP');
+                obj.preview_on = true;
             end
         end
         
@@ -65,15 +81,34 @@ classdef rc2guiController < handle
         
         
         function changed_reward_duration(obj, h_obj)
+            
             val = str2double(get(h_obj, 'string'));
+            
             if ~isnumeric(val) || isinf(val) || isnan(val)
-                fprintf('%s: %s ''val'' must be numeric\n', class(obj), 'changed_reward_duration');
+                msg = sprintf('reward duration must be a number\n');
+                
+                % print a message to the command window
+                fprintf('%s: %s: %s', class(obj), 'changed_reward_duration', msg);
+                
+                % also print the message to the GUI
+                obj.print_error(msg);
+                
                 set(obj.view.handles.edit_reward_duration, 'string', sprintf('%.1f', obj.setup.reward.duration))
                 return
             end
             
             status = obj.setup.reward.set_duration(val);
             if status == -1
+                
+                msg = sprintf('reward duration must be between %.1f and %.1f\n', ...
+                    obj.setup.reward.min_duration, obj.setup.reward.max_duration);
+                
+                % print a message to the command window
+                fprintf('%s: %s: %s', class(obj), 'changed_reward_duration', msg);
+                
+                % also print the message to the GUI
+                obj.print_error(msg);
+                
                 set(obj.view.handles.edit_reward_duration, 'string', sprintf('%.1f', obj.setup.reward.duration))
                 return
             end
@@ -82,30 +117,79 @@ classdef rc2guiController < handle
         
         
         function change_reward_location(obj, h_obj)
+            
             val = str2double(get(h_obj, 'string'));
+            
             if ~isnumeric(val) || isinf(val) || isnan(val)
-                fprintf('%s: %s ''val'' must be numeric\n', class(obj), 'change_reward_location');
+                
+                msg = sprintf('reward location must be a number\n');
+                
+                % print a message to the command window
+                fprintf('%s: %s: %s', class(obj), 'change_reward_location', msg);
+                
+                % also print the message to the GUI
+                obj.print_error(msg);
                 set(obj.view.handles.edit_reward_location, 'string', sprintf('%.1f', obj.reward_location))
                 return
             end
-            if val < 10 || val > 1400 % TODO: allow config
-                fprintf('%s: %s ''val'' must be within reasonable bounds\n', class(obj), 'change_reward_location');
+            
+            current_reward_distance = str2double(get(obj.view.handles.edit_reward_distance, 'string'));
+            
+            % catch value if it is not in the correct range.
+            if val < min(obj.stage_limits) || val + current_reward_distance > max(obj.stage_limits)
+                
+                msg = sprintf('reward location must be between [%.2f, %.2f], given reward distance\n', ...
+                        min(obj.stage_limits), max(obj.stage_limits)-current_reward_distance);
+                
+                % print a message to the command window
+                fprintf('%s: %s: %s', class(obj), 'change_reward_location', msg);
+                
+                % also print the message to the GUI
+                obj.print_error(msg);
+                
+                % reset the edit box to contain the correct value
                 set(obj.view.handles.edit_reward_location, 'string', sprintf('%.1f', obj.reward_location))
+                
                 return
-            end 
+            end
         end
         
         
         
         function change_reward_distance(obj, h_obj)
+            
+            % get the value just entered into the edit box
             val = str2double(get(h_obj, 'string'));
+            
+            % if the value is not numeric, infinite or nan = wrong
             if ~isnumeric(val) || isinf(val) || isnan(val)
-                fprintf('%s: %s ''val'' must be numeric\n', class(obj), 'change_reward_distance');
+                
+                msg = sprintf('reward distance must be a number\n');
+                
+                % print a message to the command window
+                fprintf('%s: %s: %s', class(obj), 'change_reward_location', msg);
+                
+                % also print the message to the GUI
+                obj.print_error(msg);
+                
+                % reset edit box
                 set(obj.view.handles.edit_reward_distance, 'string', sprintf('%.1f', obj.reward_distance))
                 return
             end
-            if val < 0 || val > 1400 % TODO: modify this
-                fprintf('%s: %s ''val'' must be within reasonable bounds\n', class(obj), 'change_reward_distance');
+            
+            current_reward_location = str2double(get(obj.view.handles.edit_reward_location, 'string'));
+            max_reward_distance = max(obj.stage_limits) - current_reward_location;
+            
+            if val <= 0 || val >= max_reward_distance % TODO: modify this
+                
+                msg = sprintf('reward distance must be strictly between [0, %.2f], given reward location\n', max_reward_distance);
+                
+                 % print a message to the command window
+                fprintf('%s: %s: %s', class(obj), 'change_reward_location', msg);
+                
+                % also print the message to the GUI
+                obj.print_error(msg);
+                
                 set(obj.view.handles.edit_reward_distance, 'string', sprintf('%.1f', obj.reward_distance))
                 return
             end 
@@ -153,6 +237,22 @@ classdef rc2guiController < handle
         
         
         
+        function pump_on(obj)
+        %%PUMP_ON(obj)
+        %  Turn the pump on. To start filling a chamber for example.
+            obj.setup.pump_on();
+        end
+        
+        
+        
+        function pump_off(obj)
+        %%PUMP_OFF(obj)
+        %  Turn the pump off. To stop filling for example.
+            obj.setup.pump_off();
+        end
+        
+        
+        
         function toggle_sound(obj)
             if ~obj.setup.sound.enabled
                 return
@@ -181,18 +281,40 @@ classdef rc2guiController < handle
         
         
         function changed_move_to_pos(obj, h_obj)
+            
             val = str2double(get(h_obj, 'string'));
+            
             if ~isnumeric(val) || isinf(val) || isnan(val)
-                fprintf('%s: %s ''val'' must be numeric\n', class(obj), 'changed_move_to_pos');
+                
+                msg = sprintf('"move to" position must be a number\n');
+                
+                 % print a message to the command window
+                fprintf('%s: %s: %s', class(obj), 'changed_move_to_pos', msg);
+                
+                % also print the message to the GUI
+                obj.print_error(msg);
+                
                 set(obj.view.handles.edit_move_to, 'string', sprintf('%.1f', obj.move_to_pos))
                 return
             end
             
-            if val > obj.stage_limits(1) || val < obj.stage_limits(2)
-                fprintf('%s: %s ''val'' must be within stage limits\n', class(obj), 'changed_move_to_pos');
+            
+            if val > max(obj.stage_limits) || val < min(obj.stage_limits)
+                
+                msg = sprintf('"move to" position must be between [%.2f, %.2f]\n', ...
+                    min(obj.stage_limits), max(obj.stage_limits));
+                
+                 % print a message to the command window
+                fprintf('%s: %s: %s', class(obj), 'changed_move_to_pos', msg);
+                
+                % also print the message to the GUI
+                obj.print_error(msg);
+                
                 set(obj.view.handles.edit_move_to, 'string', sprintf('%.1f', obj.move_to_pos))
                 return
             end
+            
+            obj.move_to_pos = val;
         end
         
         
@@ -200,13 +322,30 @@ classdef rc2guiController < handle
         function changed_speed(obj, h_obj)
             val = str2double(get(h_obj, 'string'));
             if ~isnumeric(val) || isinf(val) || isnan(val)
-                fprintf('%s: %s ''val'' must be numeric\n', class(obj), 'changed_speed');
-                set(obj.view.handles.edit_speed, 'string', sprintf('%.1f', obj.move_to_pos))
+                 
+                msg = sprintf('speed must be a number\n');
+                
+                % print a message to the command window
+                fprintf('%s: %s: %s', class(obj), 'changed_speed', msg);
+                
+                % also print the message to the GUI
+                obj.print_error(msg);
+                
+                set(obj.view.handles.edit_speed, 'string', sprintf('%.1f', obj.setup.soloist.default_speed))
                 return
             end
             
-            if val < obj.speed_limits(1) || val > obj.speed_limits(2)
-                fprintf('%s: %s ''val'' must be within speed limits\n', class(obj), 'changed_speed');
+            
+            if val < min(obj.speed_limits) || val > max(obj.speed_limits)
+                
+                msg = sprintf('speed must be between [%.2f, %.2f]\n', min(obj.speed_limits), max(obj.speed_limits));
+                
+                % print a message to the command window
+                fprintf('%s: %s: %s', class(obj), 'changed_speed', msg);
+                
+                % also print the message to the GUI
+                obj.print_error(msg);
+                
                 set(obj.view.handles.edit_speed, 'string', sprintf('%.1f', obj.setup.soloist.default_speed))
                 return
             end
@@ -230,6 +369,7 @@ classdef rc2guiController < handle
         
         function home_soloist(obj)
             obj.setup.home_soloist();
+            obj.view.show_ui_after_home();
         end
         
         
@@ -244,6 +384,17 @@ classdef rc2guiController < handle
             obj.setup.soloist.abort();
         end
         
+        
+        
+        function set_script(obj)
+            
+            start_dir = pwd;
+            [user_file, pathname] = uigetfile(fullfile(start_dir, '*.m'), 'Choose script to run...');
+            if ~user_file; return; end
+            
+            obj.current_script = fullfile(pathname, user_file);
+            obj.view.script_updated();
+        end
         
         
         function set_save_to(obj)
@@ -291,22 +442,40 @@ classdef rc2guiController < handle
         
         function start_training(obj)
             
+            if obj.preview_on
+                msg = sprintf('stop preview before starting training\n');
+                
+                 % print a message to the command window
+                fprintf('%s: %s: %s', class(obj), 'start_training', msg);
+                
+                % also print the message to the GUI
+                obj.print_error(msg);
+                
+                return
+            end
+            
+            % if training sequence is empty, we haven't started a training
+            % sequence
+            % else the we set is_running to the status of the training seq
             if isempty(obj.training_seq)
                 is_running = false;
             else
                 is_running = obj.training_seq.running;
             end
             
+            % if training sequence hasn't been started, start it, else stop
+            % it
             if is_running
                 
+                % stop the training sequence and reset the button
                 obj.training_seq.stop();
                 set(obj.view.handles.pushbutton_start_training, 'string', 'START TRAINING')
             else
                 
-                % are we training in closed loop or open loop
+                % determine if are we training in closed loop or open loop
                 closed_loop = strcmp(obj.condition, 'closed_loop');
                 
-                % read distances
+                % read reward location and distances
                 reward_location = str2double(get(obj.view.handles.edit_reward_location, 'string')); %#ok<*PROP>
                 reward_distance = str2double(get(obj.view.handles.edit_reward_distance, 'string'));
                 
@@ -314,9 +483,109 @@ classdef rc2guiController < handle
                 obj.training_seq = setup_training_sequence(obj.setup, closed_loop, reward_location, ...
                     reward_distance, obj.back_distance, obj.n_loops);
                 set(obj.view.handles.pushbutton_start_training, 'string', 'STOP TRAINING')
+                addlistener(obj.training_seq, 'current_trial', 'PostSet', @(src, evnt)obj.training_trial_updated(src, evnt));
                 obj.training_seq.run()
+                set(obj.view.handles.pushbutton_start_training, 'string', 'START TRAINING')
             end
         end
         
+        
+        function start_experiment(obj)
+            
+            if obj.preview_on
+                msg = sprintf('stop preview before starting experiment\n');
+                
+                 % print a message to the command window
+                fprintf('%s: %s: %s', class(obj), 'start_experiment', msg);
+                
+                % also print the message to the GUI
+                obj.print_error(msg);
+                
+                return
+            end
+            
+            % check that current script is selected
+            if isempty(obj.current_script)
+                
+                msg = sprintf('no script selected\n');
+                
+                 % print a message to the command window
+                fprintf('%s: %s: %s', class(obj), 'start_experiment', msg);
+                
+                % also print the message to the GUI
+                obj.print_error(msg);
+                
+                return
+            end
+            
+            % check that current script exists.
+            if ~exist(obj.current_script, 'file')
+                
+                msg = sprintf('script selected doesn''t exist\n');
+                
+                 % print a message to the command window
+                fprintf('%s: %s: %s', class(obj), 'start_experiment', msg);
+                
+                % also print the message to the GUI
+                obj.print_error(msg);
+                
+                return
+            end
+            
+            % if experiment sequence is empty, we haven't started a
+            % experiment sequence yet
+            % else the we set is_running to the status of the training seq
+            if isempty(obj.experiment_seq)
+                is_running = false;
+            else
+                is_running = obj.experiment_seq.running;
+            end
+            
+            % if training sequence hasn't been started, start it, else stop
+            % it
+            if is_running
+                
+                % stop the training sequence and reset the button
+                obj.experiment_seq.stop();
+                set(obj.view.handles.pushbutton_start_experiment, 'string', 'START EXPERIMENT')
+            else
+                
+                % 
+                [~, fname] = fileparts(obj.current_script);
+                
+                obj.experiment_seq = feval(fname, obj.setup);
+                
+                set(obj.view.handles.pushbutton_start_experiment, 'string', 'STOP')
+                addlistener(obj.experiment_seq, 'current_trial', 'PostSet', @(src, evnt)obj.experiment_trial_updated(src, evnt));
+                
+                obj.experiment_seq.run()
+                set(obj.view.handles.pushbutton_start_experiment, 'string', 'START EXPERIMENT')
+            end
+        end
+        
+        
+        
+        function print_error(obj, msg)
+            set(obj.view.handles.text_error_msg, 'string', sprintf('Error: %s', msg));
+            set(obj.view.handles.pushbutton_acknowledge_error, 'visible', 'on');
+        end
+        
+        
+        function acknowledge_error(obj)
+            set(obj.view.handles.text_error_msg, 'string', '');
+            set(obj.view.handles.pushbutton_acknowledge_error, 'visible', 'off');
+        end
+        
+        
+        function training_trial_updated(obj, ~, ~)
+            str = sprintf('%i', obj.training_seq.current_trial);
+            set(obj.view.handles.edit_training_trial, 'string', str);
+        end
+        
+        
+        function experiment_trial_updated(obj, ~, ~)
+            str = sprintf('%i', obj.experiment_seq.current_trial);
+            set(obj.view.handles.edit_experiment_trial, 'string', str);
+        end
     end
 end
