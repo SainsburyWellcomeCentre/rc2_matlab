@@ -4,11 +4,13 @@ classdef Soloist < handle
         
         teensy_offset
         ni_offset
+        v_per_cm_per_s
     end
     
     properties (SetAccess = private)
         
         max_limits
+        homed = false;
     end
     
     properties (SetAccess = private, Hidden = true)
@@ -37,6 +39,9 @@ classdef Soloist < handle
             
             % default speed at which we will move the soloist
             obj.default_speed = config.soloist.default_speed;
+            
+            % expected volts/cm/s on the analog input
+            obj.v_per_cm_per_s = config.soloist.v_per_cm_per_s;
             
             % max limits of the stage... extra precautions
             obj.max_limits = config.stage.max_limits;
@@ -85,6 +90,7 @@ classdef Soloist < handle
             obj.proc_array.clear_all();
             
             % TODO: look for task errors here?
+            obj.h_abort.restart();
         end
         
         
@@ -104,6 +110,8 @@ classdef Soloist < handle
             
             proc = ProcHandler(p_java);
             obj.proc_array.add_process(proc);
+            
+            obj.homed = true;
         end
         
         

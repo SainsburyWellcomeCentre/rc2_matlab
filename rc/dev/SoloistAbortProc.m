@@ -48,7 +48,8 @@ classdef SoloistAbortProc < handle
             
             % determine if process is still alive.
             if ~obj.proc.isAlive()
-                fprintf('abort process is not alive.\n');
+                fprintf('abort process is not alive...restarting\n');
+                obj.restart();
                 return
             end
             
@@ -80,6 +81,9 @@ classdef SoloistAbortProc < handle
                 return
             end
             
+            % confirm that the restart is taking place
+            fprintf('restarting abort.exe...')
+            
             % re-open up the abort.exe process... i.e. connect to soloist and
             % wait for input on standard input.
             runtime = java.lang.Runtime.getRuntime();
@@ -88,7 +92,12 @@ classdef SoloistAbortProc < handle
             % open up pipes to the process
             obj.writer = obj.proc.getOutputStream();
             obj.reader = obj.proc.getInputStream();
+            
+            if obj.proc.isAlive()
+                fprintf('restarted.\n')
+            else
+                fprintf('could not restart?\n')
+            end
         end
-        
     end
 end
