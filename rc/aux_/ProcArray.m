@@ -1,6 +1,6 @@
 classdef ProcArray < handle
     
-    properties
+    properties (SetAccess = private)
         
         processes = {}
     end
