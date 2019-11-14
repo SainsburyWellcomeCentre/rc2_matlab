@@ -266,20 +266,6 @@ classdef Soloist < handle
             proc = ProcHandler(p_java);
             obj.proc_array.add_process(proc);
         end
-        
-        
-        function proc = block_test(obj)
-            
-            fname = obj.full_command('block_test');
-            cmd = sprintf('%s', fname);
-            disp(cmd)
-            
-            % start running the process
-            runtime = java.lang.Runtime.getRuntime();
-            p_java = runtime.exec(cmd);
-            proc = ProcHandler(p_java);
-            obj.proc_array.add_process(proc);
-        end
     end
     
     
