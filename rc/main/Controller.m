@@ -54,7 +54,7 @@ classdef Controller < handle
         
         
         function delete(obj)
-            % delete(obj.plotting);
+            delete(obj.plotting);
             
             % make sure that all devices are stopped properly
             obj.soloist.abort()
@@ -201,6 +201,17 @@ classdef Controller < handle
         end
         
         
+        function ramp_velocity(obj)
+            % create a 1s ramp to 100mm/s
+            rate = obj.ni.ao.task.Rate;
+            ramp = obj.soloist.v_per_cm_per_s * (0:rate-1) / rate;
+            waveform = obj.ni.ao.idle_offset + ramp;
+            obj.load_velocity_waveform(waveform);
+            pause(0.1);
+            obj.play_velocity_waveform();
+        end
+        
+        
         function load_velocity_waveform(obj, waveform)
             obj.ni.ao_write(waveform);
         end
@@ -271,6 +282,12 @@ classdef Controller < handle
             % check limits here
             obj.position.integrate_until(back, forward);
         end
+        
+        
+        function set_ni_ao_idle(obj)
+            obj.ni.ao.set_to_idle();
+        end
+        
         
         
         function cfg = get_config(obj)
