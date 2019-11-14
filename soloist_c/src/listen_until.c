@@ -60,9 +60,9 @@ main(int argc, char **argv)
     if(!SoloistParameterSetValue(handles[0], PARAMETERID_Analog0InputOffset, 1, AI_OFFSET)) { cleanup(handles, handle_count); }
     
     // Wait for a trigger to go low.
-    //while (ready_to_go == 1) {
-    //    if(!SoloistIODigitalInput(handles[0], DI_PORT, &ready_to_go)) { cleanup(handles, handle_count); }
-    //}
+    while (ready_to_go == 1) {
+        if(!SoloistIODigitalInput(handles[0], DI_PORT, &ready_to_go)) { cleanup(handles, handle_count); }
+    }
     
     // Set to gear mode... no turning back now.
     if(!SoloistCommandExecute(handles[0], "GEAR 1", NULL)) { cleanup(handles, handle_count); }

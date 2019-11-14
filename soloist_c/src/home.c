@@ -22,7 +22,7 @@ main(int argc, char **argv)
     if(!SoloistMotionEnable(handles[0])) { cleanup(handles, handle_count); }
     
     // Home the axis
-    if(!SoloistMotionHome(handles[0])) { cleanup(handles, handle_count); }
+    if(!SoloistMotionHomeConditional(handles[0])) { cleanup(handles, handle_count); }
     
     // Home the axis
     if(!SoloistMotionDisable(handles[0])) { cleanup(handles, handle_count); }
