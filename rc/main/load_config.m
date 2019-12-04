@@ -80,21 +80,15 @@ config.reward.min_time          = 3;
 config.reward.max_time          = 7;
 config.reward.duration          = 50;
 
-
 config.treadmill.do_name        = 'solenoid';
 config.treadmill.init_state     = 1;
-
 
 config.soloist_input_src.do_name = 'multiplexer';
 config.soloist_input_src.init_source = 'teensy';
 config.soloist_input_src.teensy = 1;
 
-
 config.zero_teensy.do_name      = 'zero_teensy';
 
 config.trigger_input.init_source = 'from_soloist'; % 'from_soloist' or 'from_teensy'
 
-config.position.deadband        = 0.1; % (cm/s) only integrate values > this to assess position
-
 config.plotting                 = plotting_config();
-

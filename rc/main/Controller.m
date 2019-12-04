@@ -16,10 +16,13 @@ classdef Controller < handle
         zero_teensy
         trigger_input
         data_transform
+        
+        data
     end
     
     
     properties (SetObservable = true, SetAccess = private, Hidden = true)
+        
         acquiring = false
         acquiring_preview = false;
     end
@@ -90,19 +93,20 @@ classdef Controller < handle
             
             % set acquring flag to false and stop NI-DAQ
             obj.acquiring_preview = false;
-            obj.ni.stop_acq();
+            obj.ni.stop_acq(false);  % false indicates that clock is not on.
         end
         
         
         function h_preview_callback(obj, ~, evt)
-            %TODO: convert data ONCE here and pass this to functions
             
-            % TODO: complete this
+            % store the current data
+            obj.data = evt.Data;
+            
             % transform data
-            data = obj.data_transform.transform(evt.Data);
+            tdata = obj.data_transform.transform(obj.data);
             
             % pass transformed data to plotter
-            obj.plotting.ni_callback(data);
+            obj.plotting.ni_callback(tdata);
         end
         
         
@@ -129,18 +133,19 @@ classdef Controller < handle
         
         
         function h_callback(obj, ~, evt)
-            %TODO: convert data ONCE here and pass this to functions
+            
+            % store the data so others can use it
+            obj.data = evt.Data;
             
             % log raw voltage
             obj.saver.log(evt.Data);
             
-            % TODO: WRITE THIS:
             % transform data
-            data = obj.data_transform.transform(evt.Data);
+            tdata = obj.data_transform.transform(evt.Data);
             
             % pass transformed data to callbacks
-            obj.plotting.ni_callback(data);
-            obj.position.integrate(data(:, 1));
+            obj.plotting.ni_callback(tdata);
+            obj.position.integrate(tdata(:, 1));
         end
         
         
@@ -258,6 +263,11 @@ classdef Controller < handle
         end
         
         
+        function save_single_trial_config(obj, cfg)
+            obj.saver.append_config(cfg);
+        end
+        
+        
         function stop_logging_single_trial(obj)
             obj.saver.stop_logging_single_trial()
         end
@@ -300,11 +310,16 @@ classdef Controller < handle
                     'nidaq.ai.rate',            sprintf('%.1f', obj.ni.ai.task.Rate);
                     'nidaq.ai.channel_names',   strjoin(obj.ni.ai.channel_names, ',');
                     'nidaq.ai.channel_ids',     strjoin(obj.ni.ai.channel_ids, ',');
-            
+                    'nidaq.ai.offset',          strjoin(arrayfun(@(x)(sprintf('%.10f', x)), ...
+                                                    obj.data_transform.offset, 'uniformoutput', false), ',')
+                    'nidaq.ai.scale',           strjoin(arrayfun(@(x)(sprintf('%.10f', x)), ...
+                                                    obj.data_transform.scale, 'uniformoutput', false), ',')
+                                                    
                     'nidaq.ao.rate',            sprintf('%.1f', obj.ni.ao.task.Rate);
                     'nidaq.ao.channel_names',   strjoin(obj.ni.ao.channel_names, ',');
                     'nidaq.ao.channel_ids',     strjoin(obj.ni.ao.channel_ids, ',');
-            
+                    'nidaq.ao.idle_offset',     sprintf('%.10f', obj.ni.ao.idle_offset);
+                    
                     'nidaq.co.channel_names',   strjoin(obj.ni.co.channel_names, ',');
                     'nidaq.co.channel_ids',     strjoin(obj.ni.co.channel_ids, ',');
                     'nidaq.co.init_delay',      sprintf('%i', obj.ni.co.init_delay);

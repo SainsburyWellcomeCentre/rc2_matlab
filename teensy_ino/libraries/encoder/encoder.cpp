@@ -88,7 +88,7 @@ Encoder::_velocity() {
     if ( this->_direction_change ) {
         this->_delta_distance = 0;
     }
-
+    
     // Do the velocity calculation.
     float t = (float) this->_delta_usecs;
     this->current_velocity = (float) this->_delta_distance / t; // this->delta_usecs;

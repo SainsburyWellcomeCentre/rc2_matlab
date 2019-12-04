@@ -1,6 +1,9 @@
 classdef StageOnly < handle
     
     properties
+        
+        start_dwell_time = 5;
+        
         ctl
         start_pos
         back_limit
@@ -12,9 +15,11 @@ classdef StageOnly < handle
         handle_acquisition = true
         wait_for_reward = true
         follow_previous_protocol = false
+        log_trial = false
     end
     
     properties (SetAccess = private)
+        log_trial_fname
         running = false
         abort = false
     end
@@ -89,21 +94,11 @@ classdef StageOnly < handle
                 proc = obj.ctl.soloist.move_to(obj.start_pos, obj.ctl.soloist.default_speed, true);
                 proc.wait_for(0.5);
                 
-                % wait until process controlling movement is finished
-%                 while proc.proc.isAlive()
-%                     pause(0.005);
-%                     if obj.abort
-%                         obj.running = false;
-%                         obj.abort = false;
-%                         return
-%                     end
-%                 end
-                
-                obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit, 'ni');
+                obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit);
                 
                 % wait five seconds
                 tic;
-                while toc < 5
+                while toc < obj.start_dwell_time
                     pause(0.005);
                     if obj.abort
                         obj.running = false;
@@ -114,6 +109,11 @@ classdef StageOnly < handle
                 
                 % release block on the treadmill
                 obj.ctl.unblock_treadmill()
+                
+                % start logging the single trial
+                if obj.log_trial
+                    obj.log_trial_fname = obj.ctl.start_logging_single_trial();
+                end
                 
                 % start playing the waveform
                 obj.ctl.play_velocity_waveform()
@@ -165,6 +165,11 @@ classdef StageOnly < handle
                 % block treadmill
                 obj.ctl.block_treadmill()
                 
+                % stop logging the single trial.
+                if obj.log_trial
+                    obj.ctl.stop_logging_single_trial();
+                end
+                
                 % wait for reward to complete then stop acquisition
                 obj.ctl.reward.start_reward(obj.wait_for_reward)
                 
@@ -203,6 +208,30 @@ classdef StageOnly < handle
             if ~isempty(fname)
                 obj.set_fname(fname);
             end
+        end
+        
+        
+        function cfg = get_config(obj)
+            
+            cfg = {
+                'prot.time_started',        datestr(now, 'yyyymmdd_HH_MM_SS')
+                'prot.type',                class(obj);
+                'prot.start_pos',           sprintf('%.3f', obj.start_pos);
+                'prot.stage_pos',           '---';
+                'prot.back_limit',          sprintf('%.3f', obj.back_limit);
+                'prot.forward_limit',       sprintf('%.3f', obj.forward_limit);
+                'prot.direction',           obj.direction;
+                'prot.start_dwell_time',    sprintf('%.3f', obj.start_dwell_time);
+                'prot.handle_acquisition',  sprintf('%i', obj.handle_acquisition);
+                'prot.wait_for_reward',     sprintf('%i', obj.wait_for_reward);
+                'prot.log_trial',           sprintf('%i', obj.log_trial);
+                'prot.integrate_using',     '---';
+                'prot.wave_fname',          obj.wave_fname;
+                'prot.follow_previous_protocol', sprintf('%i', obj.follow_previous_protocol);
+                'prot.reward.randomize',    sprintf('%i', obj.ctl.reward.randomize);
+                'prot.reward.min_time',     sprintf('%i', obj.ctl.reward.min_time);
+                'prot.reward.max_time',     sprintf('%i', obj.ctl.reward.max_time);
+                'prot.reward.duration',     sprintf('%i', obj.ctl.reward.duration)};
         end
         
         

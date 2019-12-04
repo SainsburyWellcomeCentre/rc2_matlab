@@ -1,12 +1,12 @@
-classdef Coupled < handle
+classdef Loco2LocoVest < handle
     
     properties
         
-        start_dwell_time = 5
         start_pos
         back_limit
         forward_limit
         direction
+        vel_source
         handle_acquisition = true
         wait_for_reward = true
         
@@ -33,6 +33,7 @@ classdef Coupled < handle
             obj.back_limit = config.stage.back_limit;
             obj.forward_limit = config.stage.forward_limit;
             obj.direction = 'forward_only';
+            obj.vel_source = 'teensy';
         end
         
         
@@ -41,8 +42,8 @@ classdef Coupled < handle
             
             try
                 
-                cfg = obj.get_config();
-                obj.ctl.save_single_trial_config(cfg);
+                %cfg = obj.get_config();
+                %obj.ctl.save_single_trial_config(cfg);
                 
                 obj.running = true;
                 
@@ -52,13 +53,11 @@ classdef Coupled < handle
                 % make sure the treadmill is blocked
                 obj.ctl.block_treadmill();
                 
-                % load teensy
+                % load teensy and listen to correct source
                 obj.ctl.teensy.load(obj.direction);
+                obj.ctl.multiplexer.listen_to(obj.vel_source);
                 
-                % listen to correct source
-                obj.ctl.multiplexer.listen_to('teensy');
-                
-                % start PC listening to the correct trigger input
+                % start listening to the correct trigger input
                 obj.ctl.trigger_input.listen_to('soloist');
                 
                 % if this protocol is handling itself start the sound and
@@ -73,6 +72,15 @@ classdef Coupled < handle
                 % terminate.
                 proc = obj.ctl.soloist.move_to(obj.start_pos, obj.ctl.soloist.default_speed, true);
                 proc.wait_for(0.5);
+                % wait until process controlling movement is finished
+%                 while proc.proc.isAlive()
+%                     pause(0.005);
+%                     if obj.abort
+%                         obj.running = false;
+%                         obj.abort = false;
+%                         return
+%                     end
+%                 end
                 
                 % reset position
                 obj.ctl.reset_pc_position();
@@ -88,7 +96,7 @@ classdef Coupled < handle
                 
                 % wait five seconds
                 tic;
-                while toc < obj.start_dwell_time
+                while toc < 5
                     pause(0.005);
                     if obj.abort
                         obj.running = false;
@@ -172,26 +180,6 @@ classdef Coupled < handle
         
         
         function cfg = get_config(obj)
-            
-            cfg = { 
-                    'prot.time_started',        datestr(now, 'yyyymmdd_HH_MM_SS')
-                    'prot.type',                class(obj);
-                    'prot.start_pos',           sprintf('%.3f', obj.start_pos);
-                    'prot.stage_pos',           '---';
-                    'prot.back_limit',          sprintf('%.3f', obj.back_limit);
-                    'prot.forward_limit',       sprintf('%.3f', obj.forward_limit);
-                    'prot.direction',           obj.direction;
-                    'prot.start_dwell_time',    sprintf('%.3f', obj.start_dwell_time);
-                    'prot.handle_acquisition',  sprintf('%i', obj.handle_acquisition);
-                    'prot.wait_for_reward',     sprintf('%i', obj.wait_for_reward);
-                    'prot.log_trial',           sprintf('%i', obj.log_trial);
-                    'prot.integrate_using',     '---';
-                    'prot.wave_fname',          '---';
-                    'prot.follow_previous_protocol', '---';
-                    'prot.reward.randomize',    sprintf('%i', obj.ctl.reward.randomize);
-                    'prot.reward.min_time',     sprintf('%i', obj.ctl.reward.min_time);
-                    'prot.reward.max_time',     sprintf('%i', obj.ctl.reward.max_time);
-                    'prot.reward.duration',     sprintf('%i', obj.ctl.reward.duration)};
         end
         
         

@@ -139,6 +139,13 @@ classdef Saver < handle
         end
         
         
+        function append_config(obj, cfg)
+            if ~obj.enable; return; end
+            fname = obj.cfg_fname();
+            obj.write_config(fname, cfg, 'a');
+        end
+        
+        
         function stop_logging(obj)
             if ~obj.enable; return; end
             obj.is_logging = false;
@@ -196,8 +203,8 @@ classdef Saver < handle
             for i = 1 : size(cfg, 1)
                 fprintf(fid1, '%s = %s\n', cfg{i, 1}, cfg{i, 2});
             end
+            fprintf(fid1, '\n\n\n');
             fclose(fid1);
         end
-        
     end
 end

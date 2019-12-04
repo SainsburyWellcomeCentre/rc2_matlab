@@ -2,6 +2,8 @@ classdef EncoderOnly < handle
     
     properties
         
+        start_dwell_time = 5
+        
         stage_pos
         back_limit
         forward_limit
@@ -61,6 +63,9 @@ classdef EncoderOnly < handle
             
             try
                 
+                cfg = obj.get_config();
+                obj.ctl.save_single_trial_config(cfg);
+                
                 obj.running = true;
                 
                 % setup code to handle premature stopping
@@ -86,19 +91,9 @@ classdef EncoderOnly < handle
                 proc = obj.ctl.soloist.move_to(obj.stage_pos, obj.ctl.soloist.default_speed, true);
                 proc.wait_for(0.5);
                 
-                % wait until process controlling movement is finished
-%                 while proc.proc.isAlive()
-%                     pause(0.005);
-%                     if obj.abort
-%                         obj.running = false;
-%                         obj.abort = false;
-%                         return
-%                     end
-%                 end
-                
                 % wait a bit of time before starting the trial
                 tic;
-                while toc < 5
+                while toc < obj.start_dwell_time
                     pause(0.005);
                     if obj.abort
                         obj.running = false;
@@ -127,8 +122,10 @@ classdef EncoderOnly < handle
                     obj.log_trial_fname = obj.ctl.start_logging_single_trial();
                 end
                 
-                % wait for trigger from teensy
+                
                 if strcmp(obj.integrate_using, 'teensy')
+                    
+                    % wait for the trigger from the teensy
                     while ~obj.ctl.trigger_input.read()
                         pause(0.005);
                         if obj.abort
@@ -137,6 +134,7 @@ classdef EncoderOnly < handle
                             return
                         end
                     end
+                    
                 else
                     
                     % integrate position on PC until the bounds are reached
@@ -153,7 +151,6 @@ classdef EncoderOnly < handle
                         end
                     end
                     obj.ctl.position.stop();
-                    %obj.ctl.integrate_until(obj.distance_backward, obj.distance_forward);
                 end
                 
                 % block the treadmill
@@ -206,6 +203,31 @@ classdef EncoderOnly < handle
         function prepare_as_sequence(~, ~, ~)
         end
         
+        
+        function cfg = get_config(obj)
+            
+            cfg = {
+                
+                'prot.time_started',        datestr(now, 'yyyymmdd_HH_MM_SS')
+                'prot.type',                class(obj);
+                'prot.start_pos',           '---';
+                'prot.stage_pos',           sprintf('%.3f', obj.stage_pos);
+                'prot.back_limit',          sprintf('%.3f', obj.back_limit);
+                'prot.forward_limit',       sprintf('%.3f', obj.forward_limit);
+                'prot.direction',           obj.direction;
+                'prot.start_dwell_time',    sprintf('%.3f', obj.start_dwell_time);
+                'prot.handle_acquisition',  sprintf('%i', obj.handle_acquisition);
+                'prot.wait_for_reward',     sprintf('%i', obj.wait_for_reward);
+                'prot.log_trial',           sprintf('%i', obj.log_trial);
+                'prot.integrate_using',     obj.integrate_using;
+                'prot.wave_fname',          '---';
+                'prot.follow_previous_protocol', '---';
+                
+                'prot.reward.randomize',    sprintf('%i', obj.ctl.reward.randomize);
+                'prot.reward.min_time',     sprintf('%i', obj.ctl.reward.min_time);
+                'prot.reward.max_time',     sprintf('%i', obj.ctl.reward.max_time);
+                'prot.reward.duration',     sprintf('%i', obj.ctl.reward.duration)};
+        end
         
         function cleanup(obj)
             

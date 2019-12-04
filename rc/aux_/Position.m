@@ -26,8 +26,9 @@ classdef Position < handle
             % require the time interval to calculate position
             obj.dt = 1/config.nidaq.rate;
             
-            % this ignores any velocity within "deadband" limits
-            obj.deadband = config.position.deadband;
+            % try to use the same deadband as the soloist
+            filtered_idx = strcmp(config.nidaq.ai.channel_names, 'filtered_teensy');
+            obj.deadband = config.soloist.deadband * config.nidaq.ai.scale(filtered_idx);
         end
         
         
