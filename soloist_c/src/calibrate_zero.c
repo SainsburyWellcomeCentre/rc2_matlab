@@ -13,7 +13,7 @@ Averages those values and returns them on standard output.
 #include <tchar.h>
 
 /* number of iterations to record */
-#define N_ITER 1000
+#define N_ITER 100
 
 
 int
@@ -49,7 +49,6 @@ main(int argc, char **argv)
     
     // Get the number of counts per unit.
     if(!SoloistParameterGetValue(handles[0], PARAMETERID_CountsPerUnit, 1, &cnts_per_unit)) { cleanup(handles, handle_count); }
-    printf("Counts per unit: %.2f\n", cnts_per_unit);
     
     // Calculate the scale from the input voltage, speed and counts per unit
     max_speed_scale = (MAX_INPUT_SPEED * cnts_per_unit)/1000;
@@ -71,7 +70,6 @@ main(int argc, char **argv)
     // Stay in gear mode until one of the following conditions is satisfied
     int looping = 1;
     
-    printf("Start loop\n");
     while (looping) {
         
         // Run several checks to make sure that we are safe.
@@ -97,7 +95,7 @@ main(int argc, char **argv)
         
         // Stop looping after N_ITER
         if (iter >= N_ITER) {
-            looping = 0
+            looping = 0;
         }
         
         // Store the analog input level
@@ -112,7 +110,7 @@ main(int argc, char **argv)
     
     // Calculate the average analog offset.
     DOUBLE sum = 0;
-    for (int i = 0; i <= N_ITER; i++) {
+    for (int i = 0; i < N_ITER; i++) {
         sum += ai_value[i];
     }
     DOUBLE mean = sum/N_ITER;

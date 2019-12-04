@@ -13,6 +13,11 @@ main(int argc, char **argv)
     SoloistHandle *handles;
 	DWORD handle_count = 0;
     
+    if (argc < 5) {
+        printf("must have at least 5 numeric arguments.\n");
+        return 1;
+    }
+    
     // Arguments
     DOUBLE backward_limit = atof(argv[1]);
     DOUBLE forward_limit = atof(argv[2]);
@@ -20,15 +25,9 @@ main(int argc, char **argv)
     DOUBLE gear_scale = atof(argv[4]);
     DOUBLE deadband = atof(argv[5]);
     
-    
     DOUBLE return_value, return_value_pos, return_value_vel;
     int gear_set;
     DWORD ready_to_go = 1; // digital input starts high
-    
-    if (argc < 2) {
-        printf("must have at least 2 numeric arguments.\n");
-        return 1;
-    }
     
     
     // Connect to soloist.

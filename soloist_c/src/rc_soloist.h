@@ -20,7 +20,7 @@
 #define DEFAULT_GEARSOURCE              1
 #define DEFAULT_GEARSCALEFACTOR         1
 #define DEFAULT_ANALOGDEADBAND          0.05
-#define DEFAULT_GAINKPOS                115
+#define DEFAULT_GAINKPOS                53
 #define DEFAULT_RAMPRATE                200
 #define DEFAULT_RAMPMODE                RAMPMODE_Rate
 #define DEFAULT_POSITION                20
