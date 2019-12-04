@@ -1,6 +1,7 @@
 #ifndef RC_SOLOIST_H
 #define RC_SOLOIST_H
 
+#include "C:\Program Files (x86)\Aerotech\Soloist\CLibrary\Include\Soloist.h"
 
 #define AI_CHANNEL                      0
 #define AO_CHANNEL                      0

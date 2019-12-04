@@ -8,16 +8,21 @@ classdef Teensy < handle
     
     
     methods
-        function obj = Teensy(config)
+        
+        function obj = Teensy(config, force)
+            
+            VariableDefault('force', true);
+            
             obj.exe = config.teensy.exe;
             obj.dir = config.teensy.dir;
             obj.current_script = config.teensy.start_script;
-            obj.load(obj.current_script, true);
+            obj.load(obj.current_script, force);
         end
         
         
         function load(obj, script, force)
             % script = 'forward_only' or 'forward_and_backward'
+            %   'calibration_soloist'
             VariableDefault('force', false);
             
             if strcmp(obj.current_script, script) && ~force

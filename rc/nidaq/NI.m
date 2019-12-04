@@ -26,15 +26,21 @@ classdef NI < handle
         end
         
         
-        function start_acq(obj)
-            obj.co.start();
+        function start_acq(obj, clock_on)
+            VariableDefault('clock_on', true)
+            if clock_on
+                obj.co.start();
+            end
             obj.ai.start();
         end
         
         
-        function stop_acq(obj)
+        function stop_acq(obj, clock_on)
+            VariableDefault('clock_on', true)
             obj.ai.stop()
-            obj.co.stop()
+            if clock_on   
+                obj.co.stop()
+            end
         end
         
         

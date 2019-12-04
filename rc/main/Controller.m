@@ -76,7 +76,7 @@ classdef Controller < handle
             obj.plotting.reset_vals();
             
             % start the NI-DAQ device and set acquiring flag to true
-            obj.ni.start_acq()
+            obj.ni.start_acq(false);  % false indicates not to start clock
             obj.acquiring_preview = true;
         end
         

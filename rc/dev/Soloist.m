@@ -1,16 +1,15 @@
 classdef Soloist < handle
     
-    properties
-        
-        teensy_offset
-        ni_offset
-        v_per_cm_per_s
-    end
     
     properties (SetAccess = private)
         
         max_limits
         homed = false;
+        ai_offset
+        offset_limits = [-1000, 1000];
+        gear_scale
+        deadband
+        deadband_limits = [0, 1];
     end
     
     properties (SetAccess = private, Hidden = true)
@@ -40,17 +39,14 @@ classdef Soloist < handle
             % default speed at which we will move the soloist
             obj.default_speed = config.soloist.default_speed;
             
-            % expected volts/cm/s on the analog input
-            obj.v_per_cm_per_s = config.soloist.v_per_cm_per_s;
-            
             % max limits of the stage... extra precautions
             obj.max_limits = config.stage.max_limits;
             
             % the amount of voltage offset expected on the analog input pin 
             % when listening to the teensy or NI
-            % TODO: implement this...
-            obj.teensy_offset = config.soloist.teensy_offset;
-            obj.ni_offset = config.soloist.ni_offset;
+            obj.ai_offset = config.soloist.ai_offset;
+            obj.gear_scale = config.soloist.gear_scale;
+            obj.deadband = config.soloist.deadband;
             
             % we setup a separate process dedicated to aborting the current command
             % on the soloist... it runs constantly and is always connected to the
@@ -193,9 +189,97 @@ classdef Soloist < handle
         end
         
         
+        function average_offset = calibrate_zero(obj, back_pos, forward_pos, offset)
+        %%proc = calibrate_zero(obj, back_pos, forward_pos, offset)
+        %   
+        %   Runs a calibration routine to determine the correct voltage
+        %   offset to subtract to be stationary when the treadmill is not
+        %   moving.
+        %   
+        %   back_pos and forward_pos are the positions of the stage at
+        %   which the calibration routine will terminate (if it doesn't
+        %   naturally terminate).
+        %
+        %   'offset' indicates the inital voltage offset to try. 
         
-        function proc = listen_until(obj, back_pos, forward_pos, source)
-        %%proc = LISTEN_UNTIL(obj, back_pos, forward_pos, source)
+        
+            % check 'back_pos'
+            if ~isnumeric(back_pos) || isinf(back_pos) || isnan(back_pos)
+                fprintf('%s: %s ''back_pos'' must be numeric\n', class(obj), 'calibrate_zero');
+                return
+            end
+            if back_pos > obj.max_limits(1) || back_pos < obj.max_limits(2)
+                fprintf('%s: %s ''back_pos'' must be between %.1f and %.1f\n', ...
+                    class(obj), 'calibrate_zero', obj.max_limits(2), obj.max_limits(1));
+                return
+            end
+            
+            % check 'forward_pos'
+            if ~isnumeric(forward_pos) || isinf(forward_pos) || isnan(forward_pos)
+                fprintf('%s: %s ''forward_pos'' must be numeric\n', class(obj), 'calibrate_zero');
+                return
+            end
+            if forward_pos > obj.max_limits(1) || forward_pos < obj.max_limits(2)
+                fprintf('%s: %s ''forward_pos'' must be between %.1f and %.1f\n', ...
+                    class(obj), 'calibrate_zero', obj.max_limits(2), obj.max_limits(1));
+                return
+            end
+            
+            % check 'offset'
+            if ~isnumeric(offset) || isinf(offset) || isnan(offset)
+                fprintf('%s: %s ''offset'' must be numeric\n', class(obj), 'calibrate_zero');
+                return
+            end
+            if offset > 1 || offset < -1
+                fprintf('%s: %s ''offset'' must be between -1 and 1\n', ...
+                    class(obj), 'calibrate_zero');
+                return
+            end
+            
+            % make sure forward and backwards are sensible way round
+            if forward_pos > back_pos
+                fprintf('%s: %s ''forward_pos'' must be > ''back_pos''\n', ...
+                    class(obj), 'calibrate_zero');
+                return
+            end
+            
+            
+            fname = obj.full_command('calibrate_zero');
+            cmd = sprintf('%s %i %i %.8f', fname, back_pos, forward_pos, offset);
+            disp(cmd)
+            
+            % start running the process
+            runtime = java.lang.Runtime.getRuntime();
+            p_java = runtime.exec(cmd);
+            proc = ProcHandler(p_java);
+            obj.proc_array.add_process(proc);
+            
+            % open up pipes to the process
+            reader = p_java.getInputStream();
+            
+            % give it 60s to complete
+            tic;
+            while reader.available() == 0
+                if toc(t) > 60
+                    fprintf('no return signal from calibrate_zero\n');
+                    return
+                end
+            end
+            
+            ret = [];
+            for i = 1 : obj.reader.available()
+                ret(i) = obj.reader.read();
+            end
+            
+            str = char(ret);
+            average_offset = str2double(str);
+        end
+        
+        
+        
+        
+        function proc = listen_until(obj, back_pos, forward_pos)
+        %%proc = LISTEN_UNTIL(obj, back_pos, forward_pos, offset, gear_scale)
         %   
         %   Puts the stage in 'gear' mode, which will make the soloist 
         %   listen to the analog input and convert a voltage to a velocity, 
@@ -212,8 +296,6 @@ classdef Soloist < handle
         %       'forward_pos' must be < 'back_pos' (this is a feature of
         %       our stage in which forward is a lower numeric value than
         %       backwards.
-        %
-        %       'source' must be either 'teensy' or 'ni'
         
         
             % check 'back_pos'
@@ -245,19 +327,8 @@ classdef Soloist < handle
                 return
             end
             
-            % which source are we listening to
-            % TODO: implement this!!
-            if strcmp(source, 'teensy')
-                offset = obj.teensy_offset;
-            elseif strcmp(source, 'ni')
-                offset = obj.ni_offset;
-            else
-                fprintf('unknown source of voltage input (either ''teensy'' or ''ni''');
-                return
-            end
-            
             fname = obj.full_command('listen_until');
-            cmd = sprintf('%s %i %i', fname, back_pos, forward_pos);
+            cmd = sprintf('%s %i %i %.8f %.8f %.8f', fname, back_pos, forward_pos, obj.ai_offset, obj.gear_scale, obj.deadband);
             disp(cmd)
             
             % start running the process
@@ -265,6 +336,52 @@ classdef Soloist < handle
             p_java = runtime.exec(cmd);
             proc = ProcHandler(p_java);
             obj.proc_array.add_process(proc);
+        end
+        
+        
+        function set_offset(obj, val)
+            
+            % check that the value is in allowable range
+            if ~isnumeric(val) || isinf(val) || isnan(val)
+                fprintf('%s: %s ''val'' must be numeric\n', class(obj), 'set_offset');
+                return
+            end
+            if val > max(obj.offset_limits) || val < min(obj.offset_limits)
+                fprintf('%s: %s ''val'' must be between %.1f and %.1f\n', ...
+                    class(obj), 'set_offset', min(obj.offset_limits), max(obj.offset_limits));
+                return
+            end
+            
+            obj.ai_offset = val;
+        end
+        
+        
+        function set_gear_scale(obj, val)
+            
+            % check that the value is in allowable range
+            if ~isnumeric(val) || isinf(val) || isnan(val)
+                fprintf('%s: %s ''val'' must be numeric\n', class(obj), 'set_gear_scale');
+                return
+            end
+            
+            obj.gear_scale = val;
+        end
+        
+        
+        function set_deadband(obj, val)
+            
+            % check that the value is in allowable range
+            if ~isnumeric(val) || isinf(val) || isnan(val)
+                fprintf('%s: %s ''val'' must be numeric\n', class(obj), 'set_deadband');
+                return
+            end
+            if val > max(obj.deadband_limits) || val < min(obj.deadband_limits)
+                fprintf('%s: %s ''val'' must be between %.1f and %.1f\n', ...
+                    class(obj), 'set_deadband', min(obj.deadband_limits), max(obj.deadband_limits));
+                return
+            end
+            
+            obj.deadband = val;
         end
     end
     

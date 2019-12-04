@@ -1,15 +1,21 @@
 classdef SoloistAbortProc < handle
     
-    properties
+    properties (SetAccess = private)
+        
         cmd
         proc
         writer
         reader
     end
     
+    
     methods
+        
         function obj = SoloistAbortProc(cmd)
-            
+        %%obj = SOLOISTABORTPROC(cmd)
+        %  Class for controlling a separate process which itself controls
+        %  the abortion and resetting of motion on the soloist.
+        
             % open up the abort.exe process... i.e. connect to soloist and
             % wait for input on standard input.
             obj.cmd = cmd;
@@ -23,6 +29,8 @@ classdef SoloistAbortProc < handle
         
         
         function delete(obj)
+        %%DELETE(obj)
+        %   Des
             % upon deletion.
             obj.close()
         end
