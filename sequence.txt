@@ -1,0 +1,92 @@
+Sequence
+
+
+LOCOVEST
+
+1. block treadmill (if unblocked for some reason)
+
+2. load onto teensy correct script (if needed)
+3. set soloist to listen to correct source
+4. input trigger to listen to soloist
+
+
+5. if protocol is handling acquisition
+	a. prepare and start acquisition (saving and callbacks)
+	b. start sound
+
+6. move to start position
+7. reset PC position to 0
+
+8. start soloist to listen to input + pause
+9. unblock treadmill
+
+10. if logging single trial
+	a. start logging
+
+11. wait for end trigger
+
+12. block treadmill
+13. stop logging trial
+
+14. start reward timer/give reward
+
+15. if protocol is handling acquisition
+	a. stop acquisition
+	b. stop sound
+
+
+UPON DESTRUCTION
+	
+	abort soloist
+	block treadmill
+	stop logging trial
+	if handling
+		stop acquisition
+		stop sound
+	
+	
+
+	
+LOCOVEST
+
+1. block treadmill (if unblocked for some reason)
+
+2. load onto teensy correct script (if needed)
+3. set soloist to listen to correct source
+4. input trigger to listen to soloist
+
+
+5. if protocol is handling acquisition
+	a. prepare and start acquisition (saving and callbacks)
+	b. start sound
+
+6. move to start position
+7. reset PC position to 0
+
+8. start soloist to listen to input + pause
+9. unblock treadmill
+
+10. if logging single trial
+	a. start logging
+
+11. wait for end trigger
+
+12. block treadmill
+13. stop logging trial
+
+14. start reward timer/give reward
+
+15. if protocol is handling acquisition
+	a. stop acquisition
+	b. stop sound
+
+
+UPON DESTRUCTION
+	
+	abort soloist
+	block treadmill
+	stop logging trial
+	if handling
+		stop acquisition
+		stop sound
+
