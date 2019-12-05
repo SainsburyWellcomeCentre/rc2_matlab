@@ -85,7 +85,7 @@ classdef DigitalOutputRaw < handle
                     data(:, i) = 0;
                 else
                     data(:, i) = 1;
-                    data(end, :) = 0;
+                    data(end, i) = 0;
                 end
             end
         end

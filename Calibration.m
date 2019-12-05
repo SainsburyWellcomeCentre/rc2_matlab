@@ -68,9 +68,9 @@ classdef Calibration < handle
             obj.ni = NI(config);
             obj.teensy = Teensy(config, false);
             obj.soloist = Soloist(config);
-            obj.multiplexer = Multiplexer(ni, config);
-            obj.zero_teensy = ZeroTeensy(ni, config);
-            obj.treadmill = Treadmill(ni, config);
+            obj.multiplexer = Multiplexer(obj.ni, config);
+            obj.zero_teensy = ZeroTeensy(obj.ni, config);
+            obj.treadmill = Treadmill(obj.ni, config);
             
             obj.multiplexer.listen_to('teensy');
         end
@@ -169,23 +169,23 @@ classdef Calibration < handle
             
             uans = input('Press enter key when happy with position (press N to exit):');
             
-            close(h_fig);
-            
             if strcmp(uans, 'N')
                 return
             end
             
-            coords = round(getPosition(rect));
-            idx1 = coords(1);
-            idx2 = idx1+coords(3);
+            coords = rect.Position;
+            idx1 = round(coords(1));
+            idx2 = round(idx1+coords(3));
+            
+            close(h_fig);
             
             % main teensy offset on PC... step 1 done.
             obj.filtered_teensy_ni_max = mean(obj.data(idx1:idx2, filtered_idx));
             obj.raw_teensy_ni_max = mean(obj.data(idx1:idx2, raw_idx));
             
-            % compute the scale
-            obj.filtered_teensy_ni_scale = obj.max_velocity/(obj.filtered_teensy_ni_max - obj.filtered_teensy_ni_offset);
-            obj.raw_teensy_ni_scale = obj.max_velocity/(obj.raw_teensy_ni_max - obj.raw_teensy_ni_offset);
+            % compute the scale in cm
+            obj.filtered_teensy_ni_scale = obj.max_velocity/(obj.filtered_teensy_ni_max - obj.filtered_teensy_ni_offset)/10;
+            obj.raw_teensy_ni_scale = obj.max_velocity/(obj.raw_teensy_ni_max - obj.raw_teensy_ni_offset)/10;
             
             fprintf('Filtered teensy scale:  %.6f cm/s', obj.filtered_teensy_ni_scale);
             fprintf('Raw teensy scale:  %.6f cm/s', obj.raw_teensy_ni_scale);
@@ -225,7 +225,7 @@ classdef Calibration < handle
             
             %TODO: check the units of this
             % actual offset is the two combined
-            obj.filtered_teensy_soloist_offset = -teensy_ni_offset_mV-relative_filtered_teensy_soloist_offset;
+            obj.filtered_teensy_soloist_offset = teensy_ni_offset_mV - relative_filtered_teensy_soloist_offset;
             
             fprintf('Soloist AI offset: %.10f mV\n', obj.filtered_teensy_soloist_offset);
             
@@ -256,7 +256,7 @@ classdef Calibration < handle
             input('Open Soloist Scope and get ready to record velocity feedback (Press enter when done)');
             
             % move to back of stage. wait for move to complete
-            proc = obj.soloist.move_to(1400); % needs to be configurable
+            proc = obj.soloist.move_to(1200); % needs to be configurable
             proc.wait_for(0.5);
             
             % load a calibration script onto the teensy
@@ -295,8 +295,7 @@ classdef Calibration < handle
             obj.zero_teensy.zero();
             
             % The user types in actual velocity attained from soloist scope
-            uans = input('Actual velocity (mm/s):');
-            actual_velocity = str2double(uans);
+            actual_velocity = input('Actual velocity (mm/s):');
             
             % Ratio of target to actual
             p = obj.target_velocity/actual_velocity;
@@ -358,7 +357,7 @@ classdef Calibration < handle
             obj.soloist.abort()
             
             % index of the filtered teensy
-            stage_idx = strcmp(obj.config.nidaq.ai.channel_names, 'stage_teensy');
+            stage_idx = strcmp(obj.config.nidaq.ai.channel_names, 'stage');
             
             % select the location of the max
             trace = obj.data(:, stage_idx);
@@ -372,13 +371,13 @@ classdef Calibration < handle
             % prompt user whether they are happy
             uans = input('Avering this trace, press enter if happy, otherwise press N and rerun calibration:');
             
-            % close the figure
-            close(h_fig);
-            
             % if user pressed N exit
             if strcmp(uans, 'N')
                 return
             end
+            
+            % close the figure
+            close(h_fig);
             
             % main teensy offset on PC... step 1 done.
             obj.stage_ni_offset = mean(obj.data(:, stage_idx));
@@ -403,7 +402,7 @@ classdef Calibration < handle
             end
             
             % move to back of stage. wait for move to complete
-            proc = obj.soloist.move_to(1400); % needs to be configurable
+            proc = obj.soloist.move_to(1200); % needs to be configurable
             proc.wait_for(0.5);
             
             % load a calibration script onto the teensy
@@ -432,7 +431,7 @@ classdef Calibration < handle
             obj.soloist.abort()
             
             % index of the filtered teensy
-            stage_idx = strcmp(obj.config.nidaq.ai.channel_names, 'stage_teensy');
+            stage_idx = strcmp(obj.config.nidaq.ai.channel_names, 'stage');
             
             % select the location of the max
             trace = obj.data(:, stage_idx);
@@ -450,24 +449,24 @@ classdef Calibration < handle
             rect = drawrectangle();
             uans = input('Press enter key when happy with position (press N to exit):');
             
-            % close the figure
-            close(h_fig);
-            
             % if the user presses N, abort
             if strcmp(uans, 'N')
                 return
             end
             
             % get the indices where the rectangle is
-            coords = round(getPosition(rect));
-            idx1 = coords(1);
-            idx2 = idx1+coords(3);
+            coords = round(rect.Position);
+            idx1 = round(coords(1));
+            idx2 = round(idx1+coords(3));
+            
+            % close the figure
+            close(h_fig);
             
             % voltage on recorded on NI in stage channel
             obj.stage_ni_max = mean(obj.data(idx1:idx2, stage_idx));
             
-            % compute the scale
-            obj.stage_ni_scale = obj.target_velocity/(obj.stage_ni_max - obj.stage_ni_offset);
+            % compute the scale, in cm
+            obj.stage_ni_scale = obj.target_velocity/(obj.stage_ni_max - obj.stage_ni_offset)/10;
             
             fprintf('Stage scale on NI: %.6f V\n', obj.stage_ni_scale);
         end
@@ -524,12 +523,12 @@ classdef Calibration < handle
             obj.minimum_deadband = max(abs(trace - obj.filtered_teensy_ni_offset));
             
             % tell the user the minimum deadband
-            fprintf('The minimum deadband you could have (assuming this trace) is %.6fV', obj.minimum_deadband);
-            fprintf('    which is %.6 mm/s', obj.minimum_deadband * obj.filtered_teensy_ni_scale);
+            fprintf('The minimum deadband you could have (assuming this trace) is %.6fV\n', obj.minimum_deadband);
+            fprintf('    which is %.6f cm/s\n', obj.minimum_deadband * obj.filtered_teensy_ni_scale);
             
             % suggest you use
-            fprintf('3x deadband would be %.6fV', 3*obj.minimum_deadband);
-            fprintf('    which is %.6 mm/s', 3*obj.minimum_deadband * obj.filtered_teensy_ni_scale);
+            fprintf('3x deadband would be %.6fV\n', 3*obj.minimum_deadband);
+            fprintf('    which is %.6f cm/s\n', 3*obj.minimum_deadband * obj.filtered_teensy_ni_scale);
         end
         
         
@@ -554,7 +553,7 @@ classdef Calibration < handle
             % get the indices in the 
             filtered_idx = strcmp(obj.config.nidaq.ai.channel_names, 'filtered_teensy');
             raw_idx = strcmp(obj.config.nidaq.ai.channel_names, 'raw_teensy');
-            stage_idx = strcmp(obj.config.nidaq.ai.channel_names, 'stage_teensy');
+            stage_idx = strcmp(obj.config.nidaq.ai.channel_names, 'stage');
             
             calibration.channel_names = obj.config.nidaq.ai.channel_names;
             calibration.offset = zeros(1, length(obj.config.nidaq.ai.channel_names));
@@ -570,7 +569,7 @@ classdef Calibration < handle
             
             calibration.soloist_ai_offset = obj.filtered_teensy_soloist_offset;
             calibration.gear_scale = obj.actual_gear_scale;
-            calibration.deadband_V = 3*obj.minimum_deadband;
+            calibration.deadband_V = 1.2*obj.minimum_deadband;
             
             save(fname, 'calibration')
         end

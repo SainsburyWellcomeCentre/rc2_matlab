@@ -189,7 +189,7 @@ classdef Soloist < handle
         end
         
         
-        function average_offset = calibrate_zero(obj, back_pos, forward_pos, offset)
+        function average_offset_mV = calibrate_zero(obj, back_pos, forward_pos, offset)
         %%proc = calibrate_zero(obj, back_pos, forward_pos, offset)
         %   
         %   Runs a calibration routine to determine the correct voltage
@@ -230,9 +230,9 @@ classdef Soloist < handle
                 fprintf('%s: %s ''offset'' must be numeric\n', class(obj), 'calibrate_zero');
                 return
             end
-            if offset > 1 || offset < -1
-                fprintf('%s: %s ''offset'' must be between -1 and 1\n', ...
-                    class(obj), 'calibrate_zero');
+            if offset > max(obj.offset_limits) || offset < min(obj.offset_limits)
+                fprintf('%s: %s ''offset'' must be between %.2f and %.2f\n', ...
+                    class(obj), 'calibrate_zero', min(obj.offset_limits), max(obj.offset_limits));
                 return
             end
             
@@ -260,19 +260,23 @@ classdef Soloist < handle
             % give it 60s to complete
             tic;
             while reader.available() == 0
-                if toc(t) > 60
+                if toc > 60
                     fprintf('no return signal from calibrate_zero\n');
                     return
                 end
             end
             
+            fprintf('reading...');
             ret = [];
-            for i = 1 : obj.reader.available()
-                ret(i) = obj.reader.read();
+            for i = 1 : reader.available()
+                ret(i) = reader.read();
             end
             
             str = char(ret);
-            average_offset = str2double(str);
+            fprintf('%s...', str);
+            
+            % return value is in V, convert to mV
+            average_offset_mV = str2double(str)*1e3;
         end
         
         

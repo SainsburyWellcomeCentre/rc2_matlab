@@ -8,12 +8,12 @@
 
 #include "velocity.h"
 #include "ao.h"
-#include <math.h>
+#include "trigger_input.h"
 
 #define DAC_OFFSET 		0.5
 #define MIN_VOLTS 		-0.5
 
-#define MAX_VELOCITY 	400  // mm/s 
+#define TARGET_VELOCITY 	400  // mm/s 
 
 #define DWELL_MS  		2000  // 2 s
 #define RAMP_DUR_MS 	200   // 200 ms
@@ -26,7 +26,7 @@ AnalogOut ao = AnalogOut();
 TriggerInput trig_in = TriggerInput();
 
 
-bool trigger_received = 0;
+bool wait_for_trigger = 1;
 unsigned long initial_time = millis();
 unsigned long now;
 unsigned long dt;
@@ -39,6 +39,7 @@ setup() {
     //    see class definition for details.
     ao.setup(DAC_OFFSET);
     vel.setup();
+    vel.loop(0, MIN_VOLTS, DAC_OFFSET);
     trig_in.setup();
 }
 
@@ -56,7 +57,7 @@ loop() {
     }
 
     if (wait_for_trigger) {
-    	return
+    	return;
     }
 	
 	// Get current time
@@ -69,18 +70,24 @@ loop() {
 	}
 	
 	if ((dt >= DWELL_MS) && (dt < (DWELL_MS + RAMP_DUR_MS))) {
-		velocity = MAX_VELOCITY*(dt - DWELL_MS)/RAMP_DUR_MS;
+		velocity = TARGET_VELOCITY*(dt - DWELL_MS)/RAMP_DUR_MS;
+        vel.loop(velocity, MIN_VOLTS, DAC_OFFSET);
 	} else if ((dt >= (DWELL_MS + RAMP_DUR_MS)) && (dt < (DWELL_MS + RAMP_DUR_MS + MAX_DUR_MS))) {
-		velocity = MAX_VELOCITY;
+		velocity = TARGET_VELOCITY;
+        vel.loop(velocity, MIN_VOLTS, DAC_OFFSET);
 	} else if ((dt >= (DWELL_MS + RAMP_DUR_MS + MAX_DUR_MS)) && (dt < (DWELL_MS + 2*RAMP_DUR_MS + MAX_DUR_MS))) {
-		velocity = MAX_VELOCITY*((DWELL_MS + 2*RAMP_DUR_MS + MAX_DUR_MS) - dt)/RAMP_DUR_MS;
-	} else if (dt > (DWELL_MS + 2*RAMP_DUR_MS + MAX_DUR_MS)) {
+		velocity = TARGET_VELOCITY*((DWELL_MS + 2*RAMP_DUR_MS + MAX_DUR_MS) - dt)/RAMP_DUR_MS;
+        vel.loop(velocity, MIN_VOLTS, DAC_OFFSET);
+	} else if (dt > (DWELL_MS + 2*RAMP_DUR_MS + MAX_DUR_MS)) { 
+        vel.current_volts = 0.5;
 		wait_for_trigger = 1;
 	}
 	
 	// Compute the velocity as a voltage
-    vel.loop(velocity, MIN_VOLTS, DAC_OFFSET);
+    
 	
+    //if (vel.current_volts < 0.4) vel.current_volts = 0.5;
+    
 	// output the voltage
 	ao.loop(1, vel.current_volts);
 }

@@ -274,7 +274,7 @@ classdef Controller < handle
         
         
         function reset_pc_position(obj)
-            obj.position.reset();
+            %obj.position.reset();
         end
         
         
