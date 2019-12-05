@@ -1,5 +1,8 @@
 function config = load_config()
 
+config.use_calibration_file    = true;
+config.calibration_file        = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\rc\main\calibration.mat';
+
 config.saving.save_to           = 'C:\Users\Mateo\Desktop\DefaultData';
 config.saving.config_file       = mfilename('fullpath');
 config.saving.main_dir          = fileparts(fileparts(fileparts(config.saving.config_file))); % assume three levels deep
@@ -9,9 +12,6 @@ config.stage.start_pos          = 1450;
 config.stage.back_limit         = 1470;
 config.stage.forward_limit      = 250;
 config.stage.max_limits         = [1470, 15];
-
-config.use_calibration_file    = false;
-config.calibration_file        = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\main\calibration.mat';
 
 config.nidaq.rate               = 10000;
 config.nidaq.log_every          = 1000;
@@ -70,7 +70,6 @@ else
     config.soloist.gear_scale   = -4000;
     config.soloist.deadband     = 0.005;
 end
-config.soloist.v_per_cm_per_s   = 1/40;
 
 config.pump.do_name             = 'pump';
 config.pump.init_state          = 0;

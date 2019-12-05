@@ -73,6 +73,7 @@ classdef Calibration < handle
             obj.zero_teensy = ZeroTeensy(obj.ni, config);
             obj.treadmill = Treadmill(obj.ni, config);
             
+            calib.teensy.load('forward_only', true);
             obj.multiplexer.listen_to('teensy');
         end
         
@@ -188,8 +189,8 @@ classdef Calibration < handle
             obj.filtTeensy2ni_scale = obj.max_velocity/(obj.filtTeensy2ni_max - obj.filtTeensy2ni_offset)/10;
             obj.rawTeensy2ni_scale = obj.max_velocity/(obj.rawTeensy2ni_max - obj.rawTeensy2ni_offset)/10;
             
-            fprintf('Filtered teensy scale:  %.6f cm/s', obj.filtTeensy2ni_scale);
-            fprintf('Raw teensy scale:  %.6f cm/s', obj.rawTeensy2ni_scale);
+            fprintf('Filtered teensy scale:  %.6f cm/s\n', obj.filtTeensy2ni_scale);
+            fprintf('Raw teensy scale:  %.6f cm/s\n', obj.rawTeensy2ni_scale);
         end
         
         
@@ -227,6 +228,9 @@ classdef Calibration < handle
             %TODO: check the units of this
             % actual offset is the two combined
             obj.filtTeensy2soloist_offset = teensy_ni_offset_mV - relative_filtTeensy2soloist_offset;
+            
+            % stop gear mode
+            obj.soloist.abort()
             
             fprintf('Soloist AI offset: %.10f mV\n', obj.filtTeensy2soloist_offset);
             
@@ -297,6 +301,9 @@ classdef Calibration < handle
             
             % The user types in actual velocity attained from soloist scope
             actual_velocity = input('Actual velocity (mm/s):');
+            
+            % stop gear mode
+            obj.soloist.abort();
             
             % Ratio of target to actual
             p = obj.target_velocity/actual_velocity;
@@ -527,9 +534,11 @@ classdef Calibration < handle
             fprintf('The minimum deadband you could have (assuming this trace) is %.6fV\n', obj.minimum_deadband);
             fprintf('    which is %.6f cm/s\n', obj.minimum_deadband * obj.filtTeensy2ni_scale);
             
+            scale = 1.2;
+            
             % suggest you use
-            fprintf('3x deadband would be %.6fV\n', 3*obj.minimum_deadband);
-            fprintf('    which is %.6f cm/s\n', 3*obj.minimum_deadband * obj.filtTeensy2ni_scale);
+            fprintf('%.1fx deadband would be %.6fV\n', scale, scale*obj.minimum_deadband);
+            fprintf('    which is %.6f cm/s\n', scale*obj.minimum_deadband * obj.filtTeensy2ni_scale);
         end
         
         
@@ -560,7 +569,7 @@ classdef Calibration < handle
             proc.wait_for(0.5);
             
             % output the same offset as recorded on the NI
-            obj.ni.ao.task.outputSingleScan(obj.filtTeensy2ni_offset);
+            obj.ni.ao.task.outputSingleScan(obj.filtTeensy2ni_offset+0.00696105);
             
             % listen to the NI
             obj.multiplexer.listen_to('ni');
