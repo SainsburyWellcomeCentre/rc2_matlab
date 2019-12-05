@@ -62,9 +62,9 @@ config.teensy.start_script      = 'forward_only';
 config.soloist.dir              = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\soloist_c\exe';
 config.soloist.default_speed    = 200;
 if config.use_calibration_file
-    config.soloist.ai_offset    = calibration.soloist_ai_offset;
+    config.soloist.ai_offset    = calibration.filtTeensy2soloist_offset;
     config.soloist.gear_scale   = calibration.gear_scale;
-    config.soloist.deadband     = calibration.deadband;
+    config.soloist.deadband     = calibration.deadband_V;
 else
     config.soloist.ai_offset    = -508.0;
     config.soloist.gear_scale   = -4000;
