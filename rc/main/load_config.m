@@ -47,8 +47,8 @@ config.nidaq.co.pulse_dur       = 125;  % ms, e.g. 125 = 80Hz
 config.nidaq.co.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
 
 config.nidaq.do.dev             = 'Dev2';
-config.nidaq.do.channel_names   = {'pump', 'multiplexer', 'solenoid', 'zero_teensy'};
-config.nidaq.do.channel_id      = {'port0/line0', 'port0/line1', 'port0/line2', 'port0/line3'};
+config.nidaq.do.channel_names   = {'pump', 'multiplexer', 'solenoid', 'zero_teensy', 'visual_stimulus'};
+config.nidaq.do.channel_id      = {'port0/line0', 'port0/line1', 'port0/line2', 'port0/line3', 'port0/line4'};
 config.nidaq.do.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
 
 config.nidaq.di.dev             = 'Dev2';
@@ -87,6 +87,9 @@ config.soloist_input_src.init_source = 'teensy';
 config.soloist_input_src.teensy = 1;
 
 config.zero_teensy.do_name      = 'zero_teensy';
+
+config.visual_stimulus.do_name  = 'visual_stimulus';
+config.visual_stimulus.init_state = 1;
 
 config.trigger_input.init_source = 'from_soloist'; % 'from_soloist' or 'from_teensy'
 
