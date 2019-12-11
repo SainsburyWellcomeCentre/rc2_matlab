@@ -486,8 +486,9 @@ classdef rc2guiController < handle
                 end
                 
                 % create a protocol sequence
+                bd = min(obj.back_distance, max(obj.stage_limits) - (reward_location + reward_distance));
                 obj.training_seq = setup_training_sequence(obj.setup, closed_loop, reward_location, ...
-                    reward_distance, obj.back_distance, obj.n_loops);
+                    reward_distance, bd, obj.n_loops);
                 set(obj.view.handles.pushbutton_start_training, 'string', 'STOP TRAINING')
                 addlistener(obj.training_seq, 'current_trial', 'PostSet', @(src, evnt)obj.training_trial_updated(src, evnt));
                 addlistener(obj.training_seq, 'forward_trials', 'PostSet', @(src, evnt)obj.forward_training_trial_updated(src, evnt));
