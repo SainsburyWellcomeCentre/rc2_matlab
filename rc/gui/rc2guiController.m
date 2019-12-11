@@ -480,6 +480,11 @@ classdef rc2guiController < handle
                 reward_location = str2double(get(obj.view.handles.edit_reward_location, 'string')); %#ok<*PROP>
                 reward_distance = str2double(get(obj.view.handles.edit_reward_distance, 'string'));
                 
+                
+                if ~isempty(obj.training_seq)
+                    delete(obj.training_seq)
+                end
+                
                 % create a protocol sequence
                 obj.training_seq = setup_training_sequence(obj.setup, closed_loop, reward_location, ...
                     reward_distance, obj.back_distance, obj.n_loops);
