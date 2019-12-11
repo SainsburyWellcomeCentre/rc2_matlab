@@ -5,7 +5,7 @@ classdef Saver < handle
         save_to
         prefix
         suffix
-        index = 0
+        index = 1
     end
     
     properties (SetAccess = private, Hidden = true)
@@ -59,27 +59,27 @@ classdef Saver < handle
         function set_save_to(obj, str)
             if obj.is_logging; return; end
             obj.save_to = str;
-            obj.index = 0;
+            obj.index = 1;
         end
         
         
         function set_prefix(obj, str)
             if obj.is_logging; return; end
             obj.prefix = str;
-            obj.index = 0;
+            obj.index = 1;
         end
         
         
         function set_suffix(obj, str)
             if obj.is_logging; return; end
             obj.suffix = str;
-            obj.index = 0;
+            obj.index = 1;
         end
         
         
         function set_index(obj, val)
-            if ~isnumeric(val) || isinf(val) || isnan(val) || val < 0
-                fprintf('%s: %s ''val'' must be numeric and >= 0', class(obj), 'set_index');
+            if ~isnumeric(val) || isinf(val) || isnan(val) || val < 1
+                fprintf('%s: %s ''val'' must be numeric and >= 1', class(obj), 'set_index');
                 return
             end
             if obj.is_logging; return; end
@@ -121,12 +121,29 @@ classdef Saver < handle
         
         
         function setup_logging(obj)
+            
+            % if saving is not enabled, do nothing
             if ~obj.enable; return; end
+            
+            % check  to make sure the file doesn't already exist
+            if exist(obj.logging_fname(), 'file')
+                uans = questdlg('File already exists. Overwrite?', 'File warning', 'Yes', 'No', 'No');
+                if strcmp(uans, 'No')
+                    error('File already exists. Aborting.')
+                end
+            end
+                    
+            % create the right directory
             obj.create_directory();
-            obj.index = obj.index + 1;
             obj.index_single_trial = 0;
+            
+            % open the file for writing
             obj.fid = fopen(obj.logging_fname(), 'w');
+            
+            % save the config file
             obj.save_config()
+            
+            % set the is_logging flag to true
             obj.is_logging = true;
         end
         
@@ -148,6 +165,7 @@ classdef Saver < handle
         
         function stop_logging(obj)
             if ~obj.enable; return; end
+            obj.index = obj.index + 1;
             obj.is_logging = false;
             fclose(obj.fid);
             obj.fid = [];
