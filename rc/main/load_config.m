@@ -74,7 +74,7 @@ end
 config.pump.do_name             = 'pump';
 config.pump.init_state          = 0;
 
-config.reward.randomize         = true;
+config.reward.randomize         = false;
 config.reward.min_time          = 3;
 config.reward.max_time          = 7;
 config.reward.duration          = 50;

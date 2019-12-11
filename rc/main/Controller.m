@@ -168,7 +168,8 @@ classdef Controller < handle
         end
             
         function give_reward(obj)
-            obj.reward.give_reward();
+%             obj.reward.give_reward();
+            obj.reward.start_reward(0)
         end
         
         
