@@ -20,6 +20,7 @@ classdef Plotting < handle
         n_nan_points
         ylim
         units
+        ax_positions
     end
     
     methods
@@ -36,19 +37,24 @@ classdef Plotting < handle
             
             obj.ylim = config.plotting.ylim;
             obj.units = config.plotting.units;
+            obj.ax_positions = config.plotting.ax_positions;
             
             obj.fig = figure();
             set(obj.fig, 'position', config.plotting.fig.position);
             set(obj.fig, 'closerequestfcn', @(x, y)obj.close_request(x, y));
+            set(obj.fig, 'color', [0, 0, 0]);
+            
             for i = 1 : obj.n_chans
-                obj.ax(i) = subplot(obj.n_chans, 1, i);
-                set(obj.ax(i), 'plotboxaspectratio', [20, 1, 1]);
-                p = get(obj.ax(i), 'position');
-                p([1, 3]) = [0.05, 0.9];
-                if i ~= obj.n_chans
+                obj.ax(i) = axes;%subplot(obj.n_chans, 1, i);
+                %set(obj.ax(i), 'plotboxaspectratio', [20, 1, 1]);
+                set(obj.ax(i), 'color', [0, 0, 0]);
+                set(obj.ax(i), 'position', obj.ax_positions{i})
+                %p = get(obj.ax(i), 'position');
+                %p([1, 3]) = [0.05, 0.9];
+                if ~ismember(i, [3, obj.n_chans])
                     set(obj.ax(i), 'xtick', []);
                 else
-                    xlabel('Time (s)')
+                    xlabel('Time (s)', 'color', 'w');
                 end
             end
             
@@ -84,9 +90,10 @@ classdef Plotting < handle
                 set(obj.fig, 'currentaxes', obj.ax(i));
                 obj.lines(i) = line(obj.plot_t, obj.plot_data(:, i), 'color', cols(i, :));
                 set(obj.ax(i), 'xlim', obj.plot_t([1, end]), 'ylim', obj.ylim{i});
-                set(obj.ax(i), 'tickdir', 'out');
-                ylabel(obj.units{i});
-                title(obj.chan_names{i}, 'fontsize', 8, 'interpreter', 'none');
+                %set(obj.ax(i), 'tickdir', 'out');
+                set(obj.ax(i), 'ycolor', 'w', 'xcolor', 'w');
+                ylabel(obj.units{i}, 'color', 'w');
+                title(obj.chan_names{i}, 'fontsize', 8, 'interpreter', 'none', 'color', [1, 1, 1]);
             end
         end
         
