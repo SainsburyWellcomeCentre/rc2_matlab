@@ -95,15 +95,17 @@ classdef ProtocolSequence < handle
             end
             obj.abort = true;
             obj.current_sequence.stop();
+            %delete(obj.current_sequence);
             obj.current_sequence = [];
         end
         
         
         function cleanup(obj)
-            
+            fprintf('running cleanup in protseq\n')
             obj.running = false;
             obj.ctl.soloist.abort();
             obj.ctl.block_treadmill()
+            obj.ctl.vis_stim.off();
             obj.ctl.stop_acq();
             obj.ctl.stop_sound();
         end

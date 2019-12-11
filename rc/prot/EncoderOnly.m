@@ -78,6 +78,12 @@ classdef EncoderOnly < handle
                 % setup code to handle premature stopping
                 h = onCleanup(@obj.cleanup);
                 
+                % make sure the treadmill is blocked
+                obj.ctl.block_treadmill();
+                
+                % make sure vis stim is off
+                obj.ctl.vis_stim.off();
+                
                 % load correct direction on teensy
                 obj.ctl.teensy.load(obj.direction);
                 
@@ -89,7 +95,6 @@ classdef EncoderOnly < handle
                 % start acquiring data if the protocol is handling that
                 if obj.handle_acquisition
                     obj.ctl.play_sound();
-                    obj.ctl.prepare_acq();
                     obj.ctl.start_acq();
                 end
                 
@@ -97,6 +102,22 @@ classdef EncoderOnly < handle
                 % place
                 proc = obj.ctl.soloist.move_to(obj.stage_pos, obj.ctl.soloist.default_speed, true);
                 proc.wait_for(0.5);
+                
+                
+                % if we are using the teensy to determine position reset
+                % the position onboard teensy
+                if strcmp(obj.integrate_using, 'teensy')
+                    obj.ctl.reset_teensy_position();
+                end
+                
+                 % we want to reset the position anyway
+                obj.ctl.reset_pc_position();
+                
+                % start integrating the position
+                obj.ctl.position.stop();
+                
+                % switch vis stim on
+                obj.ctl.vis_stim.on();
                 
                 % wait a bit of time before starting the trial
                 tic;
@@ -109,18 +130,6 @@ classdef EncoderOnly < handle
                     end
                 end
                 
-                % we want to reset the position anyway
-                obj.ctl.reset_pc_position();
-                
-                % start integrating the position
-                obj.ctl.position.stop();
-                
-                % if we are using the teensy to determine position reset
-                % the position onboard teensy
-                if strcmp(obj.integrate_using, 'teensy')
-                    obj.ctl.reset_teensy_position();
-                end
-                
                 % release block on the treadmill
                 obj.ctl.unblock_treadmill()
                 
@@ -128,7 +137,6 @@ classdef EncoderOnly < handle
                 if obj.log_trial
                     obj.log_trial_fname = obj.ctl.start_logging_single_trial();
                 end
-                
                 
                 if strcmp(obj.integrate_using, 'teensy')
                     
@@ -163,6 +171,9 @@ classdef EncoderOnly < handle
                 % block the treadmill
                 obj.ctl.block_treadmill()
                 
+                % switch vis stim off
+                obj.ctl.vis_stim.off();
+                
                 % stop logging single trial
                 if obj.log_trial
                     obj.ctl.stop_logging_single_trial();
@@ -193,6 +204,7 @@ classdef EncoderOnly < handle
                 obj.running = false;
                 obj.ctl.soloist.abort();
                 obj.ctl.block_treadmill();
+                obj.ctl.vis_stim.off();
                 obj.ctl.stop_acq();
                 if obj.log_trial
                     obj.ctl.stop_logging_single_trial();
@@ -242,7 +254,8 @@ classdef EncoderOnly < handle
             obj.running = false;
             obj.abort = false;
             
-            obj.ctl.block_treadmill()
+            obj.ctl.block_treadmill();
+            obj.ctl.vis_stim.off();
             
             if obj.handle_acquisition
                 obj.ctl.soloist.abort();

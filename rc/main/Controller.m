@@ -16,6 +16,7 @@ classdef Controller < handle
         zero_teensy
         trigger_input
         data_transform
+        vis_stim
         
         data
     end
@@ -53,6 +54,7 @@ classdef Controller < handle
             obj.zero_teensy = ZeroTeensy(obj.ni, config);
             obj.trigger_input = TriggerInput(obj.ni, config);
             obj.data_transform = DataTransform(config);
+            obj.vis_stim = VisStim(obj.ni, config);
         end
         
         
@@ -115,6 +117,7 @@ classdef Controller < handle
                 error('already acquiring data')
                 return %#ok<UNRCH>
             end
+            
             obj.saver.setup_logging();
             obj.ni.prepare_acq(@(x, y)obj.h_callback(x, y))
             obj.plotting.reset_vals();

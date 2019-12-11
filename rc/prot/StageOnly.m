@@ -81,6 +81,9 @@ classdef StageOnly < handle
                 % make sure the treadmill is blocked
                 obj.ctl.block_treadmill();
                 
+                % switch vis stim off
+                obj.ctl.vis_stim.off();
+                
                 % load teensy and listen to correct source
                 obj.ctl.multiplexer.listen_to('ni');
                 
@@ -92,7 +95,6 @@ classdef StageOnly < handle
                 
                 if obj.handle_acquisition
                     obj.ctl.play_sound();
-                    obj.ctl.prepare_acq();
                     obj.ctl.start_acq();
                 end
                 
@@ -100,6 +102,9 @@ classdef StageOnly < handle
                 % terminate.
                 proc = obj.ctl.soloist.move_to(obj.start_pos, obj.ctl.soloist.default_speed, true);
                 proc.wait_for(0.5);
+                
+                % switch vis stim on
+                obj.ctl.vis_stim.on();
                 
                 obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit);
                 
@@ -168,9 +173,11 @@ classdef StageOnly < handle
                     end
                 end
                 
-                
                 % block treadmill
                 obj.ctl.block_treadmill()
+                
+                % switch vis stim off
+                obj.ctl.vis_stim.off();
                 
                 % stop logging the single trial.
                 if obj.log_trial
@@ -180,6 +187,7 @@ classdef StageOnly < handle
                 % wait for reward to complete then stop acquisition
                 obj.ctl.reward.start_reward(obj.wait_for_reward)
                 
+                % if handling the acquisition stop 
                 if obj.handle_acquisition
                     obj.ctl.stop_acq();
                     obj.ctl.stop_sound();
@@ -198,6 +206,8 @@ classdef StageOnly < handle
                 obj.running = false;
                 obj.ctl.soloist.abort();
                 obj.ctl.block_treadmill();
+                obj.ctl.vis_stim.off();
+                
                 obj.ctl.stop_acq();
                 obj.ctl.stop_logging_single_trial();
                 obj.ctl.stop_sound();
@@ -248,6 +258,7 @@ classdef StageOnly < handle
             obj.abort = false;
             
             obj.ctl.block_treadmill()
+            obj.ctl.vis_stim.off();
             
             if obj.handle_acquisition
                 obj.ctl.soloist.abort();

@@ -61,6 +61,9 @@ classdef Coupled < handle
                 % make sure the treadmill is blocked
                 obj.ctl.block_treadmill();
                 
+                % make sure vis stim is off
+                obj.ctl.vis_stim.off();
+                
                 % load teensy
                 obj.ctl.teensy.load(obj.direction);
                 
@@ -74,7 +77,6 @@ classdef Coupled < handle
                 % prepare the acquisition
                 if obj.handle_acquisition
                     obj.ctl.play_sound();
-                    obj.ctl.prepare_acq();
                     obj.ctl.start_acq();
                 end
                 
@@ -88,6 +90,9 @@ classdef Coupled < handle
                 
                 % start integrating position
                 obj.ctl.position.start();
+                
+                % switch vis stim on
+                obj.ctl.vis_stim.on();
                 
                 % the soloist will connect, setup some parameters and then
                 % wait for the solenoid signal to go low
@@ -120,13 +125,16 @@ classdef Coupled < handle
                     if obj.abort
                         obj.running = false;
                         obj.abort = false;
+                        %obj.cleanup();
                         return
                     end
                 end
                 
-                disp('read input')
                 % block the treadmill
                 obj.ctl.block_treadmill()
+                
+                % switch vis stim off
+                obj.ctl.vis_stim.off();
                 
                 % stop integrating position
                 obj.ctl.position.stop();
@@ -159,11 +167,14 @@ classdef Coupled < handle
                 obj.running = false;
                 obj.ctl.soloist.abort();
                 obj.ctl.block_treadmill();
+                obj.ctl.vis_stim.off();
+                
                 obj.ctl.stop_acq();
                 if obj.log_trial
                     obj.ctl.stop_logging_single_trial();
                 end
                 obj.ctl.stop_sound();
+                
                 rethrow(ME)
             end
         end
@@ -210,7 +221,10 @@ classdef Coupled < handle
             obj.running = false;
             obj.abort = false;
             
+            fprintf('running cleanup in coupled\n')
+            
             obj.ctl.block_treadmill()
+            obj.ctl.vis_stim.off();
             
             if obj.handle_acquisition
                 obj.ctl.soloist.abort();

@@ -42,6 +42,10 @@ classdef Loco2LocoVest < handle
             
             try
                 
+                if obj.handle_acquisition
+                    obj.ctl.prepare_acq();
+                end
+                
                 %cfg = obj.get_config();
                 %obj.ctl.save_single_trial_config(cfg);
                 
@@ -64,7 +68,6 @@ classdef Loco2LocoVest < handle
                 % prepare the acquisition
                 if obj.handle_acquisition
                     obj.ctl.play_sound();
-                    obj.ctl.prepare_acq();
                     obj.ctl.start_acq();
                 end
                 
@@ -149,6 +152,7 @@ classdef Loco2LocoVest < handle
                 obj.running = false;
                 obj.ctl.soloist.abort();
                 obj.ctl.block_treadmill();
+                obj.ctl.vis_stim.off();
                 obj.ctl.stop_acq();
                 if obj.log_trial
                     obj.ctl.stop_logging_single_trial();
@@ -181,6 +185,7 @@ classdef Loco2LocoVest < handle
             obj.abort = false;
             
             obj.ctl.block_treadmill()
+            obj.ctl.vis_stim.off();
             
             if obj.handle_acquisition
                 obj.ctl.soloist.abort();
