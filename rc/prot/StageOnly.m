@@ -54,17 +54,24 @@ classdef StageOnly < handle
         end
         
         
-        function run(obj)
+        function final_position = run(obj)
             
             try
+                
+                % always assume it has finished in positive direction
+                final_position = 1;
                 
                 if isempty(obj.waveform)
                     fprintf('NO WAVEFORM LOADED, SKIPPING\n')
                     return
                 end
                 
-                %cfg = obj.get_config();
-                %obj.ctl.save_single_trial_config(cfg);
+                if obj.handle_acquisition
+                    obj.ctl.prepare_acq();
+                end
+                
+                cfg = obj.get_config();
+                obj.ctl.save_single_trial_config(cfg);
                 
                 obj.running = true;
                 

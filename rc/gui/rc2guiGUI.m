@@ -154,6 +154,7 @@ function edit_save_to_Callback(~, ~, ~)
 function pushbutton_acknowledge_error_Callback(hObject, eventdata, handles)
 handles.controller.acknowledge_error();
 
+
 function edit_move_to_CreateFcn(hObject, ~, ~)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');

@@ -59,9 +59,16 @@ classdef EncoderOnly < handle
         end
         
         
-        function run(obj)
+        function final_position = run(obj)
             
             try
+                
+                % report the end position
+                final_position = 0;
+                
+                if obj.handle_acquisition
+                    obj.ctl.prepare_acq();
+                end
                 
                 cfg = obj.get_config();
                 obj.ctl.save_single_trial_config(cfg);
@@ -163,6 +170,7 @@ classdef EncoderOnly < handle
                 
                 % make sure the stage has moved foward before giving reward
                 if obj.ctl.get_position() > 0
+                    final_position = 1;
                     % start reward, block until finished if necessary
                     obj.ctl.reward.start_reward(obj.wait_for_reward)
                 end

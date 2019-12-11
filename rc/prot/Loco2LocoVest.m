@@ -73,14 +73,6 @@ classdef Loco2LocoVest < handle
                 proc = obj.ctl.soloist.move_to(obj.start_pos, obj.ctl.soloist.default_speed, true);
                 proc.wait_for(0.5);
                 % wait until process controlling movement is finished
-%                 while proc.proc.isAlive()
-%                     pause(0.005);
-%                     if obj.abort
-%                         obj.running = false;
-%                         obj.abort = false;
-%                         return
-%                     end
-%                 end
                 
                 % reset position
                 obj.ctl.reset_pc_position();

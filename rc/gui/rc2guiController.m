@@ -8,7 +8,7 @@ classdef rc2guiController < handle
         move_to_pos
         reward_distance
         reward_location
-        n_loops = 100
+        n_loops = 200
         back_distance = 50
         condition
         
@@ -470,6 +470,7 @@ classdef rc2guiController < handle
                 % stop the training sequence and reset the button
                 obj.training_seq.stop();
                 set(obj.view.handles.pushbutton_start_training, 'string', 'START TRAINING')
+                
             else
                 
                 % determine if are we training in closed loop or open loop
@@ -484,6 +485,10 @@ classdef rc2guiController < handle
                     reward_distance, obj.back_distance, obj.n_loops);
                 set(obj.view.handles.pushbutton_start_training, 'string', 'STOP TRAINING')
                 addlistener(obj.training_seq, 'current_trial', 'PostSet', @(src, evnt)obj.training_trial_updated(src, evnt));
+                addlistener(obj.training_seq, 'forward_trials', 'PostSet', @(src, evnt)obj.forward_training_trial_updated(src, evnt));
+                addlistener(obj.training_seq, 'backward_trials', 'PostSet', @(src, evnt)obj.backward_training_trial_updated(src, evnt));
+                
+                % run the training sequence
                 obj.training_seq.run()
                 set(obj.view.handles.pushbutton_start_training, 'string', 'START TRAINING')
             end
@@ -580,6 +585,18 @@ classdef rc2guiController < handle
         function training_trial_updated(obj, ~, ~)
             str = sprintf('%i', obj.training_seq.current_trial);
             set(obj.view.handles.edit_training_trial, 'string', str);
+        end
+        
+        
+        function forward_training_trial_updated(obj, ~, ~)
+            str = sprintf('%i', obj.training_seq.forward_trials);
+            set(obj.view.handles.text_n_forwards, 'string', str);
+        end
+        
+        
+        function backward_training_trial_updated(obj, ~, ~)
+            str = sprintf('%i', obj.training_seq.backward_trials);
+            set(obj.view.handles.text_n_backwards, 'string', str);
         end
         
         

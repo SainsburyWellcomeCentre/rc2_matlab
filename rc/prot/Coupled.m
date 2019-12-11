@@ -37,10 +37,19 @@ classdef Coupled < handle
         
         
         
-        function run(obj)
+        function final_position = run(obj)
             
             try
                 
+                % report the end position
+                final_position = 0;
+                
+                % prepare to acquire data
+                if obj.handle_acquisition
+                    obj.ctl.prepare_acq();
+                end
+                
+                % get and save config
                 cfg = obj.get_config();
                 obj.ctl.save_single_trial_config(cfg);
                 
@@ -130,6 +139,7 @@ classdef Coupled < handle
                 % wait for reward to complete then stop acquisition
                 % make sure the stage has moved foward
                 if obj.ctl.get_position() > 0
+                    final_position = 1;
                     obj.ctl.reward.start_reward(obj.wait_for_reward)
                 end
                 

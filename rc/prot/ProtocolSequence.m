@@ -9,7 +9,9 @@ classdef ProtocolSequence < handle
     end
     
     properties (SetObservable = true)
-        current_trial = 0;
+        current_trial = 1;
+        forward_trials = 0;
+        backward_trials = 0;
     end
     
     
@@ -44,12 +46,18 @@ classdef ProtocolSequence < handle
                 end
                 
                 % start running this protocol
-                obj.sequence{i}.run();
+                final = obj.sequence{i}.run();
                 
                 if obj.abort
                     obj.running = false;
                     obj.abort = false;
                     return
+                end
+                
+                if final
+                    obj.forward_trials = obj.forward_trials + 1;
+                else
+                    obj.backward_trials = obj.backward_trials + 1;
                 end
             end
             
@@ -59,7 +67,9 @@ classdef ProtocolSequence < handle
         
         function prepare(obj)
             
-            obj.current_trial = 0;
+            obj.current_trial = 1;
+            obj.backward_trials = 0;
+            obj.forward_trials = 0;
             
             % set run_once properties to false
             for i = 1 : length(obj.sequence)
