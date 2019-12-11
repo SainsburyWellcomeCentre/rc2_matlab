@@ -36,10 +36,11 @@ classdef SoloistAbortProc < handle
         end
         
         
-        function run(obj)
+        function run(obj, sig)
             % send the abort signal.
             %  this doesn't close the process
-            obj.send_signal('abort');
+            VariableDefault('sig', 'stop');
+            obj.send_signal(sig);
         end
         
         

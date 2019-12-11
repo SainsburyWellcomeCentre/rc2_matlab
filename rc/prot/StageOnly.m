@@ -204,7 +204,7 @@ classdef StageOnly < handle
                 % if an error has occurred, perform the following whether
                 % or not the singple protocol is handling the acquisition
                 obj.running = false;
-                obj.ctl.soloist.abort();
+                obj.ctl.soloist.stop();
                 obj.ctl.block_treadmill();
                 obj.ctl.vis_stim.off();
                 
@@ -261,7 +261,7 @@ classdef StageOnly < handle
             obj.ctl.vis_stim.off();
             
             if obj.handle_acquisition
-                obj.ctl.soloist.abort();
+                obj.ctl.soloist.stop();
                 obj.ctl.stop_acq();
                 obj.ctl.stop_sound();
                 %TODO: stop waveform running

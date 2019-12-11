@@ -80,13 +80,47 @@ classdef Soloist < handle
         %   aborts all tasks and resets all parameters on the soloist
         
             % run the abort command (this is in SoloistAbortProc)
-            obj.h_abort.run();
+            obj.h_abort.run('abort');
             
             % clear all other running processes (if any)
             obj.proc_array.clear_all();
             
             % TODO: look for task errors here?
             obj.h_abort.restart();
+        end
+        
+        
+        
+        function stop(obj)
+        %%STOP(obj)
+        %   disables the axis, resets the stage and stops all the
+        %   processes.
+        
+            % run the abort command (this is in SoloistAbortProc)
+            obj.h_abort.run('stop');
+            
+            % clear all other running processes (if any)
+            obj.proc_array.clear_all();
+            
+            % TODO: look for task errors here?
+            obj.h_abort.restart();
+        end
+        
+        
+        
+        function proc = communicate(obj)
+        %%COMMUNICATE(obj)
+        %   communicates and resets the connection
+        
+            cmd = obj.full_command('communicate');
+            disp(cmd)
+            
+            % start running the process
+            runtime = java.lang.Runtime.getRuntime();
+            p_java = runtime.exec(cmd);
+            
+            proc = ProcHandler(p_java);
+            obj.proc_array.add_process(proc);
         end
         
         

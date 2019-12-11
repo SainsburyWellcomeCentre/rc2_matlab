@@ -150,7 +150,7 @@ classdef Loco2LocoVest < handle
                 % if an error has occurred, perform the following whether
                 % or not the single protocol is handling the acquisition
                 obj.running = false;
-                obj.ctl.soloist.abort();
+                obj.ctl.soloist.stop();
                 obj.ctl.block_treadmill();
                 obj.ctl.vis_stim.off();
                 obj.ctl.stop_acq();
@@ -188,7 +188,7 @@ classdef Loco2LocoVest < handle
             obj.ctl.vis_stim.off();
             
             if obj.handle_acquisition
-                obj.ctl.soloist.abort();
+                obj.ctl.soloist.stop();
                 obj.ctl.stop_acq();
                 obj.ctl.stop_sound();
             end

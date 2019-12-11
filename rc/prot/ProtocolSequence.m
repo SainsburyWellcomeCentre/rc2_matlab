@@ -103,7 +103,7 @@ classdef ProtocolSequence < handle
         function cleanup(obj)
             fprintf('running cleanup in protseq\n')
             obj.running = false;
-            obj.ctl.soloist.abort();
+            obj.ctl.soloist.stop();
             obj.ctl.block_treadmill()
             obj.ctl.vis_stim.off();
             obj.ctl.stop_acq();

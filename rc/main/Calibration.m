@@ -230,7 +230,7 @@ classdef Calibration < handle
             obj.filtTeensy2soloist_offset = teensy_ni_offset_mV - relative_filtTeensy2soloist_offset;
             
             % stop gear mode
-            obj.soloist.abort()
+            obj.soloist.stop()
             
             fprintf('Soloist AI offset: %.10f mV\n', obj.filtTeensy2soloist_offset);
             
@@ -303,7 +303,7 @@ classdef Calibration < handle
             actual_velocity = input('Actual velocity (mm/s):');
             
             % stop gear mode
-            obj.soloist.abort();
+            obj.soloist.stop();
             
             % Ratio of target to actual
             p = obj.target_velocity/actual_velocity;
@@ -362,7 +362,7 @@ classdef Calibration < handle
             obj.measure();
             
             % abort the soloist lprocess
-            obj.soloist.abort()
+            obj.soloist.stop()
             
             % index of the filtered teensy
             stage_idx = strcmp(obj.config.nidaq.ai.channel_names, 'stage');
@@ -436,7 +436,7 @@ classdef Calibration < handle
             obj.measure();
             
             % stop the soloist running
-            obj.soloist.abort()
+            obj.soloist.stop()
             
             % index of the filtered teensy
             stage_idx = strcmp(obj.config.nidaq.ai.channel_names, 'stage');
@@ -636,7 +636,7 @@ classdef Calibration < handle
 %             obj.measure();
 %             
 %             % abor this
-%             obj.soloist.abort();
+%             obj.soloist.stop();
 %             
 %             % move to back of stage. wait for move to complete
 %             proc = obj.soloist.move_to(1200); % needs to be configurable

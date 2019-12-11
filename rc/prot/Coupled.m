@@ -36,10 +36,16 @@ classdef Coupled < handle
         end
         
         
-        
         function final_position = run(obj)
             
             try
+                
+                % setup code to handle premature stopping
+                h = onCleanup(@obj.cleanup);
+                
+                % startup initial communication
+                proc = obj.ctl.soloist.communicate();
+                proc.wait_for(0.5);
                 
                 % report the end position
                 final_position = 0;
@@ -49,15 +55,6 @@ classdef Coupled < handle
                     obj.ctl.prepare_acq();
                 end
                 
-                % get and save config
-                cfg = obj.get_config();
-                obj.ctl.save_single_trial_config(cfg);
-                
-                obj.running = true;
-                
-                % setup code to handle premature stopping
-                h = onCleanup(@obj.cleanup);
-                
                 % make sure the treadmill is blocked
                 obj.ctl.block_treadmill();
                 
@@ -66,6 +63,12 @@ classdef Coupled < handle
                 
                 % load teensy
                 obj.ctl.teensy.load(obj.direction);
+                
+                % get and save config
+                cfg = obj.get_config();
+                obj.ctl.save_single_trial_config(cfg);
+                
+                obj.running = true;
                 
                 % listen to correct source
                 obj.ctl.multiplexer.listen_to('teensy');
@@ -165,7 +168,7 @@ classdef Coupled < handle
                 % if an error has occurred, perform the following whether
                 % or not the single protocol is handling the acquisition
                 obj.running = false;
-                obj.ctl.soloist.abort();
+                obj.ctl.soloist.stop();
                 obj.ctl.block_treadmill();
                 obj.ctl.vis_stim.off();
                 
@@ -227,7 +230,7 @@ classdef Coupled < handle
             obj.ctl.vis_stim.off();
             
             if obj.handle_acquisition
-                obj.ctl.soloist.abort();
+                obj.ctl.soloist.stop();
                 obj.ctl.stop_acq();
                 obj.ctl.stop_sound();
             end
