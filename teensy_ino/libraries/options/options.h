@@ -19,8 +19,8 @@
 #define DUAL_TRIGGER            1       // BOOLEAN,  whether or not to use encoder ticks A and B to calculate velocity
 #define TIMEOUT                 50000   // MICROSECONDS, if encoder doesn't move, time to wait before setting velocity to zero 
 #define NM_PER_COUNT            164381  // NM,  distance treadmill travels each tick
-#define PHASE_FACTOR            0.2615 // 0-1,  phase of distance from A to B relative to distance from A to A encoder tick - empirically determined
-#define PHASE_FACTOR_BACK       0.252 
+#define PHASE_FACTOR            0.24625 // 0-1,  phase of distance from A to B relative to distance from A to A encoder tick - empirically determined
+#define PHASE_FACTOR_BACK       0.25    // 0-1,  phase of distance from B to A relative to distance from A to A encoder tick - empirically determined
 
 // PROTOCOLS
 #define FORWARD_ONLY            0
