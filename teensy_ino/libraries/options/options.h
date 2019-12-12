@@ -7,12 +7,11 @@
 
 // VELOCITY
 #define FILTER_ON               1       // BOOL, whether to filter the velocity output with sliding average
-#define VARIABLE_WINDOW         1       // BOOL, whether to decrease the filtering window with faster speeds.
-#define N_MILLIS_LOW            5       // MILLISECONDS, time to average over at low speeds
+#define VARIABLE_WINDOW         0       // BOOL, whether to decrease the filtering window with faster speeds.
+#define N_MILLIS_LOW            3       // MILLISECONDS, time to average over at low speeds
                                             // this is used as the window, if VARIABLE_WINDOW = 0
 											// at MAX_VELOCITY integration is over 1 bin = UPDATE_US
 #define UPDATE_US               250     // MICROSECONDS, update rate for filtered trace
-#define SIGMA_MS                2       // MILLISECONDS, sigma of the exponential for the sigmoid filter
 #define MAX_VELOCITY            1000    // MM/S,  maximum velocity to output as voltage
 #define MAX_VOLTS               2.5     // VOLTS,  voltage offset which MAX_VELOCITY attains
 

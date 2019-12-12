@@ -40,15 +40,17 @@ classdef Coupled < handle
             
             try
                 
+                % report the end position
+                final_position = 0;
+                
+                obj.running = true;
+                
                 % setup code to handle premature stopping
                 h = onCleanup(@obj.cleanup);
                 
                 % startup initial communication
                 proc = obj.ctl.soloist.communicate();
                 proc.wait_for(0.5);
-                
-                % report the end position
-                final_position = 0;
                 
                 % prepare to acquire data
                 if obj.handle_acquisition
@@ -67,8 +69,6 @@ classdef Coupled < handle
                 % get and save config
                 cfg = obj.get_config();
                 obj.ctl.save_single_trial_config(cfg);
-                
-                obj.running = true;
                 
                 % listen to correct source
                 obj.ctl.multiplexer.listen_to('teensy');
@@ -91,9 +91,6 @@ classdef Coupled < handle
                 % reset position
                 obj.ctl.reset_pc_position();
                 
-                % start integrating position
-                obj.ctl.position.start();
-                
                 % switch vis stim on
                 obj.ctl.vis_stim.on();
                 
@@ -102,6 +99,9 @@ classdef Coupled < handle
                 % we need to give it some time to setup (~2s, but we want
                 % to wait at the start position anyway...
                 obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit);
+                
+                % start integrating position
+                obj.ctl.position.start();
                 
                 % wait five seconds
                 tic;
@@ -171,7 +171,7 @@ classdef Coupled < handle
                 obj.ctl.soloist.stop();
                 obj.ctl.block_treadmill();
                 obj.ctl.vis_stim.off();
-                
+                obj.ctl.position.stop();
                 obj.ctl.stop_acq();
                 if obj.log_trial
                     obj.ctl.stop_logging_single_trial();
@@ -185,7 +185,7 @@ classdef Coupled < handle
         
         function stop(obj)
             % if the stop method is called, set the abort property
-            % temporarily to false
+            % temporarily to true
             % the main loop will detect this and abort properly
             obj.abort = true;
         end
@@ -228,6 +228,7 @@ classdef Coupled < handle
             
             obj.ctl.block_treadmill()
             obj.ctl.vis_stim.off();
+            obj.ctl.position.stop();
             
             if obj.handle_acquisition
                 obj.ctl.soloist.stop();
@@ -238,7 +239,6 @@ classdef Coupled < handle
             if obj.log_trial
                 obj.ctl.stop_logging_single_trial();
             end
-            
         end
     end
 end

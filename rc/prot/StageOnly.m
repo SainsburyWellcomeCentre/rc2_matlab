@@ -3,18 +3,17 @@ classdef StageOnly < handle
     properties
         
         start_dwell_time = 5;
-        
-        ctl
         start_pos
         back_limit
         forward_limit
         direction
+        handle_acquisition = true
+        wait_for_reward = true
+        
+        follow_previous_protocol = false
         wave_fname
         waveform
         
-        handle_acquisition = true
-        wait_for_reward = true
-        follow_previous_protocol = false
         log_trial = false
     end
     
@@ -24,6 +23,9 @@ classdef StageOnly < handle
         abort = false
     end
     
+    properties (Hidden = true)
+        ctl
+    end
     
     
     methods
@@ -62,21 +64,23 @@ classdef StageOnly < handle
                 final_position = 1;
                 
                 if isempty(obj.waveform)
+                    final_position = 0;
                     fprintf('NO WAVEFORM LOADED, SKIPPING\n')
                     return
                 end
-                
-                if obj.handle_acquisition
-                    obj.ctl.prepare_acq();
-                end
-                
-                cfg = obj.get_config();
-                obj.ctl.save_single_trial_config(cfg);
                 
                 obj.running = true;
                 
                 % setup code to handle premature stopping
                 h = onCleanup(@obj.cleanup);
+              
+                % startup initial communication
+                proc = obj.ctl.soloist.communicate();
+                proc.wait_for(0.5);
+                
+                if obj.handle_acquisition
+                    obj.ctl.prepare_acq();
+                end
                 
                 % make sure the treadmill is blocked
                 obj.ctl.block_treadmill();
@@ -84,10 +88,14 @@ classdef StageOnly < handle
                 % switch vis stim off
                 obj.ctl.vis_stim.off();
                 
-                % load teensy and listen to correct source
+                % get and save config
+                cfg = obj.get_config();
+                obj.ctl.save_single_trial_config(cfg);
+                
+                % listen to correct source
                 obj.ctl.multiplexer.listen_to('ni');
                 
-                % start listening to the correct trigger input
+                % start PC listening to the correct trigger input
                 obj.ctl.trigger_input.listen_to('soloist');
                 
                 % load the velocity waveform to NIDAQ
@@ -106,7 +114,14 @@ classdef StageOnly < handle
                 % switch vis stim on
                 obj.ctl.vis_stim.on();
                 
+                 % the soloist will connect, setup some parameters and then
+                % wait for the solenoid signal to go low
+                % we need to give it some time to setup (~2s, but we want
+                % to wait at the start position anyway...
                 obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit);
+                
+                % start integrating position
+                obj.ctl.position.start();
                 
                 % wait five seconds
                 tic;
@@ -119,9 +134,6 @@ classdef StageOnly < handle
                     end
                 end
                 
-                % release block on the treadmill
-                obj.ctl.unblock_treadmill()
-                
                 % start logging the single trial
                 if obj.log_trial
                     obj.log_trial_fname = obj.ctl.start_logging_single_trial();
@@ -132,17 +144,15 @@ classdef StageOnly < handle
                 
                 % look out for the waveform finishing, but the trigger not
                 % being received
-                premature_end = false;
+%                 premature_end = false;
                 
                 % wait for process to terminate.
-                % TODO:  setup an event to unblock treadmill on digital
-                % input.
                 while ~obj.ctl.trigger_input.read()
-                    
-                    if ~obj.ctl.ni.ao.task.IsRunning
-                        premature_end = true;
-                        break
-                    end
+
+%                     if ~obj.ctl.ni.ao.task.IsRunning
+%                         premature_end = true;
+%                         break
+%                     end
                     
                     % TODO: if waveform has stopped break out of the loop
                     % otherwise will hang forever...
@@ -160,24 +170,27 @@ classdef StageOnly < handle
 %                     obj.ctl.ramp_velocity();
 %                 end
                 
-                % this time we should definitely get to the end
-                while ~obj.ctl.trigger_input.read()
-                    
-                    % TODO: if waveform has stopped break out of the loop
-                    % otherwise will hang forever...
-                    pause(0.005);
-                    if obj.abort
-                        obj.running = false;
-                        obj.abort = false;
-                        return
-                    end
-                end
+%                 % this time we should definitely get to the end
+%                 while ~obj.ctl.trigger_input.read()
+%                     
+%                     % TODO: if waveform has stopped break out of the loop
+%                     % otherwise will hang forever...
+%                     pause(0.005);
+%                     if obj.abort
+%                         obj.running = false;
+%                         obj.abort = false;
+%                         return
+%                     end
+%                 end
                 
                 % block treadmill
                 obj.ctl.block_treadmill()
                 
                 % switch vis stim off
                 obj.ctl.vis_stim.off();
+                
+                % stop integrating position
+                obj.ctl.position.stop();
                 
                 % stop logging the single trial.
                 if obj.log_trial
@@ -207,10 +220,13 @@ classdef StageOnly < handle
                 obj.ctl.soloist.stop();
                 obj.ctl.block_treadmill();
                 obj.ctl.vis_stim.off();
-                
+                obj.ctl.position.stop();
                 obj.ctl.stop_acq();
-                obj.ctl.stop_logging_single_trial();
+                if obj.log_trial
+                    obj.ctl.stop_logging_single_trial();
+                end
                 obj.ctl.stop_sound();
+                
                 rethrow(ME)
             end
         end
@@ -259,12 +275,17 @@ classdef StageOnly < handle
             
             obj.ctl.block_treadmill()
             obj.ctl.vis_stim.off();
+            obj.ctl.position.stop();
             
             if obj.handle_acquisition
                 obj.ctl.soloist.stop();
                 obj.ctl.stop_acq();
                 obj.ctl.stop_sound();
                 %TODO: stop waveform running
+            end
+            
+            if obj.log_trial
+                obj.ctl.stop_logging_single_trial();
             end
         end
     end

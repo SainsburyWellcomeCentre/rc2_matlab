@@ -62,21 +62,22 @@ classdef EncoderOnly < handle
         function final_position = run(obj)
             
             try
-                
+               
                 % report the end position
                 final_position = 0;
-                
-                if obj.handle_acquisition
-                    obj.ctl.prepare_acq();
-                end
-                
-                cfg = obj.get_config();
-                obj.ctl.save_single_trial_config(cfg);
                 
                 obj.running = true;
                 
                 % setup code to handle premature stopping
                 h = onCleanup(@obj.cleanup);
+                
+                % startup initial communication
+                proc = obj.ctl.soloist.communicate();
+                proc.wait_for(0.5);
+                
+                if obj.handle_acquisition
+                    obj.ctl.prepare_acq();
+                end
                 
                 % make sure the treadmill is blocked
                 obj.ctl.block_treadmill();
@@ -86,6 +87,10 @@ classdef EncoderOnly < handle
                 
                 % load correct direction on teensy
                 obj.ctl.teensy.load(obj.direction);
+                
+                
+                cfg = obj.get_config();
+                obj.ctl.save_single_trial_config(cfg);
                 
                 % start listening to the correct trigger input
                 if strcmp(obj.integrate_using, 'teensy')
@@ -113,11 +118,11 @@ classdef EncoderOnly < handle
                  % we want to reset the position anyway
                 obj.ctl.reset_pc_position();
                 
-                % start integrating the position
-                obj.ctl.position.stop();
-                
                 % switch vis stim on
                 obj.ctl.vis_stim.on();
+                
+                % start integrating the position
+                obj.ctl.position.start();
                 
                 % wait a bit of time before starting the trial
                 tic;
@@ -174,6 +179,9 @@ classdef EncoderOnly < handle
                 % switch vis stim off
                 obj.ctl.vis_stim.off();
                 
+                % stop integrating position
+                obj.ctl.position.stop();
+                
                 % stop logging single trial
                 if obj.log_trial
                     obj.ctl.stop_logging_single_trial();
@@ -186,15 +194,13 @@ classdef EncoderOnly < handle
                     obj.ctl.reward.start_reward(obj.wait_for_reward)
                 end
                 
-                % stop integrating the position
-                obj.ctl.position.stop();
-                
                 % stop acquiring data if protocol is handling that
                 if obj.handle_acquisition
                     obj.ctl.stop_acq();
                     obj.ctl.stop_sound();
                 end
                 
+                % the protocol is no longer running
                 obj.running = false;
                 
             catch ME
@@ -205,6 +211,7 @@ classdef EncoderOnly < handle
                 obj.ctl.soloist.stop();
                 obj.ctl.block_treadmill();
                 obj.ctl.vis_stim.off();
+                obj.ctl.position.stop();
                 obj.ctl.stop_acq();
                 if obj.log_trial
                     obj.ctl.stop_logging_single_trial();
@@ -227,7 +234,6 @@ classdef EncoderOnly < handle
         function cfg = get_config(obj)
             
             cfg = {
-                
                 'prot.time_started',        datestr(now, 'yyyymmdd_HH_MM_SS')
                 'prot.type',                class(obj);
                 'prot.start_pos',           '---';
@@ -242,20 +248,23 @@ classdef EncoderOnly < handle
                 'prot.integrate_using',     obj.integrate_using;
                 'prot.wave_fname',          '---';
                 'prot.follow_previous_protocol', '---';
-                
                 'prot.reward.randomize',    sprintf('%i', obj.ctl.reward.randomize);
                 'prot.reward.min_time',     sprintf('%i', obj.ctl.reward.min_time);
                 'prot.reward.max_time',     sprintf('%i', obj.ctl.reward.max_time);
                 'prot.reward.duration',     sprintf('%i', obj.ctl.reward.duration)};
         end
         
+        
         function cleanup(obj)
             
             obj.running = false;
             obj.abort = false;
             
+            fprintf('running cleanup in encoder\n')
+            
             obj.ctl.block_treadmill();
             obj.ctl.vis_stim.off();
+            obj.ctl.position.stop();
             
             if obj.handle_acquisition
                 obj.ctl.soloist.stop();
@@ -266,7 +275,6 @@ classdef EncoderOnly < handle
             if obj.log_trial
                 obj.ctl.stop_logging_single_trial();
             end
-            
         end
     end
 end

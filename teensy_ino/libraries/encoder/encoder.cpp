@@ -62,7 +62,7 @@ Encoder::_velocity() {
     // Determine the distance the encoder has travelled.
     if ( this->_current_pin == ENC_A_PIN && !this->_direction_change ) {
         if ( this->_current_direction == FORWARDS ) {
-            this->_delta_distance = this->_a_to_b_rising_nm;
+            this->_delta_distance = this->_b_to_a_rising_nm;
         }
         else if ( this->_current_direction == BACKWARDS ) {
             this->_delta_distance = -this->_b_to_a_rising_nm_back; //-
@@ -70,7 +70,7 @@ Encoder::_velocity() {
     }
     else if ( this->_current_pin == ENC_B_PIN && !this->_direction_change ) {
         if ( this->_current_direction == FORWARDS ) {
-            this->_delta_distance = this->_b_to_a_rising_nm;
+            this->_delta_distance = this->_a_to_b_rising_nm;
         }
         else if ( this->_current_direction == BACKWARDS ) {
             this->_delta_distance = -this->_a_to_b_rising_nm_back; //-
@@ -88,7 +88,7 @@ Encoder::_velocity() {
     if ( this->_direction_change ) {
         this->_delta_distance = 0;
     }
-    
+
     // Do the velocity calculation.
     float t = (float) this->_delta_usecs;
     this->current_velocity = (float) this->_delta_distance / t; // this->delta_usecs;
