@@ -2,20 +2,19 @@ classdef LocoVest2Loco < handle
     
     properties
         
-        start_dwell_time = 5
+        start_dwell_time = 5 % must be > 3
         
+        start_pos
         back_limit
         forward_limit
         
-        start_pos
-        switch_pos
-        direction
-        time_to_halt = 0.2; %
-        vel_source
         handle_acquisition = true
         wait_for_reward = true
         
         log_trial = false
+        
+        time_to_halt = 0.2; %
+        switch_pos
     end
     
     
@@ -38,39 +37,59 @@ classdef LocoVest2Loco < handle
             
             obj.ctl = ctl;
             
+            % forward and backward positions as if on the stage
             obj.start_pos = config.stage.start_pos;
-            obj.switch_pos = switch_pos;
-            
             obj.back_limit = config.stage.back_limit;
             obj.forward_limit = config.stage.forward_limit;
             
-            obj.direction = 'forward_only';
+            obj.switch_pos = (obj.start_pos + obj.forward_limit)/2;
         end
         
         
+        function val = get.distance_forward(obj)
+            val = obj.stage_pos - obj.forward_limit;
+        end
         
-        function run(obj)
+        
+        function val = get.distance_backward(obj)
+            val = obj.stage_pos - obj.back_limit;
+        end
+        
+        
+        function final_position = run(obj)
             
             try
                 
-                if obj.handle_acquisition
-                    obj.ctl.prepare_acq();
-                end
+                % report the end position
+                final_position = 0;
                 
-                cfg = obj.get_config();
-                obj.ctl.save_single_trial_config(cfg);
-                
-                % we have started running
+                % we are running the protocol
                 obj.running = true;
                 
                 % prepare code to handle premature stopping
                 h = onCleanup(@obj.cleanup);
                 
+                % startup initial communication
+                proc = obj.ctl.soloist.communicate();
+                proc.wait_for(0.5);
+                
+                % prepare to acquire data
+                if obj.handle_acquisition
+                    obj.ctl.prepare_acq();
+                end
+                
                 % make sure the treadmill is blocked at the start
                 obj.ctl.block_treadmill();
                 
+                % make sure vis stim is off
+                obj.ctl.vis_stim.off();
+                
                 % load teensy
-                obj.ctl.teensy.load(obj.direction);
+                obj.ctl.teensy.load('forward_only');
+                
+                % get and save config
+                cfg = obj.get_config();
+                obj.ctl.save_single_trial_config(cfg);
                 
                 % listen to the teensy at first
                 obj.ctl.multiplexer.listen_to('teensy');
@@ -90,12 +109,14 @@ classdef LocoVest2Loco < handle
                 proc = obj.ctl.soloist.move_to(obj.start_pos, obj.ctl.soloist.default_speed, true);
                 proc.wait_for(0.5);
                 
-                % reset position
+                % reset position on the PC
                 obj.ctl.reset_pc_position();
+                
+                % reset position on the teensy
                 obj.ctl.reset_teensy_position();
                 
-                % start integrating position on PC
-                obj.ctl.position.start();
+                % switch vis stim on
+                obj.ctl.vis_stim.on();
                 
                 % the soloist will connect, setup some parameters and then
                 % wait for the solenoid signal to go low
@@ -103,7 +124,10 @@ classdef LocoVest2Loco < handle
                 % to wait at the start position anyway...
                 obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit);
                 
-                % wait five seconds
+                % start integrating position on PC
+                obj.ctl.position.start();
+                
+                % wait
                 tic;
                 while toc < obj.start_dwell_time
                     pause(0.005);
@@ -139,11 +163,11 @@ classdef LocoVest2Loco < handle
                 
                 
                 % get the current velocity (voltage)
-                % TODO: don't assume channel
+                % TODO dont assume channel
                 voltage = mean(obj.ctl.data(:, 1));
                 
                 % output the voltage on analog output
-                obj.ctl.ni.ao.task.outputSingleScan(voltage);
+                obj.ctl.ni.ao.task.outputSingleScan(voltage+obj.ctl.ni.ao.ai_ao_offset);
                 
                 % listen to the ni to stop
                 obj.ctl.multiplexer.listen_to('ni');
@@ -157,8 +181,11 @@ classdef LocoVest2Loco < handle
                 % play stop waveform
                 obj.ctl.play_velocity_waveform()
                 
-                % wait for the trigger from the teensy
-                while ~obj.ctl.trigger_input.read()
+                % integrate position of treadmill PC until the bounds are reached
+                forward_cm = obj.distance_forward/10;
+                backward_cm = obj.distance_backward/10;
+                
+                while obj.ctl.position.position < forward_cm && obj.ctl.position.position > backward_cm
                     pause(0.005);
                     if obj.abort
                         obj.running = false;
@@ -167,8 +194,20 @@ classdef LocoVest2Loco < handle
                     end
                 end
                 
+                %while ~obj.ctl.trigger_input.read()
+                %    pause(0.005);
+                %    if obj.abort
+                %        obj.running = false;
+                %        obj.abort = false;
+                %        return
+                %    end
+                %end
+                
                 % block the treadmill
                 obj.ctl.block_treadmill()
+                
+                % switch vis stim off
+                obj.ctl.vis_stim.off();
                 
                 % abort the soloist
                 obj.ctl.soloist.stop()
@@ -204,6 +243,7 @@ classdef LocoVest2Loco < handle
                 obj.ctl.soloist.stop();
                 obj.ctl.block_treadmill();
                 obj.ctl.vis_stim.off();
+                obj.ctl.position.stop();
                 obj.ctl.stop_acq();
                 if obj.log_trial
                     obj.ctl.stop_logging_single_trial();
@@ -233,9 +273,10 @@ classdef LocoVest2Loco < handle
                 'prot.type',                class(obj);
                 'prot.start_pos',           sprintf('%.3f', obj.start_pos);
                 'prot.stage_pos',           '---';
+                'prot.switch_pos',          sprintf('%.3f', obj.switch_pos);
                 'prot.back_limit',          sprintf('%.3f', obj.back_limit);
                 'prot.forward_limit',       sprintf('%.3f', obj.forward_limit);
-                'prot.direction',           obj.direction;
+                'prot.direction',           '---';
                 'prot.start_dwell_time',    sprintf('%.3f', obj.start_dwell_time);
                 'prot.handle_acquisition',  sprintf('%i', obj.handle_acquisition);
                 'prot.wait_for_reward',     sprintf('%i', obj.wait_for_reward);
@@ -257,6 +298,7 @@ classdef LocoVest2Loco < handle
             
             obj.ctl.block_treadmill()
             obj.ctl.vis_stim.off();
+            obj.ctl.position.stop();
             
             if obj.handle_acquisition
                 obj.ctl.soloist.stop();

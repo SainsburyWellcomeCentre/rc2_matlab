@@ -2,6 +2,7 @@ classdef Loco2LocoVest < handle
     
     properties
         
+        start_dwell_time = 5;
         start_pos
         back_limit
         forward_limit

@@ -6,6 +6,7 @@ classdef AnalogOutput < handle
         channel_ids = {}
         chan = {}
         idle_offset
+        ai_ao_error = 0.00696105 % move this
         max_voltage = 3.3;
     end
     
@@ -13,7 +14,11 @@ classdef AnalogOutput < handle
     methods
         
         function obj = AnalogOutput(config)
-            
+        %%obj = AnalogOutput(config)
+        %   Handles analog output.
+        %       The property "ai_ao_error" is added to all data
+        %       But it may be more sensible to move this somewhere else
+        
             obj.task = daq.createSession('ni');
             for i = 1:length(config.nidaq.ao.channel_names)
                 obj.channel_names{i} = config.nidaq.ao.channel_names{i};
@@ -43,7 +48,7 @@ classdef AnalogOutput < handle
         function set_to_idle(obj)
             obj.stop();
             % write initial voltage to AO
-            obj.task.outputSingleScan(obj.idle_offset);
+            obj.task.outputSingleScan(obj.idle_offset+obj.ai_ao_error);
         end
         
         
@@ -51,7 +56,7 @@ classdef AnalogOutput < handle
             % to avoid DANGER, clip voltage at limits!!
             data(data > obj.max_voltage) = obj.max_voltage;
             data(data < -obj.max_voltage) = -obj.max_voltage;
-            obj.task.queueOutputData(data);
+            obj.task.queueOutputData(data+obj.ai_ao_error);
         end
         
         

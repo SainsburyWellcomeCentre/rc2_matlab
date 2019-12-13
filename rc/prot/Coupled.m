@@ -103,7 +103,7 @@ classdef Coupled < handle
                 % start integrating position
                 obj.ctl.position.start();
                 
-                % wait five seconds
+                % wait a bit
                 tic;
                 while toc < obj.start_dwell_time
                     pause(0.005);

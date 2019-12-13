@@ -46,7 +46,7 @@ classdef ProtocolSequence < handle
                 end
                 
                 % start running this protocol
-                final = obj.sequence{i}.run();
+                finished_forward = obj.sequence{i}.run();
                 
                 if obj.abort
                     obj.running = false;
@@ -54,7 +54,7 @@ classdef ProtocolSequence < handle
                     return
                 end
                 
-                if final
+                if finished_forward
                     obj.forward_trials = obj.forward_trials + 1;
                 else
                     obj.backward_trials = obj.backward_trials + 1;
