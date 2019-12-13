@@ -73,7 +73,7 @@ classdef Calibration < handle
             obj.zero_teensy = ZeroTeensy(obj.ni, config);
             obj.treadmill = Treadmill(obj.ni, config);
             
-            calib.teensy.load('forward_only', true);
+            obj.teensy.load('forward_only', true);
             obj.multiplexer.listen_to('teensy');
         end
         
@@ -569,7 +569,7 @@ classdef Calibration < handle
             proc.wait_for(0.5);
             
             % output the same offset as recorded on the NI
-            obj.ni.ao.task.outputSingleScan(obj.filtTeensy2ni_offset+0.00696105);
+            obj.ni.ao.task.outputSingleScan(obj.filtTeensy2ni_offset+0.0088362434); % +0.00696105
             
             % listen to the NI
             obj.multiplexer.listen_to('ni');

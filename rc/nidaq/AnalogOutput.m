@@ -6,7 +6,7 @@ classdef AnalogOutput < handle
         channel_ids = {}
         chan = {}
         idle_offset
-        ai_ao_error = 0.00696105 % move this
+        ai_ao_error = 0.0088362434;%0.00696105 % move this
         max_voltage = 3.3;
     end
     

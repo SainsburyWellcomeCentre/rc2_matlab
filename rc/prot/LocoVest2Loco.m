@@ -7,6 +7,8 @@ classdef LocoVest2Loco < handle
         start_pos
         back_limit
         forward_limit
+        distance_forward
+        distance_backward
         
         handle_acquisition = true
         wait_for_reward = true
@@ -47,12 +49,12 @@ classdef LocoVest2Loco < handle
         
         
         function val = get.distance_forward(obj)
-            val = obj.stage_pos - obj.forward_limit;
+            val = obj.start_pos - obj.forward_limit;
         end
         
         
         function val = get.distance_backward(obj)
-            val = obj.stage_pos - obj.back_limit;
+            val = obj.start_pos - obj.back_limit;
         end
         
         
@@ -167,13 +169,13 @@ classdef LocoVest2Loco < handle
                 voltage = mean(obj.ctl.data(:, 1));
                 
                 % output the voltage on analog output
-                obj.ctl.ni.ao.task.outputSingleScan(voltage+obj.ctl.ni.ao.ai_ao_offset);
+                obj.ctl.ni.ao.task.outputSingleScan(voltage+obj.ctl.ni.ao.ai_ao_error);
                 
                 % listen to the ni to stop
                 obj.ctl.multiplexer.listen_to('ni');
                 
                 % create waveform
-                waveform = linspace(voltage, obj.ctl.ni.ao.idle_offset, round(obj.time_to_halt * obj.ctl.ni.ao.task.Rate));
+                waveform = linspace(voltage, obj.ctl.ni.ao.idle_offset, round(obj.time_to_halt * obj.ctl.ni.ao.task.Rate))';
                 
                 % load the waveform
                 obj.ctl.load_velocity_waveform(waveform);
@@ -202,6 +204,9 @@ classdef LocoVest2Loco < handle
                 %        return
                 %    end
                 %end
+                
+                % reset ni output
+                obj.ctl.set_ni_ao_idle();
                 
                 % block the treadmill
                 obj.ctl.block_treadmill()
@@ -245,6 +250,7 @@ classdef LocoVest2Loco < handle
                 obj.ctl.vis_stim.off();
                 obj.ctl.position.stop();
                 obj.ctl.stop_acq();
+                obj.ctl.set_ni_ao_idle();
                 if obj.log_trial
                     obj.ctl.stop_logging_single_trial();
                 end
@@ -299,6 +305,7 @@ classdef LocoVest2Loco < handle
             obj.ctl.block_treadmill()
             obj.ctl.vis_stim.off();
             obj.ctl.position.stop();
+            obj.ctl.set_ni_ao_idle();
             
             if obj.handle_acquisition
                 obj.ctl.soloist.stop();
