@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <tchar.h>
-
+#include <unistd.h>
 
 
 int
@@ -99,25 +99,31 @@ main(int argc, char **argv)
     
     // If ends have been reached ramp the gain down to zero over 200ms.
     auto initial_time = std::chrono::steady_clock::now();
-    auto elapsed;
+    int out_of_time = 1;
+    int n_loops = 0;
     double factor;
     
     if (success) {
-        while (elapsed < 200) {
+        while (out_of_time) {
             
             auto time_now = std::chrono::steady_clock::now();
-            elapsed = std::chrono::duration_cast<std::chrono::microseconds>(time_now - initial_time);
+            auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(time_now - initial_time);
             
-            factor = (1 - ((double) elapsed.count())/200);
+            out_of_time = (elapsed.count() < 200000);
+            
+            factor = (1 - ((double) elapsed.count())/200000);
             if (factor < 0) factor = 0;
             gear_scale_now = gear_scale * factor;
+            n_loops += 1;
+            //printf("%i\n", elapsed.count());
             
-            fprintf("%.6f\n", gear_scale_now);
+            usleep(50000);
             
-            //if(!SoloistParameterSetValue(handles[0], PARAMETERID_GearCamScaleFactor , 1, gear_scale_now)) { return -1; }
+            if(!SoloistParameterSetValue(handles[0], PARAMETERID_GearCamScaleFactor , 1, gear_scale_now)) { return -1; }
         }
     }
     
+    printf("%i\n", n_loops);
     
     // Disable the axis.
     if(!SoloistMotionDisable(handles[0])) { cleanup(handles, handle_count); }
