@@ -100,6 +100,7 @@ main(int argc, char **argv)
     // If ends have been reached ramp the gain down to zero over 200ms.
     auto initial_time = std::chrono::steady_clock::now();
     auto elapsed;
+    double factor;
     
     if (success) {
         while (elapsed < 200) {
@@ -107,7 +108,9 @@ main(int argc, char **argv)
             auto time_now = std::chrono::steady_clock::now();
             elapsed = std::chrono::duration_cast<std::chrono::microseconds>(time_now - initial_time);
             
-            gear_scale_now = gear_scale*(1 - ((double) elapsed.count())/200);
+            factor = (1 - ((double) elapsed.count())/200);
+            if (factor < 0) factor = 0;
+            gear_scale_now = gear_scale * factor;
             
             fprintf("%.6f\n", gear_scale_now);
             
