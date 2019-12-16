@@ -1,0 +1,183 @@
+' ------------------------------------------------
+' ----------------- ramp_down_gain.ab ------------------
+' ------------------------------------------------
+
+
+HEADER
+
+	INCLUDE "AeroBasicInclude.abi"
+
+END HEADER
+
+
+PROGRAM
+
+	' Declare user-defined variables
+	DIM start_position AS DOUBLE
+	DIM forward_limit AS DOUBLE
+	DIM backward_limit AS DOUBLE
+	
+	DIM max_voltage AS DOUBLE
+	DIM max_speed AS DOUBLE
+	DIM dead_band AS SINGLE
+	DIM ai_offset AS SINGLE
+
+
+	' Declare internal variables
+	DIM ai_channel AS INTEGER
+	DIM ao_channel AS INTEGER
+	
+	DIM ramp_rate AS DOUBLE
+	DIM cnts_per_unit AS DOUBLE
+	DIM max_speed_scale AS DOUBLE
+	DIM gear_scale AS DOUBLE
+	DIM fault_status AS INTEGER
+	DIM current_position AS DOUBLE
+	DIM current_velocity AS DOUBLE
+	DIM looping AS INTEGER
+	DIM gcs AS INTEGER
+	DIM gcsf AS DOUBLE
+	DIM gcadb AS SINGLE
+	DIM gkp AS DOUBLE
+	
+	DIM current_time AS DOUBLE
+	DIM current_scale AS DOUBLE
+	DIM factor AS DOUBLE
+	DIM ramp_down_over_us AS DOUBLE
+	DIM ramp_down AS INTEGER
+	
+	DIM output_string AS STRING(20)
+	DIM fmt_string AS STRING = "%.2f"
+	
+	start_position = 500
+	forward_limit = 250
+	backward_limit = 600
+	
+	
+	' Define user-defined variables
+	max_voltage = 2.5 			' V
+	max_speed = 1000   			' mm/s
+	dead_band = 0.005			' V
+	ai_offset = -508.0			' mV
+
+
+	' Define internal variables
+	ai_channel = 0
+	ao_channel = 0
+
+
+	ramp_rate = 200
+	cnts_per_unit = GETPARM(CountsPerUnit)
+	max_speed_scale = (max_speed * cnts_per_unit)/1000
+	gear_scale = -(max_speed_scale * (1 / max_voltage)) ' this line needs to be explained (1 should be 10 from the documentation)
+	ai_channel = ai_channel + 2
+	gcs = GETPARM(GearCamSource)
+	gcsf = GETPARM(GearCamScaleFactor)
+	gcadb = GETPARM(GearCamAnalogDeadband)
+	gkp = GETPARM(GainKpos)
+
+
+	' Offset the analog input
+	SETPARM Analog0InputOffset, ai_offset
+
+
+	' Track the velocity feedback on analog output
+	ANALOG TRACK ao_channel, 4 SCALE 0.001 ' 4 - velocity feedback
+
+
+	' Enable the axis
+	ENABLE
+
+	' Move to start position
+	RAMP RATE ramp_rate
+	RAMP MODE RATE
+	MOVEABS D start_position
+	WAIT MOVEDONE
+
+	' Set GEAR mode parameters
+	CALL SetGear(ai_channel, gear_scale, dead_band, 0)
+
+	' Poll position and fault status every 1ms
+	STARTSYNC 1
+
+	' Enter GEAR mode (velocity of motor coupled to voltage on analog input)
+	GEAR 1
+
+	' Enter loop to detect position, velocity and faults
+	looping = 1
+	WHILE (looping = 1)
+		SYNC
+
+		' Check fault output.
+		fault_status = AXISFAULT()
+		IF fault_status NE 0 THEN
+			looping = 0
+			DISABLE
+		END IF
+
+		' Monitor position
+		current_position = DRIVEINFO (DRIVEINFO_PositionCommandRaw)
+		IF current_position < forward_limit THEN
+			looping = 0
+		END IF
+		IF current_position > backward_limit THEN
+			looping = 0
+			DISABLE
+		END IF
+
+		' Monitor velocity
+		current_velocity = VFBK()
+		IF current_velocity < -max_speed THEN
+			looping = 0
+			DISABLE
+		END IF
+		IF current_velocity > max_speed THEN
+			looping = 0
+			DISABLE
+		END IF
+	WEND
+
+
+	' RAMP DOWN THE GAIN
+	STARTSYNC -2
+	ramp_down_over_us = 200000
+	ramp_down = 1
+	current_time = 0
+	
+	' REDUCE THE GAIN OVER 200ms
+	SETTIMEBIT
+	WHILE (ramp_down = 1)
+		SYNC
+		current_time = QUERYTIMEBIT()
+		
+		IF (current_time > ramp_down_over_us) THEN
+			ramp_down = 0
+			SETPARM GearCamScaleFactor, 0
+		ELSE
+			factor = (1-(current_time/ramp_down_over_us))
+			current_scale = gear_scale*factor
+			FORMAT output_string, fmt_string, DBLV:current_scale
+			PRINT output_string
+			SETPARM GearCamScaleFactor, current_scale
+		END IF
+	WEND
+	CLEARTIMEBIT
+
+	' Disable the motor (this step brings it to a standstill)
+	DISABLE
+
+	' Reset the parameters
+	GEAR 0
+	CALL SetGear(gcs, gcsf, gcadb, gkp)
+
+END PROGRAM
+
+
+' Set parameters of the controller.
+FUNCTION SetGear(BYVAL src AS INTEGER, BYVAL scl AS DOUBLE, BYVAL dead AS SINGLE, BYVAL kpos AS DOUBLE)
+
+	SETPARM GearCamSource, src
+	SETPARM GearCamScaleFactor, scl
+	SETPARM GearCamAnalogDeadband, dead
+	SETPARM GainKpos, kpos
+END FUNCTION

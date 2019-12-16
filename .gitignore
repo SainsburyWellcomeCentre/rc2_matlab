@@ -3,3 +3,8 @@
 *.bin
 *.wav
 *.exe
+*.abi
+*.basi
+*.bco
+*.bcx
+*.err

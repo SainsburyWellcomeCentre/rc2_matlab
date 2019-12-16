@@ -1,0 +1,54 @@
+' ------------------------------------------------
+' ----------------- test_print.ab ----------------
+' ------------------------------------------------
+'
+'	Code for testing whether 
+
+HEADER
+
+	INCLUDE "AeroBasicInclude.abi"
+
+END HEADER
+
+PROGRAM
+
+	DIM output_string AS STRING(20)
+	DIM fmt_string AS STRING = "%.2f"
+	
+	DIM gear_scale AS DOUBLE
+	DIM current_time AS DOUBLE
+	DIM current_scale AS DOUBLE
+	DIM factor AS DOUBLE
+	DIM ramp_down_over AS DOUBLE
+	DIM ramp_down AS INTEGER
+	
+	
+	gear_scale = -4000
+	current_time = 0
+	current_scale = 0
+	factor = 0
+	ramp_down_over_us = 200000
+	ramp_down = 1
+	
+	
+	ENABLE
+	
+	' REDUCE THE GAIN OVER 200ms
+	SETTIMEBIT
+	WHILE (ramp_down = 1)
+		current_time = QUERYTIMEBIT()
+		
+		IF (current_time > ramp_down_over_us) THEN
+			ramp_down = 0
+		ELSE
+			factor = (1 - (current_time / ramp_down_over_us))
+			current_scale = gear_scale * factor
+			FORMAT output_string, fmt_string, DBLV:current_scale
+			PRINT output_string
+		END IF
+	WEND
+	CLEARTIMEBIT
+	
+	DISABLE
+	
+END PROGRAM
