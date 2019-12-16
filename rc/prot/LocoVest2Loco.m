@@ -15,7 +15,6 @@ classdef LocoVest2Loco < handle
         
         log_trial = false
         
-        time_to_halt = 0.2; %
         switch_pos
     end
     
@@ -120,11 +119,8 @@ classdef LocoVest2Loco < handle
                 % switch vis stim on
                 obj.ctl.vis_stim.on();
                 
-                % the soloist will connect, setup some parameters and then
-                % wait for the solenoid signal to go low
-                % we need to give it some time to setup (~2s, but we want
-                % to wait at the start position anyway...
-                obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit);
+                % go into the mismatch condition
+                obj.ctl.soloist.mismatch_ramp_down_at(obj.back_limit, obj.switch_pos)
                 
                 % start integrating position on PC
                 obj.ctl.position.start();
@@ -149,40 +145,6 @@ classdef LocoVest2Loco < handle
                     obj.log_trial_fname = obj.ctl.start_logging_single_trial();
                 end
                 
-                % convert mm to cm
-                back_pos_cm = (obj.start_pos - obj.back_limit)/10;
-                switch_pos_cm = (obj.start_pos - obj.switch_pos)/10;
-                
-                % wait for stage to reach the desired position
-                while obj.ctl.position.position < switch_pos_cm && obj.ctl.position.position > back_pos_cm
-                    pause(0.005);
-                    if obj.abort
-                        obj.running = false;
-                        obj.abort = false;
-                        return
-                    end
-                end
-                
-                
-                % get the current velocity (voltage)
-                % TODO dont assume channel
-                voltage = mean(obj.ctl.data(:, 1));
-                
-                % output the voltage on analog output
-                obj.ctl.ni.ao.task.outputSingleScan(voltage+obj.ctl.ni.ao.ai_ao_error);
-                
-                % listen to the ni to stop
-                obj.ctl.multiplexer.listen_to('ni');
-                
-                % create waveform
-                waveform = linspace(voltage, obj.ctl.ni.ao.idle_offset, round(obj.time_to_halt * obj.ctl.ni.ao.task.Rate))';
-                
-                % load the waveform
-                obj.ctl.load_velocity_waveform(waveform);
-                
-                % play stop waveform
-                obj.ctl.play_velocity_waveform()
-                
                 % integrate position of treadmill PC until the bounds are reached
                 forward_cm = obj.distance_forward/10;
                 backward_cm = obj.distance_backward/10;
@@ -195,18 +157,6 @@ classdef LocoVest2Loco < handle
                         return
                     end
                 end
-                
-                %while ~obj.ctl.trigger_input.read()
-                %    pause(0.005);
-                %    if obj.abort
-                %        obj.running = false;
-                %        obj.abort = false;
-                %        return
-                %    end
-                %end
-                
-                % reset ni output
-                obj.ctl.set_ni_ao_idle();
                 
                 % block the treadmill
                 obj.ctl.block_treadmill()
@@ -305,7 +255,6 @@ classdef LocoVest2Loco < handle
             obj.ctl.block_treadmill()
             obj.ctl.vis_stim.off();
             obj.ctl.position.stop();
-            obj.ctl.set_ni_ao_idle();
             
             if obj.handle_acquisition
                 obj.ctl.soloist.stop();

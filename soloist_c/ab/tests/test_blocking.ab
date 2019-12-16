@@ -1,0 +1,9 @@
+' Test script for blocking behaviour of C function, SoloistProgramStart'
+' Enables, dwells, disables
+
+ENABLE
+
+' Dwell for 10s
+DWELL 10
+
+DISABLE

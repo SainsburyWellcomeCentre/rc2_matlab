@@ -1,4 +1,3 @@
-#include "C:\Program Files (x86)\Aerotech\Soloist\CLibrary\Include\Soloist.h"
 #include "rc_soloist.h"
 #include <ctime>
 #include <chrono>
@@ -26,7 +25,8 @@ main(int argc, char **argv)
     DOUBLE gear_scale = atof(argv[4]);
     DOUBLE deadband = atof(argv[5]);
     
-    DOUBLE gear_scale_now;
+    // Path to the aerobasic script which will control ramping down of the gain
+    LPCSTR ab_script = "..\\ab\\ramp_up_gain.ab";
     
     DOUBLE return_value, return_value_pos, return_value_vel;
     int gear_set;
@@ -34,6 +34,9 @@ main(int argc, char **argv)
     
     // Connect to soloist.
     if(!SoloistConnect(&handles, &handle_count)) { cleanup(handles, handle_count); }
+    
+    // Load the ramp down aerobasic script into task 1
+    if(!SoloistProgramLoad(handles[0], 1, ab_script)) { cleanup(handles, handle_count); }
     
     // Setup analog output velocity tracking
     if(!SoloistAdvancedAnalogTrack(handles[0], AO_CHANNEL, AO_SERVO_VALUE, AO_SCALE_FACTOR, 0.0)){ cleanup(handles, handle_count); }
@@ -43,28 +46,25 @@ main(int argc, char **argv)
     if(!SoloistPSOPulseCyclesAndDelay(handles[0], 1000000, 500000, 1, 0)) { cleanup(handles, handle_count); }
     if(!SoloistPSOOutputPulse(handles[0])) { cleanup(handles, handle_count); }
     
-    
     // Set the gearing parameters...
-    gear_set = set_gear_params(handles, GEARCAM_SOURCE, gear_scale, deadband, 0);
+    gear_set = set_gear_params(handles, GEARCAM_SOURCE, GEAR_SCALE, deadband, 0);
     if (gear_set != 0) { cleanup(handles, handle_count); }
-    
     
     // Enable
     if(!SoloistMotionEnable(handles[0])) { cleanup(handles, handle_count); }
     
-    
     // Subtract offset on analog input
     if(!SoloistParameterSetValue(handles[0], PARAMETERID_Analog0InputOffset, 1, ai_offset)) { cleanup(handles, handle_count); }
-    
     
     // Wait for a trigger to go low.
     while (ready_to_go == 1) {
         if(!SoloistIODigitalInput(handles[0], DI_PORT, &ready_to_go)) { cleanup(handles, handle_count); }
     }
     
-    
     // Set to gear mode... no turning back now.
     if(!SoloistCommandExecute(handles[0], "GEAR 1", NULL)) { cleanup(handles, handle_count); }
+    
+    if(!SoloistProgramStart(handles[0], 1)) { cleanup(handles, handle_count); }
     
     // Stay in gear mode until one of the following conditions is satisfied
     int looping = 1;
@@ -96,34 +96,6 @@ main(int argc, char **argv)
             success = 0;
         }
     }
-    
-    // If ends have been reached ramp the gain down to zero over 200ms.
-    auto initial_time = std::chrono::steady_clock::now();
-    int out_of_time = 1;
-    int n_loops = 0;
-    double factor;
-    
-    if (success) {
-        while (out_of_time) {
-            
-            auto time_now = std::chrono::steady_clock::now();
-            auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(time_now - initial_time);
-            
-            out_of_time = (elapsed.count() < 200000);
-            
-            factor = (1 - ((double) elapsed.count())/200000);
-            if (factor < 0) factor = 0;
-            gear_scale_now = gear_scale * factor;
-            n_loops += 1;
-            //printf("%i\n", elapsed.count());
-            
-            usleep(50000);
-            
-            if(!SoloistParameterSetValue(handles[0], PARAMETERID_GearCamScaleFactor , 1, gear_scale_now)) { return -1; }
-        }
-    }
-    
-    printf("%i\n", n_loops);
     
     // Disable the axis.
     if(!SoloistMotionDisable(handles[0])) { cleanup(handles, handle_count); }

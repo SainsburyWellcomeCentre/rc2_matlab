@@ -14,6 +14,7 @@
 #define SPEED_LIMIT 					1200
 #define MAX_INPUT_VOLTAGE               2.5
 #define GEARCAM_SOURCE                  2
+#define GEAR_SCALE 						-4000
 #define DEADBAND                        0.005
 
 #define AI_OFFSET 						-508.0

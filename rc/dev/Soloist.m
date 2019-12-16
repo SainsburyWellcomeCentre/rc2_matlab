@@ -377,6 +377,100 @@ classdef Soloist < handle
         end
         
         
+        function proc = mismatch_ramp_down_at(obj, back_pos, forward_pos)
+        %%proc = MISMATCH(obj, back_pos, forward_pos)
+        %   
+        %   Puts the 
+        
+        
+            % check 'back_pos'
+            if ~isnumeric(back_pos) || isinf(back_pos) || isnan(back_pos)
+                fprintf('%s: %s ''back_pos'' must be numeric\n', class(obj), 'mismatch_ramp_down_at');
+                return
+            end
+            if back_pos > obj.max_limits(1) || back_pos < obj.max_limits(2)
+                fprintf('%s: %s ''back_pos'' must be between %.1f and %.1f\n', ...
+                    class(obj), 'mismatch_ramp_down_at', obj.max_limits(2), obj.max_limits(1));
+                return
+            end
+            
+            % check 'forward_pos'
+            if ~isnumeric(forward_pos) || isinf(forward_pos) || isnan(forward_pos)
+                fprintf('%s: %s ''forward_pos'' must be numeric\n', class(obj), 'mismatch_ramp_down_at');
+                return
+            end
+            if forward_pos > obj.max_limits(1) || forward_pos < obj.max_limits(2)
+                fprintf('%s: %s ''forward_pos'' must be between %.1f and %.1f\n', ...
+                    class(obj), 'mismatch_ramp_down_at', obj.max_limits(2), obj.max_limits(1));
+                return
+            end
+            
+            % make sure forward and backwards are sensible way round
+            if forward_pos > back_pos
+                fprintf('%s: %s ''forward_pos'' must be > ''back_pos''\n', ...
+                    class(obj), 'mismatch_ramp_down_at');
+                return
+            end
+            
+            fname = obj.full_command('mismatch_ramp_down_at');
+            cmd = sprintf('%s %i %i %.8f %.8f %.8f', fname, back_pos, forward_pos, obj.ai_offset, obj.gear_scale, obj.deadband);
+            disp(cmd)
+            
+            % start running the process
+            runtime = java.lang.Runtime.getRuntime();
+            p_java = runtime.exec(cmd);
+            proc = ProcHandler(p_java);
+            obj.proc_array.add_process(proc);
+        end
+        
+        
+        function proc = mismatch_ramp_up_until(obj, back_pos, forward_pos)
+        %%proc = MISMATCH_RAMP_UP_UNTIL(obj, back_pos, forward_pos)
+        %   
+        
+        
+            % check 'back_pos'
+            if ~isnumeric(back_pos) || isinf(back_pos) || isnan(back_pos)
+                fprintf('%s: %s ''back_pos'' must be numeric\n', class(obj), 'mismatch_ramp_up_until');
+                return
+            end
+            if back_pos > obj.max_limits(1) || back_pos < obj.max_limits(2)
+                fprintf('%s: %s ''back_pos'' must be between %.1f and %.1f\n', ...
+                    class(obj), 'mismatch_ramp_up_until', obj.max_limits(2), obj.max_limits(1));
+                return
+            end
+            
+            % check 'forward_pos'
+            if ~isnumeric(forward_pos) || isinf(forward_pos) || isnan(forward_pos)
+                fprintf('%s: %s ''forward_pos'' must be numeric\n', class(obj), 'mismatch_ramp_up_until');
+                return
+            end
+            if forward_pos > obj.max_limits(1) || forward_pos < obj.max_limits(2)
+                fprintf('%s: %s ''forward_pos'' must be between %.1f and %.1f\n', ...
+                    class(obj), 'mismatch_ramp_up_until', obj.max_limits(2), obj.max_limits(1));
+                return
+            end
+            
+            % make sure forward and backwards are sensible way round
+            if forward_pos > back_pos
+                fprintf('%s: %s ''forward_pos'' must be > ''back_pos''\n', ...
+                    class(obj), 'mismatch_ramp_up_until');
+                return
+            end
+            
+            fname = obj.full_command('mismatch_ramp_up_until');
+            cmd = sprintf('%s %i %i %.8f %.8f %.8f', fname, back_pos, forward_pos, obj.ai_offset, obj.gear_scale, obj.deadband);
+            disp(cmd)
+            
+            % start running the process
+            runtime = java.lang.Runtime.getRuntime();
+            p_java = runtime.exec(cmd);
+            proc = ProcHandler(p_java);
+            obj.proc_array.add_process(proc);
+        end
+        
+        
+        
         function set_offset(obj, val)
             
             % check that the value is in allowable range
