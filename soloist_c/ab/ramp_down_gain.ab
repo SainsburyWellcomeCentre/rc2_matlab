@@ -127,7 +127,7 @@ PROGRAM
 
 		' Monitor velocity
 		current_velocity = VFBK()
-		IF current_velocity < -max_speed THEN
+		IF current_velocity < (-(max_speed)) THEN
 			looping = 0
 			DISABLE
 		END IF
@@ -156,8 +156,6 @@ PROGRAM
 		ELSE
 			factor = (1-(current_time/ramp_down_over_us))
 			current_scale = gear_scale*factor
-			FORMAT output_string, fmt_string, DBLV:current_scale
-			PRINT output_string
 			SETPARM GearCamScaleFactor, current_scale
 		END IF
 	WEND

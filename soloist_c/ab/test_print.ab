@@ -2,7 +2,8 @@
 ' ----------------- test_print.ab ----------------
 ' ------------------------------------------------
 '
-'	Code for testing whether 
+'	Code for testing whether gain will be ramped down
+' 	correctly.
 
 HEADER
 
@@ -13,7 +14,7 @@ END HEADER
 PROGRAM
 
 	DIM output_string AS STRING(20)
-	DIM fmt_string AS STRING = "%.2f"
+	DIM fmt_string AS STRING = "%d"
 	
 	DIM gear_scale AS DOUBLE
 	DIM current_time AS DOUBLE
@@ -21,21 +22,24 @@ PROGRAM
 	DIM factor AS DOUBLE
 	DIM ramp_down_over AS DOUBLE
 	DIM ramp_down AS INTEGER
-	
+	DIM n_loops AS INTEGER
 	
 	gear_scale = -4000
 	current_time = 0
 	current_scale = 0
 	factor = 0
-	ramp_down_over_us = 200000
+	ramp_down_over_us = 20000000
 	ramp_down = 1
-	
+	n_loops = 0
 	
 	ENABLE
+	
+	STARTSYNC -2
 	
 	' REDUCE THE GAIN OVER 200ms
 	SETTIMEBIT
 	WHILE (ramp_down = 1)
+		SYNC
 		current_time = QUERYTIMEBIT()
 		
 		IF (current_time > ramp_down_over_us) THEN
@@ -43,11 +47,15 @@ PROGRAM
 		ELSE
 			factor = (1 - (current_time / ramp_down_over_us))
 			current_scale = gear_scale * factor
-			FORMAT output_string, fmt_string, DBLV:current_scale
-			PRINT output_string
+			n_loops = n_loops + 1
+			'FORMAT output_string, fmt_string, DBLV:current_scale
+			'PRINT output_string
 		END IF
 	WEND
 	CLEARTIMEBIT
+	
+	FORMAT output_string, fmt_string, INTV:n_loops
+	PRINT output_string
 	
 	DISABLE
 	
