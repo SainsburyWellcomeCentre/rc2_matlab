@@ -18,16 +18,32 @@ PROGRAM
 	DIM current_time AS DOUBLE
 	DIM current_scale AS DOUBLE
 	DIM factor AS DOUBLE
+	DIM ready_to_go AS DOUBLE
 	
 	ramping_up = 1
 	ramp_up_over_us = 200000
 	gear_scale = -4000
+	ready_to_go = 0
 	
+	' Make sure gain is at 0
+	SETPARM GearCamScaleFactor, 0
+	
+	' When we sync it will be at 250us resolution
 	STARTSYNC -2
 	
-	' TRIGGER OUTPUT HIGH
+	' Poll the digital input fast
+	WHILE (ready_to_go < 0.01)
+		SYNC
+		ready_to_go = DIN(0, 1)
+	WEND
+	
+	' Not sure if we need this again
+	STARTSYNC -2
+	
+	' Send trigger output high
 	DOUT 0, 1
 	
+	' Do the ramp up
 	SETTIMEBIT
 	WHILE (ramping_up = 1)
 		SYNC
@@ -35,16 +51,16 @@ PROGRAM
 		
 		IF (current_time > ramp_up_over_us) THEN
 			ramping_up = 0
-			SETPARM GearCamScaleFactor, 0
+			SETPARM GearCamScaleFactor, gear_scale
 		ELSE
-			factor = (1-(current_time/ramp_up_over_us))
+			factor = (current_time/ramp_up_over_us)
 			current_scale = gear_scale*factor
 			SETPARM GearCamScaleFactor, current_scale
 		END IF
 	WEND
 	CLEARTIMEBIT
 	
-	' TRIGGER OUTPUT LOW
+	' Send trigger output low
 	DOUT 0, 0
 
 END PROGRAM

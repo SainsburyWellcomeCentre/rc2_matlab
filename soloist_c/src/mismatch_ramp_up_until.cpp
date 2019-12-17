@@ -36,7 +36,7 @@ main(int argc, char **argv)
     if(!SoloistConnect(&handles, &handle_count)) { cleanup(handles, handle_count); }
     
     // Load the ramp down aerobasic script into task 1
-    if(!SoloistProgramLoad(handles[0], 1, ab_script)) { cleanup(handles, handle_count); }
+    if(!SoloistProgramLoad(handles[0], TASKID_01, ab_script)) { cleanup(handles, handle_count); }
     
     // Setup analog output velocity tracking
     if(!SoloistAdvancedAnalogTrack(handles[0], AO_CHANNEL, AO_SERVO_VALUE, AO_SCALE_FACTOR, 0.0)){ cleanup(handles, handle_count); }
@@ -47,7 +47,7 @@ main(int argc, char **argv)
     if(!SoloistPSOOutputPulse(handles[0])) { cleanup(handles, handle_count); }
     
     // Set the gearing parameters...
-    gear_set = set_gear_params(handles, GEARCAM_SOURCE, GEAR_SCALE, deadband, 0);
+    gear_set = set_gear_params(handles, GEARCAM_SOURCE, 0, deadband, 0);
     if (gear_set != 0) { cleanup(handles, handle_count); }
     
     // Enable
@@ -64,7 +64,14 @@ main(int argc, char **argv)
     // Set to gear mode... no turning back now.
     if(!SoloistCommandExecute(handles[0], "GEAR 1", NULL)) { cleanup(handles, handle_count); }
     
-    if(!SoloistProgramStart(handles[0], 1)) { cleanup(handles, handle_count); }
+    // Start the aerobasic script
+    if(!SoloistProgramStart(handles[0], TASKID_01)) { cleanup(handles, handle_count); }
+    
+    // Wait for the program on the task to finish
+    SoloistProgramGetTaskState(handles[0], TASKID_01, &task_state);
+    while (task_state!=TASKSTATE_ProgramComplete) {
+        SoloistProgramGetTaskState(handles[0], TASKID_01, &task_state);
+    }
     
     // Stay in gear mode until one of the following conditions is satisfied
     int looping = 1;

@@ -3,6 +3,7 @@ classdef Plotting < handle
     properties
         n_chans
         chan_names
+        chans_to_plot
         rate
         fig
         ax
@@ -30,7 +31,9 @@ classdef Plotting < handle
             obj.dur = config.plotting.time;
             obj.update_every = config.nidaq.log_every;
             obj.downsample = 10;
-            obj.chan_names = config.nidaq.ai.channel_names;
+            obj.chans_to_plot = config.plotting.chans_to_plot;
+            obj.chan_names = config.nidaq.ai.channel_names(obj.chans_to_plot);
+            
             
             obj.n_chans = length(obj.chan_names);
             obj.rate = config.nidaq.rate;
@@ -45,12 +48,9 @@ classdef Plotting < handle
             set(obj.fig, 'color', [0, 0, 0]);
             
             for i = 1 : obj.n_chans
-                obj.ax(i) = axes;%subplot(obj.n_chans, 1, i);
-                %set(obj.ax(i), 'plotboxaspectratio', [20, 1, 1]);
+                obj.ax(i) = axes;
                 set(obj.ax(i), 'color', [0, 0, 0]);
                 set(obj.ax(i), 'position', obj.ax_positions{i})
-                %p = get(obj.ax(i), 'position');
-                %p([1, 3]) = [0.05, 0.9];
                 if ~ismember(i, [3, obj.n_chans])
                     set(obj.ax(i), 'xtick', []);
                 else
@@ -90,7 +90,6 @@ classdef Plotting < handle
                 set(obj.fig, 'currentaxes', obj.ax(i));
                 obj.lines(i) = line(obj.plot_t, obj.plot_data(:, i), 'color', cols(i, :));
                 set(obj.ax(i), 'xlim', obj.plot_t([1, end]), 'ylim', obj.ylim{i});
-                %set(obj.ax(i), 'tickdir', 'out');
                 set(obj.ax(i), 'ycolor', 'w', 'xcolor', 'w');
                 ylabel(obj.units{i}, 'color', 'w');
                 title(obj.chan_names{i}, 'fontsize', 8, 'interpreter', 'none', 'color', [1, 1, 1]);
@@ -121,7 +120,7 @@ classdef Plotting < handle
             v_nan = current_plot_val + n_plot_points + (0:obj.n_nan_points-1);
             v_nan = mod(v_nan-1, obj.n_points_plot)+1;
             
-            obj.plot_data(v_rep, :) = data(1:10:end, :);
+            obj.plot_data(v_rep, :) = data(1:10:end, obj.chans_to_plot);
             obj.plot_data(v_nan, :) = nan;
             
             for i = 1 : obj.n_chans

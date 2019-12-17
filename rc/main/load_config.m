@@ -17,8 +17,8 @@ config.nidaq.rate               = 10000;
 config.nidaq.log_every          = 1000;
 
 config.nidaq.ai.dev                     = 'Dev2';
-config.nidaq.ai.channel_names           = {'filtered_teensy', 'raw_teensy', 'stage', 'lick', 'pump', 'solenoid', 'photodiode'};
-config.nidaq.ai.channel_id              = 0:6;
+config.nidaq.ai.channel_names           = {'filtered_teensy', 'raw_teensy', 'stage', 'lick', 'pump', 'solenoid', 'photodiode', 'gain_change'};
+config.nidaq.ai.channel_id              = 0:7;
 
 % the following are only used if 'use_calibration_file' is set to false
 if config.use_calibration_file
@@ -29,8 +29,8 @@ if config.use_calibration_file
     config.nidaq.ai.offset                  = calibration.offset;
     config.nidaq.ai.scale                   = calibration.scale;
 else
-    config.nidaq.ai.offset                  = [0.503344396983876, 0.002920177684111, -0.013990593443526, 0, 0, 0, 0]; % 
-    config.nidaq.ai.scale                   = [40.034026111683019, 39.697309817412304, -40, 1, 1, 1, 1];
+    config.nidaq.ai.offset                  = [0.503344396983876, 0.002920177684111, -0.013990593443526, 0, 0, 0, 0, 0]; % 
+    config.nidaq.ai.scale                   = [40.034026111683019, 39.697309817412304, -40, 1, 1, 1, 1, 1];
 end
 
 config.nidaq.ao.dev             = 'Dev2';
@@ -47,8 +47,8 @@ config.nidaq.co.pulse_dur       = 125;  % ms, e.g. 125 = 80Hz
 config.nidaq.co.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
 
 config.nidaq.do.dev             = 'Dev2';
-config.nidaq.do.channel_names   = {'pump', 'multiplexer', 'solenoid', 'zero_teensy', 'visual_stimulus'};
-config.nidaq.do.channel_id      = {'port0/line0', 'port0/line1', 'port0/line2', 'port0/line3', 'port0/line4'};
+config.nidaq.do.channel_names   = {'pump', 'multiplexer', 'solenoid', 'zero_teensy', 'visual_stimulus', 'soloist'};
+config.nidaq.do.channel_id      = {'port0/line0', 'port0/line1', 'port0/line2', 'port0/line3', 'port0/line4', 'port0/line5'};
 config.nidaq.do.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
 
 config.nidaq.di.dev             = 'Dev2';
@@ -87,6 +87,8 @@ config.soloist_input_src.init_source = 'teensy';
 config.soloist_input_src.teensy = 1;
 
 config.zero_teensy.do_name      = 'zero_teensy';
+
+config.start_soloist.do_name    = 'soloist';
 
 config.visual_stimulus.do_name  = 'visual_stimulus';
 config.visual_stimulus.init_state = 1;

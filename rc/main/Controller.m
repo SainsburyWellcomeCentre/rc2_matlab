@@ -17,6 +17,7 @@ classdef Controller < handle
         trigger_input
         data_transform
         vis_stim
+        start_soloist
         
         data
     end
@@ -55,6 +56,7 @@ classdef Controller < handle
             obj.trigger_input = TriggerInput(obj.ni, config);
             obj.data_transform = DataTransform(config);
             obj.vis_stim = VisStim(obj.ni, config);
+            obj.start_soloist = StartSoloist(obj.ni, config);
         end
         
         

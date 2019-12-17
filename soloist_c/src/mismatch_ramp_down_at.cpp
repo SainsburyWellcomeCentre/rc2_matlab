@@ -13,30 +13,32 @@ main(int argc, char **argv)
     SoloistHandle *handles;
 	DWORD handle_count = 0;
     
+    // Check the arguments
     if (argc < 5) {
         printf("must have at least 5 numeric arguments.\n");
         return 1;
     }
     
-    // Arguments
+    // Command-line arguments
     DOUBLE backward_limit = atof(argv[1]);
     DOUBLE forward_limit = atof(argv[2]);
     DOUBLE ai_offset = atof(argv[3]);
     DOUBLE gear_scale = atof(argv[4]);
     DOUBLE deadband = atof(argv[5]);
-    
-    // Path to the aerobasic script which will control ramping down of the gain
-    LPCSTR ab_script = "..\\ab\\ramp_down_gain.ab";
+    TASKSTATE task_state;
     
     DOUBLE return_value, return_value_pos, return_value_vel;
     int gear_set;
     DWORD ready_to_go = 1; // digital input starts high
     
+    // Path to the aerobasic script which will control ramping down of the gain
+    LPCSTR ab_script = "..\\ab\\ramp_down_gain.ab";
+    
     // Connect to soloist.
     if(!SoloistConnect(&handles, &handle_count)) { cleanup(handles, handle_count); }
     
     // Load the ramp down aerobasic script into task 1
-    if(!SoloistProgramLoad(handles[0], 1, ab_script)) { cleanup(handles, handle_count); }
+    if(!SoloistProgramLoad(handles[0], TASKID_01, ab_script)) { cleanup(handles, handle_count); }
     
     // Setup analog output velocity tracking
     if(!SoloistAdvancedAnalogTrack(handles[0], AO_CHANNEL, AO_SERVO_VALUE, AO_SCALE_FACTOR, 0.0)){ cleanup(handles, handle_count); }
@@ -97,7 +99,13 @@ main(int argc, char **argv)
     
     // Run the ramp down aerobasic script on task 1, if correct positions have been reached
     if (success) {
-        if(!SoloistProgramStart(handles[0], 1)) { cleanup(handles, handle_count); }
+        if(!SoloistProgramStart(handles[0], TASKID_01)) { cleanup(handles, handle_count); }
+        
+        // Wait for program on task 1 to finish
+        SoloistProgramGetTaskState(handles[0], TASKID_01, &task_state);
+        while (task_state!=TASKSTATE_ProgramComplete) {
+            SoloistProgramGetTaskState(handles[0], TASKID_01, &task_state);
+        }
     }
     
     // Disable the axis.

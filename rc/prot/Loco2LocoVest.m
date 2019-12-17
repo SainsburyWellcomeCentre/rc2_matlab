@@ -166,7 +166,7 @@ classdef Loco2LocoVest < handle
                 
                 % TODO!!!
                 % send trigger to soloist to ramp up
-                obj.ctl.soloist_trigger.start();
+                obj.ctl.start_soloist.start();
                 
                 % wait for trigger from soloist
                 while ~obj.ctl.trigger_input.read()  
