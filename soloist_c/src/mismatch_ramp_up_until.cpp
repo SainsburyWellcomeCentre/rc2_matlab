@@ -24,9 +24,10 @@ main(int argc, char **argv)
     DOUBLE ai_offset = atof(argv[3]);
     DOUBLE gear_scale = atof(argv[4]);
     DOUBLE deadband = atof(argv[5]);
-    
+    TASKSTATE task_state;
+
     // Path to the aerobasic script which will control ramping down of the gain
-    LPCSTR ab_script = "..\\ab\\ramp_up_gain.ab";
+    LPCSTR ab_script = "C:\\Users\\Mateo\\Documents\\rc_version2_0\\rc2_matlab\\soloist_c\\ab\\ramp_up_gain.ab";
     
     DOUBLE return_value, return_value_pos, return_value_vel;
     int gear_set;
