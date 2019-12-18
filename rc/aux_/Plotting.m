@@ -120,6 +120,10 @@ classdef Plotting < handle
             v_nan = current_plot_val + n_plot_points + (0:obj.n_nan_points-1);
             v_nan = mod(v_nan-1, obj.n_points_plot)+1;
             
+            if size(data, 1) < 100
+                return
+            end
+            
             obj.plot_data(v_rep, :) = data(1:10:end, obj.chans_to_plot);
             obj.plot_data(v_nan, :) = nan;
             

@@ -126,7 +126,7 @@ classdef Loco2LocoVest < handle
                 obj.ctl.vis_stim.on();
                 
                 % go into the mismatch condition
-                obj.ctl.soloist.mismatch_ramp_up_at(obj.back_limit, obj.forward_limit)
+                obj.ctl.soloist.mismatch_ramp_up_until(obj.back_limit, obj.forward_limit)
                 
                  % start integrating position on PC
                 obj.ctl.position.start();
@@ -199,6 +199,7 @@ classdef Loco2LocoVest < handle
                 % wait for reward to complete then stop acquisition
                 % make sure the stage has moved foward
                 if obj.ctl.get_position() > 0
+                    final_position = 1;
                     obj.ctl.reward.start_reward(obj.wait_for_reward)
                 end
                 

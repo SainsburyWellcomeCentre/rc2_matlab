@@ -81,9 +81,11 @@ classdef ProtocolSequence < handle
             obj.sequence{end}.wait_for_reward = true;
             
             % give warning if we are going to be loading onto teensy
-            direction = cellfun(@(x)(x.direction), obj.sequence, 'uniformoutput', false);
-            if length(unique(direction)) ~= 1
-                warning('direction of travel is not the same for all protocols')
+            if isprop(obj.sequence{1}, 'direction')
+                direction = cellfun(@(x)(x.direction), obj.sequence, 'uniformoutput', false);
+                if length(unique(direction)) ~= 1
+                    warning('direction of travel is not the same for all protocols')
+                end
             end
         end
         
