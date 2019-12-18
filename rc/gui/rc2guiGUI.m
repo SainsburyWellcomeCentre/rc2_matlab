@@ -132,7 +132,6 @@ handles.controller.closed_loop(h_obj);
 function button_open_loop_Callback(h_obj, ~, handles)
 handles.controller.open_loop(h_obj);
 
-
 function pushbutton_start_training_Callback(~, ~, handles)
 handles.controller.start_training();
 
@@ -149,6 +148,7 @@ function edit_experiment_trial_Callback(~, ~, ~)
 function edit_training_trial_Callback(~, ~, ~)
 function edit_script_Callback(~, ~, ~)
 function edit_save_to_Callback(~, ~, ~)
+function checkbox_forward_only_Callback(~, ~, ~)
 % inactive
 
 function pushbutton_acknowledge_error_Callback(hObject, eventdata, handles)
@@ -206,3 +206,6 @@ function edit_experiment_trial_CreateFcn(hObject, ~, ~)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+

@@ -479,7 +479,7 @@ classdef rc2guiController < handle
                 % read reward location and distances
                 reward_location = str2double(get(obj.view.handles.edit_reward_location, 'string')); %#ok<*PROP>
                 reward_distance = str2double(get(obj.view.handles.edit_reward_distance, 'string'));
-                
+                forward_only = get(obj.view.handles.checkbox_forward_only, 'value');
                 
                 if ~isempty(obj.training_seq)
                     delete(obj.training_seq)
@@ -488,7 +488,7 @@ classdef rc2guiController < handle
                 % create a protocol sequence
                 bd = min(obj.back_distance, max(obj.stage_limits) - (reward_location + reward_distance));
                 obj.training_seq = setup_training_sequence(obj.setup, closed_loop, reward_location, ...
-                    reward_distance, bd, obj.n_loops);
+                    reward_distance, bd, obj.n_loops, forward_only);
                 set(obj.view.handles.pushbutton_start_training, 'string', 'STOP TRAINING')
                 addlistener(obj.training_seq, 'current_trial', 'PostSet', @(src, evnt)obj.training_trial_updated(src, evnt));
                 addlistener(obj.training_seq, 'forward_trials', 'PostSet', @(src, evnt)obj.forward_training_trial_updated(src, evnt));
