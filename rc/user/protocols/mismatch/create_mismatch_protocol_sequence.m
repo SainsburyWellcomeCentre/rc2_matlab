@@ -4,22 +4,27 @@
 rng(1);
 
 % parameters
-fname = 'mismatch_protocol_sequence.mat';
+fname = 'mismatch_protocol_sequence_test.mat';
 
 n_trials = 30;
 
 reward_position     = 250;
 distance            = 1200;
 back_distance       = 5;
-switch_jitter       = 50;
+switch_jitter       = 300;
 
 % label the protocols
 prot.locovest2loco = 1;
 prot.loco2locovest = 2;
 
 %% protocol order
-order = repmat([1, 2], n_trials, 1);
-order = order(randperm(numel(order)));
+order = [1; 2];
+for i = 2 : n_trials
+    a = randi(2);
+    order(1, i) = a;
+    order(2, i) = mod(a, 2)+1;
+end
+order = order(:);
 
 %% don't start with loco2locovest
 if order(1) == prot.loco2locovest

@@ -113,7 +113,7 @@ classdef Loco2LocoVest < handle
                 
                 % start the "move to" operation and wait for the process to
                 % terminate.
-                proc = obj.ctl.soloist.move_to(obj.switch_pos, obj.ctl.soloist.default_speed, true);
+                proc = obj.ctl.soloist.move_to(obj.start_pos, obj.ctl.soloist.default_speed, true);
                 proc.wait_for(0.5);
                 
                 % reset position on the PC
@@ -126,7 +126,8 @@ classdef Loco2LocoVest < handle
                 obj.ctl.vis_stim.on();
                 
                 % go into the mismatch condition
-                obj.ctl.soloist.mismatch_ramp_up_until(obj.back_limit, obj.forward_limit)
+                reward_position = obj.start_pos - (obj.switch_pos - obj.forward_limit);
+                obj.ctl.soloist.mismatch_ramp_up_until(obj.back_limit, reward_position)
                 
                  % start integrating position on PC
                 obj.ctl.position.start();

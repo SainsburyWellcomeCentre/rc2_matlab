@@ -1,5 +1,5 @@
-function seq = setup_training_sequence(ctl, closed_loop, reward_position, distance, back_distance, n_loops)
-%%seq = SETUP_TRAINING_SEQUENCE(ctl, closed_loop reward_position, distance, back_distance)
+function seq = setup_training_sequence(ctl, closed_loop, reward_position, distance, back_distance, n_loops, forward_only)
+%%seq = SETUP_TRAINING_SEQUENCE(ctl, closed_loop reward_position, distance, back_distance, n_loops, forward_only)
 %   Sets up a protocol sequence for training. This is a standard sequence
 %   so contained in the main program.
 %       Inputs:
@@ -8,6 +8,10 @@ function seq = setup_training_sequence(ctl, closed_loop, reward_position, distan
 %               reward_position:    position along the controller
 %               distance:           distance to start from reward position
 %               back_distance:      amount to move backward before stopping
+%               n_loops:            the number of loops of the protocol to
+%                                   setup
+%               forward_only:       true = only allow forward movement
+%                                   false = allow backward movement as well
 %       Outputs:
 %               seq:                protocol sequence
 
@@ -23,13 +27,16 @@ ctl.reward.randomize = false;
 if closed_loop
     
     prot = Coupled(ctl, config);
-    prot.direction = 'forward_and_backward';
-    
 else
     
     prot = EncoderOnly(ctl, config);
-    prot.direction = 'forward_and_backward';
     prot.integrate_using = 'pc';
+end
+
+if forward_only
+    prot.direction = 'forward_only';
+else
+    prot.direction = 'forward_and_backward';
 end
 
 % setup the protocol sequence
