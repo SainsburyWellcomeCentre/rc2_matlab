@@ -6,6 +6,8 @@ classdef ProtocolSequence < handle
         running = false;
         abort = false;
         current_sequence
+        current_reward_state = false
+        randomize_reward = false
     end
     
     properties (SetObservable = true)
@@ -71,6 +73,9 @@ classdef ProtocolSequence < handle
             obj.backward_trials = 0;
             obj.forward_trials = 0;
             
+            obj.current_reward_state = obj.ctl.reward.randomize;
+            obj.ctl.reward.randomize = obj.randomize_reward;
+            
             % set run_once properties to false
             for i = 1 : length(obj.sequence)
                 obj.sequence{i}.handle_acquisition = false;
@@ -99,6 +104,7 @@ classdef ProtocolSequence < handle
             obj.current_sequence.stop();
             %delete(obj.current_sequence);
             obj.current_sequence = [];
+            obj.ctl.reward.randomize = obj.current_reward_state;
         end
         
         
