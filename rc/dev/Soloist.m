@@ -1,14 +1,17 @@
 classdef Soloist < handle
     
+    properties    
+        deadband_scale = 0.2
+        deadband
+        ai_offset
+    end
     
     properties (SetAccess = private)
         
         max_limits
         homed = false;
-        ai_offset
         offset_limits = [-1000, 1000];
         gear_scale
-        deadband
         deadband_limits = [0, 1];
     end
     
@@ -46,7 +49,7 @@ classdef Soloist < handle
             % when listening to the teensy or NI
             obj.ai_offset = config.soloist.ai_offset;
             obj.gear_scale = config.soloist.gear_scale;
-            obj.deadband = config.soloist.deadband;
+            obj.deadband = obj.deadband_scale * config.soloist.deadband;
             
             % we setup a separate process dedicated to aborting the current command
             % on the soloist... it runs constantly and is always connected to the
