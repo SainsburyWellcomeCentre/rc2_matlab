@@ -25,6 +25,9 @@ main(int argc, char **argv)
     if(!SoloistMotionSetupRampMode(handles[0], DEFAULT_RAMPMODE)) { cleanup(handles, handle_count); }
     if(!SoloistMotionMoveAbs(handles[0], DEFAULT_POSITION, DEFAULT_SPEED)) { cleanup(handles, handle_count); }
     
+    // Make sure controller waits for move to finish
+    if(!SoloistMotionWaitForMotionDone(handles[0], WAITOPTION_MoveDone, 50000, NULL)) { cleanup(handles, handle_count); }
+    
     // Disable
     if(!SoloistMotionDisable(handles[0])) { cleanup(handles, handle_count); }
     

@@ -12,6 +12,7 @@ main(int argc, char **argv)
 {
     SoloistHandle *handles;
 	DWORD handle_count = 0;
+    BOOL time_out;
     
     if (argc < 4) {
         printf("must have at least 3 numeric arguments.\n");
@@ -38,6 +39,10 @@ main(int argc, char **argv)
     if(!SoloistMotionSetupRampRateAccel(handles[0], DEFAULT_RAMPRATE)) { cleanup(handles, handle_count); }
     if(!SoloistMotionSetupRampMode(handles[0], DEFAULT_RAMPMODE)) { cleanup(handles, handle_count); }
     if(!SoloistMotionMoveAbs(handles[0], position, speed)) { cleanup(handles, handle_count); }
+    
+    // Make sure controller waits for move to finish
+    if(!SoloistMotionWaitForMotionDone(handles[0], WAITOPTION_MoveDone, 50000, &time_out)) { cleanup(handles, handle_count); }
+    
     
     // If we have requested, stay enabled.
     if (!leave_enabled) {
