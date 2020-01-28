@@ -1,7 +1,7 @@
 function config = load_config()
 
 config.use_calibration_file    = true;
-config.calibration_file        = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\rc\main\calibration.mat';
+config.calibration_file        = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\rc\main\calibration_20200123_2.mat';
 
 config.saving.save_to           = 'C:\Users\Mateo\Desktop\DefaultData';
 config.saving.config_file       = mfilename('fullpath');
@@ -43,7 +43,7 @@ config.nidaq.co.channel_names   = {'camera'};
 config.nidaq.co.channel_id      = 0;
 config.nidaq.co.init_delay      = 0;
 config.nidaq.co.pulse_high      = 60;
-config.nidaq.co.pulse_dur       = 125;  % ms, e.g. 125 = 80Hz
+config.nidaq.co.pulse_dur       = 167;  % ms, e.g. 125 = 80Hz 333;%
 config.nidaq.co.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
 
 config.nidaq.do.dev             = 'Dev2';
