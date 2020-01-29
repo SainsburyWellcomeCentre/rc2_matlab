@@ -1,7 +1,7 @@
 function config = load_config()
 
 config.use_calibration_file    = true;
-config.calibration_file        = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\rc\main\calibration_20200123_2.mat';
+config.calibration_file        = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\rc\main\calibration_20200129.mat';
 
 config.saving.save_to           = 'C:\Users\Mateo\Desktop\DefaultData';
 config.saving.config_file       = mfilename('fullpath');
@@ -37,6 +37,11 @@ config.nidaq.ao.dev             = 'Dev2';
 config.nidaq.ao.channel_names   = {'velocity'};
 config.nidaq.ao.channel_id      = 0;
 config.nidaq.ao.idle_offset     = config.nidaq.ai.offset(1); % offset to apply to analog output
+if config.use_calibration_file
+     config.nidaq.ao.ai_ao_error             = calibration.ni_ai_ao_error;
+else
+     config.nidaq.ao.ai_ao_error             = 0;
+end
 
 config.nidaq.co.dev             = 'Dev2';
 config.nidaq.co.channel_names   = {'camera'};

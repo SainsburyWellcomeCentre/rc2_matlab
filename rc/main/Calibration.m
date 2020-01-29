@@ -36,6 +36,7 @@ classdef Calibration < handle
         
         filtTeensy2soloist_offset
         ni2soloist_offset
+        ni_ai_ao_error
         
         theoretical_gear_scale
         actual_gear_scale
@@ -569,7 +570,7 @@ classdef Calibration < handle
             proc.wait_for(0.5);
             
             % output the same offset as recorded on the NI
-            obj.ni.ao.task.outputSingleScan(obj.filtTeensy2ni_offset+0.0088362434); % +0.00696105
+            obj.ni.ao.task.outputSingleScan(obj.filtTeensy2ni_offset+0.0027897713);
             
             % listen to the NI
             obj.multiplexer.listen_to('ni');
@@ -587,9 +588,9 @@ classdef Calibration < handle
             relative_ni2soloist_offset = obj.soloist.calibrate_zero(stage_middle+100, stage_middle-100, obj.filtTeensy2soloist_offset);
             
             % actual offset is the two combined
-            obj.ni2soloist_offset = obj.filtTeensy2soloist_offset - relative_ni2soloist_offset;
+            obj.ni_ai_ao_error = -1e-3*relative_ni2soloist_offset;
             
-            fprintf('NIDAQ to Soloist analog offset: %.10f mV\n', obj.ni2soloist_offset);
+            fprintf('NIDAQ AI to AO error: %.10f mV\n', obj.ni_ai_ao_error);
         end
         
         
@@ -700,6 +701,7 @@ classdef Calibration < handle
             calibration.ni2soloist_offset = obj.ni2soloist_offset;
             calibration.gear_scale = obj.actual_gear_scale;
             calibration.deadband_V = 1.2*obj.minimum_deadband;
+            calibration.ni_ai_ao_error = obj.ni_ai_ao_error;
             
             save(fname, 'calibration')
         end
@@ -722,7 +724,7 @@ classdef Calibration < handle
             obj.ni.start_acq(false);  % do not start clock
             
             tic;
-            while toc < 10
+            while toc < 30
                 pause(0.05)
             end
             
