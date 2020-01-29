@@ -1,4 +1,4 @@
-function seq = experiment_protocol1(ctl)
+function seq = locovest_loco_vest_protocol(ctl)
 
 
 load('protocol_sequence.mat', 'order', 'prot');

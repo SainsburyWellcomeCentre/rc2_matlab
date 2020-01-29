@@ -213,7 +213,7 @@ classdef Controller < handle
         
         
         function ramp_velocity(obj)
-            % create a 1s ramp to 100mm/s
+            % create a 1s ramp to 10mm/s
             rate = obj.ni.ao.task.Rate;
             ramp = obj.soloist.v_per_cm_per_s * (0:rate-1) / rate;
             waveform = obj.ni.ao.idle_offset + ramp;

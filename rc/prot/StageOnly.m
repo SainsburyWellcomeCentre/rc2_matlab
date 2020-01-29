@@ -118,7 +118,8 @@ classdef StageOnly < handle
                 % wait for the solenoid signal to go low
                 % we need to give it some time to setup (~2s, but we want
                 % to wait at the start position anyway...
-                obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit);
+                % don't wait for trigger
+                obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit, false);
                 
                 % start integrating position
                 obj.ctl.position.start();
@@ -144,15 +145,15 @@ classdef StageOnly < handle
                 
                 % look out for the waveform finishing, but the trigger not
                 % being received
-%                 premature_end = false;
+                premature_end = false;
                 
                 % wait for process to terminate.
                 while ~obj.ctl.trigger_input.read()
 
-%                     if ~obj.ctl.ni.ao.task.IsRunning
-%                         premature_end = true;
-%                         break
-%                     end
+                    if ~obj.ctl.ni.ao.task.IsRunning
+                        premature_end = true;
+                        break
+                    end
                     
                     % TODO: if waveform has stopped break out of the loop
                     % otherwise will hang forever...
@@ -166,22 +167,23 @@ classdef StageOnly < handle
                 
                 % if there was a premature end of the trial play a voltage
                 % ramp
-%                 if premature_end
-%                     obj.ctl.ramp_velocity();
-%                 end
+                if premature_end
+                    fprintf('playing voltage ramp\n');
+                    obj.ctl.ramp_velocity();
+                end
                 
-%                 % this time we should definitely get to the end
-%                 while ~obj.ctl.trigger_input.read()
-%                     
-%                     % TODO: if waveform has stopped break out of the loop
-%                     % otherwise will hang forever...
-%                     pause(0.005);
-%                     if obj.abort
-%                         obj.running = false;
-%                         obj.abort = false;
-%                         return
-%                     end
-%                 end
+                % this time we should definitely get to the end
+                while ~obj.ctl.trigger_input.read()
+                    
+                    % TODO: if waveform has stopped break out of the loop
+                    % otherwise will hang forever...
+                    pause(0.005);
+                    if obj.abort
+                        obj.running = false;
+                        obj.abort = false;
+                        return
+                    end
+                end
                 
                 % block treadmill
                 obj.ctl.block_treadmill()

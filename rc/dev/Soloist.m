@@ -13,6 +13,7 @@ classdef Soloist < handle
         offset_limits = [-1000, 1000];
         gear_scale
         deadband_limits = [0, 1];
+        v_per_cm_per_s
     end
     
     properties (SetAccess = private, Hidden = true)
@@ -50,6 +51,7 @@ classdef Soloist < handle
             obj.ai_offset = config.soloist.ai_offset;
             obj.gear_scale = config.soloist.gear_scale;
             obj.deadband = obj.deadband_scale * config.soloist.deadband;
+            obj.v_per_cm_per_s = config.soloist.v_per_cm_per_s;
             
             % we setup a separate process dedicated to aborting the current command
             % on the soloist... it runs constantly and is always connected to the
@@ -319,25 +321,23 @@ classdef Soloist < handle
         
         
         
-        function proc = listen_until(obj, back_pos, forward_pos)
-        %%proc = LISTEN_UNTIL(obj, back_pos, forward_pos, offset, gear_scale)
+        function proc = listen_until(obj, back_pos, forward_pos, wait_for_trigger)
+        %%proc = LISTEN_UNTIL(obj, back_pos, forward_pos)
         %   
         %   Puts the stage in 'gear' mode, which will make the soloist 
         %   listen to the analog input and convert a voltage to a velocity, 
         %   until one of the limits 'back_pos' or 'forward_pos' are reached 
         %   or an error condition occurs (at which point the process ends)
         %
-        %   'source' indicates which voltage source will be listened to, and
-        %   determines the voltage offset to apply to the analog input.
-        %
-        %   There are no defaults.
-        %
         %       'back_pos' and 'forward_pos' must be numeric, not infinite or
         %       nan and between the limits set by Soloist.max_limits
         %       'forward_pos' must be < 'back_pos' (this is a feature of
         %       our stage in which forward is a lower numeric value than
         %       backwards.
+        %       'wait_for_trigger' is true unless specified (determines
+        %       whether the soloist waits for a trigger to go low
         
+            VariableDefault('wait_for_trigger', true);
         
             % check 'back_pos'
             if ~isnumeric(back_pos) || isinf(back_pos) || isnan(back_pos)
@@ -369,7 +369,7 @@ classdef Soloist < handle
             end
             
             fname = obj.full_command('listen_until');
-            cmd = sprintf('%s %i %i %.8f %.8f %.8f', fname, back_pos, forward_pos, obj.ai_offset, obj.gear_scale, obj.deadband);
+            cmd = sprintf('%s %i %i %.8f %.8f %.8f %i', fname, back_pos, forward_pos, obj.ai_offset, obj.gear_scale, obj.deadband, wait_for_trigger);
             disp(cmd)
             
             % start running the process

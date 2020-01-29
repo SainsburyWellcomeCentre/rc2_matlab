@@ -1,4 +1,3 @@
-#include "C:\Program Files (x86)\Aerotech\Soloist\CLibrary\Include\Soloist.h"
 #include "rc_soloist.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,8 +12,8 @@ main(int argc, char **argv)
     SoloistHandle *handles;
 	DWORD handle_count = 0;
     
-    if (argc < 5) {
-        printf("must have at least 5 numeric arguments.\n");
+    if (argc < 6) {
+        printf("must have at least 6 numeric arguments.\n");
         return 1;
     }
     
@@ -24,6 +23,7 @@ main(int argc, char **argv)
     DOUBLE ai_offset = atof(argv[3]);
     DOUBLE gear_scale = atof(argv[4]);
     DOUBLE deadband = atof(argv[5]);
+    DWORD wait_for_trigger = atoi(argv[6]);
     
     DOUBLE return_value, return_value_pos, return_value_vel;
     int gear_set;
@@ -56,10 +56,11 @@ main(int argc, char **argv)
     
     
     // Wait for a trigger to go low.
-    while (ready_to_go == 1) {
-        if(!SoloistIODigitalInput(handles[0], DI_PORT, &ready_to_go)) { cleanup(handles, handle_count); }
+    if (wait_for_trigger == 1) {
+        while (ready_to_go == 1) {
+            if(!SoloistIODigitalInput(handles[0], DI_PORT, &ready_to_go)) { cleanup(handles, handle_count); }
+        }
     }
-    
     
     // Set to gear mode... no turning back now.
     if(!SoloistCommandExecute(handles[0], "GEAR 1", NULL)) { cleanup(handles, handle_count); }
