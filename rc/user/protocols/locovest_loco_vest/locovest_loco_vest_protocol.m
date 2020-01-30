@@ -38,6 +38,7 @@ end
 
 % setup the protocol sequence
 seq = ProtocolSequence(ctl);
+seq.randomize_reward = true;
 
 % iterate over saved waveforms
 current_saved_waveform = 0;
