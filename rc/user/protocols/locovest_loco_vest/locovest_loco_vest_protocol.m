@@ -19,21 +19,25 @@ config.stage.forward_limit = reward_position;
 % setup the locovest protocol
 locovest = Coupled(ctl, config);
 locovest.log_trial = true;
+locovest.enable_vis_stim = false;
 
 % setup the loco only protocol
 loco = EncoderOnly(ctl, config);
 loco.log_trial = true;
 loco.integrate_using = 'pc';
+loco.enable_vis_stim = false;
 
 % setup the vest only protocol
 vest_replay = StageOnly(ctl, config);
 vest_replay.follow_previous_protocol = true;
+vest_replay.enable_vis_stim = false;
 vest_replay.initiate_trial = true;
 
 % 
 for i = 1 : n_saved_waveforms
     fname = fullfile(waveforms_location, sprintf('%s%03i.bin', waveform_basename, i));
     vest_saved(i) = StageOnly(ctl, config, fname);
+    vest_saved(i).enable_vis_stim = false;
     vest_saved(i).initiate_trial = true;
 end
 

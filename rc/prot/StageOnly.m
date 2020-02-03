@@ -9,6 +9,7 @@ classdef StageOnly < handle
         direction
         handle_acquisition = true
         wait_for_reward = true
+        enable_vis_stim = true
         
         initiate_trial = false;
         initiation_speed = 5;
@@ -115,7 +116,11 @@ classdef StageOnly < handle
                 proc.wait_for(0.5);
                 
                 % switch vis stim on
-                obj.ctl.vis_stim.on();
+                if obj.enable_vis_stim
+                    obj.ctl.vis_stim.on();
+                else
+                    obj.ctl.vis_stim.off();
+                end
                 
                 % let animal initiate the trial
                 if obj.initiate_trial
@@ -211,7 +216,9 @@ classdef StageOnly < handle
                 obj.ctl.block_treadmill()
                 
                 % switch vis stim off
-                obj.ctl.vis_stim.off();
+                if obj.enable_vis_stim
+                    obj.ctl.vis_stim.off();
+                end
                 
                 % stop integrating position
                 obj.ctl.position.stop();

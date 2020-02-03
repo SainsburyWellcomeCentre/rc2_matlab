@@ -10,6 +10,7 @@ classdef EncoderOnly < handle
         direction
         handle_acquisition = true
         wait_for_reward = true
+        enable_vis_stim = true
         
         log_trial = false
         
@@ -119,7 +120,12 @@ classdef EncoderOnly < handle
                 obj.ctl.reset_pc_position();
                 
                 % switch vis stim on
-                obj.ctl.vis_stim.on();
+                if obj.enable_vis_stim
+                    obj.ctl.vis_stim.on();
+                else
+                    obj.ctl.vis_stim.off();
+                end
+                
                 
                 % start integrating the position
                 obj.ctl.position.start();
@@ -177,7 +183,9 @@ classdef EncoderOnly < handle
                 obj.ctl.block_treadmill()
                 
                 % switch vis stim off
-                obj.ctl.vis_stim.off();
+                if obj.enable_vis_stim
+                    obj.ctl.vis_stim.off();
+                end
                 
                 % stop integrating position
                 obj.ctl.position.stop();
