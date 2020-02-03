@@ -176,8 +176,13 @@ classdef StageOnly < handle
                 
                 % wait for process to terminate.
                 while ~obj.ctl.trigger_input.read()
-
+                    
+                    % check to see AO is still running
                     if ~obj.ctl.ni.ao.task.IsRunning
+                        
+                        % if AO no longer running set voltage waveform to the idle value
+                        obj.ctl.set_ni_ao_idle();
+                        
                         premature_end = true;
                         break
                     end
@@ -212,6 +217,9 @@ classdef StageOnly < handle
                     end
                 end
                 
+                % if AO no longer running set voltage waveform to the idle value
+                obj.ctl.set_ni_ao_idle();
+                
                 % block treadmill
                 obj.ctl.block_treadmill()
                 
@@ -237,9 +245,6 @@ classdef StageOnly < handle
                     obj.ctl.stop_sound();
                 end
                 
-                % set voltage waveform to the idle value
-                obj.ctl.set_ni_ao_idle();
-                
                 % the protocol is no longer running
                 obj.running = false;
                 
@@ -257,6 +262,7 @@ classdef StageOnly < handle
                     obj.ctl.stop_logging_single_trial();
                 end
                 obj.ctl.stop_sound();
+                obj.ctl.set_ni_ao_idle();
                 
                 rethrow(ME)
             end
@@ -318,6 +324,7 @@ classdef StageOnly < handle
             if obj.log_trial
                 obj.ctl.stop_logging_single_trial();
             end
+            obj.ctl.set_ni_ao_idle();
         end
     end
 end
