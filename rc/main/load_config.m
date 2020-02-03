@@ -30,8 +30,8 @@ if config.use_calibration_file
     config.nidaq.ai.offset                  = calibration.offset;
     config.nidaq.ai.scale                   = calibration.scale;
 else
-    config.nidaq.ai.offset                  = [0.503344396983876, 0.002920177684111, -0.013990593443526, 0, 0, 0, 0, 0]; % 
-    config.nidaq.ai.scale                   = [40.034026111683019, 39.697309817412304, -40, 1, 1, 1, 1, 1];
+    config.nidaq.ai.offset                  = [0.5, 0, 0, 0, 0, 0, 0, 0]; % 
+    config.nidaq.ai.scale                   = [40, 40, -40, 1, 1, 1, 1, 1];
 end
 
 config.nidaq.ao.dev             = 'Dev2';
@@ -72,9 +72,9 @@ config.teensy.start_script      = 'forward_only';
 config.soloist.dir              = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\soloist_c\exe';
 config.soloist.default_speed    = 200;
 if config.use_calibration_file
-    config.soloist.ai_offset            = calibration.filtTeensy2soloist_offset;
-    config.soloist.gear_scale           = calibration.gear_scale;
-    config.soloist.deadband             = calibration.deadband_V;
+    config.soloist.ai_offset    = calibration.filtTeensy2soloist_offset;
+    config.soloist.gear_scale   = calibration.gear_scale;
+    config.soloist.deadband     = 1.2*calibration.deadband_V;
 else
     config.soloist.ai_offset            = -508.0;
     config.soloist.gear_scale           = -4000;
