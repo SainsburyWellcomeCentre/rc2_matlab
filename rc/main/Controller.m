@@ -30,6 +30,18 @@ classdef Controller < handle
         acquiring_preview = false;
     end
     
+    properties (Hidden = true)
+        
+        % These should be private but flexibility is required ATM
+        %  These offset errors could be stored in multiple places (e.g. with
+        %  treadmill class, or with the AO class, but it was thought best to keep those
+        %  classes generic and pass offsets as from the controller.. which
+        %  is more setup specific?)
+        ao_error_solenoid_on
+        ao_error_solenoid_off
+    end
+    
+    
     
     methods
         
@@ -58,6 +70,10 @@ classdef Controller < handle
             obj.data_transform = DataTransform(config);
             obj.vis_stim = VisStim(obj.ni, config);
             obj.start_soloist = StartSoloist(obj.ni, config);
+            
+            % Offset errors along the Teensy-NIDAQ-AI, to NIDAQ-AO to Multiplexer to Soloist
+            obj.ao_error_solenoid_on = config.nidaq.ao.offset_error_solenoid_on;
+            obj.ao_error_solenoid_off = config.nidaq.ao.offset_error_solenoid_off;
         end
         
         
@@ -172,7 +188,8 @@ classdef Controller < handle
         function stop_sound(obj)
             obj.sound.stop()
         end
-            
+        
+        
         function give_reward(obj)
 %             obj.reward.give_reward();
             obj.reward.start_reward(0)
@@ -180,12 +197,26 @@ classdef Controller < handle
         
         
         function block_treadmill(obj)
+            
             obj.treadmill.block()
+            
+            % change the offset on the NI
+            %   unless it is already running a waveform
+            if ~obj.ni.ao.task.IsRunning
+                obj.set_ni_ao_idle();
+            end
         end
         
         
         function unblock_treadmill(obj)
+            
             obj.treadmill.unblock()
+            
+            % change the offset on the NI
+            %   unless it is already running a waveform
+            if ~obj.ni.ao.task.IsRunning
+                obj.set_ni_ao_idle();
+            end
         end
         
         
@@ -225,7 +256,19 @@ classdef Controller < handle
         
         
         function load_velocity_waveform(obj, waveform)
-            obj.ni.ao_write(waveform);
+            
+            % change offset depending on the state of the solenoid...
+            if obj.treadmill.state
+                % solenoid is blocked
+                offset = obj.ao_error_solenoid_on;
+            else
+                % solenoid is not blocking
+                offset = obj.ao_error_solenoid_off;
+            end
+            
+            % write a waveform (in V) and an error to apply to that
+            % waveform
+            obj.ni.ao_write(waveform, offset);
         end
         
         
@@ -296,7 +339,18 @@ classdef Controller < handle
         
         
         function set_ni_ao_idle(obj)
-            obj.ni.ao.set_to_idle();
+            
+            % change offset depending on the state of the solenoid...
+            if obj.treadmill.state
+                % solenoid is blocked
+                offset = obj.ao_error_solenoid_on;
+            else
+                % solenoid is not blocking
+                offset = obj.ao_error_solenoid_off;
+            end
+            
+            % 
+            obj.ni.ao.set_to_idle(offset);
         end
         
         

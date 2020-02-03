@@ -1,12 +1,14 @@
 classdef AnalogOutput < handle
     
     properties
+        
         task
         channel_names = {}
         channel_ids = {}
         chan = {}
+        
         idle_offset
-        ai_ao_error
+        
         max_voltage = 3.3;
     end
     
@@ -29,7 +31,6 @@ classdef AnalogOutput < handle
             obj.task.Rate = config.nidaq.rate;
             obj.task.IsContinuous = 0;
             obj.idle_offset = config.nidaq.ao.idle_offset;
-            obj.ai_ao_error = config.nidaq.ao.ai_ao_error;
             
             % make sure the idle offset provided is not above max_voltage
             if abs(obj.idle_offset) > obj.max_voltage
@@ -46,18 +47,30 @@ classdef AnalogOutput < handle
         end
         
         
-        function set_to_idle(obj)
+        function set_to_idle(obj, offset)
+            
+            % By default don't apply an offset
+            VariableDefault('offset', 0);
+            
+            % Stop any running tasks first
             obj.stop();
+            
             % write initial voltage to AO
-            obj.task.outputSingleScan(obj.idle_offset + obj.ai_ao_error);
+            obj.task.outputSingleScan(obj.idle_offset + offset);
         end
         
         
-        function write(obj, data)
+        function write(obj, data, offset)
+            
+            % By default don't apply an offset
+            VariableDefault('offset', 0);
+            
             % to avoid DANGER, clip voltage at limits!!
             data(data > obj.max_voltage) = obj.max_voltage;
             data(data < -obj.max_voltage) = -obj.max_voltage;
-            obj.task.queueOutputData(data + obj.ai_ao_error);
+            
+            % Queue the output data
+            obj.task.queueOutputData(data + offset);
         end
         
         

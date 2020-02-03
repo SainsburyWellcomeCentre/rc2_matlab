@@ -34,41 +34,43 @@ else
     config.nidaq.ai.scale                   = [40.034026111683019, 39.697309817412304, -40, 1, 1, 1, 1, 1];
 end
 
+config.nidaq.ao.dev             = 'Dev2';
+config.nidaq.ao.channel_names   = {'velocity'};
+config.nidaq.ao.channel_id      = 0;
+config.nidaq.ao.idle_offset     = config.nidaq.ai.offset(1); % offset to apply to analog output
 
-config.nidaq.ao.dev                     = 'Dev2';
-config.nidaq.ao.channel_names           = {'velocity'};
-config.nidaq.ao.channel_id              = 0;
-config.nidaq.ao.idle_offset             = config.nidaq.ai.offset(1); % offset to apply to analog output
+% 
 if config.use_calibration_file
-     config.nidaq.ao.ai_ao_error             = calibration.ni_ai_ao_error;
+    config.nidaq.ao.offset_error_solenoid_on = calibration.ni_ao_error_solenoid_on;
+    config.nidaq.ao.offset_error_solenoid_off = calibration.ni_ao_error_solenoid_off;
 else
-     config.nidaq.ao.ai_ao_error             = 0;
+    config.nidaq.ao.offset_error_solenoid_on = 0;
+    config.nidaq.ao.offset_error_solenoid_off = 0;
 end
 
-config.nidaq.co.dev                     = 'Dev2';
-config.nidaq.co.channel_names           = {'camera'};
-config.nidaq.co.channel_id              = 0;
-config.nidaq.co.init_delay              = 0;
-config.nidaq.co.pulse_high              = 60;
-config.nidaq.co.pulse_dur               = 167;  % ms, e.g. 125 = 80Hz 333;%
-config.nidaq.co.clock_src               = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
+config.nidaq.co.dev             = 'Dev2';
+config.nidaq.co.channel_names   = {'camera'};
+config.nidaq.co.channel_id      = 0;
+config.nidaq.co.init_delay      = 0;
+config.nidaq.co.pulse_high      = 60;
+config.nidaq.co.pulse_dur       = 167;  % ms, e.g. 125 = 80Hz 333;%
+config.nidaq.co.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
 
-config.nidaq.do.dev                     = 'Dev2';
-config.nidaq.do.channel_names           = {'pump', 'multiplexer', 'solenoid', 'zero_teensy', 'visual_stimulus', 'soloist'};
-config.nidaq.do.channel_id              = {'port0/line0', 'port0/line1', 'port0/line2', 'port0/line3', 'port0/line4', 'port0/line5'};
-config.nidaq.do.clock_src               = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
+config.nidaq.do.dev             = 'Dev2';
+config.nidaq.do.channel_names   = {'pump', 'multiplexer', 'solenoid', 'zero_teensy', 'visual_stimulus', 'soloist'};
+config.nidaq.do.channel_id      = {'port0/line0', 'port0/line1', 'port0/line2', 'port0/line3', 'port0/line4', 'port0/line5'};
+config.nidaq.do.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
 
-config.nidaq.di.dev                     = 'Dev2';
-config.nidaq.di.channel_names           = {'from_soloist', 'from_teensy'};
-config.nidaq.di.channel_id              = {'port1/line0', 'port1/line1'};
+config.nidaq.di.dev             = 'Dev2';
+config.nidaq.di.channel_names   = {'from_soloist', 'from_teensy'};
+config.nidaq.di.channel_id      = {'port1/line0', 'port1/line1'};
 
-config.teensy.exe                       = 'C:\Program Files (x86)\Arduino\arduino_debug.exe';
-config.teensy.dir                       = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\teensy_ino';
-config.teensy.start_script              = 'forward_only';
+config.teensy.exe               = 'C:\Program Files (x86)\Arduino\arduino_debug.exe';
+config.teensy.dir               = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\teensy_ino';
+config.teensy.start_script      = 'forward_only';
 
-config.soloist.dir                      = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\soloist_c\exe';
-config.soloist.default_speed            = 200;
-config.soloist.v_per_cm_per_s           = 2.5/100;
+config.soloist.dir              = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\soloist_c\exe';
+config.soloist.default_speed    = 200;
 if config.use_calibration_file
     config.soloist.ai_offset            = calibration.filtTeensy2soloist_offset;
     config.soloist.gear_scale           = calibration.gear_scale;

@@ -44,9 +44,13 @@ classdef NI < handle
         end
         
         
-        function ao_write(obj, waveform)
+        function ao_write(obj, waveform, offset)
+            
+            % don't apply any offset by default
+            VariableDefault('offset', 0);
+            
             obj.ao.stop()
-            obj.ao.write(waveform)
+            obj.ao.write(waveform, offset);
         end
         
         
