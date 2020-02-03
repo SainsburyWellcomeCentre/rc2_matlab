@@ -5,6 +5,9 @@ classdef Calibration < handle
         max_velocity = 1000 % mm/s
         max_voltage = 2.5  % V
         cnts_per_unit = 10000 % check this
+        
+        % time over which to measure NI input
+        measure_time = 10; % s
     end
     
     properties (SetAccess = private)
@@ -35,11 +38,11 @@ classdef Calibration < handle
         soloist2ni_scale
         
         filtTeensy2soloist_offset
-        ni2soloist_offset
-        ni_ai_ao_error
-        
         theoretical_gear_scale
         actual_gear_scale
+        
+        ni_ao_error_solenoid_on
+        ni_ao_error_solenoid_off
         
         minimum_deadband
     end
@@ -62,7 +65,6 @@ classdef Calibration < handle
         %       5. soloist_ni_offset()
         %       6. soloist_velocity_scale()
         %       7. deadband()
-        %
         
             obj.config = config;
             
@@ -79,9 +81,45 @@ classdef Calibration < handle
         end
         
         
+        function load_calibration(obj, fname)
+        %%LOAD_CALIBRATION(obj)
+        %   Loads a previously generated calibration file.
         
-        function teensy_ni_offsets(obj)
+            % load in an old calibration file
+            load(fname, 'calibration');
             
+            % get the indices of the filtered teensy, raw teensy and stage
+            filtered_idx = strcmp(calibration.channel_names, 'filtered_teensy');
+            raw_idx = strcmp(calibration.channel_names, 'raw_teensy');
+            stage_idx = strcmp(calibration.channel_names, 'stage');
+            
+            % 
+            obj.filtTeensy2ni_offset = calibration.offset(filtered_idx);
+            obj.rawTeensy2ni_offset = calibration.offset(raw_idx);
+            obj.soloist2ni_offset = calibration.offset(stage_idx);
+            
+            % 
+            obj.filtTeensy2ni_scale = calibration.scale(filtered_idx);
+            obj.rawTeensy2ni_scale = calibration.scale(raw_idx);
+            obj.soloist2ni_scale = calibration.scale(stage_idx);
+            
+            obj.filtTeensy2soloist_offset = calibration.filtTeensy2soloist_offset;
+            
+            obj.actual_gear_scale = calibration.gear_scale;
+            obj.minimum_deadband = calibration.deadband_V;
+            
+            % these did not exist for early versions of the calibration
+            if isfield(calibration, 'ni_ao_error_solenoid_on')
+                obj.ni_ao_error_solenoid_on = calibration.ni_ao_error_solenoid_on;
+                obj.ni_ao_error_solenoid_off = calibration.ni_ao_error_solenoid_off;
+            end
+        end
+        
+        
+        
+        function calibrate_teensy2ni_offsets(obj)
+        %%CALIBRATE_TEENSY2NI_OFFSETS(obj)
+        
             % move the stage to the middle
             stage_middle = mean(obj.soloist.max_limits);
             
@@ -132,8 +170,17 @@ classdef Calibration < handle
         
         
         
-        function teensy_velocity_scale(obj)
-            
+        function calibrate_teensy2ni_scales(obj)
+        %%CALIBRATE_TEENSY2NI_SCALES(obj)
+        %   
+        %   Moves the stage to the middle.
+        %   Loads on the 'forward_only' script onto the teensy
+        %   Unblocks the treadmill (solenoid off)
+        %   Measures the voltage on analog input of filtered and raw
+        %       Teensys
+        %   Presents a figure to check that the treadmill was stationary
+        %   Averages the traces to get an offset value.
+        
             % move the stage to the middle
             stage_middle = mean(obj.soloist.max_limits);
             
@@ -196,8 +243,18 @@ classdef Calibration < handle
         
         
         
-        function soloist_ai_offset(obj)
-            
+        function calibrate_filteredTeensy2soloist_offset(obj)
+        %%CALIBRATE_FILTEREDTEENSY2SOLOIST_OFFSET(obj)
+        %    
+        %   Moves the stage to the middle.
+        %   Loads on the 'forward_only' script onto the teensy
+        %   Unblocks the treadmill (solenoid off)
+        % 
+        %   Puts the soloist in gear mode, applies the offset as measured
+        %   from teensy to NIDAQ, and then measures the residual offset.
+        % 
+        %   Averages the traces to get an offset value.
+        
             % move the stage to the middle
             stage_middle = mean(obj.soloist.max_limits);
             
@@ -220,10 +277,12 @@ classdef Calibration < handle
                 return; %#ok<UNRCH>
             end
             
-            % estimate the voltage offset for the soloist
+            % Estimate the voltage offset to apply on the soloist analog
+            % input.
+            %   Take negative, as we must subtract it.
             teensy_ni_offset_mV = -1e3*obj.filtTeensy2ni_offset;
             
-            % run calibration to determine offset on soloist
+            % Run calibration to determine offset on soloist
             relative_filtTeensy2soloist_offset = obj.soloist.calibrate_zero(stage_middle+100, stage_middle-100, teensy_ni_offset_mV);
             
             %TODO: check the units of this
@@ -240,15 +299,15 @@ classdef Calibration < handle
         end
         
         
-        function soloist_gear_scale(obj, test_on)
-        %%SOLOIST_GEAR_SCALE(obj, test_on)
+        function calibrate_filteredTeensy2soloist_gear_scale(obj, test_on)
+        %%CALIBRATE_FILTEREDTEENSY2SOLOIST_GEAR_SCALE(obj, test_on)
         %  This method calibrates the 'gear_scale' parameter. 
         %   The soloist accepts an analog input, and converts the voltage
         %   to velocity.
         %   The scale (V to mm/s) is determined by the gear scale factor.
         %   To do this we need to open Soloist Scope and record the true
         %   velocity feedback of the stage.
-        %   To calibrate run with test_on = false;
+        %   To calibrate, run with test_on = false;
         %   To test the calibration run with test_on = true
         
         
@@ -320,12 +379,12 @@ classdef Calibration < handle
         
         
         
-        function soloist_ni_offset(obj)
-        %%SOLOIST_NI_OFFSET(obj)
+        function calibrate_soloist2ni_offset(obj)
+        %%CALIBRATE_SOLOIST2NI_OFFSET(obj)
         %   This method puts the stage into gear mode with the calibrated
         %   offset and gear scale (as measured with the above functions).
-        %   Then measures the offset while the treadmill is stationary.
-            
+        %   Then measures the offset on the NIDAQ while the treadmill is stationary.
+
             %check we have already established filtTeensy2ni_offset
             if isempty(obj.filtTeensy2soloist_offset)
                 error('filtTeensy2soloist_offset doesn''t exist. Run ''soloist_ai_offset'' to generate it');
@@ -396,11 +455,12 @@ classdef Calibration < handle
         end
         
         
-        function soloist_velocity_scale(obj)
-        %%SOLOIST_VELOCITY_SCALE(obj, test_on)
-        %  This method calibrates the scale for the velocity
+        function calibrate_soloist2ni_scale(obj)
+        %%CALIBRATE_SOLOIST2NI_SCALE(obj, test_on)
+        %  This method calibrates the scale for the velocity measured from
+        %  the soloist controller onto the NIDAQ.
         
-            %check we have already established filtTeensy2ni_offset
+            % check we have already established filtTeensy2ni_offset
             if isempty(obj.filtTeensy2soloist_offset)
                 error('filtTeensy2soloist_offset doesn''t exist. Run ''soloist_ai_offset'' to generate it');
                 return; %#ok<UNRCH>
@@ -481,8 +541,8 @@ classdef Calibration < handle
         end
         
         
-        function deadband(obj)
-        %%DEADBAND(obj)
+        function calibrate_deadband(obj)
+        %%CALIBRATE_DEADBAND(obj)
         %   Records some stationary recording and computes the minimum
         %   deadband required, then suggests another deadband.
             
@@ -543,13 +603,16 @@ classdef Calibration < handle
         end
         
         
-        function calibrate_ni2soloist_offset(obj)
-        %%CALIBRATE_NI2SOLOIST_OFFSET(obj)
+        function calibrate_ni2soloist_offset_errors(obj)
+        %%CALIBRATE_NI2SOLOIST_OFFSET_ERRORS(obj)
+        %
         %   This method calibrates the offset from the NIDAQ analog output
         %   to the soloist (through the multiplexer). We apply the same
-        %   offset as measured from the Teensy analog output to the NIDAQ 
+        %   offset to the NIDAQ analog output as measured on the NIDAQ 
         %   analog input (NOT through the mutliplexer) (this after all is
         %   what we will record and playback)
+        %
+        %   We then measure the offset on the soloist
         
         
             %check we have already established filtTeensy2ni_offset
@@ -570,7 +633,7 @@ classdef Calibration < handle
             proc.wait_for(0.5);
             
             % output the same offset as recorded on the NI
-            obj.ni.ao.task.outputSingleScan(obj.filtTeensy2ni_offset+0.0027897713);
+            obj.ni.ao.task.outputSingleScan(obj.filtTeensy2ni_offset);
             
             % listen to the NI
             obj.multiplexer.listen_to('ni');
@@ -587,78 +650,22 @@ classdef Calibration < handle
             % run calibration to determine offset on soloist
             relative_ni2soloist_offset = obj.soloist.calibrate_zero(stage_middle+100, stage_middle-100, obj.filtTeensy2soloist_offset);
             
-            % actual offset is the two combined
-            obj.ni_ai_ao_error = -1e-3*relative_ni2soloist_offset;
+            % store calibration for solenoid off
+            obj.ni_ao_error_solenoid_off = -1e-3*relative_ni2soloist_offset;
             
-            fprintf('NIDAQ AI to AO error: %.10f mV\n', obj.ni_ai_ao_error);
+            % unblock the treadmill
+            obj.treadmill.block()
+            
+            % run calibration to determine offset on soloist
+            relative_ni2soloist_offset = obj.soloist.calibrate_zero(stage_middle+100, stage_middle-100, obj.filtTeensy2soloist_offset);
+            
+            % store calibration for solenoid off
+            obj.ni_ao_error_solenoid_on = -1e-3*relative_ni2soloist_offset;
+            
+            % print results
+            fprintf('NIDAQ AO error, solenoid down: %.10f mV\n', obj.ni_ao_error_solenoid_off);
+            fprintf('NIDAQ AO error, solenoid up: %.10f mV\n', obj.ni_ao_error_solenoid_on);
         end
-        
-        
-        
-%         function calibrate_ni2soloist_gear_scale(obj)
-%         %%CALIBRATE_NI2SOLOIST_GEAR_SCALE(obj)
-%         %   This method calibrates the gear scale when using the NIDAQ analog output
-%         %   to drive the soloist (through the multiplexer). We record the
-%         %   test pulse from the Teensy on the analog input, and play it
-%         %   back using the NIDAQ.
-%             
-%             % prompt user to open Soloist Scope
-%             input('Open Soloist Scope and get ready to record velocity feedback (Press enter when done)');
-%             
-%             % move to back of stage. wait for move to complete
-%             proc = obj.soloist.move_to(1200); % needs to be configurable
-%             proc.wait_for(0.5);
-%             
-%             % load a calibration script onto the teensy
-%             % it waits for a signal to start
-%             obj.teensy.load('calibrate_soloist')
-%             
-%             % tell stage to listen to teensy
-%             obj.multiplexer.listen_to('teensy');
-%             
-%             % unblock the treadmill
-%             obj.treadmill.unblock()
-%             
-%             % set parameters and enter gear mode
-%             obj.soloist.set_offset(obj.filtTeensy2soloist_offset);
-%             obj.soloist.set_gear_scale(obj.actual_gear_scale)
-%             obj.soloist.listen_until(1450, 400);
-%             
-%             % Direct the user
-%             fprintf('Start recording in the Soloist Scope and press Enter here.\n');
-%             fprintf('The stage will reach a peak speed of approximately 40cm/s\n');
-%             fprintf('When it has finished, check in the Soloist Scope the actual velocity attained and type it at the command line here\n')
-%             input('Ready (press Enter)?');
-%             
-%             % Tell the teensy to start the profile
-%             obj.zero_teensy.zero();
-%             
-%             % measure the profile
-%             obj.measure();
-%             
-%             % abor this
-%             obj.soloist.stop();
-%             
-%             % move to back of stage. wait for move to complete
-%             proc = obj.soloist.move_to(1200); % needs to be configurable
-%             proc.wait_for(0.5);
-%             
-%             % tell stage to listen to teensy
-%             obj.multiplexer.listen_to('teensy');
-%             
-%             % set parameters and enter gear mode
-%             obj.soloist.set_offset(obj.ni2soloist_offset);
-%             obj.soloist.set_gear_scale(obj.actual_gear_scale)
-%             obj.soloist.listen_until(1450, 400);
-%             
-%             
-%             % write the same analog output we just measured
-%             obj.ni.ao_write(obj.data);
-%             
-%             % start the task
-%             obj.ni.ao_start();
-%         
-%         end
         
         
         
@@ -673,14 +680,16 @@ classdef Calibration < handle
                 ~isempty(obj.rawTeensy2ni_scale) && ...
                 ~isempty(obj.soloist2ni_scale) && ...
                 ~isempty(obj.filtTeensy2soloist_offset) && ...
-                ~isempty(obj.actual_gear_scale);
+                ~isempty(obj.actual_gear_scale) && ...
+                ~isempty(obj.minimum_deadband) && ...
+                ~isempty(obj.ni_ao_error_solenoid_on) && ...
+                ~isempty(obj.ni_ao_error_solenoid_off);
         
             % if not true then problem
             if ~valid
                 error('one or more parameters have not been calibrated');
             end
             
-            % get the indices in the 
             filtered_idx = strcmp(obj.config.nidaq.ai.channel_names, 'filtered_teensy');
             raw_idx = strcmp(obj.config.nidaq.ai.channel_names, 'raw_teensy');
             stage_idx = strcmp(obj.config.nidaq.ai.channel_names, 'stage');
@@ -700,10 +709,16 @@ classdef Calibration < handle
             calibration.filtTeensy2soloist_offset = obj.filtTeensy2soloist_offset;
             calibration.ni2soloist_offset = obj.ni2soloist_offset;
             calibration.gear_scale = obj.actual_gear_scale;
-            calibration.deadband_V = 1.2*obj.minimum_deadband;
-            calibration.ni_ai_ao_error = obj.ni_ai_ao_error;
+            calibration.deadband_V = obj.minimum_deadband;
             
-            save(fname, 'calibration')
+            calibration.ni_ao_error_solenoid_on = obj.ni_ao_error_solenoid_on;
+            calibration.ni_ao_error_solenoid_off = obj.ni_ao_error_solenoid_off;
+            
+            if exist(fname, 'file')
+                error('Filename %s already exists. Delete.', fname);
+            else
+                save(fname, 'calibration');
+            end
         end
         
         
@@ -724,7 +739,7 @@ classdef Calibration < handle
             obj.ni.start_acq(false);  % do not start clock
             
             tic;
-            while toc < 30
+            while toc < obj.measure_time
                 pause(0.05)
             end
             
