@@ -10,6 +10,9 @@ classdef StageOnly < handle
         handle_acquisition = true
         wait_for_reward = true
         
+        initiate_trial = false;
+        initiation_speed = 5;
+        
         follow_previous_protocol = false
         wave_fname
         waveform
@@ -113,6 +116,25 @@ classdef StageOnly < handle
                 
                 % switch vis stim on
                 obj.ctl.vis_stim.on();
+                
+                % let animal initiate the trial
+                if obj.initiate_trial
+                    
+                    obj.ctl.unblock_treadmill();
+                    
+                    fprintf('waiting for trial initialization\n');
+                    
+                    while all(obj.ctl.tdata(:, 1) < obj.initiation_speed)
+                        pause(0.005);
+                        if obj.abort
+                            obj.running = false;
+                            obj.abort = false;
+                            return
+                        end
+                    end
+                    
+                    obj.ctl.block_treadmill();
+                end
                 
                  % the soloist will connect, setup some parameters and then
                 % wait for the solenoid signal to go low

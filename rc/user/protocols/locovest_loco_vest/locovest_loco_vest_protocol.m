@@ -28,11 +28,13 @@ loco.integrate_using = 'pc';
 % setup the vest only protocol
 vest_replay = StageOnly(ctl, config);
 vest_replay.follow_previous_protocol = true;
+vest_replay.initiate_trial = true;
 
 % 
 for i = 1 : n_saved_waveforms
     fname = fullfile(waveforms_location, sprintf('%s%03i.bin', waveform_basename, i));
     vest_saved(i) = StageOnly(ctl, config, fname);
+    vest_saved(i).initiate_trial = true;
 end
 
 

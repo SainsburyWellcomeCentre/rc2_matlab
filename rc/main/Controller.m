@@ -20,6 +20,7 @@ classdef Controller < handle
         start_soloist
         
         data
+        tdata
     end
     
     
@@ -107,10 +108,10 @@ classdef Controller < handle
             obj.data = evt.Data;
             
             % transform data
-            tdata = obj.data_transform.transform(obj.data);
+            obj.tdata = obj.data_transform.transform(obj.data);
             
             % pass transformed data to plotter
-            obj.plotting.ni_callback(tdata);
+            obj.plotting.ni_callback(obj.tdata);
         end
         
         
@@ -146,11 +147,11 @@ classdef Controller < handle
             obj.saver.log(evt.Data);
             
             % transform data
-            tdata = obj.data_transform.transform(evt.Data);
+            obj.tdata = obj.data_transform.transform(evt.Data);
             
             % pass transformed data to callbacks
-            obj.plotting.ni_callback(tdata);
-            obj.position.integrate(tdata(:, 1));
+            obj.plotting.ni_callback(obj.tdata);
+            obj.position.integrate(obj.tdata(:, 1));
         end
         
         
