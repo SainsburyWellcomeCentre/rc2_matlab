@@ -275,6 +275,12 @@ classdef StageOnly < handle
         
         
         function prepare_as_sequence(obj, fname)
+            
+            if ~isempty(obj.wave_fname)
+                fprintf('wavename already exists...\n')
+                return
+            end
+            
             if ~isempty(fname)
                 obj.set_fname(fname);
             end

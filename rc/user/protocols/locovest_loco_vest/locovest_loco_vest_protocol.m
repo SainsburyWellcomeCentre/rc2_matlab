@@ -5,7 +5,7 @@ load('protocol_sequence.mat', 'order', 'prot');
 
 % saved waveforms
 waveforms_location = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\waveforms';
-waveform_basename = '201911141434_28_001_single_trial_';
+waveform_basename = 'CA_529_2_trn11_001_single_trial_';
 n_saved_waveforms = 8;
 
 reward_position     = 250;
