@@ -262,6 +262,9 @@ classdef Calibration < handle
             proc = obj.soloist.move_to(stage_middle);
             proc.wait_for(0.5);
             
+            % 
+            obj.multiplexer.listen_to('teensy');
+            
             % load the zero teensy script for stationary
             obj.teensy.load('forward_only');
             
@@ -323,6 +326,8 @@ classdef Calibration < handle
             % move to back of stage. wait for move to complete
             proc = obj.soloist.move_to(1200); % needs to be configurable
             proc.wait_for(0.5);
+            
+            obj.multiplexer.listen_to('teensy');
             
             % load a calibration script onto the teensy
             % it waits for a signal to start
@@ -401,6 +406,8 @@ classdef Calibration < handle
             % move to middle of stage. wait for move to complete
             proc = obj.soloist.move_to(stage_middle);
             proc.wait_for(0.5);
+            
+            obj.multiplexer.listen_to('teensy');
             
             % load the zero teensy script for stationary
             obj.teensy.load('forward_only');
@@ -707,7 +714,6 @@ classdef Calibration < handle
             calibration.scale(stage_idx) = obj.soloist2ni_scale;
             
             calibration.filtTeensy2soloist_offset = obj.filtTeensy2soloist_offset;
-            calibration.ni2soloist_offset = obj.ni2soloist_offset;
             calibration.gear_scale = obj.actual_gear_scale;
             calibration.deadband_V = obj.minimum_deadband;
             

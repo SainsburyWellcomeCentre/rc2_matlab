@@ -1,7 +1,9 @@
-function config = load_config()
+function config = load_config(use_calibration)
 
-config.use_calibration_file             = true;
-config.calibration_file                 = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\rc\main\calibration_20200129.mat';
+VariableDefault('use_calibration', true);
+
+config.use_calibration_file             = use_calibration;
+config.calibration_file                 = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\rc\main\calibration_20200207.mat';
 
 config.saving.save_to                   = 'C:\Users\Mateo\Desktop\DefaultData';
 config.saving.config_file               = mfilename('fullpath');
@@ -71,6 +73,7 @@ config.teensy.start_script      = 'forward_only';
 
 config.soloist.dir              = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\soloist_c\exe';
 config.soloist.default_speed    = 200;
+config.soloist.v_per_cm_per_s   = 25/100;
 if config.use_calibration_file
     config.soloist.ai_offset    = calibration.filtTeensy2soloist_offset;
     config.soloist.gear_scale   = calibration.gear_scale;
