@@ -248,7 +248,7 @@ classdef Controller < handle
             % create a 1s ramp to 10mm/s
             rate = obj.ni.ao.task.Rate;
             ramp = obj.soloist.v_per_cm_per_s * (0:rate-1) / rate;
-            waveform = obj.ni.ao.idle_offset + ramp;
+            waveform = obj.ni.ao.idle_offset + ramp';
             obj.load_velocity_waveform(waveform);
             pause(0.1);
             obj.play_velocity_waveform();
