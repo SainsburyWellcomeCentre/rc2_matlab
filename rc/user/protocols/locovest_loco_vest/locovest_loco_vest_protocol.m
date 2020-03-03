@@ -28,11 +28,7 @@ loco.integrate_using = 'pc';
 loco.enable_vis_stim = false;
 
 % setup the vest only protocol
-vest_replay = StageOnly(ctl, config);
-vest_replay.follow_previous_protocol = true;
-vest_replay.enable_vis_stim = false;
-vest_replay.initiate_trial = true;
-vest_replay.start_dwell_time = 3;
+
 
 % 
 for i = 1 : n_saved_waveforms
@@ -41,6 +37,12 @@ for i = 1 : n_saved_waveforms
     vest_saved(i).enable_vis_stim = false;
     vest_saved(i).initiate_trial = true;
     vest_saved(i).start_dwell_time = 3;
+    
+    vest_replay(i) = StageOnly(ctl, config);
+    vest_replay(i).follow_previous_protocol = true;
+    vest_replay(i).enable_vis_stim = false;
+    vest_replay(i).initiate_trial = true;
+    vest_replay(i).start_dwell_time = 3;
 end
 
 
@@ -50,6 +52,8 @@ seq.randomize_reward = true;
 
 % iterate over saved waveforms
 current_saved_waveform = 0;
+current_replay = 0;
+
 
 % it will loop n_loops number of times
 for i = 1 : length(order)
@@ -58,7 +62,8 @@ for i = 1 : length(order)
     elseif order(i) == prot.loco
         seq.add(loco);
     elseif order(i) == prot.vest
-        seq.add(vest_replay);
+        current_replay = current_replay + 1;
+        seq.add(vest_replay(current_replay));
     elseif order(i) == prot.vest_from_bank
         current_saved_waveform = current_saved_waveform + 1;
         seq.add(vest_saved(current_saved_waveform));
