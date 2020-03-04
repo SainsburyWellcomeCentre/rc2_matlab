@@ -1,0 +1,55 @@
+' ------------------------------------------------
+' ------------ ramp_up_gain_nowait.ab ------------
+' ------------------------------------------------
+
+HEADER
+
+	INCLUDE "AeroBasicInclude.abi"
+
+END HEADER
+
+
+PROGRAM
+
+	DIM ramping_up AS INTEGER
+	DIM ramp_up_over_us AS DOUBLE
+	DIM gear_scale AS DOUBLE
+	
+	DIM current_time AS DOUBLE
+	DIM current_scale AS DOUBLE
+	DIM factor AS DOUBLE
+	
+	ramping_up = 1
+	ramp_up_over_us = 200000
+	gear_scale = -4000
+	
+	' Make sure gain is at 0
+	SETPARM GearCamScaleFactor, 0
+	
+	' When we sync it will be at 250us resolution
+	STARTSYNC -2
+	
+	' Send trigger output high
+	DOUT 0, 1
+	
+	' Do the ramp up
+	SETTIMEBIT
+	WHILE (ramping_up = 1)
+		SYNC
+		current_time = QUERYTIMEBIT()
+		
+		IF (current_time > ramp_up_over_us) THEN
+			ramping_up = 0
+			SETPARM GearCamScaleFactor, gear_scale
+		ELSE
+			factor = (current_time/ramp_up_over_us)
+			current_scale = gear_scale*factor
+			SETPARM GearCamScaleFactor, current_scale
+		END IF
+	WEND
+	CLEARTIMEBIT
+	
+	' Send trigger output low
+	DOUT 0, 0
+
+END PROGRAM

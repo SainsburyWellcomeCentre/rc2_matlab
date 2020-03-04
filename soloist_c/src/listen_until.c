@@ -24,14 +24,20 @@ main(int argc, char **argv)
     DOUBLE gear_scale = atof(argv[4]);
     DOUBLE deadband = atof(argv[5]);
     DWORD wait_for_trigger = atoi(argv[6]);
+    TASKSTATE task_state;
     
     DOUBLE return_value, return_value_pos, return_value_vel;
     int gear_set;
     DWORD ready_to_go = 1; // digital input starts high
     
+    // Path to the aerobasic script which will control ramping down of the gain
+    LPCSTR ab_script = "C:\\Users\\Mateo\\Documents\\rc_version2_0\\rc2_matlab\\soloist_c\\ab\\ramp_up_gain_nowait.ab";
     
     // Connect to soloist.
     if(!SoloistConnect(&handles, &handle_count)) { cleanup(handles, handle_count); }
+    
+    // Load the ramp down aerobasic script into task 1
+    if(!SoloistProgramLoad(handles[0], TASKID_01, ab_script)) { cleanup(handles, handle_count); }
     
     // Setup analog output velocity tracking
     if(!SoloistAdvancedAnalogTrack(handles[0], AO_CHANNEL, AO_SERVO_VALUE, AO_SCALE_FACTOR, 0.0)){ cleanup(handles, handle_count); }
@@ -43,7 +49,7 @@ main(int argc, char **argv)
     
     
     // Set the gearing parameters...
-    gear_set = set_gear_params(handles, GEARCAM_SOURCE, gear_scale, deadband, 0);
+    gear_set = set_gear_params(handles, GEARCAM_SOURCE, 0, deadband, 0);
     if (gear_set != 0) { cleanup(handles, handle_count); }
     
     
@@ -64,6 +70,16 @@ main(int argc, char **argv)
     
     // Set to gear mode... no turning back now.
     if(!SoloistCommandExecute(handles[0], "GEAR 1", NULL)) { cleanup(handles, handle_count); }
+    
+    // Start the aerobasic script
+    if(!SoloistProgramStart(handles[0], TASKID_01)) { cleanup(handles, handle_count); }
+    
+    // Wait for the program on the task to finish
+    SoloistProgramGetTaskState(handles[0], TASKID_01, &task_state);
+    while (task_state!=TASKSTATE_ProgramComplete) {
+        SoloistProgramGetTaskState(handles[0], TASKID_01, &task_state);
+    }
+    
     
     // Stay in gear mode until one of the following conditions is satisfied
     int looping = 1;
