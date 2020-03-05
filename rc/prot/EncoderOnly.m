@@ -179,6 +179,12 @@ classdef EncoderOnly < handle
                     obj.ctl.position.stop();
                 end
                 
+                % add 500ms to end of trial (= gain change time on soloist)
+                tic;
+                while toc < 0.5
+                    pause(0.005);
+                end
+                
                 % block the treadmill
                 obj.ctl.block_treadmill()
                 
