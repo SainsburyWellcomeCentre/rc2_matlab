@@ -36,13 +36,13 @@ for i = 1 : n_saved_waveforms
     vest_saved(i) = StageOnly(ctl, config, fname);
     vest_saved(i).enable_vis_stim = false;
     vest_saved(i).initiate_trial = true;
-    vest_saved(i).start_dwell_time = 3;
+    vest_saved(i).start_dwell_time = 6;
     
     vest_replay(i) = StageOnly(ctl, config);
     vest_replay(i).follow_previous_protocol = true;
     vest_replay(i).enable_vis_stim = false;
     vest_replay(i).initiate_trial = true;
-    vest_replay(i).start_dwell_time = 3;
+    vest_replay(i).start_dwell_time = 6;
 end
 
 
