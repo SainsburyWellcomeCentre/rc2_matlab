@@ -30,14 +30,18 @@ main(int argc, char **argv)
     int gear_set;
     DWORD ready_to_go = 1; // digital input starts high
     
-    // Path to the aerobasic script which will control ramping down of the gain
-    LPCSTR ab_script = "C:\\Users\\Mateo\\Documents\\rc_version2_0\\rc2_matlab\\soloist_c\\ab\\ramp_up_gain_nowait.ab";
+    // Path to the aerobasic script which will control ramping up of the gain
+    LPCSTR ab_script_up = "C:\\Users\\Mateo\\Documents\\rc_version2_0\\rc2_matlab\\soloist_c\\ab\\ramp_up_gain_nowait.ab";
+    LPCSTR ab_script_down = "C:\\Users\\Mateo\\Documents\\rc_version2_0\\rc2_matlab\\soloist_c\\ab\\ramp_down_gain_nowait.ab";
     
     // Connect to soloist.
     if(!SoloistConnect(&handles, &handle_count)) { cleanup(handles, handle_count); }
     
-    // Load the ramp down aerobasic script into task 1
-    if(!SoloistProgramLoad(handles[0], TASKID_01, ab_script)) { cleanup(handles, handle_count); }
+    // Load the ramp up aerobasic script into task 1
+    if(!SoloistProgramLoad(handles[0], TASKID_01, ab_script_up)) { cleanup(handles, handle_count); }
+    
+    // Load the ramp down aerobasic script into task 2
+    if(!SoloistProgramLoad(handles[0], TASKID_02, ab_script_down)) { cleanup(handles, handle_count); }
     
     // Setup analog output velocity tracking
     if(!SoloistAdvancedAnalogTrack(handles[0], AO_CHANNEL, AO_SERVO_VALUE, AO_SCALE_FACTOR, 0.0)){ cleanup(handles, handle_count); }
@@ -83,6 +87,7 @@ main(int argc, char **argv)
     
     // Stay in gear mode until one of the following conditions is satisfied
     int looping = 1;
+    int success = 0;
     
     printf("Start loop\n");
     while (looping) {
@@ -91,6 +96,7 @@ main(int argc, char **argv)
         if(!SoloistCommandExecute(handles[0], "RET = AXISFAULT()", &return_value)) { cleanup(handles, handle_count); }
         if (return_value > 0.5) {
             looping = 0;
+            success = 0;
         }
         
         // Exit loop if there treadmill moves to reward zone
@@ -98,19 +104,36 @@ main(int argc, char **argv)
         if(!SoloistCommandExecute(handles[0], "RET = DRIVEINFO (94)", &return_value_pos)) { cleanup(handles, handle_count); }
         if (return_value_pos < forward_limit | return_value_pos > backward_limit) {
             looping = 0;
+            success = 1;
         }
         
         // Exit loop if velocity is above a limit.
         if(!SoloistCommandExecute(handles[0], "RET = VFBK()", &return_value_vel)) { cleanup(handles, handle_count); }
         if (abs(return_value_vel) > SPEED_LIMIT) {
             looping = 0;
+            success = 0;
         }
     }
     
-    // Disable the axis.
-    if(!SoloistMotionDisable(handles[0])) { cleanup(handles, handle_count); }
+    // If the motion did not reach the end successfully
+    if (success == 0) {
+        
+        // Disable the axis.
+        if(!SoloistMotionDisable(handles[0])) { cleanup(handles, handle_count); }
+        
+    } else {
+        
+        // Start the aerobasic script to ramp down gain smoothly
+        if(!SoloistProgramStart(handles[0], TASKID_02)) { cleanup(handles, handle_count); }
     
-    // Pulse the digital output
+        // Wait for the program on the task to finish
+        SoloistProgramGetTaskState(handles[0], TASKID_02, &task_state);
+        while (task_state!=TASKSTATE_ProgramComplete) {
+            SoloistProgramGetTaskState(handles[0], TASKID_02, &task_state);
+        }
+    }
+    
+    // Pulse the digital output first
     if(!SoloistPSOControl(handles[0], PSOMODE_Fire)) { cleanup(handles, handle_count); }
     
     // Reset the gear parameters to their defaults.

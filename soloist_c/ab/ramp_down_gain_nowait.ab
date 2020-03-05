@@ -1,0 +1,50 @@
+' ------------------------------------------------
+' ----------------- ramp_down_gain.ab ------------
+' ------------------------------------------------
+
+HEADER
+
+	INCLUDE "AeroBasicInclude.abi"
+
+END HEADER
+
+
+PROGRAM
+
+	DIM ramping_down AS INTEGER
+	DIM ramp_down_over_us AS DOUBLE
+	DIM gear_scale AS DOUBLE
+	
+	DIM current_time AS DOUBLE
+	DIM current_scale AS DOUBLE
+	DIM factor AS DOUBLE
+	
+	ramping_down = 1
+	ramp_down_over_us = 500000
+	gear_scale = -4000
+	
+	STARTSYNC -2
+	
+	' TRIGGER OUTPUT HIGH
+	DOUT 0, 1
+	
+	SETTIMEBIT
+	WHILE (ramping_down = 1)
+		SYNC
+		current_time = QUERYTIMEBIT()
+		
+		IF (current_time > ramp_down_over_us) THEN
+			ramping_down = 0
+			SETPARM GearCamScaleFactor, 0
+		ELSE
+			factor = (1-(current_time/ramp_down_over_us))
+			current_scale = gear_scale*factor
+			SETPARM GearCamScaleFactor, current_scale
+		END IF
+	WEND
+	CLEARTIMEBIT
+	
+	' TRIGGER OUTPUT LOW
+	DOUT 0, 0
+
+END PROGRAM
