@@ -13,12 +13,13 @@ classdef EncoderOnly < handle
         enable_vis_stim = true
         
         log_trial = false
+        log_fname = ''
         
         integrate_using = 'teensy'  % 'teensy' or 'pc'
     end
     
     properties (SetAccess = private)
-        log_trial_fname
+        
         running = false
         abort = false
     end
@@ -146,7 +147,7 @@ classdef EncoderOnly < handle
                 
                 % start logging velocity if required.
                 if obj.log_trial
-                    obj.log_trial_fname = obj.ctl.start_logging_single_trial();
+                    obj.ctl.start_logging_single_trial(obj.log_fname);
                 end
                 
                 if strcmp(obj.integrate_using, 'teensy')
@@ -241,10 +242,6 @@ classdef EncoderOnly < handle
         end
         
         
-        function prepare_as_sequence(~, ~, ~)
-        end
-        
-        
         function cfg = get_config(obj)
             
             cfg = {
@@ -259,9 +256,9 @@ classdef EncoderOnly < handle
                 'prot.handle_acquisition',  sprintf('%i', obj.handle_acquisition);
                 'prot.wait_for_reward',     sprintf('%i', obj.wait_for_reward);
                 'prot.log_trial',           sprintf('%i', obj.log_trial);
+                'prot.log_fname',           sprintf('%s', obj.log_fname);
                 'prot.integrate_using',     obj.integrate_using;
                 'prot.wave_fname',          '---';
-                'prot.follow_previous_protocol', '---';
                 'prot.reward.randomize',    sprintf('%i', obj.ctl.reward.randomize);
                 'prot.reward.min_time',     sprintf('%i', obj.ctl.reward.min_time);
                 'prot.reward.max_time',     sprintf('%i', obj.ctl.reward.max_time);

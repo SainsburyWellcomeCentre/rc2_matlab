@@ -308,8 +308,15 @@ classdef Controller < handle
         
         
         %%% TRIAL LOGGING
-        function fname = start_logging_single_trial(obj)
-            fname = obj.saver.start_logging_single_trial();
+        function fid = start_logging_single_trial(obj, fname)
+            
+            % open file for saving
+            fid = obj.saver.start_logging_single_trial(fname);
+            
+            % throw warning if file couldn't be opened
+            if fid == -1
+                warning('Not logging single trial. Specified file name: %s', fname);
+            end
         end
         
         

@@ -14,6 +14,7 @@ classdef LocoVest2Loco < handle
         wait_for_reward = true
         
         log_trial = false
+        log_fname = ''
         
         switch_pos
     end
@@ -21,7 +22,6 @@ classdef LocoVest2Loco < handle
     
     properties (SetAccess = private)
         
-        log_trial_fname
         running = false
         abort = false
     end
@@ -142,7 +142,7 @@ classdef LocoVest2Loco < handle
                 
                 % start logging the single trial if necessary
                 if obj.log_trial
-                    obj.log_trial_fname = obj.ctl.start_logging_single_trial();
+                    obj.ctl.start_logging_single_trial(obj.log_fname);
                 end
                 
                 % integrate position of treadmill PC until the bounds are reached
@@ -219,10 +219,6 @@ classdef LocoVest2Loco < handle
         end
         
         
-        function prepare_as_sequence(~, ~, ~)
-        end
-        
-        
         function cfg = get_config(obj)
             
             cfg = {
@@ -238,9 +234,9 @@ classdef LocoVest2Loco < handle
                 'prot.handle_acquisition',  sprintf('%i', obj.handle_acquisition);
                 'prot.wait_for_reward',     sprintf('%i', obj.wait_for_reward);
                 'prot.log_trial',           sprintf('%i', obj.log_trial);
+                'prot.log_fname',           sprintf('%s', obj.log_fname);
                 'prot.integrate_using',     '---';
                 'prot.wave_fname',          '---';
-                'prot.follow_previous_protocol', '---';
                 'prot.reward.randomize',    sprintf('%i', obj.ctl.reward.randomize);
                 'prot.reward.min_time',     sprintf('%i', obj.ctl.reward.min_time);
                 'prot.reward.max_time',     sprintf('%i', obj.ctl.reward.max_time);

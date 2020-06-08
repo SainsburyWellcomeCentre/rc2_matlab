@@ -42,11 +42,6 @@ classdef ProtocolSequence < handle
                 obj.current_sequence = obj.sequence{i};
                 obj.current_trial = i;
                 
-                % this is quite specific for the vestibular condition...
-                if isa(obj.sequence{i}, 'StageOnly') && i > 1
-                    obj.sequence{i}.prepare_as_sequence(obj.sequence{i-1}.log_trial_fname)
-                end
-                
                 % start running this protocol
                 finished_forward = obj.sequence{i}.run();
                 

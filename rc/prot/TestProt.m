@@ -11,11 +11,9 @@ classdef TestProt < handle
         wait_for_reward = true
         
         log_trial = false
+        log_fname = ''
     end
     
-    properties (SetAccess = private)
-        log_trial_fname
-    end
     
     properties (Hidden = true)
         ctl
@@ -78,7 +76,7 @@ classdef TestProt < handle
                 
                 % start logging the single trial
                 if obj.log_trial
-                    obj.log_trial_fname = obj.ctl.start_logging_single_trial();
+                    obj.ctl.start_logging_single_trial(obj.log_fname);
                 end
                 
                 % wait for process to terminate.
@@ -115,10 +113,6 @@ classdef TestProt < handle
                 obj.ctl.stop_logging_single_trial();
                 rethrow(ME)
             end
-        end
-        
-        
-        function prepare_as_sequence(~, ~, ~)
         end
         
         

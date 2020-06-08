@@ -20,7 +20,6 @@ classdef Saver < handle
         voltage_range
         
         fid_single_trial
-        index_single_trial = 0
         is_logging_single_trial = false
     end
     
@@ -99,16 +98,16 @@ classdef Saver < handle
         end
         
         
-        function fname = logging_fname_single_trial(obj)
-            fname_ = sprintf('%s_%s_%03i_single_trial_%03i.bin', obj.prefix, obj.suffix, obj.index, obj.index_single_trial);
-            fname = fullfile(obj.save_to, obj.prefix, fname_);
-        end
+%         function fname = logging_fname_single_trial(obj)
+%             fname_ = sprintf('%s_%s_%03i_single_trial_%03i.bin', obj.prefix, obj.suffix, obj.index, obj.index_single_trial);
+%             fname = fullfile(obj.save_to, obj.prefix, fname_);
+%         end
         
         
-        function fname = cfg_fname_single_trial(obj)
-            fname_ = sprintf('%s_%s_%03i_single_trial_%03i.cfg', obj.prefix, obj.suffix, obj.index, obj.index_single_trial);
-            fname = fullfile(obj.save_to, obj.prefix, fname_);
-        end
+%         function fname = cfg_fname_single_trial(obj)
+%             fname_ = sprintf('%s_%s_%03i_single_trial_%03i.cfg', obj.prefix, obj.suffix, obj.index, obj.index_single_trial);
+%             fname = fullfile(obj.save_to, obj.prefix, fname_);
+%         end
         
         
         function create_directory(obj)
@@ -132,10 +131,9 @@ classdef Saver < handle
                     error('File already exists. Aborting.')
                 end
             end
-                    
+            
             % create the right directory
             obj.create_directory();
-            obj.index_single_trial = 0;
             
             % open the file for writing
             obj.fid = fopen(obj.logging_fname(), 'w');
@@ -184,32 +182,51 @@ classdef Saver < handle
         end
         
         
-        function fname_single_trial = start_logging_single_trial(obj)
+        function fid = start_logging_single_trial(obj, fname)
+            
             % saving must be enabled and already logging to a main storage
             % location
-            fname_single_trial = [];
             if ~obj.enable; return; end
             if ~obj.is_logging; return; end
             
-            obj.index_single_trial = obj.index_single_trial + 1;
-            fname_single_trial = obj.logging_fname_single_trial();
-            obj.fid_single_trial = fopen(fname_single_trial, 'w');
-            disp(obj.fid_single_trial);
+            % do not start another one if already logging single trial
+            if obj.is_logging_single_trial; return; end
+            
+            % open file
+            fid = fopen(fname, 'w');
+            
+            % return if file couldn't be opened
+            if fid == -1
+                return
+            end
+            
+            % store for use
+            obj.fid_single_trial = fid;
+            
+            % switch on logging flag
             obj.is_logging_single_trial = true;
         end
         
         
         function log_single_trial(obj, data)
+            
             if ~obj.is_logging_single_trial; return; end
             if isempty(obj.fid_single_trial); return; end
+            
+            % write the data
             fwrite(obj.fid_single_trial, data(:), 'int16');
         end
         
         
         function stop_logging_single_trial(obj)
+            
             if ~obj.is_logging_single_trial; return; end
+            
+            % switch off the logging flag
             obj.is_logging_single_trial = false;
+            % close the file
             fclose(obj.fid_single_trial);
+            % clear the file id
             obj.fid_single_trial = [];
         end
         
