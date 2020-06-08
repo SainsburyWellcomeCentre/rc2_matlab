@@ -15,6 +15,8 @@ classdef ReplayOnly < handle
         
         wave_fname
         waveform
+        
+        direction = 'forward_only'
     end
     
     properties (SetAccess = private)

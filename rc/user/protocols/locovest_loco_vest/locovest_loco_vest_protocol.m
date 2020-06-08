@@ -63,7 +63,7 @@ for i = 1 : length(order)
             ctl.saver.prefix, ...
             ctl.saver.suffix, ...
             ctl.saver.index, ...
-            protocol_id.loco, ...
+            prot.loco, ...
             i);
         
         loco.log_fname = fullfile(ctl.saver.save_to, ctl.saver.prefix, fname_);
@@ -71,8 +71,8 @@ for i = 1 : length(order)
         % integrate with the PC
         loco.integrate_using = 'pc';
         
-        % we will true
-        loco.enable_vis_stim = true;
+        % we are doing this in the darkness
+        loco.enable_vis_stim = false;
         
         % add protocol to the sequence
         seq.add(loco);

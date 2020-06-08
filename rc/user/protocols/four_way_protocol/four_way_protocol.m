@@ -36,9 +36,9 @@ seq.randomize_reward = true;
 % insert all the trials
 for i = 1 : size(trial_order, 2)
     
-    for j  = 1 : size(trial, 1)
+    for j  = 1 : size(trial_order, 1)
         
-        if trial_order(j, i) == protcol_id.locovest
+        if trial_order(j, i) == protocol_id.locovest
             
             % setup the locovest protocol
             locovest = Coupled(ctl, config);
@@ -62,7 +62,7 @@ for i = 1 : size(trial_order, 2)
             % add protocol to the sequence
             seq.add(locovest);
             
-        elseif trial_order(j, i) == protcol_id.loco
+        elseif trial_order(j, i) == protocol_id.loco
             
             % setup the locovest protocol
             loco = EncoderOnly(ctl, config);
@@ -90,7 +90,7 @@ for i = 1 : size(trial_order, 2)
             seq.add(loco);
             
             
-        elseif trial_order(j, i) == protcol_id.vest_replay_locovest
+        elseif trial_order(j, i) == protocol_id.vest_replay_locovest
             
             % setup the locovest protocol
             vest = StageOnly(ctl, config);
@@ -115,7 +115,7 @@ for i = 1 : size(trial_order, 2)
             seq.add(vest);
             
             
-        elseif trial_order(j, i) == protcol_id.vest_replay_loco
+        elseif trial_order(j, i) == protocol_id.vest_replay_loco
             
             % setup the locovest replay protocol
             vest = StageOnly(ctl, config);
