@@ -75,9 +75,9 @@ fprintf('Can calibrate Teensy to Vis Stim, solenoid UP, gear mode OFF here...\n'
 input('Press Enter when done');
 
 % Index of the filtered teensy input
-filtered_idx = strcmp(ctl.config.nidaq.ai.channel_names, 'filtered_teensy');
-raw_idx = strcmp(ctl.config.nidaq.ai.channel_names, 'raw_teensy');
-stage_idx = strcmp(ctl.config.nidaq.ai.channel_names, 'stage');
+filtered_idx = strcmp(ctl.ni.ai.channel_names, 'filtered_teensy');
+raw_idx = strcmp(ctl.ni.ai.channel_names, 'raw_teensy');
+stage_idx = strcmp(ctl.ni.ai.channel_names, 'stage');
 
 % Get the filtered teensy trace
 filtered_trace = data(:, filtered_idx);
@@ -164,7 +164,7 @@ relative_filtTeensy2soloist_offset = ctl.soloist.calibrate_zero(stage_middle+100
 ctl.soloist.stop()
 
 % Store the error as volts
-offset_error_mtx(1, 2) = -relative_filtTeensy2soloist_offset * 1e-3;
+offset_error_mtx(1, 2) = relative_filtTeensy2soloist_offset * 1e-3;
 
 % Message
 fprintf('Calibrating Teensy to Soloist, solenoid DOWN (gear mode ON)...\n')
@@ -185,7 +185,7 @@ relative_filtTeensy2soloist_offset = ctl.soloist.calibrate_zero(stage_middle+100
 ctl.soloist.stop()
 
 % Store the error as volts
-offset_error_mtx(3, 2) = -relative_filtTeensy2soloist_offset * 1e-3;
+offset_error_mtx(3, 2) = relative_filtTeensy2soloist_offset * 1e-3;
 
 
 
@@ -208,7 +208,7 @@ ctl.treadmill.block()
 
 % Set the AI offset on the solenoid to the "correct" value for this
 % situtation. Convert to mV
-ctl.soloist.ai_offset = -teensy_stationary_mV + 1e3 * offset_error_mtx(1, 2);  %%%%%%%%%%%%%%
+ctl.soloist.ai_offset = -(teensy_stationary_mV + 1e3 * offset_error_mtx(1, 2));  %%%%%%%%%%%%%%
 
 % Put the soloist in gear mode, do not wait for a trigger to start
 ctl.soloist.listen_until(stage_middle+200, stage_middle-200, false);
@@ -262,7 +262,7 @@ ctl.treadmill.unblock()
 
 % Set the AI offset on the solenoid to the "correct" value for this
 % situtation. Convert to mV
-ctl.soloist.ai_offset = -teensy_stationary_mV + 1e3 * offset_error_mtx(3, 2);  %%%%%%%%%%%%%%
+ctl.soloist.ai_offset = -(teensy_stationary_mV + 1e3 * offset_error_mtx(3, 2));  %%%%%%%%%%%%%%
 
 % Put the soloist in gear mode, do not wait for a trigger to start
 ctl.soloist.listen_until(stage_middle+200, stage_middle-200, false);
@@ -279,9 +279,6 @@ input('Press Enter when ready');
 
 % Stop gear mode
 ctl.soloist.stop()
-
-% index of the filtered teensy
-filtered_idx = strcmp(ctl.config.nidaq.ai.channel_names, 'filtered_teensy');
 
 % select the location of the max
 filtered_trace = data(:, filtered_idx);
@@ -341,12 +338,12 @@ relative_ni2soloist_offset = ctl.soloist.calibrate_zero(stage_middle+100, stage_
 ctl.soloist.stop()
 
 % Store the error as volts
-offset_error_mtx(1, 3) = -relative_ni2soloist_offset * 1e-3;
+offset_error_mtx(1, 3) = relative_ni2soloist_offset * 1e-3;
 
 
 % Set the AI offset on the solenoid to the "correct" value for this
 % situtation. Convert to mV
-ctl.soloist.ai_offset = -teensy_stationary_mV + 1e3 * offset_error_mtx(1, 3);
+ctl.soloist.ai_offset = -(teensy_stationary_mV + 1e3 * offset_error_mtx(1, 3));
 
 % Put the soloist in gear mode, do not wait for a trigger to start
 ctl.soloist.listen_until(stage_middle+200, stage_middle-200, false);
@@ -386,11 +383,11 @@ relative_ni2soloist_offset = ctl.soloist.calibrate_zero(stage_middle+100, stage_
 ctl.soloist.stop()
 
 % Store the error as volts
-offset_error_mtx(3, 3) = -relative_ni2soloist_offset * 1e-3;
+offset_error_mtx(3, 3) = relative_ni2soloist_offset * 1e-3;
 
 % Set the AI offset on the solenoid to the "correct" value for this
 % situtation. Convert to mV
-ctl.soloist.ai_offset = -teensy_stationary_mV + 1e3 * offset_error_mtx(3, 3); %%%%%%%%%%%%
+ctl.soloist.ai_offset = -(teensy_stationary_mV + 1e3 * offset_error_mtx(3, 3)); %%%%%%%%%%%%
 
 % Put the soloist in gear mode, do not wait for a trigger to start
 ctl.soloist.listen_until(stage_middle+200, stage_middle-200, false);
@@ -479,6 +476,9 @@ fprintf('Raw teensy scale:  %.6f cm/s\n', rawTeensy2ni_scale);
 % Message
 fprintf('Calibrating Soloist to NI *scale*, solenoid DOWN (gear mode ON)...\n')
 
+% 
+target_velocity = 400; % mm/s
+
 % move to back of stage. wait for move to complete
 proc = ctl.soloist.move_to(1200); % needs to be configurable
 proc.wait_for(0.5);
@@ -491,7 +491,7 @@ ctl.teensy.load('calibrate_soloist')
 ctl.treadmill.unblock()
 
 % set the correct offset and scale on the soloist
-ctl.soloist.ai_offset = -teensy_stationary_mV + 1e3 * offset_error_mtx(3, 2);
+ctl.soloist.ai_offset = -(teensy_stationary_mV + 1e3 * offset_error_mtx(3, 2));
 ctl.soloist.set_gear_scale(theoretical_gear_scale);
 
 % put stage into gear mode, don't wait for trigger
@@ -536,7 +536,7 @@ close(h_fig);
 soloist2ni_max = mean(stage_trace(idx1:idx2));
 
 % compute the scale in cm
-soloist2ni_scale = target_velocity/(soloist2ni_max - soloist2ni_offset1)/10;
+soloist2ni_scale = target_velocity/(soloist2ni_max - stage2ni_offset1)/10;
 
 fprintf('Soloist scale:  %.6f cm/s\n', soloist2ni_scale);
 
@@ -560,7 +560,7 @@ calibration.scale = ones(1, length(ctl.ni.ai.channel_names));
 
 calibration.offset(filtered_idx) = filtTeensy2ni_offset1;
 calibration.offset(raw_idx) = rawTeensy2ni_offset1;
-calibration.offset(stage_idx) = soloist2ni_offset1;
+calibration.offset(stage_idx) = stage2ni_offset1;
 
 calibration.scale(filtered_idx) = filtTeensy2ni_scale;
 calibration.scale(raw_idx) = rawTeensy2ni_scale;

@@ -202,6 +202,8 @@ classdef Controller < handle
             
             obj.treadmill.block()
             
+            obj.offsets.solenoid_state = 'up';
+            
             % change the offset on the NI
             %   unless it is already running a waveform
             if ~obj.ni.ao.task.IsRunning
@@ -213,6 +215,8 @@ classdef Controller < handle
         function unblock_treadmill(obj)
             
             obj.treadmill.unblock()
+            
+            obj.offsets.solenoid_state = 'down';
             
             % change the offset on the NI
             %   unless it is already running a waveform
@@ -358,7 +362,7 @@ classdef Controller < handle
 %                 offset = obj.ao_error_solenoid_off;
 %             end
             
-            offset = obj.offsets.get_ni_ao_offset(obj);
+            offset = obj.offsets.get_ni_ao_offset();
             obj.ni.ao.idle_offset = offset;
 
             % 

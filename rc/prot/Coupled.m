@@ -72,7 +72,7 @@ classdef Coupled < handle
                 obj.ctl.save_single_trial_config(cfg);
                 
                 % listen to correct source
-                obj.ctl.multiplexer.listen_to('teensy');
+                obj.ctl.multiplexer_listen_to('teensy');
                 
                 % start PC listening to the correct trigger input
                 obj.ctl.trigger_input.listen_to('soloist');

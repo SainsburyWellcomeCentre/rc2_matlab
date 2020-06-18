@@ -95,7 +95,7 @@ classdef EncoderOnly < handle
                 obj.ctl.save_single_trial_config(cfg);
                 
                 % listen to correct source
-                obj.ctl.multiplexer.listen_to('teensy');
+                obj.ctl.multiplexer_listen_to('teensy');
                 
                 % start listening to the correct trigger input
                 if strcmp(obj.integrate_using, 'teensy')

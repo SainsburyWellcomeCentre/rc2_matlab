@@ -102,12 +102,12 @@ classdef StageOnly < handle
                 obj.ctl.save_single_trial_config(cfg);
                 
                 obj.ctl.offsets.soloist_input_src = 'ni';
-                obj.ctl.offsets.solenoid_state = 'down';
+                obj.ctl.offsets.solenoid_state = 'up';
                 obj.ctl.offsets.gear_mode = 'off';
                 obj.ctl.set_ni_ao_idle();
                 
                 % listen to correct source
-                obj.ctl.multiplexer.listen_to('ni');
+                obj.ctl.multiplexer_listen_to('ni');
                 
                 % start PC listening to the correct trigger input
                 obj.ctl.trigger_input.listen_to('soloist');

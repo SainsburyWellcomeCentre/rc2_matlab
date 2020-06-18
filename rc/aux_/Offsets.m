@@ -31,7 +31,7 @@ classdef Offsets < handle
             
             elseif strcmp(obj.solenoid_state, 'up') && strcmp(obj.soloist_input_src, 'ni')
                 
-                val = -1e3*(obj.nominal_stationary_offset + obj.error_mtx(1, 3) + (obj.error_mtx(1, 5) - obj.error_mtx(1, 4)));
+                val = -1e3*(obj.nominal_stationary_offset - obj.error_mtx(1, 3) + (-obj.error_mtx(1, 5) + obj.error_mtx(4, 4)));
             
             elseif strcmp(obj.solenoid_state, 'down') && strcmp(obj.soloist_input_src, 'teensy')
             
@@ -39,7 +39,7 @@ classdef Offsets < handle
             
             elseif strcmp(obj.solenoid_state, 'down') && strcmp(obj.soloist_input_src, 'ni')
                 
-                val = -1e3*(obj.nominal_stationary_offset + obj.error_mtx(3, 3) + (obj.error_mtx(3, 5) - obj.error_mtx(3, 4)));
+                val = -1e3*(obj.nominal_stationary_offset - obj.error_mtx(3, 3) + (-obj.error_mtx(3, 5) + obj.error_mtx(4, 4)));
             
             end
         end
@@ -50,15 +50,15 @@ classdef Offsets < handle
             % subtract error on AO
             if strcmp(obj.solenoid_state, 'up') && strcmp(obj.gear_mode, 'on')
                 
-                val = obj.nominal_stationary_offset - obj.error_mtx(1, 5) + obj.error_mtx(1, 4);
+                val = obj.nominal_stationary_offset - obj.error_mtx(1, 5) + obj.error_mtx(4, 4);
             
             elseif strcmp(obj.solenoid_state, 'up') && strcmp(obj.gear_mode, 'off')
                 
-                val = obj.nominal_stationary_offset - obj.error_mtx(2, 5) + obj.error_mtx(2, 4);
+                val = obj.nominal_stationary_offset - obj.error_mtx(2, 5) + obj.error_mtx(4, 4);
             
             elseif strcmp(obj.solenoid_state, 'down') && strcmp(obj.gear_mode, 'on')
                 
-                val = obj.nominal_stationary_offset - obj.error_mtx(3, 5) + obj.error_mtx(3, 4);
+                val = obj.nominal_stationary_offset - obj.error_mtx(3, 5) + obj.error_mtx(4, 4);
             
             elseif strcmp(obj.solenoid_state, 'down') && strcmp(obj.gear_mode, 'off')
                 

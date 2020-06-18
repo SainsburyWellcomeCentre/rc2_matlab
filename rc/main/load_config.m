@@ -6,7 +6,7 @@ VariableDefault('use_calibration', true);
 
 % whether to use calibration file and its location
 config.use_calibration_file             = use_calibration;
-config.calibration_file                 = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\rc\main\calibration_20200207.mat';
+config.calibration_file                 = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\rc\main\calibration_test_20200618.mat';
 
 
 %%%%%%%%%%%%
@@ -32,6 +32,14 @@ config.stage.back_limit                 = 1470;
 config.stage.forward_limit              = 250;
 config.stage.max_limits                 = [1470, 15];
 
+if config.use_calibration_file
+    % load the calibration file
+    load(config.calibration_file, 'calibration')
+    
+    config.offset_error_mtx                 = calibration.offset_error_mtx;
+else
+    config.offset_error_mtx                 = zeros(4, 7);
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % General NIDAQ parameters %%%
@@ -59,9 +67,6 @@ config.nidaq.ai.channel_id              = 0:7;
 % offsets and scales to apply to the 
 if config.use_calibration_file
     
-    % load the calibration file
-    load(config.calibration_file, 'calibration')
-    
     % make sure that the calibration file matches the list of channel names
     % provided
     if ~isequal(calibration.channel_names, config.nidaq.ai.channel_names)
@@ -85,8 +90,12 @@ end
 config.nidaq.ao.dev             = 'Dev2';
 config.nidaq.ao.channel_names   = {'velocity'};
 config.nidaq.ao.channel_id      = 0;
-config.nidaq.ao.idle_offset     = calibration.nominal_stationary_offset - ...
-    calibration.offset_error_mtx(3, 5) + calibration.offset_error_mtx(3, 4); 
+if config.use_calibration_file
+    config.nidaq.ao.idle_offset     = calibration.nominal_stationary_offset - ...
+        calibration.offset_error_mtx(3, 5) + calibration.offset_error_mtx(3, 4);
+else
+    config.nidaq.ao.idle_offset     = 0.5;
+end
 % offset to apply to analog output
 
 % 
@@ -154,7 +163,7 @@ if config.use_calibration_file
     config.soloist.gear_scale   = calibration.gear_scale;
     config.soloist.deadband     = 1.2*calibration.deadband_V;
 else
-    config.soloist.ai_offset            = -508.0;
+    config.soloist.ai_offset            = -500.0;
     config.soloist.gear_scale           = -4000;
     config.soloist.deadband             = 0.005;
 end
