@@ -48,8 +48,17 @@ classdef StageOnly < handle
         
         function load_wave(obj)
             if isempty(obj.wave_fname); return; end
+            
             w = double(read_bin(obj.wave_fname, 1)); % file must be single channel
-            obj.waveform = -10 + 20*(w(:, 1) + 2^15)/2^16;  %TODO:  config... but StageOnlys shouldn't have to worry about it.
+            
+            waveform = -10 + 20*(w(:, 1) + 2^15)/2^16;  %#ok<*PROP> %TODO:  config... but StageOnlys shouldn't have to worry about it.
+            
+            % transform waveform
+            obj.ctl.offsets.soloist_input_src = 'ni';
+            obj.ctl.offsets.solenoid_state = 'up';
+            obj.ctl.offsets.gear_mode = 'on';
+            
+            obj.waveform = obj.ctl.offsets.transform_ai_ao_data(waveform);
         end
         
         
@@ -92,11 +101,17 @@ classdef StageOnly < handle
                 cfg = obj.get_config();
                 obj.ctl.save_single_trial_config(cfg);
                 
+                obj.ctl.offsets.soloist_input_src = 'ni';
+                obj.ctl.offsets.solenoid_state = 'down';
+                obj.ctl.offsets.gear_mode = 'off';
+                obj.ctl.set_ni_ao_idle();
+                
                 % listen to correct source
                 obj.ctl.multiplexer.listen_to('ni');
                 
                 % start PC listening to the correct trigger input
                 obj.ctl.trigger_input.listen_to('soloist');
+                
                 
                 % load the velocity waveform to NIDAQ
                 obj.ctl.load_velocity_waveform(obj.waveform);
@@ -134,14 +149,18 @@ classdef StageOnly < handle
                         end
                     end
                     
+                    obj.ctl.offsets.solenoid_state = 'up';
+                    obj.ctl.set_ni_ao_idle();
+                    
                     obj.ctl.block_treadmill();
                 end
                 
-                 % the soloist will connect, setup some parameters and then
+                % the soloist will connect, setup some parameters and then
                 % wait for the solenoid signal to go low
                 % we need to give it some time to setup (~2s, but we want
                 % to wait at the start position anyway...
                 % don't wait for trigger
+                obj.ctl.soloist.ai_offset = obj.ctl.offsets.get_soloist_offset();
                 obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit, false);
                 
                 % start integrating position
@@ -241,6 +260,8 @@ classdef StageOnly < handle
                     obj.ctl.stop_sound();
                 end
                 
+                obj.ctl.multiplexer.listen_to('teensy');
+                
                 % the protocol is no longer running
                 obj.running = false;
                 
@@ -258,6 +279,10 @@ classdef StageOnly < handle
                     obj.ctl.stop_logging_single_trial();
                 end
                 obj.ctl.stop_sound();
+                obj.ctl.multiplexer.listen_to('teensy');
+                obj.ctl.offsets.soloist_input_src = 'teensy';
+                obj.ctl.offsets.solenoid_state = 'down';
+                obj.ctl.offsets.gear_mode = 'on';
                 obj.ctl.set_ni_ao_idle();
                 
                 rethrow(ME)
@@ -313,6 +338,11 @@ classdef StageOnly < handle
             if obj.log_trial
                 obj.ctl.stop_logging_single_trial();
             end
+            
+            obj.ctl.multiplexer.listen_to('teensy');
+            obj.ctl.offsets.soloist_input_src = 'teensy';
+            obj.ctl.offsets.solenoid_state = 'down';
+            obj.ctl.offsets.gear_mode = 'on';
             obj.ctl.set_ni_ao_idle();
         end
     end

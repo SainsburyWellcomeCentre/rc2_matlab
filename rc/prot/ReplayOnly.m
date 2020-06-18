@@ -57,7 +57,14 @@ classdef ReplayOnly < handle
             w = double(read_bin(obj.wave_fname, 1)); % file must be single channel
             
             % store the waveform
-            obj.waveform = -10 + 20*(w(:, 1) + 2^15)/2^16;  %TODO:  config... but StageOnlys shouldn't have to worry about it.
+            waveform = -10 + 20*(w(:, 1) + 2^15)/2^16;  %#ok<*PROP> %TODO:  config... but StageOnlys shouldn't have to worry about it.
+            
+            % transform waveform
+            obj.ctl.offsets.soloist_input_src = 'ni';
+            obj.ctl.offsets.solenoid_state = 'up';
+            obj.ctl.offsets.gear_mode = 'off';
+            
+            obj.waveform = obj.ctl.offsets.transform_ai_ao_data(waveform);
         end
         
         
@@ -93,6 +100,11 @@ classdef ReplayOnly < handle
                 if obj.handle_acquisition
                     obj.ctl.prepare_acq();
                 end
+                
+                obj.ctl.offsets.soloist_input_src = 'ni';
+                obj.ctl.offsets.solenoid_state = 'down';
+                obj.ctl.offsets.gear_mode = 'off';
+                obj.ctl.set_ni_ao_idle();
                 
                 % make sure the treadmill is blocked
                 obj.ctl.block_treadmill();
@@ -145,6 +157,9 @@ classdef ReplayOnly < handle
                             return
                         end
                     end
+                    
+                    obj.ctl.offsets.solenoid_state = 'up';
+                    obj.ctl.set_ni_ao_idle();
                     
                     obj.ctl.block_treadmill();
                 end
@@ -205,6 +220,11 @@ classdef ReplayOnly < handle
                 obj.ctl.position.stop();
                 obj.ctl.stop_acq();
                 obj.ctl.stop_sound();
+                
+                obj.ctl.multiplexer.listen_to('teensy');
+                obj.ctl.offsets.soloist_input_src = 'teensy';
+                obj.ctl.offsets.solenoid_state = 'down';
+                obj.ctl.offsets.gear_mode = 'on';
                 obj.ctl.set_ni_ao_idle();
                 
                 rethrow(ME)
@@ -257,6 +277,10 @@ classdef ReplayOnly < handle
                 %TODO: stop waveform running
             end
             
+            obj.ctl.multiplexer.listen_to('teensy');
+            obj.ctl.offsets.soloist_input_src = 'teensy';
+            obj.ctl.offsets.solenoid_state = 'down';
+            obj.ctl.offsets.gear_mode = 'on';
             obj.ctl.set_ni_ao_idle();
         end
     end

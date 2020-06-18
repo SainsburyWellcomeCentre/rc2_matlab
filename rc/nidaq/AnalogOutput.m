@@ -47,30 +47,24 @@ classdef AnalogOutput < handle
         end
         
         
-        function set_to_idle(obj, offset)
-            
-            % By default don't apply an offset
-            VariableDefault('offset', 0);
+        function set_to_idle(obj)
             
             % Stop any running tasks first
             obj.stop();
             
             % write initial voltage to AO
-            obj.task.outputSingleScan(obj.idle_offset + offset);
+            obj.task.outputSingleScan(obj.idle_offset);
         end
         
         
-        function write(obj, data, offset)
-            
-            % By default don't apply an offset
-            VariableDefault('offset', 0);
+        function write(obj, data)
             
             % to avoid DANGER, clip voltage at limits!!
             data(data > obj.max_voltage) = obj.max_voltage;
             data(data < -obj.max_voltage) = -obj.max_voltage;
             
             % Queue the output data
-            obj.task.queueOutputData(data + offset);
+            obj.task.queueOutputData(data);
         end
         
         

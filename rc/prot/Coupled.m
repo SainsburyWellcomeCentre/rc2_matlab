@@ -103,6 +103,7 @@ classdef Coupled < handle
                 % wait for the solenoid signal to go low
                 % we need to give it some time to setup (~2s, but we want
                 % to wait at the start position anyway...
+                obj.ctl.soloist.ai_offset = obj.ctl.offsets.get_soloist_offset();
                 obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit);
                 
                 % start integrating position
