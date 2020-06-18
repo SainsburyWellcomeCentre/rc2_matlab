@@ -18,6 +18,7 @@ classdef Controller < handle
         data_transform
         vis_stim
         start_soloist
+        offsets
         
         data
         tdata
@@ -37,8 +38,8 @@ classdef Controller < handle
         %  treadmill class, or with the AO class, but it was thought best to keep those
         %  classes generic and pass offsets as from the controller.. which
         %  is more setup specific?)
-        ao_error_solenoid_on
-        ao_error_solenoid_off
+        %ao_error_solenoid_on
+        %ao_error_solenoid_off
     end
     
     
@@ -70,10 +71,11 @@ classdef Controller < handle
             obj.data_transform = DataTransform(config);
             obj.vis_stim = VisStim(obj.ni, config);
             obj.start_soloist = StartSoloist(obj.ni, config);
+            obj.offsets = Offsets(obj, config);
             
             % Offset errors along the Teensy-NIDAQ-AI, to NIDAQ-AO to Multiplexer to Soloist
-            obj.ao_error_solenoid_on = config.nidaq.ao.offset_error_solenoid_on;
-            obj.ao_error_solenoid_off = config.nidaq.ao.offset_error_solenoid_off;
+            %obj.ao_error_solenoid_on = config.nidaq.ao.offset_error_solenoid_on;
+            %obj.ao_error_solenoid_off = config.nidaq.ao.offset_error_solenoid_off;
         end
         
         
@@ -258,17 +260,17 @@ classdef Controller < handle
         function load_velocity_waveform(obj, waveform)
             
             % change offset depending on the state of the solenoid...
-            if obj.treadmill.state
-                % solenoid is blocked
-                offset = obj.ao_error_solenoid_on;
-            else
-                % solenoid is not blocking
-                offset = obj.ao_error_solenoid_off;
-            end
-            
+%             if obj.treadmill.state
+%                 % solenoid is blocked
+%                 offset = obj.ao_error_solenoid_on;
+%             else
+%                 % solenoid is not blocking
+%                 offset = obj.ao_error_solenoid_off;
+%             end
+
             % write a waveform (in V) and an error to apply to that
             % waveform
-            obj.ni.ao_write(waveform, offset);
+            obj.ni.ao_write(waveform);
         end
         
         
@@ -348,16 +350,27 @@ classdef Controller < handle
         function set_ni_ao_idle(obj)
             
             % change offset depending on the state of the solenoid...
-            if obj.treadmill.state
-                % solenoid is blocked
-                offset = obj.ao_error_solenoid_on;
-            else
-                % solenoid is not blocking
-                offset = obj.ao_error_solenoid_off;
-            end
+%             if obj.treadmill.state
+%                 % solenoid is blocked
+%                 offset = obj.ao_error_solenoid_on;
+%             else
+%                 % solenoid is not blocking
+%                 offset = obj.ao_error_solenoid_off;
+%             end
             
+            offset = obj.offsets.get_ni_ao_offset(obj);
+            obj.ni.ao.idle_offset = offset;
+
             % 
-            obj.ni.ao.set_to_idle(offset);
+            obj.ni.ao.set_to_idle();
+        end
+        
+        
+        
+        function multiplexer_listen_to(obj, src)
+            
+            obj.offsets.soloist_input_src = src;
+            obj.multiplexer.listen_to(src);
         end
         
         
