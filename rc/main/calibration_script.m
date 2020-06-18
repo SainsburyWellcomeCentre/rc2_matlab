@@ -16,6 +16,10 @@ max_velocity = 1000;     % mm/s
 max_voltage = 2.5;       % V
 cnts_per_unit = 10000;   %
 
+% compute the theoretical gear scale
+max_speed_scale = (max_velocity * cnts_per_unit)/1000;
+theoretical_gear_scale = -(max_speed_scale * (1/max_voltage));
+
 % create measure
 cal = Calibrate(ctl);
 
