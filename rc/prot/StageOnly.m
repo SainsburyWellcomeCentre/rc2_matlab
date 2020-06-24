@@ -101,11 +101,6 @@ classdef StageOnly < handle
                 cfg = obj.get_config();
                 obj.ctl.save_single_trial_config(cfg);
                 
-                obj.ctl.offsets.soloist_input_src = 'ni';
-                obj.ctl.offsets.solenoid_state = 'up';
-                obj.ctl.offsets.gear_mode = 'off';
-                obj.ctl.set_ni_ao_idle();
-                
                 % listen to correct source
                 obj.ctl.multiplexer_listen_to('ni');
                 
@@ -148,9 +143,6 @@ classdef StageOnly < handle
                             return
                         end
                     end
-                    
-                    obj.ctl.offsets.solenoid_state = 'up';
-                    obj.ctl.set_ni_ao_idle();
                     
                     obj.ctl.block_treadmill();
                 end

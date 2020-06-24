@@ -262,15 +262,6 @@ classdef Controller < handle
         
         
         function load_velocity_waveform(obj, waveform)
-            
-            % change offset depending on the state of the solenoid...
-%             if obj.treadmill.state
-%                 % solenoid is blocked
-%                 offset = obj.ao_error_solenoid_on;
-%             else
-%                 % solenoid is not blocking
-%                 offset = obj.ao_error_solenoid_off;
-%             end
 
             % write a waveform (in V) and an error to apply to that
             % waveform
@@ -353,19 +344,12 @@ classdef Controller < handle
         
         function set_ni_ao_idle(obj)
             
-            % change offset depending on the state of the solenoid...
-%             if obj.treadmill.state
-%                 % solenoid is blocked
-%                 offset = obj.ao_error_solenoid_on;
-%             else
-%                 % solenoid is not blocking
-%                 offset = obj.ao_error_solenoid_off;
-%             end
-            
+            % get the current state of the setup and associated offset to
+            % apply on the NI AO
             offset = obj.offsets.get_ni_ao_offset();
+            % set the idle voltage on the NI
             obj.ni.ao.idle_offset = offset;
-
-            % 
+            % apply the voltage
             obj.ni.ao.set_to_idle();
         end
         
@@ -373,7 +357,16 @@ classdef Controller < handle
         
         function multiplexer_listen_to(obj, src)
             
+            % notify the offset handler
             obj.offsets.soloist_input_src = src;
+            
+            % change the offset on the NI
+            %   unless it is already running a waveform
+            if ~obj.ni.ao.task.IsRunning
+                obj.set_ni_ao_idle();
+            end
+            
+            % switch the digital output
             obj.multiplexer.listen_to(src);
         end
         
