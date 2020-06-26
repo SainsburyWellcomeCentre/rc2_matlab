@@ -36,9 +36,6 @@ classdef Treadmill < handle
             else
                 obj.unblock()
             end
-            
-            % Set the state variable
-            obj.state = config.treadmill.init_state;
         end
         
         
@@ -47,7 +44,7 @@ classdef Treadmill < handle
         %   Block the treadmill, by toggling the digital output.
         
             obj.ni.do_toggle(obj.chan, true);
-            obj.state = true;
+            obj.state = 'up';
         end
         
         function unblock(obj)
@@ -55,7 +52,7 @@ classdef Treadmill < handle
         %   Unblock the treadmill, by toggling the digital output.
         
             obj.ni.do_toggle(obj.chan, false);
-            obj.state = false;
+            obj.state = 'down';
         end
     end
 end
