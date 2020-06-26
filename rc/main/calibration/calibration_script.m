@@ -191,6 +191,59 @@ offset_error_mtx(3, 2) = relative_filtTeensy2soloist_offset * 1e-3;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% STEP 2B:  Teensy to Soloist (Gear mode OFF) %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Message
+fprintf('Calibrating Teensy to Soloist, solenoid UP (gear mode OFF)...\n')
+
+% Move to middle of stage
+proc = ctl.soloist.move_to(stage_middle);
+
+% Wait for move to complete.
+proc.wait_for(0.5);
+
+% Set the solenoid up
+ctl.treadmill.block()
+
+% Run calibration to determine offset on soloist
+relative_filtTeensy2soloist_offset = ctl.soloist.calibrate_zero(stage_middle+100, stage_middle-100, -teensy_stationary_mV, true);
+
+% Stop gear mode
+ctl.soloist.stop()
+
+% Store the error as volts
+offset_error_mtx(2, 2) = relative_filtTeensy2soloist_offset * 1e-3;
+
+% Message
+fprintf('Calibrating Teensy to Soloist, solenoid DOWN (gear mode OFF)...\n')
+
+% Move to middle of stage
+proc = ctl.soloist.move_to(stage_middle);
+
+% Wait for move to complete.
+proc.wait_for(0.5);
+
+% Set the solenoid down
+ctl.treadmill.unblock()
+
+% Run calibration to determine offset on soloist
+relative_filtTeensy2soloist_offset = ctl.soloist.calibrate_zero(stage_middle+100, stage_middle-100, -teensy_stationary_mV, true);
+
+% Stop gear mode
+ctl.soloist.stop()
+
+% Store the error as volts
+offset_error_mtx(4, 2) = relative_filtTeensy2soloist_offset * 1e-3;
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% STEP 3:  Teensy to NI: Gear mode ON %%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -409,6 +462,66 @@ input('Press Enter when ready');
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% STEP 4B:  NI to Soloist (Gear mode OFF) %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Message
+fprintf('Calibrating NI to Soloist, solenoid UP, gear mode OFF...\n')
+
+% Move to middle of stage
+proc = ctl.soloist.move_to(stage_middle);
+
+% Wait for move to complete.
+proc.wait_for(0.5);
+
+% Set the multiplexer to listen to the Teensy
+ctl.multiplexer.listen_to('ni');
+
+% Put the solenoid up
+ctl.treadmill.block()
+
+% Set voltage on soloist equal to 'teensy_stationary_V'
+ctl.ni.ao.idle_offset = teensy_stationary_V;
+
+% Perform the setting of voltage
+ctl.ni.ao.set_to_idle();
+
+% Run calibration to determine offset on soloist
+relative_ni2soloist_offset = ctl.soloist.calibrate_zero(stage_middle+100, stage_middle-100, -teensy_stationary_mV, true);
+
+% Stop gear mode
+ctl.soloist.stop()
+
+% Store the error as volts
+offset_error_mtx(2, 3) = relative_ni2soloist_offset * 1e-3;
+
+
+% Message
+fprintf('Calibrating NI to Soloist, solenoid DOWN, gear mode OFF...\n')
+
+% Move to middle of stage
+proc = ctl.soloist.move_to(stage_middle);
+
+% Wait for move to complete.
+proc.wait_for(0.5);
+
+% Set the solenoid down
+ctl.treadmill.unblock()
+
+% Run calibration to determine offset on soloist
+relative_ni2soloist_offset = ctl.soloist.calibrate_zero(stage_middle+100, stage_middle-100, -teensy_stationary_mV, true);
+
+% Stop gear mode
+ctl.soloist.stop()
+
+% Store the error as volts
+offset_error_mtx(4, 3) = relative_ni2soloist_offset * 1e-3;
+
+
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% STEP 5:  Teensy to NI SCALES %%%%%%%%%%%%%%%
@@ -570,5 +683,6 @@ calibration.gear_scale = theoretical_gear_scale;
 
 calibration.nominal_stationary_offset = teensy_stationary_V;
 calibration.offset_error_mtx = offset_error_mtx;
+calibration.deadband_V = minimum_deadband;
 
 save('calibration.mat', 'calibration');
