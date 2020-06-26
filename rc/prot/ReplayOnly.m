@@ -59,12 +59,7 @@ classdef ReplayOnly < handle
             % store the waveform
             waveform = -10 + 20*(w(:, 1) + 2^15)/2^16;  %#ok<*PROP> %TODO:  config... but StageOnlys shouldn't have to worry about it.
             
-            % transform waveform
-            obj.ctl.offsets.soloist_input_src = 'ni';
-            obj.ctl.offsets.solenoid_state = 'up';
-            obj.ctl.offsets.gear_mode = 'off';
-            
-            obj.waveform = obj.ctl.offsets.transform_ai_ao_data(waveform);
+            obj.waveform = obj.ctl.offsets.transform_ai_ao_data(waveform, 'up', 'off');
         end
         
         
@@ -100,11 +95,6 @@ classdef ReplayOnly < handle
                 if obj.handle_acquisition
                     obj.ctl.prepare_acq();
                 end
-                
-                obj.ctl.offsets.soloist_input_src = 'ni';
-                obj.ctl.offsets.solenoid_state = 'down';
-                obj.ctl.offsets.gear_mode = 'off';
-                obj.ctl.set_ni_ao_idle();
                 
                 % make sure the treadmill is blocked
                 obj.ctl.block_treadmill();
@@ -158,9 +148,6 @@ classdef ReplayOnly < handle
                         end
                     end
                     
-                    obj.ctl.offsets.solenoid_state = 'up';
-                    obj.ctl.set_ni_ao_idle();
-                    
                     obj.ctl.block_treadmill();
                 end
                 
@@ -190,7 +177,7 @@ classdef ReplayOnly < handle
                 end
                 
                 % if AO no longer running set voltage waveform to the idle value
-                obj.ctl.set_ni_ao_idle();
+                obj.ctl.set_ni_ao_idle('up', 'off');
                 
                 % switch vis stim off
                 if obj.enable_vis_stim
@@ -222,10 +209,7 @@ classdef ReplayOnly < handle
                 obj.ctl.stop_sound();
                 
                 obj.ctl.multiplexer.listen_to('teensy');
-                obj.ctl.offsets.soloist_input_src = 'teensy';
-                obj.ctl.offsets.solenoid_state = 'down';
-                obj.ctl.offsets.gear_mode = 'on';
-                obj.ctl.set_ni_ao_idle();
+                obj.ctl.set_ni_ao_idle('up', 'off');
                 
                 rethrow(ME)
             end
@@ -278,10 +262,7 @@ classdef ReplayOnly < handle
             end
             
             obj.ctl.multiplexer.listen_to('teensy');
-            obj.ctl.offsets.soloist_input_src = 'teensy';
-            obj.ctl.offsets.solenoid_state = 'down';
-            obj.ctl.offsets.gear_mode = 'on';
-            obj.ctl.set_ni_ao_idle();
+            obj.ctl.set_ni_ao_idle('up', 'off');
         end
     end
 end

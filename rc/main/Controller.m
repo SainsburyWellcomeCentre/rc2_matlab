@@ -342,13 +342,16 @@ classdef Controller < handle
         end
         
         
-        function set_ni_ao_idle(obj)
+        function set_ni_ao_idle(obj, solenoid_state, gear_mode)
             
-            % get the current state of the setup and associated offset to
-            % apply on the NI AO
-            offset = obj.offsets.get_ni_ao_offset();
+            % Given the state of the setup, provided by arguments,
+            % get the *EXPECTED* offset to apply on the NI AO, to prevent
+            % movement on the visual stimulus.
+            offset = obj.offsets.get_ni_ao_offset(solenoid_state, gear_mode);
+            
             % set the idle voltage on the NI
             obj.ni.ao.idle_offset = offset;
+            
             % apply the voltage
             obj.ni.ao.set_to_idle();
         end
@@ -356,15 +359,6 @@ classdef Controller < handle
         
         
         function multiplexer_listen_to(obj, src)
-            
-            % notify the offset handler
-            obj.offsets.soloist_input_src = src;
-            
-            % change the offset on the NI
-            %   unless it is already running a waveform
-            if ~obj.ni.ao.task.IsRunning
-                obj.set_ni_ao_idle();
-            end
             
             % switch the digital output
             obj.multiplexer.listen_to(src);

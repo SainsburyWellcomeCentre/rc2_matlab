@@ -53,12 +53,11 @@ classdef StageOnly < handle
             
             waveform = -10 + 20*(w(:, 1) + 2^15)/2^16;  %#ok<*PROP> %TODO:  config... but StageOnlys shouldn't have to worry about it.
             
-            % transform waveform
-            obj.ctl.offsets.soloist_input_src = 'ni';
-            obj.ctl.offsets.solenoid_state = 'up';
-            obj.ctl.offsets.gear_mode = 'on';
-            
-            obj.waveform = obj.ctl.offsets.transform_ai_ao_data(waveform);
+            % Transform the waveform according to the state of the setup
+            % during the task:
+            %   solenoid - up
+            %   gear_mode - on
+            obj.waveform = obj.ctl.offsets.transform_ai_ao_data(waveform, 'up', 'on');
         end
         
         
@@ -107,7 +106,6 @@ classdef StageOnly < handle
                 % start PC listening to the correct trigger input
                 obj.ctl.trigger_input.listen_to('soloist');
                 
-                
                 % load the velocity waveform to NIDAQ
                 obj.ctl.load_velocity_waveform(obj.waveform);
                 
@@ -120,6 +118,37 @@ classdef StageOnly < handle
                 % terminate.
                 proc = obj.ctl.soloist.move_to(obj.start_pos, obj.ctl.soloist.default_speed, true);
                 proc.wait_for(0.5);
+                
+                % Retrieve the *EXPECTED* offset on the soloist, given the
+                % current conditions and a prior calibration value:
+                %   solenoid - up
+                %   gear mode - off
+                %   listening to - NI
+                % obj.ctl.soloist.ai_offset = obj.ctl.offsets.get_soloist_offset('ni', 'up', 'off');
+                
+                % Apply the voltage on the NI matching these conditions
+                obj.ctl.set_ni_ao_idle('up', 'off');
+                
+                % Get the *CURRENT* error on the soloist when that expected
+                % voltage is applied.
+                % This line applies the *EXPECTED* offset on the soloist and returns 
+                % the residual error
+                obj.ctl.soloist.reset_pso();
+                real_time_offset_error = ...
+                    obj.ctl.soloist.calibrate_zero(obj.back_limit, obj.forward_limit, 0); % obj.ctl.soloist.ai_offset
+                
+                % Retrieve the *EXPECTED* offset on the soloist, given the
+                % conditions to be used in the task:
+                %   solenoid - up
+                %   gear mode - on
+                %   listening to - Teensy
+                %obj.ctl.soloist.ai_offset = obj.ctl.offsets.get_soloist_offset('ni', 'up', 'on');
+                
+                % Subtract the residual voltage (if the residual error was
+                % positive, we need to subtract it)
+                %obj.ctl.soloist.ai_offset = obj.ctl.soloist.ai_offset - real_time_offset_error;
+                obj.ctl.soloist.ai_offset = -real_time_offset_error;%obj.ctl.soloist.ai_offset - real_time_offset_error;
+                
                 
                 % switch vis stim on
                 if obj.enable_vis_stim
@@ -152,8 +181,11 @@ classdef StageOnly < handle
                 % we need to give it some time to setup (~2s, but we want
                 % to wait at the start position anyway...
                 % don't wait for trigger
-                obj.ctl.soloist.ai_offset = obj.ctl.offsets.get_soloist_offset();
                 obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit, false);
+                
+                % Reset the idle voltage on the NI as we are now in gear
+                % mode
+                obj.ctl.set_ni_ao_idle('up', 'on');
                 
                 % start integrating position
                 obj.ctl.position.start();
@@ -188,7 +220,7 @@ classdef StageOnly < handle
                     if ~obj.ctl.ni.ao.task.IsRunning
                         
                         % if AO no longer running set voltage waveform to the idle value
-                        obj.ctl.set_ni_ao_idle();
+                        obj.ctl.set_ni_ao_idle('up', 'on');
                         
                         premature_end = true;
                         break
@@ -225,10 +257,7 @@ classdef StageOnly < handle
                 end
                 
                 % if AO no longer running set voltage waveform to the idle value
-                obj.ctl.set_ni_ao_idle();
-                
-                % block treadmill
-                obj.ctl.block_treadmill()
+                obj.ctl.set_ni_ao_idle('up', 'off');
                 
                 % switch vis stim off
                 if obj.enable_vis_stim
@@ -272,10 +301,7 @@ classdef StageOnly < handle
                 end
                 obj.ctl.stop_sound();
                 obj.ctl.multiplexer.listen_to('teensy');
-                obj.ctl.offsets.soloist_input_src = 'teensy';
-                obj.ctl.offsets.solenoid_state = 'down';
-                obj.ctl.offsets.gear_mode = 'on';
-                obj.ctl.set_ni_ao_idle();
+                obj.ctl.set_ni_ao_idle('up', 'off');
                 
                 rethrow(ME)
             end
@@ -332,10 +358,7 @@ classdef StageOnly < handle
             end
             
             obj.ctl.multiplexer.listen_to('teensy');
-            obj.ctl.offsets.soloist_input_src = 'teensy';
-            obj.ctl.offsets.solenoid_state = 'down';
-            obj.ctl.offsets.gear_mode = 'on';
-            obj.ctl.set_ni_ao_idle();
+            obj.ctl.set_ni_ao_idle('up', 'off');
         end
     end
 end
