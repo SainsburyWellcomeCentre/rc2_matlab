@@ -198,30 +198,30 @@ classdef Controller < handle
         end
         
         
-        function block_treadmill(obj)
+        function block_treadmill(obj, gear_mode)
+            
+            VariableDefault('gear_mode', 'off');
             
             obj.treadmill.block()
-            
-            obj.offsets.solenoid_state = 'up';
             
             % change the offset on the NI
             %   unless it is already running a waveform
             if ~obj.ni.ao.task.IsRunning
-                obj.set_ni_ao_idle();
+                obj.set_ni_ao_idle('up', gear_mode);
             end
         end
         
         
-        function unblock_treadmill(obj)
+        function unblock_treadmill(obj, gear_mode)
+            
+            VariableDefault('gear_mode', 'off');
             
             obj.treadmill.unblock()
-            
-            obj.offsets.solenoid_state = 'down';
             
             % change the offset on the NI
             %   unless it is already running a waveform
             if ~obj.ni.ao.task.IsRunning
-                obj.set_ni_ao_idle();
+                obj.set_ni_ao_idle('down', gear_mode);
             end
         end
         
