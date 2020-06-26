@@ -237,8 +237,8 @@ classdef Soloist < handle
         end
         
         
-        function average_offset_mV = calibrate_zero(obj, back_pos, forward_pos, offset)
-        %%proc = calibrate_zero(obj, back_pos, forward_pos, offset)
+        function average_offset_mV = calibrate_zero(obj, back_pos, forward_pos, offset, no_gear)
+        %%proc = calibrate_zero(obj, back_pos, forward_pos, offset, no_gear)
         %   
         %   Runs a calibration routine to determine the correct voltage
         %   offset to subtract to be stationary when the treadmill is not
@@ -248,7 +248,11 @@ classdef Soloist < handle
         %   which the calibration routine will terminate (if it doesn't
         %   naturally terminate).
         %
-        %   'offset' indicates the inital voltage offset to try. 
+        %   'offset' indicates the inital voltage offset to try.
+        %
+        %   'no_gear', if true run without gear mode
+        
+            VariableDefault('no_gear', false);
         
         
             % check 'back_pos'
@@ -291,8 +295,11 @@ classdef Soloist < handle
                 return
             end
             
-            
-            fname = obj.full_command('calibrate_zero');
+            if no_gear
+                fname = obj.full_command('calibrate_zero_no_gear');
+            else
+                fname = obj.full_command('calibrate_zero');
+            end
             cmd = sprintf('%s %i %i %.8f', fname, back_pos, forward_pos, offset);
             disp(cmd)
             
