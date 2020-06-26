@@ -92,19 +92,44 @@ classdef Coupled < handle
                 % reset position
                 obj.ctl.reset_pc_position();
                 
+                % Retrieve the *EXPECTED* offset on the soloist, given the
+                % current conditions and a prior calibration value:
+                %   solenoid - up
+                %   gear mode - off
+                %   listening to - Teensy
+                %obj.ctl.soloist.ai_offset = obj.ctl.offsets.get_soloist_offset('teensy', 'up', 'on');
+                
+                % Get the *CURRENT* error on the soloist when that expected
+                % voltage is applied.
+                % This line applies the *EXPECTED* offset on the soloist and returns 
+                % the residual error
+                obj.ctl.soloist.reset_pso();
+                real_time_offset_error = ...
+                    obj.ctl.soloist.calibrate_zero(obj.back_limit, obj.forward_limit, 0); % obj.ctl.soloist.ai_offset
+                
+                % Retrieve the *EXPECTED* offset on the soloist, given the
+                % conditions to be used in the task:
+                %   solenoid - down
+                %   gear mode - on
+                %   listening to - Teensy
+                %obj.ctl.soloist.ai_offset = obj.ctl.offsets.get_soloist_offset('teensy', 'down', 'on');
+                
+                % Subtract the residual voltage (if the residual error was
+                % positive, we need to subtract it)
+                obj.ctl.soloist.ai_offset = -real_time_offset_error + 1.2;%obj.ctl.soloist.ai_offset - real_time_offset_error;
+                
+                % the soloist will connect, setup some parameters and then
+                % wait for the solenoid signal to go low
+                % we need to give it some time to setup (~2s, but we want
+                % to wait at the start position anyway...
+                obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit);
+                
                 % switch vis stim on
                 if obj.enable_vis_stim
                     obj.ctl.vis_stim.on();
                 else
                     obj.ctl.vis_stim.off();
                 end
-                
-                % the soloist will connect, setup some parameters and then
-                % wait for the solenoid signal to go low
-                % we need to give it some time to setup (~2s, but we want
-                % to wait at the start position anyway...
-                obj.ctl.soloist.ai_offset = obj.ctl.offsets.get_soloist_offset();
-                obj.ctl.soloist.listen_until(obj.back_limit, obj.forward_limit);
                 
                 % start integrating position
                 obj.ctl.position.start();
