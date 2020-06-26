@@ -41,6 +41,9 @@ main () {
             printf("stopped...\n");
             // Reset gear parameters
             reset_gear(handles, handle_count);
+        } else if (line.compare("reset_pso") == 0) {
+            if(!SoloistPSOControl(handles[0], PSOMODE_Reset)) { cleanup(handles, handle_count); }
+            printf("pso_reset...\n");
         }
     }
     

@@ -13,7 +13,7 @@ Averages those values and returns them on standard output.
 #include <tchar.h>
 
 /* number of iterations to record */
-#define N_ITER 100
+#define N_ITER 50
 
 
 int
@@ -52,7 +52,7 @@ main(int argc, char **argv)
     
     // Calculate the scale from the input voltage, speed and counts per unit
     max_speed_scale = (MAX_INPUT_SPEED * cnts_per_unit)/1000;
-    gear_scale = -(max_speed_scale * (1/MAX_INPUT_VOLTAGE));
+    gear_scale = 0; //-(max_speed_scale * (1/MAX_INPUT_VOLTAGE));
     
     // Set the gearing parameters...
     gear_set = set_gear_params(handles, GEARCAM_SOURCE, gear_scale, DEADBAND, 0);

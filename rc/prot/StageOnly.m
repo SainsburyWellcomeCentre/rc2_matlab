@@ -281,6 +281,7 @@ classdef StageOnly < handle
                     obj.ctl.stop_sound();
                 end
                 
+                obj.ctl.soloist.reset_pso();
                 obj.ctl.multiplexer.listen_to('teensy');
                 
                 % the protocol is no longer running

@@ -100,7 +100,10 @@ classdef Soloist < handle
         %%STOP(obj)
         %   disables the axis, resets the stage and stops all the
         %   processes.
-        
+            
+            % make sure PSO is reset
+            obj.h_abort.run('reset_pso');
+            
             % run the abort command (this is in SoloistAbortProc)
             obj.h_abort.run('stop');
             
@@ -111,6 +114,12 @@ classdef Soloist < handle
             obj.h_abort.restart();
         end
         
+        
+        function reset_pso(obj)
+            
+            % run the abort command (this is in SoloistAbortProc)
+            obj.h_abort.run('reset_pso');
+        end
         
         
         function proc = communicate(obj)

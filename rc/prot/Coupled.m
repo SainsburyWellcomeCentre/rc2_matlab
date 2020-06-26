@@ -157,12 +157,14 @@ classdef Coupled < handle
                     obj.ctl.stop_logging_single_trial();
                 end
                 
-                % wait for reward to complete then stop acquisition
-                % make sure the stage has moved foward
+                % Wait for reward to complete then stop acquisition
+                % make sure the treadmill has moved foward
                 if obj.ctl.get_position() > 0
                     final_position = 1;
                     obj.ctl.reward.start_reward(obj.wait_for_reward)
                 end
+                
+                obj.ctl.soloist.reset_pso();
                 
                 % if handling the acquisition stop 
                 if obj.handle_acquisition
