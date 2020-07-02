@@ -278,6 +278,7 @@ input('Press Enter when ready');
 
 % Stop gear mode
 ctl.soloist.stop()
+ctl.soloist.reset_pso();
 
 % select the location of the max
 filtered_trace = data(:, filtered_idx);
@@ -332,6 +333,7 @@ input('Press Enter when ready');
 
 % Stop gear mode
 ctl.soloist.stop()
+ctl.soloist.reset_pso();
 
 % select the location of the max
 filtered_trace = data(:, filtered_idx);
@@ -410,6 +412,7 @@ input('Press Enter when ready');
 
 % Stop gear mode
 ctl.soloist.stop()
+ctl.soloist.reset_pso();
 
 % Wait for user input
 fprintf('Can calibrate NI to Vis Stim, solenoid UP, gear mode OFF here...\n')
@@ -454,6 +457,7 @@ input('Press Enter when ready');
 
 % Stop gear mode
 ctl.soloist.stop()
+ctl.soloist.reset_pso();
 
 % Wait for user input
 fprintf('Can calibrate NI to Vis Stim, solenoid DOWN, gear mode OFF here...\n')
@@ -620,6 +624,7 @@ data = cal.measure();
 
 % stop the soloist running
 ctl.soloist.stop()
+ctl.soloist.reset_pso();
 
 stage_trace = data(:, stage_idx);
 
