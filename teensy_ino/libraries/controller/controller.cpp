@@ -6,6 +6,7 @@
 #include "velocity.h"
 #include "ao.h"
 #include "trigger_input.h"
+#include "disable.h"
 #include "trigger_output.h"
 
 
@@ -14,6 +15,7 @@ class Encoder;
 Velocity vel = Velocity();
 AnalogOut ao = AnalogOut();
 TriggerInput trig_in = TriggerInput();
+Disable disable = Disable();
 TriggerOutput trig_out = TriggerOutput();
 
 
@@ -30,6 +32,7 @@ Controller::setup() {
     ao.setup(this->dac_offset_volts);
     vel.setup();
     trig_in.setup();
+    disable.setup();
     trig_out.setup();
 }
 
@@ -40,7 +43,7 @@ Controller::loop() {
 
     bool update = 0;
     float volts = 0;
-
+    
     // Check to make sure encoder has moved in last Xms
     enc.loop();
 
@@ -52,6 +55,12 @@ Controller::loop() {
         enc.total_distance = 0;
     }
 
+    // If disable input is on, set voltage to resting state
+    //if (digitalRead(DISABLE_PIN) == HIGH) {
+    //    ao.loop(true, this->dac_offset_volts);
+    //    return;
+    //}
+    
     // Fix the encoder velocity and distance for each loop.
     noInterrupts();
     float encoder_velocity = enc.current_velocity;
@@ -78,5 +87,9 @@ Controller::loop() {
     trig_out.loop();
     
     // Determine whether to update the voltage.
-    ao.loop(update, volts);
+    if (digitalRead(DISABLE_PIN) == LOW) {
+        ao.loop(update, volts);
+    } else {
+        ao.loop(true, this->dac_offset_volts);
+    }
 }

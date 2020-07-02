@@ -126,8 +126,8 @@ config.nidaq.co.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 config.nidaq.do.dev             = 'Dev2';
-config.nidaq.do.channel_names   = {'pump', 'multiplexer', 'solenoid', 'zero_teensy', 'visual_stimulus', 'soloist'};
-config.nidaq.do.channel_id      = {'port0/line0', 'port0/line1', 'port0/line2', 'port0/line3', 'port0/line4', 'port0/line5'};
+config.nidaq.do.channel_names   = {'pump', 'multiplexer', 'solenoid', 'zero_teensy', 'visual_stimulus', 'soloist', 'disable_teensy'};
+config.nidaq.do.channel_id      = {'port0/line0', 'port0/line1', 'port0/line2', 'port0/line3', 'port0/line4', 'port0/line5', 'port0/line6'};
 config.nidaq.do.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
 
 
@@ -202,6 +202,10 @@ config.soloist_input_src.teensy         = 1;
 
 % name of digital output channel to use
 config.zero_teensy.do_name              = 'zero_teensy';
+
+% 
+config.disable_teensy.do_name           = 'disable_teensy';
+config.disable_teensy.init_state        = 0;
 
 % name of digital output channel to use
 config.start_soloist.do_name            = 'soloist';

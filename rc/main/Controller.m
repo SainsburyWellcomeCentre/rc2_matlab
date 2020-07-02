@@ -14,6 +14,7 @@ classdef Controller < handle
         sound
         position
         zero_teensy
+        disable_teensy
         trigger_input
         data_transform
         vis_stim
@@ -67,6 +68,7 @@ classdef Controller < handle
             obj.position = Position(config);
             obj.saver = Saver(obj, config);
             obj.zero_teensy = ZeroTeensy(obj.ni, config);
+            obj.disable_teensy = DisableTeensy(obj.ni, config);
             obj.trigger_input = TriggerInput(obj.ni, config);
             obj.data_transform = DataTransform(config);
             obj.vis_stim = VisStim(obj.ni, config);

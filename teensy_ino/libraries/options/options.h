@@ -31,7 +31,9 @@
 #define ENC_B_PIN               1
 #define ZERO_POSITION_PIN		6
 #define REWARD_PIN				14
+#define DISABLE_PIN             15
 #define DAC_PIN                 A14
+
 
 // ANALOG OUTPUT
 #define MAX_DAC_VOLTS           3.3     // VOLTS, for converting to BITS
