@@ -67,6 +67,12 @@ classdef ReplayOnly < handle
             
             try
                 
+                % times simulating features of other protocols
+                %   calibration time + connection to soloist (~6s)
+                %   moveback of stage from one end to other (~7s)
+                simulate_calibration_s = 6;
+                simulate_moveback = 7;
+                
                 % always assume it has finished in positive direction
                 final_position = 1;
                 
@@ -124,6 +130,17 @@ classdef ReplayOnly < handle
                 % terminate.
                 proc = obj.ctl.soloist.move_to(obj.start_pos, obj.ctl.soloist.default_speed, true);
                 proc.wait_for(0.5);
+                
+                % simulate the calibration
+                tic;
+                while toc < simulate_calibration_s
+                    pause(0.005);
+                    if obj.abort
+                        obj.running = false;
+                        obj.abort = false;
+                        return
+                    end
+                end
                 
                 % switch vis stim on
                 if obj.enable_vis_stim
@@ -186,6 +203,17 @@ classdef ReplayOnly < handle
                 
                 % wait for reward to complete then stop acquisition
                 obj.ctl.reward.start_reward(obj.wait_for_reward)
+                
+                % simulate moveback of the stage
+                tic;
+                while toc < simulate_moveback
+                    pause(0.005);
+                    if obj.abort
+                        obj.running = false;
+                        obj.abort = false;
+                        return
+                    end
+                end
                 
                 % if handling the acquisition stop 
                 if obj.handle_acquisition

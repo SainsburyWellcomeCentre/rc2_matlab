@@ -65,6 +65,12 @@ classdef EncoderOnly < handle
             
             try
                
+                % times simulating features of other protocols
+                %   calibration time + connection to soloist (~6s)
+                %   moveback of stage from one end to other (~7s)
+                simulate_calibration_s = 6;
+                simulate_moveback = 7;
+                
                 % report the end position
                 final_position = 0;
                 
@@ -125,6 +131,17 @@ classdef EncoderOnly < handle
                 
                  % we want to reset the position anyway
                 obj.ctl.reset_pc_position();
+                
+                % simulate the calibration
+                tic;
+                while toc < simulate_calibration_s
+                    pause(0.005);
+                    if obj.abort
+                        obj.running = false;
+                        obj.abort = false;
+                        return
+                    end
+                end
                 
                 % switch vis stim on
                 if obj.enable_vis_stim
@@ -216,6 +233,17 @@ classdef EncoderOnly < handle
                     final_position = 1;
                     % start reward, block until finished if necessary
                     obj.ctl.reward.start_reward(obj.wait_for_reward)
+                end
+                
+                % simulate moveback of the stage
+                tic;
+                while toc < simulate_moveback
+                    pause(0.005);
+                    if obj.abort
+                        obj.running = false;
+                        obj.abort = false;
+                        return
+                    end
                 end
                 
                 % stop acquiring data if protocol is handling that
