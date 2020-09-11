@@ -107,7 +107,7 @@ classdef Coupled < handle
                 obj.ctl.soloist.reset_pso();
                 real_time_offset_error = ...
                     obj.ctl.soloist.calibrate_zero(obj.back_limit, obj.forward_limit, 0); % obj.ctl.soloist.ai_offset
-                obj.ctl.disable_teensy.off();
+                
                 
                 % Retrieve the *EXPECTED* offset on the soloist, given the
                 % conditions to be used in the task:
@@ -146,6 +146,8 @@ classdef Coupled < handle
                         return
                     end
                 end
+                
+                obj.ctl.disable_teensy.off();
                 
                 % release block on the treadmill
                 obj.ctl.unblock_treadmill()

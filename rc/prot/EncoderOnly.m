@@ -87,6 +87,9 @@ classdef EncoderOnly < handle
                 % make sure vis stim is off
                 obj.ctl.vis_stim.off();
                 
+                % prevent output of the teensy until just before the trial
+                obj.ctl.disable_teensy.on();
+                
                 % load correct direction on teensy
                 obj.ctl.teensy.load(obj.direction);
                 
@@ -144,6 +147,9 @@ classdef EncoderOnly < handle
                         return
                     end
                 end
+                
+                % enable the teensy again
+                obj.ctl.disable_teensy.off();
                 
                 % release block on the treadmill
                 obj.ctl.unblock_treadmill()
