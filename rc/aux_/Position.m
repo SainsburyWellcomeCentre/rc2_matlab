@@ -44,7 +44,7 @@ classdef Position < handle
             obj.position = obj.position + sum(velocity(abs(velocity) > obj.deadband))*obj.dt;
             
             % printing is useful for debugging
-            fprintf('%.2f\n', obj.position);
+            %fprintf('%.2f\n', obj.position);
         end
         
         
