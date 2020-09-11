@@ -54,6 +54,8 @@ classdef AnalogOutput < handle
             
             % write initial voltage to AO
             obj.task.outputSingleScan(obj.idle_offset);
+            
+            fprintf('Voltage output on NI: %.7f\n', obj.idle_offset);
         end
         
         
