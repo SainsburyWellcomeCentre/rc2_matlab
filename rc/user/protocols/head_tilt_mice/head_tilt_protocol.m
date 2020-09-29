@@ -42,9 +42,7 @@ for i = 1 : length(trial_order)
         % increase start dwell time slightly
         vest.start_dwell_time = 6;
         
-        fname_ = fnames{i};
-        
-        vest.wave_fname = fullfile(ctl.saver.save_to, ctl.saver.prefix, fname_);
+        vest.wave_fname = fnames{i};
         
         % enable vis stim
         vest.enable_vis_stim = true;
@@ -63,17 +61,13 @@ for i = 1 : length(trial_order)
         % increase start dwell time slightly
         vest.start_dwell_time = 6;
         
-        % same filename as loco
-        fname_ = fnames{i};
-        
-        vest.wave_fname = fullfile(ctl.saver.save_to, ctl.saver.prefix, fname_);
+        vest.wave_fname = fnames{i};
         
         % enable vis stim
         vest.enable_vis_stim = false;
         
         % add protocol to the sequence
         seq.add(vest);
-        
         
     elseif trial_order(i) == protocol_id.visual_flow
         
@@ -86,13 +80,10 @@ for i = 1 : length(trial_order)
         % increase start dwell time slightly
         replay.start_dwell_time = 6;
         
-        % same filename as locovest
-        fname_ = fnames{i};
-        
-        replay.wave_fname = fullfile(ctl.saver.save_to, ctl.saver.prefix, fname_);
+        replay.wave_fname = fnames{i};
         
         % enable vis stim
-        vest.enable_vis_stim = true;
+        replay.enable_vis_stim = true;
         
         % add protocol to the sequence
         seq.add(replay);

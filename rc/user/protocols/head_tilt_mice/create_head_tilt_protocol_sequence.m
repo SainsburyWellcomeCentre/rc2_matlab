@@ -45,8 +45,8 @@ vis_flow_fnames = strsplit(vis_flow_str, ',');
 darkness_fnames = strsplit(darkness_str, ',');
 
 % prepend the data location
-vis_flow_fnames = cellfun(@(x)(fullfile(data_dir, x)), vis_flow_fnames, 'uniformoutput', false);
-darkness_fnames = cellfun(@(x)(fullfile(data_dir, x)), darkness_fnames, 'uniformoutput', false);
+vis_flow_fnames = cellfun(@(x)(fullfile(data_dir, [x, '.bin'])), vis_flow_fnames, 'uniformoutput', false);
+darkness_fnames = cellfun(@(x)(fullfile(data_dir, [x, '.bin'])), darkness_fnames, 'uniformoutput', false);
 
 % list of protocols
 protocol_id.vest_with_flow      = 1;
@@ -97,10 +97,10 @@ fnames = cell(length(file_no), 1);
 for i = 1 : length(trial_order)
     
     if trial_order(i) == protocol_id.vest_with_flow
-        fnames{i} = fullfile(data_dir, vis_flow_fnames{file_no(i)});
+        fnames{i} = vis_flow_fnames{file_no(i)};
     elseif trial_order(i) == protocol_id.visual_flow
-        fnames{i} = fullfile(data_dir, vis_flow_fnames{file_no(i)});
+        fnames{i} = vis_flow_fnames{file_no(i)};
     elseif trial_order(i) == protocol_id.vest_darkness
-        fnames{i} = fullfile(data_dir, darkness_fnames{file_no(i)});
+        fnames{i} = darkness_fnames{file_no(i)};
     end
 end
