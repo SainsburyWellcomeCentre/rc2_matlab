@@ -176,6 +176,14 @@ classdef StageOnly < handle
                     end
                     
                     obj.ctl.block_treadmill();
+                else
+                    % This is frustrating: we need some indication of the
+                    % start of the trial and the change in solenoid state
+                    % is being used.
+                    % Should be replaced with a dedicated start trigger?
+                    obj.ctl.unblock_treadmill();
+                    pause(0.1);
+                    obj.ctl.block_treadmill();
                 end
                 
                 % the soloist will connect, setup some parameters and then
