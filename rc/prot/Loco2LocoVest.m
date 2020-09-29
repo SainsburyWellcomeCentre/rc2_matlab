@@ -15,6 +15,7 @@ classdef Loco2LocoVest < handle
         
         handle_acquisition = true
         wait_for_reward = true
+        enable_vis_stim = true
         
         log_trial = false
         log_fname = ''
@@ -259,6 +260,9 @@ classdef Loco2LocoVest < handle
                 'prot.log_fname',           sprintf('%s', obj.log_fname);
                 'prot.integrate_using',     '---';
                 'prot.wave_fname',          '---';
+                'prot.enable_vis_stim',     sprintf('%i', obj.enable_vis_stim);
+                'prot.initiate_trial',      '---';
+                'prot.initiation_speed',    '---';
                 'prot.reward.randomize',    sprintf('%i', obj.ctl.reward.randomize);
                 'prot.reward.min_time',     sprintf('%i', obj.ctl.reward.min_time);
                 'prot.reward.max_time',     sprintf('%i', obj.ctl.reward.max_time);

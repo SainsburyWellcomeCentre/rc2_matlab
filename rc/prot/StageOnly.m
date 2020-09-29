@@ -192,7 +192,7 @@ classdef StageOnly < handle
                 % start integrating position
                 obj.ctl.position.start();
                 
-                % wait five seconds
+                % wait at the start
                 tic;
                 while toc < obj.start_dwell_time
                     pause(0.005);
@@ -333,6 +333,9 @@ classdef StageOnly < handle
                 'prot.log_fname',           sprintf('%s', obj.log_fname);
                 'prot.integrate_using',     '---';
                 'prot.wave_fname',          obj.wave_fname;
+                'prot.enable_vis_stim',     sprintf('%i', obj.enable_vis_stim);
+                'prot.initiate_trial',      sprintf('%i', obj.initiate_trial);
+                'prot.initiation_speed',    sprintf('%i', obj.initiation_speed);
                 'prot.reward.randomize',    sprintf('%i', obj.ctl.reward.randomize);
                 'prot.reward.min_time',     sprintf('%i', obj.ctl.reward.min_time);
                 'prot.reward.max_time',     sprintf('%i', obj.ctl.reward.max_time);
