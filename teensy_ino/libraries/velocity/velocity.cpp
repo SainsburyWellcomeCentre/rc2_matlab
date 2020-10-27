@@ -111,7 +111,7 @@ Velocity::setup() {
 
 
 void
-Velocity::loop(float enc_velocity, float min_v, float offset) {
+Velocity::loop(float enc_velocity, float min_v, float offset, float gain) {
 
     // by default we do not need to update (only if velocity has changed)
     //   this public variable tells other parts whether we need to update...
@@ -125,6 +125,9 @@ Velocity::loop(float enc_velocity, float min_v, float offset) {
         // otherwise just take this velocity
         this->_new_velocity = enc_velocity;
     }
+    
+    // Multiply by gain factor
+    this->_new_velocity = this->new_velocity * gain;
     
     // if the new velocity is not equal to the velocity on the last loop
     if (this->_new_velocity != this->_previous_velocity) {

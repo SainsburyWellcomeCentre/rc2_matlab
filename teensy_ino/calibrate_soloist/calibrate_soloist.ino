@@ -39,7 +39,7 @@ setup() {
     //    see class definition for details.
     ao.setup(DAC_OFFSET);
     vel.setup();
-    vel.loop(0, MIN_VOLTS, DAC_OFFSET);
+    vel.loop(0, MIN_VOLTS, DAC_OFFSET, 1);
     trig_in.setup();
 }
 
@@ -71,13 +71,13 @@ loop() {
 	
 	if ((dt >= DWELL_MS) && (dt < (DWELL_MS + RAMP_DUR_MS))) {
 		velocity = TARGET_VELOCITY*(dt - DWELL_MS)/RAMP_DUR_MS;
-        vel.loop(velocity, MIN_VOLTS, DAC_OFFSET);
+        vel.loop(velocity, MIN_VOLTS, DAC_OFFSET, 1);
 	} else if ((dt >= (DWELL_MS + RAMP_DUR_MS)) && (dt < (DWELL_MS + RAMP_DUR_MS + MAX_DUR_MS))) {
 		velocity = TARGET_VELOCITY;
-        vel.loop(velocity, MIN_VOLTS, DAC_OFFSET);
+        vel.loop(velocity, MIN_VOLTS, DAC_OFFSET, 1);
 	} else if ((dt >= (DWELL_MS + RAMP_DUR_MS + MAX_DUR_MS)) && (dt < (DWELL_MS + 2*RAMP_DUR_MS + MAX_DUR_MS))) {
 		velocity = TARGET_VELOCITY*((DWELL_MS + 2*RAMP_DUR_MS + MAX_DUR_MS) - dt)/RAMP_DUR_MS;
-        vel.loop(velocity, MIN_VOLTS, DAC_OFFSET);
+        vel.loop(velocity, MIN_VOLTS, DAC_OFFSET, 1);
 	} else if (dt > (DWELL_MS + 2*RAMP_DUR_MS + MAX_DUR_MS)) { 
         vel.current_volts = 0.5;
 		wait_for_trigger = 1;

@@ -9,7 +9,7 @@ class Velocity {
     public:
         Velocity ();
         void setup ();
-        void loop (float enc_velocity, float min_v, float offset);
+        void loop (float enc_velocity, float min_v, float offset, float gain);
 
         bool update;
         float current_volts;

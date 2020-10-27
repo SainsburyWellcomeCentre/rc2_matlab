@@ -59,7 +59,7 @@ Controller::loop() {
     interrupts();
 
     // Compute the velocity as a voltage
-    vel.loop(encoder_velocity, this->min_volts, this->dac_offset_volts);
+    vel.loop(encoder_velocity, this->min_volts, this->dac_offset_volts, 1);
 
     // Do we need to update the voltage?
     update = vel.update;
