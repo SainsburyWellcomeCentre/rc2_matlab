@@ -34,10 +34,15 @@
 #define DISABLE_PIN             15
 #define DAC_PIN                 A14
 
-
 // ANALOG OUTPUT
 #define MAX_DAC_VOLTS           3.3     // VOLTS, for converting to BITS
 #define MAX_DAC_BITS            4095    // 2^12-1,  we are writing 12-bit integers to analog output
 
+// GAIN SETTINGS
+#define GAIN_UP_PIN 			6		// Reuse ZERO_POSITION_PIN
+#define GAIN_DOWN_PIN 			14		// Reuse REWARD_PIN
+#define GAIN_UP_VAL 			2		// Gain to apply on gain up
+#define GAIN_DOWN_VAL 			0		// Gain to apply on gain down
+#define GAIN_RAMP_MS 			100		// Duration of gain ramp (applied at start and end)
 
 #endif /* OPTIONS_H */

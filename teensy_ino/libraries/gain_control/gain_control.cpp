@@ -1,0 +1,64 @@
+#include <math.h>
+#include "Arduino.h"
+#include "gain_control.h"
+#include "trigger_input.h"
+#include "options.h"
+
+
+TriggerInput gain_up = TriggerInput();
+TriggerInput gain_down = TriggerInput();
+
+
+GainControl::GainControl() {
+}
+
+
+void
+GainControl::setup() {
+	
+	gain_up.setup(GAIN_UP_PIN);
+	gain_down.setup(GAIN_DOWN_PIN);
+	
+	this->_target = 1;
+	this->value = this->_target;
+	this->_time_started = 0;
+	this->_initial_value = this->value;
+}
+
+
+
+void
+GainControl::loop() {
+	
+	float dt = 0;
+	
+	gain_up.loop();
+	gain_down.loop();
+	
+	if ( gain_up.delta_state != 0 | gain_down.delta_state != 0 ) {
+		
+		this->_time_started = millis();
+		this->_initial_value = this->value;
+		
+		if (gain_up.current_state == HIGH & gain_down.current_state == HIGH)
+			this->_target = 1;
+		else if (gain_up.current_state == HIGH & gain_down.current_state == LOW)
+			this->_target = GAIN_UP_VAL;
+		else if (gain_up.current_state == LOW & gain_down.current_state == HIGH)
+			this->_target = GAIN_DOWN_VAL;
+		else if (gain_up.current_state == LOW & gain_down.current_state == LOW)
+			this->_target = 1;
+		
+		this->_dvalue = this->_target - this->_initial_value;
+		this->_full_dt = fabs(this->_dvalue) * GAIN_RAMP_MS;
+	}
+	
+	
+	if ((millis() - this->_time_started) < this->_full_dt) {
+		dt = (float) (millis() - this->_time_started);
+		this->value = this->_initial_value + dt * (this->_dvalue/this->_full_dt);
+	} else {
+		this->value = this->_target;
+	}
+    
+}
