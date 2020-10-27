@@ -7,7 +7,7 @@ class TriggerOutput {
     public:
         TriggerOutput();
         
-        void setup();
+        void setup(int pin);
         void loop();
         void start();
         
@@ -19,6 +19,7 @@ class TriggerOutput {
 		bool _on = 0;
 		unsigned int _duration = 50;
 		int _time_started;
+		int _pin;
 };
 
 

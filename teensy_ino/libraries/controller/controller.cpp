@@ -29,8 +29,8 @@ Controller::setup() {
     enc.setup(this->protocol);
     ao.setup(this->dac_offset_volts);
     vel.setup();
-    trig_in.setup();
-    trig_out.setup();
+    trig_in.setup(ZERO_POSITION_PIN);
+    trig_out.setup(REWARD_PIN);
 }
 
 

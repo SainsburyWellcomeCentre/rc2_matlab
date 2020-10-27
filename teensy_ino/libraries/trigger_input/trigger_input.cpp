@@ -11,26 +11,27 @@ TriggerInput::TriggerInput() {
 void
 TriggerInput::_get_state() {
 
-    this->_current_state = digitalRead(ZERO_POSITION_PIN);
+    this->current_state = digitalRead(this->_pin);
 
     this->delta_state = 0;
-    if (this->_current_state == HIGH && this->_previous_state == LOW) {
+    if (this->current_state == HIGH && this->_previous_state == LOW) {
         this->delta_state = 1;
     }
-    if (this->_current_state == LOW && this->_previous_state == HIGH) {
+    if (this->current_state == LOW && this->_previous_state == HIGH) {
         this->delta_state = -1;
     }
-    this->_previous_state = this->_current_state;
+    this->_previous_state = this->current_state;
 }
 
 
 void
-TriggerInput::setup() {
+TriggerInput::setup(int pin) {
 
-    pinMode(ZERO_POSITION_PIN, INPUT);
+    this->_pin = pin;
+    pinMode(this->_pin, INPUT);
 
-    this->_current_state = digitalRead(ZERO_POSITION_PIN);
-    this->_previous_state = this->_current_state;
+    this->current_state = digitalRead(this->_pin);
+    this->_previous_state = this->current_state;
     this->delta_state = 0;
 }
 

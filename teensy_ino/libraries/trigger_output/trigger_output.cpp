@@ -8,17 +8,18 @@ TriggerOutput::TriggerOutput() {
 
 
 void
-TriggerOutput::setup() {
+TriggerOutput::setup(int pin) {
 
-    pinMode(REWARD_PIN, OUTPUT);
-    digitalWrite(REWARD_PIN, LOW);
+    this._pin = pin;
+    pinMode(this._pin, OUTPUT);
+    digitalWrite(this._pin, LOW);
 }
 
 
 void
 TriggerOutput::start() {
 
-    digitalWrite(REWARD_PIN, HIGH);
+    digitalWrite(this._pin, HIGH);
     this->_on = 1;
     this->_time_started = millis();
 }
@@ -27,7 +28,7 @@ TriggerOutput::start() {
 void
 TriggerOutput::_stop() {
 
-    digitalWrite(REWARD_PIN, LOW);
+    digitalWrite(this._pin, LOW);
     this->_on = 0;
 }
 
