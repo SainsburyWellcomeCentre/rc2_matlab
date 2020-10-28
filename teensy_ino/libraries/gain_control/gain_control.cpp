@@ -2,11 +2,13 @@
 #include "Arduino.h"
 #include "gain_control.h"
 #include "trigger_input.h"
+#include "trigger_output.h"
 #include "options.h"
 
 
 TriggerInput gain_up = TriggerInput();
 TriggerInput gain_down = TriggerInput();
+TriggerOutput gain_report = TriggerOutput();
 
 
 GainControl::GainControl() {
@@ -18,6 +20,7 @@ GainControl::setup() {
 	
 	gain_up.setup(GAIN_UP_PIN);
 	gain_down.setup(GAIN_DOWN_PIN);
+	gain_report.setup(GAIN_REPORT_PIN);
 	
 	this->_target = 1;
 	this->value = this->_target;
@@ -48,6 +51,7 @@ GainControl::loop() {
 			this->_target = GAIN_DOWN_VAL;
 		else if ( (gain_up.current_state == LOW) & (gain_down.current_state == LOW) )
 			this->_target = 1;
+			digitalWrite(gain_report._pin, LOW);
 		
 		this->_dvalue = this->_target - this->_initial_value;
 		this->_full_dt = fabs(this->_dvalue) * GAIN_RAMP_MS;
