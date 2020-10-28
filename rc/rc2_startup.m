@@ -12,7 +12,7 @@
 
 
 % load configuration information
-config = load_config();
+config = config_default();
 
 % main controller object
 ctl = Controller(config);

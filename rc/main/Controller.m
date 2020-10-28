@@ -52,7 +52,7 @@ classdef Controller < handle
         %   Main class for interfacing with the rollercoaster setup.
         %       config - configuration structure containing necessary
         %           parameters for setup - usually this is created with
-        %           load_config, but of course you can define your own
+        %           config_default, but of course you can define your own
         %           config structure
         %   For information on each property see the related class.
         
