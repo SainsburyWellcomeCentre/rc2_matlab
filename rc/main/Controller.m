@@ -33,17 +33,6 @@ classdef Controller < handle
         acquiring_preview = false;
     end
     
-    properties (Hidden = true)
-        
-        % These should be private but flexibility is required ATM
-        %  These offset errors could be stored in multiple places (e.g. with
-        %  treadmill class, or with the AO class, but it was thought best to keep those
-        %  classes generic and pass offsets as from the controller.. which
-        %  is more setup specific?)
-        %ao_error_solenoid_on
-        %ao_error_solenoid_off
-    end
-    
     
     
     methods
@@ -68,18 +57,17 @@ classdef Controller < handle
             obj.sound = Sound();
             obj.position = Position(config);
             obj.saver = Saver(obj, config);
+            obj.data_transform = DataTransform(config);
+            obj.offsets = Offsets(obj, config);
+            
+            % Triggers
             obj.zero_teensy = ZeroTeensy(obj.ni, config);
             obj.disable_teensy = DisableTeensy(obj.ni, config);
             obj.trigger_input = TriggerInput(obj.ni, config);
-            obj.data_transform = DataTransform(config);
             obj.vis_stim = VisStim(obj.ni, config);
             obj.start_soloist = StartSoloist(obj.ni, config);
-            obj.offsets = Offsets(obj, config);
             obj.teensy_gain = TeensyGain(obj.ni, config);
             
-            % Offset errors along the Teensy-NIDAQ-AI, to NIDAQ-AO to Multiplexer to Soloist
-            %obj.ao_error_solenoid_on = config.nidaq.ao.offset_error_solenoid_on;
-            %obj.ao_error_solenoid_off = config.nidaq.ao.offset_error_solenoid_off;
         end
         
         
