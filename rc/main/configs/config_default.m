@@ -217,7 +217,9 @@ config.visual_stimulus.init_state       = 1;
 % name of digital input channel to use
 config.trigger_input.init_source        = 'from_soloist'; % 'from_soloist' or 'from_teensy'
 
-
+% for triggers to the teensy gain
+config.teensy_gain_up.do_name           = 'teensy_gain_up';
+config.teensy_gain_down.do_name         = 'teensy_gain_down';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plotting configuration %
