@@ -127,7 +127,7 @@ Velocity::loop(float enc_velocity, float min_v, float offset, float gain) {
     }
     
     // Multiply by gain factor
-    this->_new_velocity = this->new_velocity * gain;
+    this->_new_velocity = this->_new_velocity * gain;
     
     // if the new velocity is not equal to the velocity on the last loop
     if (this->_new_velocity != this->_previous_velocity) {

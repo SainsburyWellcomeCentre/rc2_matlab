@@ -15,15 +15,12 @@
 #include "velocity.h"
 #include "ao.h"
 #include "gain_control.h"
-#include "disable.h"
 
 
 class Encoder;
 Velocity vel = Velocity();
 AnalogOut ao = AnalogOut();
 GainControl gain = GainControl();
-Disable disable = Disable();
-
 int protocol = FORWARD_ONLY;
 float dac_offset_volts = 0.5;
 float min_volts = 0;
@@ -36,7 +33,6 @@ setup() {
 	ao.setup(dac_offset_volts);
 	vel.setup();
 	gain.setup();
-	disable.setup();
 	
 }
 
@@ -46,7 +42,7 @@ loop() {
 
 	// Determine whether to update the voltage.
 	if (digitalRead(DISABLE_PIN) == HIGH) {
-		ao.loop(true, this->dac_offset_volts);
+		ao.loop(true, dac_offset_volts);
 		return;
 	}
 
@@ -63,10 +59,10 @@ loop() {
 	interrupts();
 
 	// Check state of the gain
-	gain.loop()
+	gain.loop();
 
 	// Compute the velocity as a voltage
-	vel.loop(encoder_velocity, this->min_volts, this->dac_offset_volts, gain.value);
+	vel.loop(encoder_velocity, min_volts, dac_offset_volts, gain.value);
 
 	// Do we need to update the voltage?
 	update = vel.update;
