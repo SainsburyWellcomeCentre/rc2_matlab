@@ -20,6 +20,7 @@ classdef Controller < handle
         vis_stim
         start_soloist
         offsets
+        teensy_gain
         
         data
         tdata
@@ -74,6 +75,7 @@ classdef Controller < handle
             obj.vis_stim = VisStim(obj.ni, config);
             obj.start_soloist = StartSoloist(obj.ni, config);
             obj.offsets = Offsets(obj, config);
+            obj.teensy_gain = TeensyGain(obj.ni, config);
             
             % Offset errors along the Teensy-NIDAQ-AI, to NIDAQ-AO to Multiplexer to Soloist
             %obj.ao_error_solenoid_on = config.nidaq.ao.offset_error_solenoid_on;
