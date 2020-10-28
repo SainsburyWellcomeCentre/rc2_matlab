@@ -41,7 +41,7 @@
 // GAIN SETTINGS
 #define GAIN_UP_PIN 			6		// Reuse ZERO_POSITION_PIN
 #define GAIN_DOWN_PIN 			14		// Reuse REWARD_PIN
-#define GAIN_UP_VAL 			2		// Gain to apply on gain up
+#define GAIN_UP_VAL 			3		// Gain to apply on gain up
 #define GAIN_DOWN_VAL 			0		// Gain to apply on gain down
 #define GAIN_RAMP_MS 			100		// Duration of gain ramp (applied at start and end)
 
