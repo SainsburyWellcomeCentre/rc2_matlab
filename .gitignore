@@ -8,3 +8,5 @@
 *.bcx
 *.err
 **/easyplot.m
+*.bas
+*.bcm
