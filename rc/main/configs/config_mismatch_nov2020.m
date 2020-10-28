@@ -79,7 +79,7 @@ if config.use_calibration_file
 else
     % default to use if no calibration file
     config.nidaq.ai.offset                  = [0.5, 0, 0, 0, 0, 0, 0, 0, 0.5]; % 
-    config.nidaq.ai.scale                   = [40, 40, -40, 1, 1, 1, 1, 1, 40s];
+    config.nidaq.ai.scale                   = [40, 40, -40, 1, 1, 1, 1, 1, 40];
 end
 
 
