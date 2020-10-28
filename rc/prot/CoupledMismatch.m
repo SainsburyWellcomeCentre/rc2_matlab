@@ -342,6 +342,8 @@ classdef CoupledMismatch < handle
             obj.ctl.block_treadmill()
             obj.ctl.vis_stim.off();
             obj.ctl.position.stop();
+            obj.ctl.teensy_gain.gain_up_off();
+            obj.ctl.teensy_gain.gain_down_off();
             
             if obj.handle_acquisition
                 obj.ctl.soloist.stop();
