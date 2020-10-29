@@ -2,7 +2,7 @@ function seq = mismatch_nov2020_protocol(ctl)
 
 fname = 'mismatch_nov2020_protocol_sequence.mat';
 
-load(fname, 'order', 'config', 'switch_pos');
+load(fname, 'prot', 'order', 'config', 'switch_pos');
 
 % setup the protocol sequence
 seq = ProtocolSequence(ctl);
