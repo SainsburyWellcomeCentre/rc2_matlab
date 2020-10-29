@@ -104,7 +104,10 @@ classdef rc2guiView < handle
         
         
         function script_updated(obj)
-            set(obj.handles.edit_script, 'string', obj.controller.current_script);
+            [pathname, fname] = fileparts(obj.controller.current_script);
+            [pathname, path1] = fileparts(pathname);
+            [~, path2] = fileparts(pathname);
+            set(obj.handles.edit_script, 'string', fullfile(path2, path1, fname));
         end
         
         
