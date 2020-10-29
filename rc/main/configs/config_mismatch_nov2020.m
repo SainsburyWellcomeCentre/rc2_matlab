@@ -228,3 +228,12 @@ config.teensy_gain_down.do_name         = 'teensy_gain_down';
 
 % get plotting configuration from a separate file
 config.plotting                         = plotting_config();
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Checks on config structure %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+assert(length(config.nidaq.ai.channel_names) == length(config.nidaq.ai.channel_id));
+assert(length(config.nidaq.ai.channel_names) == length(config.nidaq.ai.offset));
+assert(length(config.nidaq.ai.channel_names) == length(config.nidaq.ai.scale));

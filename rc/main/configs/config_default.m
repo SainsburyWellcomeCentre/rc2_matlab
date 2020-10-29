@@ -6,7 +6,7 @@ VariableDefault('use_calibration', true);
 
 % whether to use calibration file and its location
 config.use_calibration_file             = use_calibration;
-config.calibration_file                 = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\rc\main\calibration\calibration_20201029.mat';
+config.calibration_file                 = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\rc\main\calibration\calibration_20200707_b.mat';
 
 
 %%%%%%%%%%%%
@@ -227,3 +227,13 @@ config.teensy_gain_down.do_name         = 'teensy_gain_down';
 
 % get plotting configuration from a separate file
 config.plotting                         = plotting_config();
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Checks on config structure %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+assert(length(config.nidaq.ai.channel_names) == length(config.nidaq.ai.channel_id));
+assert(length(config.nidaq.ai.channel_names) == length(config.nidaq.ai.offset));
+assert(length(config.nidaq.ai.channel_names) == length(config.nidaq.ai.scale));
