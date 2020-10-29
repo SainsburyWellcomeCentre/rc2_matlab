@@ -10,15 +10,8 @@
 %       gui - main object for interfacing with the gui. unlikely there will
 %           be much use for using it other than debugging
 
-
-% select config file
-this_dir = fileparts(mfilename('fullpath'));
-fname = uigetfile(fullfile(this_dir, 'main', 'configs', '*.m'), 'Load configuration file...');
-if fname == 0; fprintf('No config selected\n'); return; end
-
-% load config file
-fn = str2func(strrep(fname, '.m', ''));
-config = fn();
+% setup configuration
+config = load_config();
 
 % main controller object
 ctl = Controller(config);
