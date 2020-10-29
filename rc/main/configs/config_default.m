@@ -1,4 +1,4 @@
-function config = load_config(use_calibration)
+function config = config_default(use_calibration)
 
 % by default load a calibration file
 VariableDefault('use_calibration', true);
@@ -6,7 +6,7 @@ VariableDefault('use_calibration', true);
 
 % whether to use calibration file and its location
 config.use_calibration_file             = use_calibration;
-config.calibration_file                 = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\rc\main\calibration\calibration_20200707_b.mat';
+config.calibration_file                 = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\rc\main\calibration\calibration_20201029.mat';
 
 
 %%%%%%%%%%%%

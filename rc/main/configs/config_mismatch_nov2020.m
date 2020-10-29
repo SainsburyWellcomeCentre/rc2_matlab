@@ -6,7 +6,7 @@ VariableDefault('use_calibration', true);
 
 % whether to use calibration file and its location
 config.use_calibration_file             = use_calibration;
-config.calibration_file                 = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\rc\main\calibration\calibration_20200707_b.mat';
+config.calibration_file                 = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\rc\main\calibration\calibration_20201029.mat';
 
 
 %%%%%%%%%%%%
@@ -59,9 +59,9 @@ config.nidaq.log_every                  = 1000;
 % device name
 config.nidaq.ai.dev                     = 'Dev2';
 % nominal channel names (for reference)
-config.nidaq.ai.channel_names           = {'gain_teensy', 'filtered_teensy', 'stage', 'lick', 'pump', 'solenoid', 'photodiode', 'minidaq_ao0', 'multiplexer_output'};
+config.nidaq.ai.channel_names           = {'gain_teensy', 'filtered_teensy', 'stage', 'lick', 'pump', 'solenoid', 'photodiode', 'minidaq_ao0', 'multiplexer_output', 'teensy_gain'};
 % 
-config.nidaq.ai.channel_id              = [0:7, 16];
+config.nidaq.ai.channel_id              = [0:7, 16:17];
 
 
 % offsets and scales to apply to the 
@@ -78,8 +78,8 @@ if config.use_calibration_file
     config.nidaq.ai.scale                   = calibration.scale;
 else
     % default to use if no calibration file
-    config.nidaq.ai.offset                  = [0.5, 0, 0, 0, 0, 0, 0, 0, 0.5]; % 
-    config.nidaq.ai.scale                   = [40, 40, -40, 1, 1, 1, 1, 1, 40];
+    config.nidaq.ai.offset                  = [0.5, 0, 0, 0, 0, 0, 0, 0, 0.5, 0]; % 
+    config.nidaq.ai.scale                   = [40, 40, -40, 1, 1, 1, 1, 1, 40, 1];
 end
 
 
