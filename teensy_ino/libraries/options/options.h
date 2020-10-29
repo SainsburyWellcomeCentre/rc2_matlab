@@ -44,6 +44,6 @@
 #define GAIN_REPORT_PIN			2		// Digital output pin to report when gain (either up or down) is changed
 #define GAIN_UP_VAL 			3		// Gain to apply on gain up
 #define GAIN_DOWN_VAL 			0		// Gain to apply on gain down
-#define MS_PER_UNIT_GAIN 		100		// Duration of gain ramp PER UNIT GAIN CHANGE (applied at start and end)
+#define MS_PER_UNIT_GAIN 		50		// Duration of gain ramp PER UNIT GAIN CHANGE (applied at start and end)
 
 #endif /* OPTIONS_H */
