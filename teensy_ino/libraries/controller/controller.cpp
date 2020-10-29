@@ -31,6 +31,7 @@ Controller::setup() {
     vel.setup();
     trig_in.setup(ZERO_POSITION_PIN);
     trig_out.setup(REWARD_PIN);
+    pinMode(DISABLE_PIN, INPUT);
 }
 
 

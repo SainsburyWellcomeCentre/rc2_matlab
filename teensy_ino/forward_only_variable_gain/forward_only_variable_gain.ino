@@ -33,7 +33,7 @@ setup() {
 	ao.setup(dac_offset_volts);
 	vel.setup();
 	gain.setup();
-	
+	pinMode(DISABLE_PIN, INPUT);
 }
 
 
