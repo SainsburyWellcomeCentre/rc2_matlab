@@ -34,7 +34,7 @@ config.stage.forward_limit = reward_position;
 % the switch position will be half-way down the track give or take
 % 'switch_jitter'
 switch_pos = (config.stage.start_pos + config.stage.forward_limit)/2;
-switch_pos = switch_pos - switch_jitter + 2*switch_jitter * rand(length(order), 1);
+switch_pos = switch_pos - switch_jitter * rand(length(order), 1);
 
 %% save
 save(fname, 'order', 'prot', 'config', 'switch_pos');
