@@ -2,13 +2,11 @@
 #include "Arduino.h"
 #include "gain_control.h"
 #include "trigger_input.h"
-#include "trigger_output.h"
 #include "options.h"
 
 
 TriggerInput gain_up = TriggerInput();
 TriggerInput gain_down = TriggerInput();
-TriggerOutput gain_report = TriggerOutput();
 
 
 GainControl::GainControl() {
@@ -20,7 +18,7 @@ GainControl::setup() {
 	
 	gain_up.setup(GAIN_UP_PIN);
 	gain_down.setup(GAIN_DOWN_PIN);
-	gain_report.setup(GAIN_REPORT_PIN);
+	pinMode(GAIN_REPORT_PIN, OUTPUT);
 	
 	this->_target = 1;
 	this->value = this->_target;
@@ -43,18 +41,25 @@ GainControl::loop() {
 		this->_time_started = millis();
 		this->_initial_value = this->value;
 		
-		if ( (gain_up.current_state == HIGH) & (gain_down.current_state == HIGH) )
+		if ( (gain_up.current_state == HIGH) & (gain_down.current_state == HIGH) ) {
 			this->_target = 1;
-		else if ( (gain_up.current_state == HIGH) & (gain_down.current_state == LOW) )
+			digitalWrite(GAIN_REPORT_PIN, HIGH);
+		}
+		else if ( (gain_up.current_state == HIGH) & (gain_down.current_state == LOW) ) {
 			this->_target = GAIN_UP_VAL;
-		else if ( (gain_up.current_state == LOW) & (gain_down.current_state == HIGH) )
+			digitalWrite(GAIN_REPORT_PIN, HIGH);
+		}
+		else if ( (gain_up.current_state == LOW) & (gain_down.current_state == HIGH) ) {
 			this->_target = GAIN_DOWN_VAL;
-		else if ( (gain_up.current_state == LOW) & (gain_down.current_state == LOW) )
+			digitalWrite(GAIN_REPORT_PIN, HIGH);
+		}
+		else if ( (gain_up.current_state == LOW) & (gain_down.current_state == LOW) ) {	
 			this->_target = 1;
-			digitalWrite(gain_report._pin, LOW);
+			digitalWrite(GAIN_REPORT_PIN, LOW);
+		}
 		
 		this->_dvalue = this->_target - this->_initial_value;
-		this->_full_dt = fabs(this->_dvalue) * GAIN_RAMP_MS;
+		this->_full_dt = fabs(this->_dvalue) * MS_PER_UNIT_GAIN;
 	}
 	
 	
