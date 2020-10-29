@@ -20,9 +20,10 @@ prot.m_mismatch_down    = 3;
 prot.m_mismatch_up      = 4;
 
 %% protocol order
-order = [];
-for i = 1 : n_trials
-    order(:, i) = randi(4);
+% first batch has specified order
+order = [2; 1; 3; 4];
+for i = 2 : n_trials
+    order(:, i) = randperm(4);
 end
 order = order(:);
 
