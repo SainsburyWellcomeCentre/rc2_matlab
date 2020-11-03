@@ -27,8 +27,8 @@ classdef Position < handle
             obj.dt = 1/config.nidaq.rate;
             
             % try to use the same deadband as the soloist
-            filtered_idx = strcmp(config.nidaq.ai.channel_names, 'filtered_teensy');
-            obj.deadband = config.soloist.deadband * config.nidaq.ai.scale(filtered_idx);
+            filtered_idx = ismember(config.nidaq.ai.channel_names, {'filtered_teensy', 'gain_teensy'});
+            obj.deadband = config.soloist.deadband * config.nidaq.ai.scale(filtered_idx);  % TODO: Move to config
         end
         
         
