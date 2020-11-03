@@ -8,6 +8,8 @@ load(fname, 'prot', 'order', 'config', 'switch_pos');
 seq = ProtocolSequence(ctl);
 seq.randomize_reward = true;
 
+mismatch_duration = 0.2;
+
 % it will loop n_loops number of times
 for i = 1 : length(order)
     
@@ -16,7 +18,7 @@ for i = 1 : length(order)
         mt_down = CoupledMismatch(ctl, config);
         mt_down.switch_pos = switch_pos(i);
         mt_down.gain_direction = 'down';
-        mt_down.mismatch_duration = 1;
+        mt_down.mismatch_duration = mismatch_duration;
         seq.add(mt_down);
         
     elseif order(i) == prot.mt_mismatch_up
@@ -24,7 +26,7 @@ for i = 1 : length(order)
         mt_up = CoupledMismatch(ctl, config);
         mt_up.switch_pos = switch_pos(i);
         mt_up.gain_direction = 'up';
-        mt_up.mismatch_duration = 1;
+        mt_up.mismatch_duration = mismatch_duration;
         seq.add(mt_up);
         
     elseif order(i) == prot.m_mismatch_down
@@ -32,7 +34,7 @@ for i = 1 : length(order)
         m_down = EncoderOnlyMismatch(ctl, config);
         m_down.switch_pos = switch_pos(i);
         m_down.gain_direction = 'down';
-        m_down.mismatch_duration = 1;
+        m_down.mismatch_duration = mismatch_duration;
         seq.add(m_down);
         
     elseif order(i) == prot.m_mismatch_up
@@ -40,7 +42,7 @@ for i = 1 : length(order)
         m_up = EncoderOnlyMismatch(ctl, config);
         m_up.switch_pos = switch_pos(i);
         m_up.gain_direction = 'up';
-        m_up.mismatch_duration = 1;
+        m_up.mismatch_duration = mismatch_duration;
         seq.add(m_up);
         
     end
