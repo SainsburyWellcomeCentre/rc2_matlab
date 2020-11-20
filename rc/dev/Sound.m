@@ -24,7 +24,10 @@ classdef Sound < handle
         
         function obj = Sound()
             
+            obj.enabled = false;
+            return
             try
+                
                 % load a hard-coded audio file
                 %   this could become an option, but it is unlikely to change
                 %   if it doesn't exist, this will fail and the sound will
