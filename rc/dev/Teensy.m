@@ -6,12 +6,20 @@ classdef Teensy < handle
         current_script
     end
     
+    properties (SetAccess = private)
+        
+        enabled
+    end
     
     methods
         
         function obj = Teensy(config, force)
             
             VariableDefault('force', true);
+            
+            obj.enabled = config.teensy.enabled;
+            
+            if ~obj.enabled; return; end
             
             obj.exe = config.teensy.exe;
             obj.dir = config.teensy.dir;
@@ -23,6 +31,9 @@ classdef Teensy < handle
         function load(obj, script, force)
             % script = 'forward_only' or 'forward_and_backward'
             %   'calibration_soloist'
+            
+            if ~obj.enabled; return; end
+            
             VariableDefault('force', false);
             
             if strcmp(obj.current_script, script) && ~force

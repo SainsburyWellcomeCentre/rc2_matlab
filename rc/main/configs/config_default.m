@@ -27,6 +27,7 @@ config.saving.git_dir                   = fullfile(config.saving.main_dir, '.git
 %%%%%%%%%%%%%%%%%%%%%%
 
 % default stage positions
+config.stage.enabled                    = true;
 config.stage.start_pos                  = 1450;
 config.stage.back_limit                 = 1470;
 config.stage.forward_limit              = 250;
@@ -144,6 +145,7 @@ config.nidaq.di.channel_id      = {'port1/line0', 'port1/line1'};
 % TEENSY parameters %%
 %%%%%%%%%%%%%%%%%%%%%%
 
+config.teensy.enabled           = true;
 config.teensy.exe               = 'C:\Program Files (x86)\Arduino\arduino_debug.exe';
 config.teensy.dir               = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\teensy_ino';
 config.teensy.start_script      = 'forward_only';

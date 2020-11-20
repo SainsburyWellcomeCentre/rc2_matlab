@@ -8,6 +8,7 @@ classdef Soloist < handle
     
     properties (SetAccess = private)
         
+        enabled
         max_limits
         homed = false;
         offset_limits = [-1000, 1000];
@@ -36,7 +37,15 @@ classdef Soloist < handle
         %   
         %       config - configuration structure
         
+            % is stage enabled?
+            obj.enabled = config.stage.enabled;
         
+            % if stage not enabled, set homed to true
+            if ~obj.enabled
+                obj.homed = true;
+                return;
+            end
+            
             % directory in which the soloist commands are stored
             obj.dir = config.soloist.dir;
             
@@ -84,6 +93,8 @@ classdef Soloist < handle
         %%ABORT(obj)
         %   aborts all tasks and resets all parameters on the soloist
         
+            if ~obj.enabled; return; end
+        
             % run the abort command (this is in SoloistAbortProc)
             obj.h_abort.run('abort');
             
@@ -101,6 +112,8 @@ classdef Soloist < handle
         %   disables the axis, resets the stage and stops all the
         %   processes.
             
+            if ~obj.enabled; return; end
+        
             % make sure PSO is reset
             obj.h_abort.run('reset_pso');
             
@@ -117,6 +130,8 @@ classdef Soloist < handle
         
         function reset_pso(obj)
             
+            if ~obj.enabled; return; end
+            
             % run the abort command (this is in SoloistAbortProc)
             obj.h_abort.run('reset_pso');
         end
@@ -125,6 +140,8 @@ classdef Soloist < handle
         function proc = communicate(obj)
         %%COMMUNICATE(obj)
         %   communicates and resets the connection
+        
+            if ~obj.enabled; return; end
         
             cmd = obj.full_command('communicate');
             disp(cmd)
@@ -144,6 +161,8 @@ classdef Soloist < handle
         %   runs the HOME command for the soloist (see Soloist
         %   documentation), resets any parameters on the soloist to
         %   defaults and disables the stage.
+        
+            if ~obj.enabled; return; end
         
             cmd = obj.full_command('home');
             disp(cmd)
@@ -165,6 +184,8 @@ classdef Soloist < handle
         %   moves the soloist to a fixed "reset" position, resets any
         %   parameters on the soloist to defaults and disables the stage.
         
+            if ~obj.enabled; return; end
+            
             cmd = obj.full_command('reset');
             disp(cmd)
             
@@ -191,7 +212,8 @@ classdef Soloist < handle
         %                   between [10 and 500] (mm/s)
         %   end_enabled must be logical
         
-            
+            if ~obj.enabled; return; end
+        
             % set defaults
             VariableDefault('speed', obj.default_speed);
             VariableDefault('end_enabled', false);
@@ -252,6 +274,8 @@ classdef Soloist < handle
         %
         %   'no_gear', if true run without gear mode
         
+            if ~obj.enabled; return; end
+            
             VariableDefault('no_gear', false);
         
         
@@ -353,6 +377,8 @@ classdef Soloist < handle
         %       'wait_for_trigger' is true unless specified (determines
         %       whether the soloist waits for a trigger to go low
         
+            if ~obj.enabled; return; end
+        
             VariableDefault('wait_for_trigger', true);
         
             % check 'back_pos'
@@ -401,6 +427,7 @@ classdef Soloist < handle
         %   
         %   Puts the 
         
+            if ~obj.enabled; return; end
         
             % check 'back_pos'
             if ~isnumeric(back_pos) || isinf(back_pos) || isnan(back_pos)
@@ -447,6 +474,7 @@ classdef Soloist < handle
         %%proc = MISMATCH_RAMP_UP_UNTIL(obj, back_pos, forward_pos)
         %   
         
+            if ~obj.enabled; return; end
         
             % check 'back_pos'
             if ~isnumeric(back_pos) || isinf(back_pos) || isnan(back_pos)
@@ -492,6 +520,8 @@ classdef Soloist < handle
         
         function set_offset(obj, val)
             
+            if ~obj.enabled; return; end
+            
             % check that the value is in allowable range
             if ~isnumeric(val) || isinf(val) || isnan(val)
                 fprintf('%s: %s ''val'' must be numeric\n', class(obj), 'set_offset');
@@ -509,6 +539,8 @@ classdef Soloist < handle
         
         function set_gear_scale(obj, val)
             
+            if ~obj.enabled; return; end
+            
             % check that the value is in allowable range
             if ~isnumeric(val) || isinf(val) || isnan(val)
                 fprintf('%s: %s ''val'' must be numeric\n', class(obj), 'set_gear_scale');
@@ -520,6 +552,8 @@ classdef Soloist < handle
         
         
         function set_deadband(obj, val)
+            
+            if ~obj.enabled; return; end
             
             % check that the value is in allowable range
             if ~isnumeric(val) || isinf(val) || isnan(val)
