@@ -1,6 +1,6 @@
-function config = config_measure_encoder_delay(use_calibration)
-% alternative config file for a one off measurement of delay between
-% encoder A and B and stage velocity.
+function config = config_two_monitor_delta(use_calibration)
+% alternative config file for a one off measurement of different update of
+% two monitors
 
 % by default load a calibration file
 VariableDefault('use_calibration', true);
@@ -8,7 +8,7 @@ VariableDefault('use_calibration', true);
 
 % whether to use calibration file and its location
 config.use_calibration_file             = use_calibration;
-config.calibration_file                 = 'calibration_20210324_measure_encoder_delay.mat';
+config.calibration_file                 = 'calibration_20210419_two_monitor_delta.mat';
 
 
 %%%%%%%%%%%%
@@ -21,7 +21,7 @@ config.saving.save_to                   = 'C:\Users\Mateo\Desktop\DefaultData';
 % automatically gets these file locations and directories
 config.saving.config_file               = mfilename('fullpath');        % current file path
 config.saving.main_dir                  = fileparts(fileparts(fileparts(config.saving.config_file))); % assume three levels deep
-config.saving.git_dir                   = fullfile(config.saving.main_dir, '.git');  % git directory
+config.saving.git_dir                   = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\.git';  % git directory
 
 
 %%%%%%%%%%%%%%%%%%%%%%
@@ -61,7 +61,7 @@ config.nidaq.log_every                  = 1000;
 % device name
 config.nidaq.ai.dev                     = 'Dev2';
 % nominal channel names (for reference)
-config.nidaq.ai.channel_names           = {'filtered_teensy', 'encoderA', 'stage', 'lick', 'pump', 'encoderB', 'photodiode', 'minidaq_ao0', 'multiplexer_output'};
+config.nidaq.ai.channel_names           = {'filtered_teensy', 'photodiode_2', 'stage', 'lick', 'pump', 'solenoid', 'photodiode', 'minidaq_ao0', 'multiplexer_output'};
 % 
 config.nidaq.ai.channel_id              = [0:7, 16];
 
@@ -228,7 +228,7 @@ config.teensy_gain_down.do_name         = 'teensy_gain_down';
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % get plotting configuration from a separate file
-config.plotting                         = plotting_config_measure_encoder_delay();
+config.plotting                         = plotting_config_two_monitor_delta();
 
 
 
