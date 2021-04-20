@@ -52,10 +52,16 @@ classdef AnalogOutput < handle
             % Stop any running tasks first
             obj.stop();
             
+            % assert that idle_offset is correct size
+            assert(length(obj.idle_offset) == length(obj.chan));
+            
             % write initial voltage to AO
             obj.task.outputSingleScan(obj.idle_offset);
             
-            fprintf('Voltage output on NI: %.7f\n', obj.idle_offset);
+            fprintf('Voltage output on NI:\n');
+            for i = 1 : length(obj.idle_offset)
+                fprintf('Channel ID %s: %.7fV\n', obj.channel_ids{i}, obj.idle_offset(i));
+            end
         end
         
         
@@ -64,6 +70,9 @@ classdef AnalogOutput < handle
             % to avoid DANGER, clip voltage at limits!!
             data(data > obj.max_voltage) = obj.max_voltage;
             data(data < -obj.max_voltage) = -obj.max_voltage;
+            
+            % assert that the data is correct size
+            assert(size(data, 2) == length(obj.chan));
             
             % Queue the output data
             obj.task.queueOutputData(data);

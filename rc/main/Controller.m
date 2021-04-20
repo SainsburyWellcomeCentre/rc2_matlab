@@ -21,6 +21,7 @@ classdef Controller < handle
         start_soloist
         offsets
         teensy_gain
+        delayed_velocity
         
         data
         tdata
@@ -59,6 +60,7 @@ classdef Controller < handle
             obj.saver = Saver(obj, config);
             obj.data_transform = DataTransform(config);
             obj.offsets = Offsets(obj, config);
+            obj.delayed_velocity = DelayedVelocity(obj.ni, config);
             
             % Triggers
             obj.zero_teensy = ZeroTeensy(obj.ni, config);
@@ -243,10 +245,15 @@ classdef Controller < handle
         
         
         function ramp_velocity(obj)
+            
             % create a 1s ramp to 10mm/s
             rate = obj.ni.ao.task.Rate;
             ramp = obj.soloist.v_per_cm_per_s * (0:rate-1) / rate;
-            waveform = obj.ni.ao.idle_offset + ramp';
+            
+            % use the first idle_offset value. we are assuming the ONLY use
+            % case for other analog channels is for a delayed copy of the
+            % velocity waveform...
+            waveform = obj.ni.ao.idle_offset(1) + ramp';
             obj.load_velocity_waveform(waveform);
             pause(0.1);
             obj.play_velocity_waveform();
@@ -255,8 +262,11 @@ classdef Controller < handle
         
         function load_velocity_waveform(obj, waveform)
 
-            % write a waveform (in V) and an error to apply to that
-            % waveform
+            if obj.delayed_velocity.enabled
+                waveform = obj.delayed_velocity.create_waveform(waveform);
+            end
+            
+            % write a waveform (in V)
             obj.ni.ao_write(waveform);
         end
         
@@ -342,7 +352,7 @@ classdef Controller < handle
             offset = obj.offsets.get_ni_ao_offset(solenoid_state, gear_mode);
             
             % set the idle voltage on the NI
-            obj.ni.ao.idle_offset = offset;
+            obj.ni.ao.idle_offset = repmat(offset, 1, length(obj.ni.ao.chan));
             
             % apply the voltage
             obj.ni.ao.set_to_idle();
