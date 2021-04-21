@@ -19,7 +19,7 @@ config.saving.save_to                   = 'C:\Users\Mateo\Desktop\DefaultData';
 % automatically gets these file locations and directories
 config.saving.config_file               = mfilename('fullpath');        % current file path
 config.saving.main_dir                  = fileparts(fileparts(fileparts(config.saving.config_file))); % assume three levels deep
-config.saving.git_dir                   = fullfile(config.saving.main_dir, '.git');  % git directory
+config.saving.git_dir                   = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\.git';  % git directory
 
 
 %%%%%%%%%%%%%%%%%%%%%%
