@@ -3,7 +3,7 @@ classdef DelayedVelocity < handle
     properties
         
         enabled
-        delay_ms
+        delay_ms = 0
         ni
     end
     
@@ -11,6 +11,12 @@ classdef DelayedVelocity < handle
     methods
         
         function obj = DelayedVelocity(ni, config)
+            
+            if ~isfield(config, 'include_delayed_copy')
+                obj.enabled = false;
+                obj.ni = ni;
+                return
+            end
             
             obj.enabled = config.include_delayed_copy;
             obj.delay_ms = config.delay_ms;
