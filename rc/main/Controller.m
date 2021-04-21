@@ -407,6 +407,12 @@ classdef Controller < handle
                 
                     'nidaq.di.channel_names',   strjoin(obj.ni.di.channel_names, ',');
                     'nidaq.di.channel_ids',     strjoin(obj.ni.di.channel_ids, ',')};
+                
+                % add information about delay
+                if obj.delayed_velocity.enabled
+                    cfg{end+1, 1} = 'delay_ms';
+                    cfg{end, 2} = sprintf('%i', obj.delayed_velocity.delay_ms);
+                end
                     
         end
     end
