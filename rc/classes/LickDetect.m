@@ -13,10 +13,13 @@ classdef LickDetect < handle
         trigger_channel
         trigger_channel_threshold = 2.5  % expect TTL by default
         lick_channel
+        n_licks_detected = 0
+        lick_times = nan(100000, 1);
     end
     
     properties
         
+        detection_window_is_triggered
         lick_threshold
     end
     
@@ -69,8 +72,7 @@ classdef LickDetect < handle
         
             obj.enabled = config.lick_detect.enable;
             
-            if ~obj.enabled, return
-            end
+            if ~obj.enabled, return, end
             
             % if using lick detect, setup parameters
             obj.ctl = ctl;
@@ -81,6 +83,7 @@ classdef LickDetect < handle
             obj.n_lick_windows = config.lick_detect.n_lick_windows;
             obj.trigger_channel = config.lick_detect.trigger_channel;
             obj.lick_channel = config.lick_detect.lick_channel;
+            obj.detection_window_is_triggered = config.lick_detect.detection_window_is_triggered;
             
             % optional fields
             if isfield(config.lick_detect, 'trigger_channel_threshold')
@@ -100,6 +103,13 @@ classdef LickDetect < handle
         function val = get.n_samples_per_window(obj)
             
             val = floor((obj.window_size_ms/1e3) * obj.ctl.ni_ai_rate);
+        end
+        
+        
+        
+        function reset_lick_counter(obj)
+            obj.n_licks_detected    = 0;
+            obj.lick_times          = nan(100000, 1);
         end
         
         
@@ -162,31 +172,51 @@ classdef LickDetect < handle
             if ~obj.enabled, return
             end
             
-            lick_detected = false;
-            
-            % look for rise in trigger channel
-            if ~obj.running  % detection is not running
+            if obj.detection_window_is_triggered
                 
-                [trigger_detected, idx] = obj.detect_trigger();
+                lick_detected = false;
                 
-                if trigger_detected
-                    obj.start_lick_detection();
-                    lick_data = obj.ctl.data(idx:end, obj.lick_channel);
+                % look for rise in trigger channel
+                if ~obj.running  % detection is not running
+                    
+                    [trigger_detected, idx] = obj.detect_trigger();
+                    
+                    if trigger_detected
+                        obj.start_lick_detection();
+                        lick_data = obj.ctl.data(idx:end, obj.lick_channel);
+                        lick_detected = obj.detect_lick(lick_data);
+                    end
+                    
+                else  % detection is running
+                    lick_data = obj.ctl.data(:, obj.lick_channel);
                     lick_detected = obj.detect_lick(lick_data);
                 end
                 
-            else  % detection is running
+            else
+                
+                % if lick detection window not externally triggered, just
+                % keep looking for licks
                 lick_data = obj.ctl.data(:, obj.lick_channel);
                 lick_detected = obj.detect_lick(lick_data);
             end
             
+            
             if lick_detected
+                
                 fprintf('lick detected!!\n');
+                
+                % store the time of the lick
+                obj.n_licks_detected = obj.n_licks_detected + 1;
+                obj.lick_times(obj.n_licks_detected) = toc;
+                
+                % give the reward and reset the window
                 obj.ctl.give_reward();
                 obj.reset();
             end
             
+            
             if obj.current_window_sample_idx > obj.total_window_samples
+                % if beyond the lick window reset
                 obj.reset();
             end
         end

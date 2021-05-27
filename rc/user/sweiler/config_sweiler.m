@@ -34,7 +34,7 @@ config.nidaq.log_every                  = 1000;  % log data every number of samp
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 config.nidaq.ai.enable                  = true;
 config.nidaq.ai.dev                     = 'Dev2';  % device name
-config.nidaq.ai.channel_names           = {'filtered_teensy', 'lick', 'pump', 'minidaq', 'photodiode_1', 'photodiode_2'};  % nominal channel names (for reference)
+config.nidaq.ai.channel_names           = {'filtered_teensy', 'lick', 'pump', 'visual_stimulus_computer_minidaq', 'photodiode_1', 'photodiode_2'};  % nominal channel names (for reference)
 config.nidaq.ai.channel_id              = 0:5;
 config.nidaq.ai.offset                  = [0.5, 0, 0, 0, 0, 0];
 config.nidaq.ai.scale                   = [40, 1, 1, 1, 1, 1];
@@ -74,7 +74,7 @@ config.nidaq.co.clock_src               = sprintf('/%s/ai/SampleClock', config.n
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 config.nidaq.do.enable                  = true;
 config.nidaq.do.dev                     = 'Dev2';
-config.nidaq.do.channel_names           = {'pump', 'visual_stimulus'};
+config.nidaq.do.channel_names           = {'pump', 'visual_stimulus_start_trigger'};
 config.nidaq.do.channel_id              = {'port0/line0', 'port0/line1'};
 config.nidaq.do.clock_src               = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
 
@@ -117,7 +117,7 @@ config.start_soloist.enable             = false;
 config.start_soloist.do_name            = ''; % name of digital output channel to use
 
 config.visual_stimulus.enable           = true;
-config.visual_stimulus.do_name          = 'visual_stimulus'; % name of digital output channel to use
+config.visual_stimulus.do_name          = 'visual_stimulus_start_trigger'; % name of digital output channel to use
 config.visual_stimulus.init_state       = 0;
 
 config.trigger_input.enable             = false;
@@ -169,10 +169,11 @@ config.reward.duration                  = 50;
 % if enabled reward will be given if a lick is detected
 config.lick_detect.enabled              = true;
 config.lick_detect.n_windows            = 1;
-config.lick_detect.window_size_ms       = 6000; % size of each window to determine licking
+config.lick_detect.window_size_ms       = 8000; % size of each window to determine licking
 config.lick_detect.n_lick_windows       = 1;
-config.lick_detect.trigger_channel      = 3;   % index of channel in "config.nidaq.ai.channel_names" not analog input channel ID
+config.lick_detect.trigger_channel      = 4;   % index of channel in "config.nidaq.ai.channel_names" not analog input channel ID
 config.lick_detect.lick_channel         = 2;   % index of channel in "config.nidaq.ai.channel_names" not analog input channel ID
+config.lick_detect.detection_window_is_triggered = false;
 
 
 
