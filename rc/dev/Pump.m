@@ -2,6 +2,7 @@ classdef Pump < handle
     
     properties (SetAccess = private)
         
+        enabled
         chan
         state
     end
@@ -16,6 +17,9 @@ classdef Pump < handle
     methods
         
         function obj = Pump(ni, config)
+            
+            obj.enabled = config.pump.enable;
+            if ~obj.enabled, return, end
             
             obj.ni = ni;
             
@@ -34,18 +38,21 @@ classdef Pump < handle
         
         
         function on(obj)
+            if ~obj.enabled, return, end
             obj.ni.do_toggle(obj.chan, true);
             obj.state = true;
         end
         
         
         function off(obj)
+            if ~obj.enabled, return, end
             obj.ni.do_toggle(obj.chan, false);
             obj.state = false;
         end
         
         
         function pulse(obj, duration)
+            if ~obj.enabled, return, end
             obj.ni.do_pulse(obj.chan, duration);
         end
     end

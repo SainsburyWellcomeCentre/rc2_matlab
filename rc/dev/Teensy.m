@@ -1,6 +1,8 @@
 classdef Teensy < handle
     
     properties
+        
+        enabled
         exe
         dir
         current_script
@@ -13,6 +15,9 @@ classdef Teensy < handle
             
             VariableDefault('force', true);
             
+            obj.enabled = config.teensy.enable;
+            if ~obj.enabled, return, end
+            
             obj.exe = config.teensy.exe;
             obj.dir = config.teensy.dir;
             obj.current_script = config.teensy.start_script;
@@ -24,6 +29,8 @@ classdef Teensy < handle
             % script = 'forward_only' or 'forward_and_backward'
             %   'calibration_soloist'
             VariableDefault('force', false);
+            
+            if ~obj.enabled, return, end
             
             if strcmp(obj.current_script, script) && ~force
                 disp('no need to load Teensy')

@@ -5,6 +5,7 @@ classdef ZeroTeensy < handle
     end
     
     properties (Hidden  = true, SetAccess = private)
+        enabled
         chan
     end
     
@@ -22,6 +23,9 @@ classdef ZeroTeensy < handle
         %           ni - object for controlling the NI hardware
         %           config - configuration structure at startup
             
+            obj.enabled = config.zero_teensy.enable;
+            if ~obj.enabled, return, end
+            
             obj.ni = ni;
             
             % The name of the digital output channel is
@@ -35,6 +39,8 @@ classdef ZeroTeensy < handle
         %%ZERO(obj)
         %   Send the signal.
         
+            if ~obj.enabled, return, end
+            
             % Send a 500 ms pulse to tell the Teensy to zero its position.
             obj.ni.do_pulse(obj.chan, 500);
         end

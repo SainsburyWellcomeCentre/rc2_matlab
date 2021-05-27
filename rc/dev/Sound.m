@@ -8,6 +8,7 @@ classdef Sound < handle
     
     properties (SetAccess = private)
         
+        global_enabled
         audio
         reset
         state = false;
@@ -22,14 +23,17 @@ classdef Sound < handle
     
     methods
         
-        function obj = Sound()
+        function obj = Sound(config)
+            
+            obj.global_enabled = config.sound.enable;
+            if ~obj.global_enabled, return, end
             
             try
                 % load a hard-coded audio file
                 %   this could become an option, but it is unlikely to change
                 %   if it doesn't exist, this will fail and the sound will
                 %   be disabled
-                [y, rate] = audioread('white_noise.wav', 'native');
+                [y, rate] = audioread(config.sound.filename, 'native');
                 
                 % create the main audio play object
                 obj.audio = audioplayer(y, rate);
@@ -52,17 +56,20 @@ classdef Sound < handle
                 % upon failure disable the sound and don't loop
                 obj.enabled = false;
                 obj.looping = false;
-                rethrow(ME);
+                warning('initializing sound failed.')
+%                 rethrow(ME);
             end
         end
         
         
         function enable(obj)
+            if ~obj.global_enabled, return, end
             obj.enabled = true;
         end
         
         
         function disable(obj)
+            if ~obj.global_enabled, return, end
             % stop the sound and set enabled flag to false
             obj.stop();
             obj.enabled = false;
@@ -70,6 +77,7 @@ classdef Sound < handle
         
         
         function play(obj)
+            if ~obj.global_enabled, return, end
             % if sound is currently disabled or it is already running
             % do nothing.
             if ~obj.enabled; return; end
@@ -82,7 +90,7 @@ classdef Sound < handle
         
         
         function stop(obj)
-            
+            if ~obj.global_enabled, return, end
             % if sound is currently disabled or it is not running
             % do nothing.
             if ~obj.enabled; return; end
@@ -102,6 +110,7 @@ classdef Sound < handle
         
         function repeat(obj, ~, ~)
             
+            if ~obj.global_enabled, return, end
             % if state is false, don't start again.
             if ~obj.state; return; end
             

@@ -1,16 +1,17 @@
 classdef CounterOutputRaw < handle
     
     properties
+        enabled
         task_handle
-        channel_names
-        channel_ids
+        channel_names = {}
+        channel_ids = {}
     end
     
     properties (SetAccess = private)
-        init_delay
-        low_samps
-        high_samps
-        clock_src
+        init_delay = nan
+        low_samps = nan
+        high_samps = nan
+        clock_src = nan
     end
     
     
@@ -18,6 +19,9 @@ classdef CounterOutputRaw < handle
     methods
         
         function obj = CounterOutputRaw(config)
+            
+            obj.enabled = config.nidaq.co.enable;
+            if ~obj.enabled, return, end
             
             obj.init_delay = config.nidaq.co.init_delay;
             obj.low_samps = config.nidaq.co.pulse_dur - config.nidaq.co.pulse_high;
@@ -42,21 +46,25 @@ classdef CounterOutputRaw < handle
         
         
         function delete(obj)
+            if ~obj.enabled, return, end
             obj.close();
         end
         
         
         function start(obj)
+            if ~obj.enabled, return, end
             status = daq.ni.NIDAQmx.DAQmxStartTask(obj.task_handle);
             obj.handle_fault(status, 'DAQmxStartTask');
         end
         
         function stop(obj)
+            if ~obj.enabled, return, end
             status = daq.ni.NIDAQmx.DAQmxStopTask(obj.task_handle);
             obj.handle_fault(status, 'DAQmxStopTask');
         end
         
         function close(obj)
+            if ~obj.enabled, return, end
             status = daq.ni.NIDAQmx.DAQmxClearTask(obj.task_handle);
             if status ~= 0
                 fprintf('couldn''t clear co task\n')
@@ -64,6 +72,7 @@ classdef CounterOutputRaw < handle
         end
         
         function handle_fault(obj, status, loc)
+            if ~obj.enabled, return, end
             if status ~= 0
                 fprintf('%s: error: %i, %s\n', class(obj), status, loc);
                 obj.close()

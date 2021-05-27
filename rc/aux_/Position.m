@@ -2,11 +2,11 @@ classdef Position < handle
     
     properties (SetAccess = private)
         
-        dt
+        dt = nan
         
         position = 0
-        deadband
-        integrate_on
+        deadband = nan
+        integrate_on = false
     end
     
     
@@ -23,6 +23,10 @@ classdef Position < handle
         % Inputs:
         %       config - main config structures
             
+            if ~config.nidaq.ai.enable
+                return
+            end
+        
             % require the time interval to calculate position
             obj.dt = 1/config.nidaq.rate;
             

@@ -1,10 +1,11 @@
 classdef DigitalInput < handle
     
     properties
+        enabled
         task
         ai_task
-        channel_names
-        channel_ids
+        channel_names = {}
+        channel_ids = {}
         chan = {}
         n_chan
         state
@@ -15,6 +16,9 @@ classdef DigitalInput < handle
     methods
         
         function obj = DigitalInput(config)
+            
+            obj.enabled = config.nidaq.di.enable;
+            if ~obj.enabled, return, end
             
             obj.task = daq.createSession('ni');
             obj.n_chan = length(config.nidaq.di.channel_names);
@@ -27,18 +31,30 @@ classdef DigitalInput < handle
         end
         
         
+        
         function data = read(obj)
+            
+            if ~obj.enabled, return, end
+            
             data = obj.task.inputSingleScan();
         end
         
         
+        
         function data = read_channel(obj, chan)
+            
+            if ~obj.enabled, return, end
+            
             data = obj.read();
             data = data(chan);
         end
         
         
+        
         function close(obj)
+            
+            if ~obj.enabled, return, end
+            
             if isvalid(obj.task)
                 delete(obj.task);
             end

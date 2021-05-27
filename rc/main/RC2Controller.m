@@ -1,4 +1,4 @@
-classdef Controller < handle
+classdef RC2Controller < handle
     
     properties
         
@@ -22,6 +22,7 @@ classdef Controller < handle
         offsets
         teensy_gain
         delayed_velocity
+        lick_detector
         
         data
         tdata
@@ -38,8 +39,8 @@ classdef Controller < handle
     
     methods
         
-        function obj = Controller(config)
-        %%obj = CONTROLLER(config)
+        function obj = RC2Controller(config)
+        %%obj = RC2CONTROLLER(config)
         %   Main class for interfacing with the rollercoaster setup.
         %       config - configuration structure containing necessary
         %           parameters for setup - usually this is created with
@@ -50,17 +51,20 @@ classdef Controller < handle
             obj.ni = NI(config);
             obj.teensy = Teensy(config);
             obj.soloist = Soloist(config);
+            
             obj.pump = Pump(obj.ni, config);
             obj.reward = Reward(obj.pump, config);
             obj.treadmill = Treadmill(obj.ni, config);
             obj.multiplexer = Multiplexer(obj.ni, config);
+            
             obj.plotting = Plotting(config);
-            obj.sound = Sound();
+            obj.sound = Sound(config);
             obj.position = Position(config);
             obj.saver = Saver(obj, config);
             obj.data_transform = DataTransform(config);
             obj.offsets = Offsets(obj, config);
             obj.delayed_velocity = DelayedVelocity(obj.ni, config);
+            obj.lick_detector = LickDetect(obj, config);
             
             % Triggers
             obj.zero_teensy = ZeroTeensy(obj.ni, config);
@@ -69,7 +73,6 @@ classdef Controller < handle
             obj.vis_stim = VisStim(obj.ni, config);
             obj.start_soloist = StartSoloist(obj.ni, config);
             obj.teensy_gain = TeensyGain(obj.ni, config);
-            
         end
         
         
@@ -128,6 +131,7 @@ classdef Controller < handle
         
         
         function prepare_acq(obj)
+            
             if obj.acquiring || obj.acquiring_preview
                 error('already acquiring data')
                 return %#ok<UNRCH>
@@ -136,6 +140,7 @@ classdef Controller < handle
             obj.saver.setup_logging();
             obj.ni.prepare_acq(@(x, y)obj.h_callback(x, y))
             obj.plotting.reset_vals();
+            obj.lick_detector.reset();
         end
         
         
@@ -164,6 +169,7 @@ classdef Controller < handle
             % pass transformed data to callbacks
             obj.plotting.ni_callback(obj.tdata);
             obj.position.integrate(obj.tdata(:, 1));
+            obj.lick_detect.loop();
         end
         
         
@@ -200,7 +206,7 @@ classdef Controller < handle
             
             % change the offset on the NI
             %   unless it is already running a waveform
-            if ~obj.ni.ao.task.IsRunning
+            if ~obj.ni.ao_task_is_running
                 obj.set_ni_ao_idle('up', gear_mode);
             end
         end
@@ -214,7 +220,7 @@ classdef Controller < handle
             
             % change the offset on the NI
             %   unless it is already running a waveform
-            if ~obj.ni.ao.task.IsRunning
+            if ~obj.ni.ao_task_is_running
                 obj.set_ni_ao_idle('down', gear_mode);
             end
         end
@@ -247,13 +253,13 @@ classdef Controller < handle
         function ramp_velocity(obj)
             
             % create a 1s ramp to 10mm/s
-            rate = obj.ni.ao.task.Rate;
+            rate = obj.ni.ao_rate;
             ramp = obj.soloist.v_per_cm_per_s * (0:rate-1) / rate;
             
             % use the first idle_offset value. we are assuming the ONLY use
             % case for other analog channels is for a delayed copy of the
             % velocity waveform...
-            waveform = obj.ni.ao.idle_offset(1) + ramp';
+            waveform = obj.ni.ao_idle_offset(1) + ramp';
             obj.load_velocity_waveform(waveform);
             pause(0.1);
             obj.play_velocity_waveform();
@@ -356,6 +362,12 @@ classdef Controller < handle
             
             % apply the voltage
             obj.ni.ao.set_to_idle();
+        end
+        
+        
+        
+        function val = ni_ai_rate(obj)
+            val = obj.ni.ai_rate();
         end
         
         

@@ -31,6 +31,9 @@ classdef Saver < handle
     methods
         
         function obj = Saver(ctl, config)
+            obj.enable = config.saving.enable;
+            if ~obj.enable, return, end
+            
             %TODO: remove ctl
             obj.ctl = ctl;
             obj.save_to = config.saving.save_to;

@@ -2,6 +2,7 @@ classdef VisStim < handle
     
     properties (SetAccess = private)
         
+        enabled
         chan
         state
     end
@@ -22,6 +23,9 @@ classdef VisStim < handle
         %           ni - object for controlling the NI hardware
         %           config - configuration structure at startup
         
+            obj.enabled = config.visual_stimulus.enable;
+            if ~obj.enabled, return, end
+            
             obj.ni = ni;
             
             % The name of the digital output channel is
@@ -46,6 +50,7 @@ classdef VisStim < handle
         %%OFF(obj)
         %   Send screen black and reset position.
         
+            if ~obj.enabled, return, end
             obj.ni.do_toggle(obj.chan, true);
             obj.state = true;
         end
@@ -54,6 +59,7 @@ classdef VisStim < handle
         %%ON(obj)
         %   Present the corridor.
         
+            if ~obj.enabled, return, end
             obj.ni.do_toggle(obj.chan, false);
             obj.state = false;
         end

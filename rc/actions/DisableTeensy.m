@@ -2,6 +2,7 @@ classdef DisableTeensy < handle
     
     properties (SetAccess = private)
         
+        enabled
         chan
         state
     end
@@ -21,6 +22,9 @@ classdef DisableTeensy < handle
         %       Inputs:
         %           ni - object for controlling the NI hardware
         %           config - configuration structure at startup
+        
+            obj.enabled = config.disable_teensy.enable;
+            if ~obj.enabled, return, end
         
             obj.ni = ni;
             
@@ -45,7 +49,8 @@ classdef DisableTeensy < handle
         function on(obj)
         %%ON(obj)
         %   Disable velocity output on Teensy
-        
+            
+            if ~obj.enabled, return, end
             obj.ni.do_toggle(obj.chan, true);
             obj.state = true;
         end
@@ -54,7 +59,8 @@ classdef DisableTeensy < handle
         function off(obj)
         %%OFF(obj)
         %   Do not disable: i.e. enable velocity output on Teensy
-        
+            
+            if ~obj.enabled, return, end
             obj.ni.do_toggle(obj.chan, false);
             obj.state = false;
         end

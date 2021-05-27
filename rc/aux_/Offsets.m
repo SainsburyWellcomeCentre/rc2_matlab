@@ -2,6 +2,7 @@ classdef Offsets < handle
     
     properties
         
+        enabled
         nominal_stationary_offset = 0.5
         
         ctl
@@ -13,13 +14,20 @@ classdef Offsets < handle
         
         function obj = Offsets(ctl, config)
             
-            obj.ctl = ctl;
-            obj.error_mtx = config.offset_error_mtx;
+            obj.enabled = config.offsets.enable;
+            if ~obj.enabled, return, end
             
+            obj.ctl = ctl;
+            obj.error_mtx = config.offsets.error_mtx;
         end
         
         
         function val = get_soloist_offset(obj, soloist_input_src, solenoid_state, gear_mode)
+            
+            if ~obj.enabled
+                val = obj.nominal_stationary_offset;
+                return
+            end
             
             if strcmp(solenoid_state, 'up') && strcmp(gear_mode, 'on')
                 row = 1;
@@ -114,6 +122,11 @@ classdef Offsets < handle
         
         function val = get_ni_ao_offset(obj, solenoid_state, gear_mode)
             
+            if ~obj.enabled
+                val = obj.nominal_stationary_offset;
+                return
+            end
+            
             % subtract error on AO
             if strcmp(solenoid_state, 'up') && strcmp(gear_mode, 'on')
                 
@@ -139,6 +152,11 @@ classdef Offsets < handle
         function data = transform_ai_ao_data(obj, data, solenoid_state, gear_mode)
             % Transforms data collected on the NIDAQ analog input, and
             % subtracts offsets
+            
+            if ~obj.enabled
+                return
+            end
+            
             
             % subtract error on AI - assume that solenoid was 'down' and gear
             % mode 'on' during recording... baseline should be around 0.5V

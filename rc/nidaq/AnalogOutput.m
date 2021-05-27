@@ -1,7 +1,7 @@
 classdef AnalogOutput < handle
     
     properties
-        
+        enabled
         task
         channel_names = {}
         channel_ids = {}
@@ -20,7 +20,13 @@ classdef AnalogOutput < handle
         %   Handles analog output.
         %       The property "ai_ao_error" is added to all data
         %       But it may be more sensible to move this somewhere else
-        
+            
+            obj.enabled = config.nidaq.ao.enable;
+            if ~obj.enabled
+                obj.task.Rate = nan;
+                return
+            end
+            
             obj.task = daq.createSession('ni');
             for i = 1:length(config.nidaq.ao.channel_names)
                 obj.channel_names{i} = config.nidaq.ao.channel_names{i};
@@ -43,11 +49,14 @@ classdef AnalogOutput < handle
         
         
         function delete(obj)
+            if ~obj.enabled, return, end
             obj.close()
         end
         
         
         function set_to_idle(obj)
+            
+            if ~obj.enabled, return, end
             
             % Stop any running tasks first
             obj.stop();
@@ -67,6 +76,8 @@ classdef AnalogOutput < handle
         
         function write(obj, data)
             
+            if ~obj.enabled, return, end
+            
             % to avoid DANGER, clip voltage at limits!!
             data(data > obj.max_voltage) = obj.max_voltage;
             data(data < -obj.max_voltage) = -obj.max_voltage;
@@ -80,11 +91,13 @@ classdef AnalogOutput < handle
         
         
         function start(obj)
+            if ~obj.enabled, return, end
             obj.task.startBackground();
         end
         
         
         function stop(obj)
+            if ~obj.enabled, return, end
             if isvalid(obj.task)
                 obj.task.stop()
             end
@@ -92,9 +105,25 @@ classdef AnalogOutput < handle
         
         
         function close(obj)
+            if ~obj.enabled, return, end
             if isvalid(obj.task)
                 delete(obj.task)
             end
+        end
+        
+        
+        function val = is_running(obj)
+            if ~obj.enabled
+                val = false;
+                return
+            end
+            val = obj.task.IsRunning;
+        end
+        
+        
+        function val = rate(obj)
+            if ~obj.enabled, return, end
+            val = obj.task.Rate;
         end
     end
 end

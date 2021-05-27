@@ -7,6 +7,7 @@ classdef Multiplexer < handle
     
     properties (SetAccess = private, Hidden = true)
         
+        enabled
         chan
         vals
     end
@@ -21,7 +22,9 @@ classdef Multiplexer < handle
         %           ni - object for controlling the NI hardware
         %           config - configuration structure at startup
         
-            % 
+            obj.enabled = config.soloist_input_src.enable;
+            if ~obj.enabled, return, end
+        
             obj.ni = ni;
             
             % The name of the digital output channel is
@@ -49,6 +52,7 @@ classdef Multiplexer < handle
         %%LISTEN_TO(obj, src)
         %   Which input should we listen to?
             % src = 'teensy' or 'ni'
+            if ~obj.enabled, return, end
             obj.ni.do_toggle(obj.chan, obj.vals.(src));
         end
     end

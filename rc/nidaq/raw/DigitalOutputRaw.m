@@ -1,6 +1,7 @@
 classdef DigitalOutputRaw < handle
     
     properties
+        enabled
         task_handle
         ai_task
         
@@ -8,10 +9,10 @@ classdef DigitalOutputRaw < handle
         
         n_chan
         
-        channel_names
-        channel_ids
+        channel_names = {}
+        channel_ids = {}
         state
-        clock_src
+        clock_src = ''
     end
     
     
@@ -24,6 +25,9 @@ classdef DigitalOutputRaw < handle
     methods
         
         function obj = DigitalOutputRaw(config, ai_task)
+            
+            obj.enabled = config.nidaq.do.enable;
+            if ~obj.enabled, return, end
             
             obj.ai_task = ai_task;
             
@@ -56,11 +60,14 @@ classdef DigitalOutputRaw < handle
         
         
         function delete(obj)
+            if ~obj.enabled, return, end
             obj.close()
         end
         
         
         function data = get_toggle(obj, chan, direction)
+            
+            if ~obj.enabled, return, end
             
             toggle_length = 2;
             data = nan(toggle_length, obj.n_chan);
@@ -76,6 +83,9 @@ classdef DigitalOutputRaw < handle
         
         
         function data = get_pulse(obj, chan, dur)
+            
+            if ~obj.enabled, return, end
+            
             n_samples = round(obj.rate*dur*1e-3);
             data = nan(n_samples, obj.n_chan);
             for i = 1 : obj.n_chan
@@ -92,6 +102,8 @@ classdef DigitalOutputRaw < handle
         
         
         function start(obj, data)
+            
+            if ~obj.enabled, return, end
             
             if obj.is_running
                 fprintf('not running digital output\n');
@@ -138,12 +150,18 @@ classdef DigitalOutputRaw < handle
         end
         
         function stop(obj)
+            
+            if ~obj.enabled, return, end
+            
             status = daq.ni.NIDAQmx.DAQmxStopTask(obj.task_handle);
             obj.handle_fault(status, 'DAQmxStopTask');
             obj.is_running = false;
         end
         
         function close(obj)
+            
+            if ~obj.enabled, return, end
+            
             status = daq.ni.NIDAQmx.DAQmxClearTask(obj.task_handle);
             if status ~= 0
                 fprintf('couldn''t clear do task\n')
@@ -152,6 +170,9 @@ classdef DigitalOutputRaw < handle
         
         
         function handle_fault(obj, status, loc)
+            
+            if ~obj.enabled, return, end
+            
             if status ~= 0
                 fprintf('%s: error: %i, %s\n', class(obj), status, loc);
                 obj.close()

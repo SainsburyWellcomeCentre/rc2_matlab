@@ -2,6 +2,7 @@ classdef Treadmill < handle
     
     properties (SetAccess = private)
         
+        enabled
         chan
         state
     end
@@ -22,6 +23,9 @@ classdef Treadmill < handle
         %           ni - object for controlling the NI hardware
         %           config - configuration structure at startup
         
+            obj.enabled = config.treadmill.enable;
+            if ~obj.enabled, return, end
+            
             obj.ni = ni;
             
             % The name of the digital output channel is
@@ -42,7 +46,7 @@ classdef Treadmill < handle
         function block(obj)
         %%BLOCK(obj)
         %   Block the treadmill, by toggling the digital output.
-        
+            if ~obj.enabled, return, end
             obj.ni.do_toggle(obj.chan, true);
             obj.state = 'up';
         end
@@ -50,7 +54,7 @@ classdef Treadmill < handle
         function unblock(obj)
         %%UNBLOCK(obj)
         %   Unblock the treadmill, by toggling the digital output.
-        
+            if ~obj.enabled, return, end
             obj.ni.do_toggle(obj.chan, false);
             obj.state = 'down';
         end
