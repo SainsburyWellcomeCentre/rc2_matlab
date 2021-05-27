@@ -4,9 +4,9 @@ function config = plotting_config_sweiler()
 
 config.time = 5; %s
 config.fig.position = [1340, 80, 1333, 630];
-config.chans_to_plot = 1:6;
-config.ylim = {[-22, 102], [-0.1, 5.1] , [-0.1, 5.1], [-0.1, 5.1] ,[-0.1, 5.1], [-0.1, 5.1]};
-config.units = {'cm/s', 'V', 'V', 'V', 'V', 'V'};
+config.chans_to_plot = 1:5;
+config.ylim = {[-0.1, 5.1] , [-0.1, 5.1], [-0.1, 5.1] ,[-0.1, 5.1], [-0.1, 5.1]};
+config.units = {'V', 'V', 'V', 'V', 'V'};
 config.ax_positions = {[0.03, 0.54, 0.45, 0.19], ...
                     [0.03, 0.3, 0.45, 0.19], ...
                     [0.03, 0.06, 0.45, 0.19], ...

@@ -4,10 +4,10 @@ function config = config_sweiler()
 % SAVING %%%
 %%%%%%%%%%%%
 config.saving.enable                    = true;
-config.saving.save_to                   = '';  % where to save data
+config.saving.save_to                   = 'C:\Users\Margrie_Lab1\Documents\temp_data';  % where to save data
 config.saving.config_file               = mfilename('fullpath');  % current file path
-config.saving.main_dir                  = '';  
-config.saving.git_dir                   = '';  % git directory
+config.saving.main_dir                  = 'C:\Users\Margrie_Lab1\Documents\MATLAB\rc2_matlab';  
+config.saving.git_dir                   = 'C:\Users\Margrie_Lab1\Documents\MATLAB\rc2_matlab\.git';  % git directory
 
 
 
@@ -33,11 +33,11 @@ config.nidaq.log_every                  = 1000;  % log data every number of samp
 % ANALOG INPUT parameters %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 config.nidaq.ai.enable                  = true;
-config.nidaq.ai.dev                     = 'Dev2';  % device name
-config.nidaq.ai.channel_names           = {'filtered_teensy', 'lick', 'pump', 'visual_stimulus_computer_minidaq', 'photodiode_1', 'photodiode_2'};  % nominal channel names (for reference)
-config.nidaq.ai.channel_id              = 0:5;
-config.nidaq.ai.offset                  = [0.5, 0, 0, 0, 0, 0];
-config.nidaq.ai.scale                   = [40, 1, 1, 1, 1, 1];
+config.nidaq.ai.dev                     = 'Dev1';  % device name
+config.nidaq.ai.channel_names           = {'photodiode_left', 'photodiode_right', 'visual_stimulus_computer_minidaq', 'pump',  'lick'};  % nominal channel names (for reference)
+config.nidaq.ai.channel_id              = 0:4;
+config.nidaq.ai.offset                  = [0, 0, 0, 0, 0];
+config.nidaq.ai.scale                   = [1, 1, 1, 1, 1];
 
 config.offsets.enable                   = false;
 config.offsets.error_mtx                = [];
@@ -59,7 +59,7 @@ config.nidaq.ao.idle_offset             = [];
 % COUNTER OUTPUT parameters %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 config.nidaq.co.enable                  = true;
-config.nidaq.co.dev                     = 'Dev2';
+config.nidaq.co.dev                     = 'Dev1';
 config.nidaq.co.channel_names           = {'camera'};
 config.nidaq.co.channel_id              = 0;
 config.nidaq.co.init_delay              = 0;
@@ -73,7 +73,7 @@ config.nidaq.co.clock_src               = sprintf('/%s/ai/SampleClock', config.n
 % DIGITAL OUTPUT parameters %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 config.nidaq.do.enable                  = true;
-config.nidaq.do.dev                     = 'Dev2';
+config.nidaq.do.dev                     = 'Dev1';
 config.nidaq.do.channel_names           = {'pump', 'visual_stimulus_start_trigger'};
 config.nidaq.do.channel_id              = {'port0/line0', 'port0/line1'};
 config.nidaq.do.clock_src               = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
@@ -167,14 +167,14 @@ config.reward.duration                  = 50;
 % LICK DETECTION %%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % if enabled reward will be given if a lick is detected
-config.lick_detect.enabled              = true;
+config.lick_detect.enable               = true;
 config.lick_detect.n_windows            = 1;
 config.lick_detect.window_size_ms       = 8000; % size of each window to determine licking
 config.lick_detect.n_lick_windows       = 1;
-config.lick_detect.trigger_channel      = 4;   % index of channel in "config.nidaq.ai.channel_names" not analog input channel ID
-config.lick_detect.lick_channel         = 2;   % index of channel in "config.nidaq.ai.channel_names" not analog input channel ID
+config.lick_detect.trigger_channel      = 3;   % index of channel in "config.nidaq.ai.channel_names" not analog input channel ID
+config.lick_detect.lick_channel         = 5;   % index of channel in "config.nidaq.ai.channel_names" not analog input channel ID
 config.lick_detect.detection_window_is_triggered = false;
-
+config.lick_detect.lick_threshold       = 2;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
