@@ -12,7 +12,7 @@ classdef RC2Controller < handle
         plotting
         saver
         sound
-        position
+%         position
         zero_teensy
         disable_teensy
         trigger_input
@@ -59,7 +59,7 @@ classdef RC2Controller < handle
             
             obj.plotting = Plotting(config);
             obj.sound = Sound(config);
-            obj.position = Position(config);
+%             obj.position = Position(config);
             obj.saver = Saver(obj, config);
             obj.data_transform = DataTransform(config);
             obj.offsets = Offsets(obj, config);
@@ -168,8 +168,8 @@ classdef RC2Controller < handle
             
             % pass transformed data to callbacks
             obj.plotting.ni_callback(obj.tdata);
-            obj.position.integrate(obj.tdata(:, 1));
-            obj.lick_detect.loop();
+%             obj.position.integrate(obj.tdata(:, 1));
+            obj.lick_detector.loop();
         end
         
         
@@ -346,7 +346,7 @@ classdef RC2Controller < handle
         
         
         function pos = get_position(obj)
-            pos = obj.position.position;
+%             pos = obj.position.position;
         end
         
         
