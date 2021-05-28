@@ -2,6 +2,7 @@ classdef RC2Controller < handle
     
     properties
         
+        tic
         ni
         teensy
         soloist
@@ -48,7 +49,7 @@ classdef RC2Controller < handle
         %           config structure
         %   For information on each property see the related class.
         
-            tic;
+            obj.tic = tic;
             
             obj.ni = NI(config);
             obj.teensy = Teensy(config);

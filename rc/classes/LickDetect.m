@@ -5,22 +5,27 @@ classdef LickDetect < handle
         enabled = false
         
         ctl
-        
-        n_windows
-        window_size_ms
-        n_lick_windows
-        
         trigger_channel
         trigger_channel_threshold = 2.5  % expect TTL by default
         lick_channel
-        n_licks_detected = 0
+        
         lick_times = nan(100000, 1);
     end
     
     properties
         
+        n_windows
+        window_size_ms
+        n_lick_windows
         detection_window_is_triggered
         lick_threshold
+        enable_reward = true
+    end
+    
+    properties (SetObservable = true)
+        n_licks_detected = 0
+        last_lick_time = nan
+        lick_occurred_in_window = -1
     end
     
     properties (SetAccess = private, Hidden = true)
@@ -95,7 +100,8 @@ classdef LickDetect < handle
             
             obj.total_window_samples = obj.n_samples_per_window * obj.n_windows;
             
-            obj.reset();
+            obj.reset_counters();
+            obj.reset_window();
         end
         
         
@@ -107,14 +113,28 @@ classdef LickDetect < handle
         
         
         
-        function reset_lick_counter(obj)
-            obj.n_licks_detected    = 0;
-            obj.lick_times          = nan(100000, 1);
+        function reset(obj)
+            
+            if ~obj.enabled, return, end
+            
+            obj.reset_counters();
+            obj.reset_window();
         end
         
         
         
-        function reset(obj)
+        function reset_counters(obj)
+            
+            if ~obj.enabled, return, end
+            
+            obj.n_licks_detected    = 0;
+            obj.lick_times          = nan(100000, 1);
+            obj.last_lick_time      = nan;
+        end
+        
+        
+        
+        function reset_window(obj)
             
             if ~obj.enabled, return, end
             
@@ -122,14 +142,6 @@ classdef LickDetect < handle
             obj.window_data = nan(obj.n_samples_per_window, obj.n_windows);
             obj.current_window_sample_idx = 1;
             obj.running = false;
-        end
-        
-        
-        
-        function start_lick_detection(obj)
-            
-            if ~obj.enabled, return, end
-            obj.running = true;
         end
         
         
@@ -169,8 +181,7 @@ classdef LickDetect < handle
         
         function lick_detected = loop(obj)
             
-            if ~obj.enabled, return
-            end
+            if ~obj.enabled, return, end
             
             if obj.detection_window_is_triggered
                 
@@ -182,12 +193,13 @@ classdef LickDetect < handle
                     [trigger_detected, idx] = obj.detect_trigger();
                     
                     if trigger_detected
-                        obj.start_lick_detection();
+                        obj.running = true;
                         lick_data = obj.ctl.data(idx:end, obj.lick_channel);
                         lick_detected = obj.detect_lick(lick_data);
                     end
                     
                 else  % detection is running
+                    
                     lick_data = obj.ctl.data(:, obj.lick_channel);
                     lick_detected = obj.detect_lick(lick_data);
                 end
@@ -207,17 +219,24 @@ classdef LickDetect < handle
                 
                 % store the time of the lick
                 obj.n_licks_detected = obj.n_licks_detected + 1;
-                obj.lick_times(obj.n_licks_detected) = toc;
+                obj.last_lick_time = toc(obj.ctl.tic);
+                obj.lick_times(obj.n_licks_detected) = obj.last_lick_time;
                 
                 % give the reward and reset the window
-                obj.ctl.give_reward();
-                obj.reset();
+                if obj.enable_reward
+                    obj.ctl.give_reward();
+                end
+                
+                obj.lick_occurred_in_window = 1;
+                
+                obj.reset_window();
             end
             
             
             if obj.current_window_sample_idx > obj.total_window_samples
                 % if beyond the lick window reset
-                obj.reset();
+                obj.lick_occurred_in_window = 0;
+                obj.reset_window();
             end
         end
     end
