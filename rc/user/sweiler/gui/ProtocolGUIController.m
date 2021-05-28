@@ -66,8 +66,8 @@ classdef ProtocolGUIController < handle
         
         function update_plot(obj)
             
-            s_plus_idx = strcmp(obj.protocol.stimulus_type_list, 's_plus');
-            s_minus_idx = strcmp(obj.protocol.stimulus_type_list, 's_minus');
+            s_plus_idx = cellfun(@(x)(x == 's_plus'), obj.protocol.stimulus_type_list);
+            s_minus_idx = cellfun(@(x)(x == 's_minus'), obj.protocol.stimulus_type_list);
             
             n_s_plus = sum(s_plus_idx);
             n_s_minus = sum(s_minus_idx);
@@ -89,7 +89,7 @@ classdef ProtocolGUIController < handle
             set(obj.view.gui.s_plus_axes, 'xlim', [0, n_s_plus+1], 'xtick', 1:n_s_plus)
             set(obj.view.gui.s_minus_axes, 'xlim', [0, n_s_minus+1], 'xtick', 1:n_s_minus)
             
-            if length(s_plus_response) > 3
+            if length(s_plus_response) >= 3
                 if sum(s_plus_response(end-2:end)) == 0
                     obj.view.gui.warning_text.Text = '3 incorrect S+ trials in a row';
                 end

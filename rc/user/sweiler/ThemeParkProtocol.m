@@ -58,8 +58,8 @@ classdef ThemeParkProtocol < handle
                 
                 h = onCleanup(@obj.cleanup);
                 
-                %             obj.rc2ctl.prepare_acq();
-                %             obj.rc2ctl.start_acq();
+                obj.rc2ctl.prepare_acq();
+                obj.rc2ctl.start_acq();
                 
                 obj.running = true;
                 
@@ -126,7 +126,7 @@ classdef ThemeParkProtocol < handle
                             obj.n_incorrect_s_plus_trials = obj.n_incorrect_s_plus_trials + 1;
                         end
                         
-                    elseif strmcp(obj.current_stimulus_type, 's_minus')
+                    elseif strcmp(obj.current_stimulus_type, 's_minus')
                         
                         if obj.lick_detected
                             % incorrect S- trial

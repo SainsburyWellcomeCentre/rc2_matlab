@@ -2,7 +2,7 @@ classdef ThemeParkRC2 < handle
     
     properties
         
-        remote_ip = '172.24.242.181';
+        remote_ip = '172.24.242.141';
         remote_port_prepare = 43056;
         remote_port_stimulus = 43057;
         
@@ -58,13 +58,18 @@ classdef ThemeParkRC2 < handle
             end
             
             % set the save name
-            obj.ctl.saver.prefix = animal_id;
-            obj.ctl.saver.suffix = session_name;
+            obj.ctl.saver.set_prefix(animal_id);
+            obj.ctl.saver.set_suffix(session_name);
             
             % setup the protocol.. which differ by licking behaviour
             config.lick_detect.enable           = true;
-%             config.lick_detect.trigger_channel = 1;
-%             config.lick_detect.lick_channel = 2;
+            
+            % temp
+            config.lick_detect.trigger_channel      = 3;   % index of channel in "config.nidaq.ai.channel_names" not analog input channel ID
+            config.lick_detect.lick_channel         = 5;   % index of channel in "config.nidaq.ai.channel_names" not analog input channel ID
+            config.lick_detect.detection_window_is_triggered = false;
+            config.lick_detect.lick_threshold       = 2;
+            
             if protocol_id == 1
                 config.lick_detect.n_windows        = 1;
                 config.lick_detect.window_size_ms   = 8000;
