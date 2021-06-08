@@ -69,36 +69,34 @@ classdef ThemeParkRC2 < handle
             % temp
 %             config.lick_detect.trigger_channel      = 3;   % index of channel in "config.nidaq.ai.channel_names" not analog input channel ID
 %             config.lick_detect.lick_channel         = 5;   % index of channel in "config.nidaq.ai.channel_names" not analog input channel ID
-%             config.lick_detect.detection_window_is_triggered = false;
+%             config.lick_detect.detection_window_is_triggered = 1;
             config.lick_detect.lick_threshold       = 2;
-            config.lick_detect.continuous_rewards   = false;
             
             if protocol_id == 1
                 config.lick_detect.n_windows        = 1;
                 config.lick_detect.window_size_ms   = 2000;
                 config.lick_detect.n_lick_windows   = 1;
-                config.lick_detect.detection_window_is_triggered = false;
-                config.lick_detect.continuous_rewards = true;
+                config.lick_detect.detection_window_is_triggered = 2;  % rewards given when trigger is high
             elseif protocol_id == 2
                 config.lick_detect.n_windows        = 8;
                 config.lick_detect.window_size_ms   = 250;
                 config.lick_detect.n_lick_windows   = 1;
-                config.lick_detect.detection_window_is_triggered = true;
+                config.lick_detect.detection_window_is_triggered = 1;
             elseif protocol_id == 3
                 config.lick_detect.n_windows        = 8;
                 config.lick_detect.window_size_ms   = 250;
                 config.lick_detect.n_lick_windows   = 2;
-                config.lick_detect.detection_window_is_triggered = true;
+                config.lick_detect.detection_window_is_triggered = 1;
             elseif protocol_id == 4
                 config.lick_detect.n_windows        = 8;
                 config.lick_detect.window_size_ms   = 250;
                 config.lick_detect.n_lick_windows   = 2;
-                config.lick_detect.detection_window_is_triggered = true;
+                config.lick_detect.detection_window_is_triggered = 1;
             elseif protocol_id == 5
                 config.lick_detect.n_windows        = 8;
                 config.lick_detect.window_size_ms   = 250;
                 config.lick_detect.n_lick_windows   = 2;
-                config.lick_detect.detection_window_is_triggered = true;
+                config.lick_detect.detection_window_is_triggered = 1;
             end
             
             % reinitialize the lick detection module....
@@ -109,7 +107,7 @@ classdef ThemeParkRC2 < handle
             
             % start the gui... this seems to take a long time and is
             % non-blocking
-            if ismember(protocol_id, 2:5)
+            if ismember(protocol_id, 1:5)
                 obj.protocol_gui = ProtocolGUIController(obj.protocol);
             end
             
@@ -117,7 +115,7 @@ classdef ThemeParkRC2 < handle
             obj.protocol.run();
             
             % close the gui
-            if ismember(protocol_id, 2:5)
+            if ismember(protocol_id, 1:5)
                 delete(obj.protocol_gui);
             end
         end

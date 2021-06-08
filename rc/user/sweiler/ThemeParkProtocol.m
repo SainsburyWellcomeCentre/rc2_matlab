@@ -46,7 +46,7 @@ classdef ThemeParkProtocol < handle
         
         function run(obj)
             
-            if ismember(obj.protocol_id, 2:5)
+            if ismember(obj.protocol_id, 1:5)
                 
                 % reset
                 obj.current_trial = 0;
