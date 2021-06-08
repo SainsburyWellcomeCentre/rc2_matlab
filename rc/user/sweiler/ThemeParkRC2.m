@@ -6,6 +6,7 @@ classdef ThemeParkRC2 < handle
         remote_port_prepare = 43056;
         remote_port_stimulus = 43057;
         
+        config
         ctl
         gui
         
@@ -19,9 +20,9 @@ classdef ThemeParkRC2 < handle
         
         function obj = ThemeParkRC2()
             
-            config = config_sweiler();
-            obj.ctl = RC2Controller(config);
-            obj.gui = rc2guiController(obj.ctl, config);
+            obj.config = config_sweiler();
+            obj.ctl = RC2Controller(obj.config);
+            obj.gui = rc2guiController(obj.ctl, obj.config);
         end
         
         
@@ -62,19 +63,22 @@ classdef ThemeParkRC2 < handle
             obj.ctl.saver.set_suffix(session_name);
             
             % setup the protocol.. which differ by licking behaviour
+            config                              = obj.config; %#ok<*PROPLC> % original config
             config.lick_detect.enable           = true;
             
             % temp
-            config.lick_detect.trigger_channel      = 3;   % index of channel in "config.nidaq.ai.channel_names" not analog input channel ID
-            config.lick_detect.lick_channel         = 5;   % index of channel in "config.nidaq.ai.channel_names" not analog input channel ID
-            config.lick_detect.detection_window_is_triggered = false;
+%             config.lick_detect.trigger_channel      = 3;   % index of channel in "config.nidaq.ai.channel_names" not analog input channel ID
+%             config.lick_detect.lick_channel         = 5;   % index of channel in "config.nidaq.ai.channel_names" not analog input channel ID
+%             config.lick_detect.detection_window_is_triggered = false;
             config.lick_detect.lick_threshold       = 2;
+            config.lick_detect.continuous_rewards   = false;
             
             if protocol_id == 1
                 config.lick_detect.n_windows        = 1;
-                config.lick_detect.window_size_ms   = 8000;
+                config.lick_detect.window_size_ms   = 2000;
                 config.lick_detect.n_lick_windows   = 1;
                 config.lick_detect.detection_window_is_triggered = false;
+                config.lick_detect.continuous_rewards = true;
             elseif protocol_id == 2
                 config.lick_detect.n_windows        = 8;
                 config.lick_detect.window_size_ms   = 250;
