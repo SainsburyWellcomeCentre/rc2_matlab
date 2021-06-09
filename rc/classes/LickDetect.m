@@ -243,11 +243,11 @@ classdef LickDetect < handle
                     obj.running = true;
                 end
                 
-                lick_data = obj.ctl.data(trigger_high, obj.lick_channel);
+                lick_data = obj.ctl.data(trigger_high(2:end), obj.lick_channel);
                 
                 % append the last value from the previous batch or previous
                 % sample
-                if trigger_high(1)
+                if trigger_high(2)
                     lick_data = [obj.last_lick_sample_value; lick_data];
                 end
                 
