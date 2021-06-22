@@ -27,6 +27,14 @@ classdef ThemeParkRC2 < handle
         
         
         
+        function delete(obj)
+            
+            delete(obj.gui);
+            delete(obj.ctl);
+        end
+        
+        
+        
         function start_protocol(obj, protocol_id)
             
             % make sure protocol is known
