@@ -89,6 +89,17 @@ classdef Saver < handle
         end
         
         
+        function str = save_root_name(obj)
+            str = sprintf('%s_%s_%03i', obj.prefix, obj.suffix, obj.index);
+        end
+        
+        
+        function str = save_fulldir(obj)
+            str = fullfile(obj.save_to, obj.prefix);
+        end
+        
+        
+        
         function fname = logging_fname(obj)
             fname_ = sprintf('%s_%s_%03i.bin', obj.prefix, obj.suffix, obj.index);
             fname = fullfile(obj.save_to, obj.prefix, fname_);
