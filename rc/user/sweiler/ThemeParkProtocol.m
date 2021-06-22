@@ -175,6 +175,12 @@ classdef ThemeParkProtocol < handle
             response = obj.is_correct;
             
             save(fname, 'protocol_number', 'n_trials', 'stimulus_type', 'response');
+            
+            try
+                bin_fname = obj.rc2ctl.saver.logging_fname();
+                analyze_and_plot_licking_data(bin_fname);
+            catch
+            end
         end
         
         
