@@ -9,7 +9,7 @@ lick_threshold              = 2;
 % load the raw data and online data (if it exists)
 mat_fname                   = strrep(bin_fname, '.bin', '_themepark.mat');
 
-[data, ~, channel_names, ~] = read_rc2_bin(bin_fname);
+[data, dt, channel_names, ~] = read_rc2_bin(bin_fname);
 online_data_exists          = isfile(mat_fname);
 
 if online_data_exists
@@ -30,6 +30,12 @@ vis_stim_signal             = data(:, vis_stim_chan_idx);
 lick_signal                 = data(:, lick_chan_idx);
 pump_signal                 = data(:, pump_chan_idx);
 % photodiode_signal           = data(:, photodiode_idx);
+
+figure()
+plot(timebase, vis_stim_signal);
+hold on;
+plot(timebase, lick_signal);
+plot(timebase, pump_signal);
 
 % look for stimulus on
 vis_stim_onset_flag         = diff(vis_stim_signal > vis_stim_threshold) == 1;
@@ -82,13 +88,16 @@ end
 % lick rasters
 figure();
 h_ax_s_plus             = subplot(2, 1, 1);
+hold on;
 plot_raster(h_ax_s_plus, lick_times_relative(s_plus_trial_idx));
+set(h_ax_s_plus, 'xlim', padding);
 if online_data_exists
     ylabel(h_ax_s_plus, 'S+ trial #');
     h_ax_s_minus = subplot(2, 1, 2);
+    hold on;
     plot_raster(h_ax_s_minus, lick_times_relative(s_minus_trial_idx));
     ylabel(h_ax_s_minus, 'S- trial #');
-    
+    set(h_ax_s_minus, 'xlim', padding);
 else
     ylabel(h_ax_s_plus, 'Trial #');
 end
@@ -98,11 +107,15 @@ end
 figure()
 edges                   = padding(1):0.25:padding(2);
 h_ax_s_plus = subplot(2, 1, 1);
+hold on;
 plot_histogram(h_ax_s_plus, lick_times_relative(s_plus_trial_idx), edges);
+set(h_ax_s_plus, 'xlim', padding);
 if online_data_exists
     title(h_ax_s_plus, 'S+ trial');
     h_ax_s_minus = subplot(2, 1, 2);
+    hold on;
     plot_histogram(h_ax_s_minus, lick_times_relative(s_minus_trial_idx), edges);
+    set(h_ax_s_minus, 'xlim', padding);
     title(h_ax_s_minus, 'S- trial');
 else
     title(h_ax_s_plus, 'All trials');
@@ -121,7 +134,7 @@ end
 line(h_ax, [0, 0], get(h_ax, 'ylim'), 'color', 'k', 'linestyle', '--');
 line(h_ax, [2, 2], get(h_ax, 'ylim'), 'color', 'k', 'linestyle', '--');
 xlabel(h_ax, 'Time (s)');
-set(h_ax, 'ylim', [0, length(lick_times)+1], 'plotboxaspectratio', [1, 2, 1]);
+set(h_ax, 'ylim', [0, length(lick_times)+1], 'plotboxaspectratio', [2, 1, 1]);
 
 
 
@@ -131,7 +144,7 @@ fill(h_ax, [0, 2, 2, 0], [0, 0, length(lick_times), length(lick_times)], [0.7, 0
 histogram(h_ax, [lick_times{:}], edges);
 line(h_ax, [0, 0], get(h_ax, 'ylim'), 'color', 'k', 'linestyle', '--');
 line(h_ax, [2, 2], get(h_ax, 'ylim'), 'color', 'k', 'linestyle', '--');
-set(h_ax, 'plotboxaspectratio', [1, 2, 1]);
+set(h_ax, 'plotboxaspectratio', [2, 1, 1]);
 xlabel(h_ax, 'Time (s)');
 
 
