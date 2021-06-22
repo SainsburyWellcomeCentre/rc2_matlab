@@ -26,6 +26,7 @@ classdef ThemeParkProtocol < handle
         n_incorrect_s_plus_trials = 0
         n_correct_s_minus_trials = 0
         n_incorrect_s_minus_trials = 0
+        n_rewards_given = 0;
     end
     
     
@@ -40,6 +41,8 @@ classdef ThemeParkProtocol < handle
             
             addlistener(obj.rc2ctl.lick_detector, 'lick_occurred_in_window', ...
                 'PostSet', @obj.lick_notification);
+            addlistener(obj.rc2ctl.reward, 'n_rewards_counter', ...
+                'PostSet', @obj.n_rewards_given_updated);
         end
         
         
@@ -48,15 +51,16 @@ classdef ThemeParkProtocol < handle
             
             if ismember(obj.protocol_id, 1:5)
                 
-                % reset
+                % reset variables
                 obj.current_trial = 0;
-                
                 obj.n_correct_s_plus_trials = 0;
                 obj.n_incorrect_s_plus_trials = 0;
                 obj.n_correct_s_minus_trials = 0;
                 obj.n_incorrect_s_minus_trials = 0;
                 
                 h = onCleanup(@obj.cleanup);
+                
+                obj.rc2ctl.reward.reset_n_rewards_counter();
                 
                 obj.rc2ctl.prepare_acq();
                 obj.rc2ctl.start_acq();
@@ -167,6 +171,13 @@ classdef ThemeParkProtocol < handle
         function lick_notification(obj, ~, ~)
             
             obj.lick_detected = obj.rc2ctl.lick_detector.lick_occurred_in_window;
+        end
+        
+        
+        
+        function n_rewards_given_updated(obj, ~, ~)
+            
+            obj.n_rewards_given = obj.rc2ctl.reward.n_rewards_counter;
         end
     end
 end

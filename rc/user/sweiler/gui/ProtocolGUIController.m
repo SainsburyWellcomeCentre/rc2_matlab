@@ -19,6 +19,7 @@ classdef ProtocolGUIController < handle
             addlistener(obj.protocol, 'n_incorrect_s_plus_trials', 'PostSet', @(src, evnt)obj.n_incorrect_s_plus_updated(src, evnt));
             addlistener(obj.protocol, 'n_correct_s_minus_trials', 'PostSet', @(src, evnt)obj.n_correct_s_minus_updated(src, evnt));
             addlistener(obj.protocol, 'n_incorrect_s_minus_trials', 'PostSet', @(src, evnt)obj.n_incorrect_s_minus_updated(src, evnt));
+            addlistener(obj.protocol, 'n_rewards_given', 'PostSet', @(src, evnt)obj.n_rewards_given_updated(src, evnt));
             
             set(obj.view.gui.s_plus_axes, 'ylim', [-0.05, 1.05], 'ytick', [0, 1]);
             set(obj.view.gui.s_minus_axes, 'ylim', [-0.05, 1.05], 'ytick', [0, 1]);
@@ -63,6 +64,9 @@ classdef ProtocolGUIController < handle
             obj.update_plot();
         end
         
+        function n_rewards_given_updated(obj, ~, ~)
+            obj.view.gui.total_rewards_given.Text = sprintf('%i', obj.protocol.n_rewards_given);
+        end
         
         function update_plot(obj)
             
