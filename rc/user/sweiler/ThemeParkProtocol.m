@@ -163,11 +163,13 @@ classdef ThemeParkProtocol < handle
             obj.running = false;
             obj.tcp_client.writeline('rc2_stopping');
             delete(obj.tcp_client);
-            obj.rc2ctl.stop_acq();
             
             % log the info
             fname = [obj.rc2ctl.saver.save_root_name(), '_themepark.mat'];
             fname = fullfile(obj.rc2ctl.saver.save_fulldir, fname);
+            bin_fname = obj.rc2ctl.saver.logging_fname();
+            
+            obj.rc2ctl.stop_acq();
             
             protocol_number = obj.protocol_id;
             n_trials = length(obj.stimulus_type_list);
@@ -176,8 +178,7 @@ classdef ThemeParkProtocol < handle
             
             save(fname, 'protocol_number', 'n_trials', 'stimulus_type', 'response');
             
-            try
-                bin_fname = obj.rc2ctl.saver.logging_fname();
+            try    
                 analyze_and_plot_licking_data(bin_fname);
             catch
             end
