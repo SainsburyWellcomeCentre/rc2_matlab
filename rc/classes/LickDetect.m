@@ -17,6 +17,7 @@ classdef LickDetect < handle
         n_windows
         window_size_ms
         n_lick_windows
+        n_consecutive_windows
         detection_window_is_triggered
         lick_threshold
         enable_reward = true
@@ -30,6 +31,7 @@ classdef LickDetect < handle
     
     properties (SetAccess = private, Hidden = true)
         
+        consecutive_window_idx
         n_samples_per_window
         window_data
         total_window_samples
@@ -86,6 +88,7 @@ classdef LickDetect < handle
             obj.n_windows = config.lick_detect.n_windows;
             obj.window_size_ms = config.lick_detect.window_size_ms;
             obj.n_lick_windows = config.lick_detect.n_lick_windows;
+            obj.n_consecutive_windows = config.lick_detect.n_consecutive_windows;
             obj.trigger_channel = config.lick_detect.trigger_channel;
             obj.lick_channel = config.lick_detect.lick_channel;
             obj.detection_window_is_triggered = config.lick_detect.detection_window_is_triggered;
@@ -140,6 +143,7 @@ classdef LickDetect < handle
             
             % preallocate array to store lick data
             obj.window_data = nan(obj.n_samples_per_window, obj.n_windows);
+            obj.consecutive_window_idx = bsxfun(@plus, (1:obj.n_consecutive_windows)', (0:(obj.n_windows-obj.n_consecutive_windows)));
             obj.current_window_sample_idx = 1;
             obj.running = false;
         end
@@ -161,17 +165,36 @@ classdef LickDetect < handle
         
         function lick_detected = detect_lick(obj, lick_data)
             
+            % the last sample point after including this set of lick data
             end_sample_idx = obj.current_window_sample_idx + length(lick_data) - 1;
             
+            % if that sample point is beyond all windows
             if end_sample_idx > obj.total_window_samples
+                % restrict the lick data to just that occurring within the
+                % windows
                 n_lick_samples = obj.total_window_samples - obj.current_window_sample_idx + 1;
                 obj.window_data(obj.current_window_sample_idx:end) = lick_data(1:n_lick_samples);
             else
+                % otherwise take all the lick data
                 obj.window_data(obj.current_window_sample_idx:end_sample_idx) = lick_data;
             end
             
+            % put the last sample of the previous window in front of the
+            % next window in case lick rises above threshold on first
+            % sample point of window
+            % find sample points above the lick threshold and take the
+            % difference along columnes (i.e. in each window)
             diff_mtx = diff([[nan, obj.window_data(end, 1:end-1)]; obj.window_data] > obj.lick_threshold, [], 1);
-            lick_detected = sum(max(diff_mtx > 0, [], 1)) >= obj.n_lick_windows;
+            
+            % has lick occurred in the window
+            lick_in_window = max(diff_mtx > 0, [], 1);
+            
+            % new lick detection criteria... licks must occur in
+            % a subset of consecutive windows
+            lick_detected = any(sum(lick_in_window(obj.consecutive_window_idx), 1) >= obj.n_lick_windows);
+            
+            % old criteria - >= obj.n_lick_windows across all windows
+%             lick_detected = sum(lick_in_window) >= obj.n_lick_windows;
             
             obj.current_window_sample_idx = obj.current_window_sample_idx + length(lick_data);
 %             obj.last_lick_sample_value = lick_data(end);
