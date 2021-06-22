@@ -10,6 +10,7 @@ classdef Reward < handle
     
     properties (SetObservable = true, SetAccess = private)
     
+        n_rewards_counter = 0;
         duration
     end
     
@@ -18,6 +19,8 @@ classdef Reward < handle
         min_duration = 1;
         max_duration = 500;
         rand_timer
+        
+        total_duration_on = 0;
     end
     
     properties (Hidden = true)
@@ -43,6 +46,14 @@ classdef Reward < handle
             % duration
             obj.duration = config.reward.duration;
         end
+        
+        
+        function reset_n_rewards_counter(obj)
+        %%Resets the counters
+            obj.n_rewards_counter = 0;
+            obj.total_duration_on = 0;
+        end
+        
         
         
         function start_reward(obj, wait_for_reward)
@@ -119,6 +130,9 @@ classdef Reward < handle
         %   Set the pump to pulse for obj.duration milliseconds.
         
             obj.pump.pulse(obj.duration);
+            
+            obj.n_rewards_counter = obj.n_rewards_counter + 1;
+            obj.total_duration_on = obj.total_duration_on + obj.duration;
         end
     end
 end
