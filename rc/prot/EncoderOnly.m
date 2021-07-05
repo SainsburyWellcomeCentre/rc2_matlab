@@ -15,7 +15,7 @@ classdef EncoderOnly < handle
         log_trial = false
         log_fname = ''
         
-        integrate_using = 'teensy'  % 'teensy' or 'pc'
+        integrate_using = 'pc'  % 'teensy' or 'pc'
     end
     
     properties (SetAccess = private)
