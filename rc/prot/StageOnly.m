@@ -136,7 +136,7 @@ classdef StageOnly < handle
                 obj.ctl.disable_teensy.on();
                 obj.ctl.soloist.reset_pso();
                 real_time_offset_error = ...
-                    obj.ctl.soloist.calibrate_zero(obj.back_limit, obj.forward_limit, 0); % obj.ctl.soloist.ai_offset
+                    obj.ctl.soloist.calibrate_zero(obj.back_limit, obj.forward_limit, 0, [], true); % obj.ctl.soloist.ai_offset
                 obj.ctl.disable_teensy.off();
                 
                 % Retrieve the *EXPECTED* offset on the soloist, given the

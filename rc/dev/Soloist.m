@@ -237,7 +237,7 @@ classdef Soloist < handle
         end
         
         
-        function average_offset_mV = calibrate_zero(obj, back_pos, forward_pos, offset, no_gear)
+        function average_offset_mV = calibrate_zero(obj, back_pos, forward_pos, offset, no_gear, leave_enabled)
         %%proc = calibrate_zero(obj, back_pos, forward_pos, offset, no_gear)
         %   
         %   Runs a calibration routine to determine the correct voltage
@@ -250,10 +250,12 @@ classdef Soloist < handle
         %
         %   'offset' indicates the inital voltage offset to try.
         %
-        %   'no_gear', if true run without gear mode
+        %   'no_gear', if true run without gear mode (default = false)
+        %   'leave_enabled', if true, stage returns enabled (default =
+        %   false) (no effect if no_gear is true)
         
             VariableDefault('no_gear', false);
-        
+            VariableDefault('leave_enabled', false)
         
             % check 'back_pos'
             if ~isnumeric(back_pos) || isinf(back_pos) || isnan(back_pos)
@@ -297,10 +299,12 @@ classdef Soloist < handle
             
             if no_gear
                 fname = obj.full_command('calibrate_zero_no_gear');
+                cmd = sprintf('%s %i %i %.8f %i', fname, back_pos, forward_pos, offset);
             else
                 fname = obj.full_command('calibrate_zero');
+                cmd = sprintf('%s %i %i %.8f %i', fname, back_pos, forward_pos, offset, leave_enabled);
             end
-            cmd = sprintf('%s %i %i %.8f', fname, back_pos, forward_pos, offset);
+            
             disp(cmd)
             
             % start running the process
