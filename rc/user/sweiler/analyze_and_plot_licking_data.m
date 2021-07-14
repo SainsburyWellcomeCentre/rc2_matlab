@@ -20,13 +20,14 @@ end
 vis_stim_chan_idx           = strcmp(channel_names, 'visual_stimulus_computer_minidaq');
 lick_chan_idx               = strcmp(channel_names, 'lick');
 pump_chan_idx               = strcmp(channel_names, 'pump');
-% photodiode_idx              = strcmp(channel_names, 'photodiode_left');
+photodiode_idx              = strcmp(channel_names, 'photodiode_left');
 
 % time base of data
 timebase                    = (0:size(data, 1)-1)*dt;
 
 % signals
 vis_stim_signal             = data(:, vis_stim_chan_idx);
+photodiode_signal           = data(:, photodiode_idx);
 lick_signal                 = data(:, lick_chan_idx);
 pump_signal                 = data(:, pump_chan_idx);
 % photodiode_signal           = data(:, photodiode_idx);
@@ -36,6 +37,7 @@ plot(timebase, vis_stim_signal);
 hold on;
 plot(timebase, lick_signal);
 plot(timebase, pump_signal);
+plot(timebase, photodiode_signal);
 
 % look for stimulus on
 vis_stim_onset_flag         = diff(vis_stim_signal > vis_stim_threshold) == 1;
@@ -52,6 +54,7 @@ if online_data_exists
     % if not equal issue a warning
     if n_trials ~= online_data.n_trials
         warning('Number of trials save to .mat file and number of expected trials from raw data do not match');
+        
     end
 end
 
@@ -74,8 +77,12 @@ end
 
 % index of s+ and s- trials
 if online_data_exists
-    s_plus_trial_idx            = strcmp(online_data.stimulus_type, 's_plus');
-    s_minus_trial_idx           = strcmp(online_data.stimulus_type, 's_minus');
+    %wasn't working so I converted to string - AA on 05/07/2021
+    %s_plus_trial_idx            = strcmp(online_data.stimulus_type, 's_plus');
+    %s_minus_trial_idx           = strcmp(online_data.stimulus_type, 's_minus');
+    
+    s_plus_trial_idx           = strcmp(string(online_data.stimulus_type), 's_plus');
+    s_minus_trial_idx          = strcmp(string(online_data.stimulus_type), 's_minus');
 else
     s_plus_trial_idx            = true(1, n_trials);
     s_minus_trial_idx           = false(1, n_trials);
