@@ -84,14 +84,14 @@ classdef ThemeParkRC2 < handle
             
             if protocol_id == 1
                 config.lick_detect.n_windows        = 1;
-                config.lick_detect.window_size_ms   = 2000;
+                config.lick_detect.window_size_ms   = 250;
                 config.lick_detect.n_lick_windows   = 1;
                 config.lick_detect.detection_window_is_triggered = 2;  % rewards given when trigger is high
             elseif protocol_id == 2
-                config.lick_detect.n_windows        = 8;
+                config.lick_detect.n_windows        = 16;
                 config.lick_detect.window_size_ms   = 250;
-                config.lick_detect.n_lick_windows   = 1;
-                config.lick_detect.n_consecutive_windows = 4;
+                config.lick_detect.n_lick_windows   = 2;
+                config.lick_detect.n_consecutive_windows = 2;
                 config.lick_detect.detection_window_is_triggered = 1;
             elseif protocol_id == 3
                 config.lick_detect.n_windows        = 8;
