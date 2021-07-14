@@ -16,6 +16,9 @@ classdef ThemeParkProtocol < handle
         stimulus_type_list = {}
         is_correct = []
         lick_detected = -1
+        
+        h_listener_lick
+        h_listener_reward
     end
     
     properties (SetObservable = true)
@@ -39,17 +42,26 @@ classdef ThemeParkProtocol < handle
             obj.tcp_client = tcp_client;
             obj.protocol_id = protocol_id;
             
-            addlistener(obj.rc2ctl.lick_detector, 'lick_occurred_in_window', ...
+            obj.h_listener_lick = addlistener(obj.rc2ctl.lick_detector, 'lick_occurred_in_window', ...
                 'PostSet', @obj.lick_notification);
-            addlistener(obj.rc2ctl.reward, 'n_rewards_counter', ...
+            obj.h_listener_reward = addlistener(obj.rc2ctl.reward, 'n_rewards_counter', ...
                 'PostSet', @obj.n_rewards_given_updated);
+        end
+        
+        
+        
+        function delete(obj)
+            
+            fprintf('deleting current protocol object\n');
+            delete(obj.h_listener_lick);
+            delete(obj.h_listener_reward);
         end
         
         
         
         function run(obj)
             
-            if ismember(obj.protocol_id, 1:5)
+            if ismember(obj.protocol_id, [1:5, 101, 102])
                 
                 % reset variables
                 obj.current_trial = 0;
