@@ -1,7 +1,8 @@
 function analyze_and_plot_licking_data(bin_fname)
 
 % padding around visual onset
-padding                     = [-5, 3];
+padding                     = [-11, 5];
+vis_stim_duration           = 4;
 vis_stim_threshold          = 2.5;
 pump_threshold              = 2.5;
 lick_threshold              = 2;
@@ -96,13 +97,13 @@ end
 figure();
 h_ax_s_plus             = subplot(2, 1, 1);
 hold on;
-plot_raster(h_ax_s_plus, lick_times_relative(s_plus_trial_idx));
+plot_raster(h_ax_s_plus, lick_times_relative(s_plus_trial_idx), vis_stim_duration);
 set(h_ax_s_plus, 'xlim', padding);
 if online_data_exists
     ylabel(h_ax_s_plus, 'S+ trial #');
     h_ax_s_minus = subplot(2, 1, 2);
     hold on;
-    plot_raster(h_ax_s_minus, lick_times_relative(s_minus_trial_idx));
+    plot_raster(h_ax_s_minus, lick_times_relative(s_minus_trial_idx), vis_stim_duration);
     ylabel(h_ax_s_minus, 'S- trial #');
     set(h_ax_s_minus, 'xlim', padding);
 else
@@ -115,13 +116,13 @@ figure()
 edges                   = padding(1):0.25:padding(2);
 h_ax_s_plus = subplot(2, 1, 1);
 hold on;
-plot_histogram(h_ax_s_plus, lick_times_relative(s_plus_trial_idx), edges);
+plot_histogram(h_ax_s_plus, lick_times_relative(s_plus_trial_idx), edges , vis_stim_duration);
 set(h_ax_s_plus, 'xlim', padding);
 if online_data_exists
     title(h_ax_s_plus, 'S+ trial');
     h_ax_s_minus = subplot(2, 1, 2);
     hold on;
-    plot_histogram(h_ax_s_minus, lick_times_relative(s_minus_trial_idx), edges);
+    plot_histogram(h_ax_s_minus, lick_times_relative(s_minus_trial_idx), edges, vis_stim_duration);
     set(h_ax_s_minus, 'xlim', padding);
     title(h_ax_s_minus, 'S- trial');
 else
@@ -131,9 +132,9 @@ end
 
 
 
-function plot_raster(h_ax, lick_times)
+function plot_raster(h_ax, lick_times, vis_stim_duration)
 
-fill(h_ax, [0, 2, 2, 0], [0, 0, length(lick_times), length(lick_times)], [0.7, 0.7, 0.7]);
+fill(h_ax, [0, vis_stim_duration, vis_stim_duration, 0], [0, 0, length(lick_times), length(lick_times)], [0.7, 0.7, 0.7]);
 for i = 1 : length(lick_times)
     n_licks = length(lick_times{i});
     scatter(h_ax, lick_times{i}, i*ones(1, n_licks), [], 'k', 'fill');
@@ -145,12 +146,12 @@ set(h_ax, 'ylim', [0, length(lick_times)+1], 'plotboxaspectratio', [2, 1, 1]);
 
 
 
-function plot_histogram(h_ax, lick_times, edges)
+function plot_histogram(h_ax, lick_times, edges, vis_stim_duration)
 
-fill(h_ax, [0, 2, 2, 0], [0, 0, length(lick_times), length(lick_times)], [0.7, 0.7, 0.7]);
+fill(h_ax, [0, vis_stim_duration, vis_stim_duration, 0], [0, 0, length(lick_times), length(lick_times)], [0.7, 0.7, 0.7]);
 histogram(h_ax, [lick_times{:}], edges);
 line(h_ax, [0, 0], get(h_ax, 'ylim'), 'color', 'k', 'linestyle', '--');
-line(h_ax, [2, 2], get(h_ax, 'ylim'), 'color', 'k', 'linestyle', '--');
+line(h_ax, [vis_stim_duration, vis_stim_duration], get(h_ax, 'ylim'), 'color', 'k', 'linestyle', '--');
 set(h_ax, 'plotboxaspectratio', [2, 1, 1]);
 xlabel(h_ax, 'Time (s)');
 

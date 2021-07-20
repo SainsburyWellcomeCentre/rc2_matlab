@@ -144,10 +144,10 @@ if online_data_exists
     ylabel(h_ax_s_minus, 'S- trial #');
     set(h_ax_s_minus, 'xlim', padding);
     annotation('textbox', [.8 .9 .1 .1],'String',protocol_n, 'EdgeColor', 'none');
-    %annotation('textbox', [.8 .85 .1 .1], 'String',strcat(num2str(total_water), 'ul') , 'EdgeColor', 'none');
+    annotation('textbox', [.8 .85 .1 .1], 'String',strcat(num2str(total_water), 'ul') , 'EdgeColor', 'none');
     else
     annotation('textbox', [.8 .9 .1 .1],'String',protocol_n, 'EdgeColor', 'none');
-    %annotation('textbox', [.8 .85 .1 .1], 'String',strcat(num2str(total_water), 'ul') , 'EdgeColor', 'none');
+    annotation('textbox', [.8 .85 .1 .1], 'String',strcat(num2str(total_water), 'ul') , 'EdgeColor', 'none');
     end
 else
     ylabel(h_ax_s_plus, 'Trial #');
@@ -175,10 +175,10 @@ if online_data_exists
     set(h_ax_s_minus, 'xlim', padding);
     subtitle(h_ax_s_minus, 'S- trial');
     annotation('textbox', [.8 .9 .1 .1],'String',protocol_n, 'EdgeColor', 'none');
-    %annotation('textbox', [.8 .85 .1 .1], 'String',strcat(num2str(total_water), 'ul') , 'EdgeColor', 'none');
+    annotation('textbox', [.8 .85 .1 .1], 'String',strcat(num2str(total_water), 'ul') , 'EdgeColor', 'none');
     else
     annotation('textbox', [.8 .9 .1 .1],'String',protocol_n, 'EdgeColor', 'none');
-    %annotation('textbox', [.8 .85 .1 .1], 'String',strcat(num2str(total_water), 'ul') , 'EdgeColor', 'none');
+    annotation('textbox', [.8 .85 .1 .1], 'String',strcat(num2str(total_water), 'ul') , 'EdgeColor', 'none');
     end
 else
     subtitle(h_ax_s_plus, 'All trials');
