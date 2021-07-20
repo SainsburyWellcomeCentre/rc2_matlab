@@ -141,6 +141,7 @@ classdef ThemeParkRC2 < handle
             
             % close the gui
             if ismember(protocol_id, valid_protocol_ids)
+                delete(tcp_client_stimulus);
                 delete(obj.protocol);
                 delete(obj.protocol_gui);
             end
