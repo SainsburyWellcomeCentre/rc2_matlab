@@ -37,7 +37,7 @@ classdef ThemeParkRC2 < handle
         
         function start_protocol(obj, protocol_id)
             
-            valid_protocol_ids = [1:5, 101, 102];
+            valid_protocol_ids = [1:5, 101:104];
             
             % make sure protocol is known
             assert(ismember(protocol_id, valid_protocol_ids), 'Unknown protocol ID (1-5)');
@@ -117,12 +117,11 @@ classdef ThemeParkRC2 < handle
                 config.lick_detect.n_lick_windows   = 2;
                 config.lick_detect.n_consecutive_windows = 4;
                 config.lick_detect.detection_window_is_triggered = 1;
-            elseif protocol_id == 102
+            elseif ismember(protocol_id, [102, 103, 104])
                 config.lick_detect.n_windows        = 1;
                 config.lick_detect.window_size_ms   = 250;
                 config.lick_detect.n_lick_windows   = 1;
                 config.lick_detect.detection_window_is_triggered = 2;
-                obj.ctl.pump.enabled = false;
             end
             
             % reinitialize the lick detection module....
