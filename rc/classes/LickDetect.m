@@ -318,8 +318,6 @@ classdef LickDetect < handle
         
         function on_lick_detected(obj)
             
-            fprintf('lick detected!!\n');
-            
             % store the time of the lick
             obj.n_licks_detected = obj.n_licks_detected + 1;
             obj.last_lick_time = toc(obj.ctl.tic);

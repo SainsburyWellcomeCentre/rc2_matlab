@@ -1,8 +1,12 @@
 classdef Pump < handle
     
-    properties (SetAccess = private)
+    properties
         
         enabled
+    end
+    
+    properties (SetAccess = private)
+        
         chan
         state
     end

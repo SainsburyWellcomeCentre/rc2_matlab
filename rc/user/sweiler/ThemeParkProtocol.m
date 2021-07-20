@@ -52,7 +52,6 @@ classdef ThemeParkProtocol < handle
         
         function delete(obj)
             
-            fprintf('deleting current protocol object\n');
             delete(obj.h_listener_lick);
             delete(obj.h_listener_reward);
         end
@@ -194,6 +193,9 @@ classdef ThemeParkProtocol < handle
                 analyze_and_plot_licking_data(bin_fname);
             catch
             end
+            
+            delete(obj.h_listener_lick);
+            delete(obj.h_listener_reward);
         end
         
         

@@ -79,7 +79,8 @@ classdef Reward < handle
             % delete old timers
             if ~isempty(obj.rand_timer)
                 if isvalid(obj.rand_timer)
-                    delete(obj.rand_timer)
+                    return
+%                     delete(obj.rand_timer)
                 end
             end
             
@@ -97,6 +98,7 @@ classdef Reward < handle
                 obj.rand_timer = timer();
                 obj.rand_timer.StartDelay = interval;
                 obj.rand_timer.TimerFcn = @(src, evt)obj.give_reward(src, evt);
+                obj.rand_timer.StopFcn = @(src, evt)obj.delete_timer(src, evt);
                 start(obj.rand_timer)
             end
         end
@@ -128,11 +130,17 @@ classdef Reward < handle
         function give_reward(obj, ~, ~)
         %%GIVE_REWARD(obj, ~, ~)
         %   Set the pump to pulse for obj.duration milliseconds.
-        
+            
             obj.pump.pulse(obj.duration);
             
             obj.n_rewards_counter = obj.n_rewards_counter + 1;
             obj.total_duration_on = obj.total_duration_on + obj.duration;
+        end
+        
+        
+        function delete_timer(obj, ~, ~)
+            
+            delete(obj.rand_timer)
         end
     end
 end
