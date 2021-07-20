@@ -4,7 +4,7 @@ function config = config_sweiler()
 % SAVING %%%
 %%%%%%%%%%%%
 config.saving.enable                    = true;
-config.saving.save_to                   = 'C:\Users\Margrie_Lab1\Documents\temp_data';  % where to save data
+config.saving.save_to                   = 'C:\Users\Margrie_Lab1\Documents\raw_data';  % where to save data
 config.saving.config_file               = mfilename('fullpath');  % current file path
 config.saving.main_dir                  = 'C:\Users\Margrie_Lab1\Documents\MATLAB\rc2_matlab';  
 config.saving.git_dir                   = 'C:\Users\Margrie_Lab1\Documents\MATLAB\rc2_matlab\.git';  % git directory
