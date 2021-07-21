@@ -3,7 +3,7 @@ classdef ThemeParkProtocol < handle
     properties
         
         rc2ctl
-        tcp_client
+        tcp_client_stimulus
         protocol_id
     end
     
@@ -36,10 +36,10 @@ classdef ThemeParkProtocol < handle
     
     methods
         
-        function obj = ThemeParkProtocol(rc2ctl, tcp_client, protocol_id)
+        function obj = ThemeParkProtocol(rc2ctl, tcp_client_stimulus, protocol_id)
             
             obj.rc2ctl = rc2ctl;
-            obj.tcp_client = tcp_client;
+            obj.tcp_client_stimulus = tcp_client_stimulus;
             obj.protocol_id = protocol_id;
             
             obj.h_listener_lick = addlistener(obj.rc2ctl.lick_detector, 'lick_occurred_in_window', ...
@@ -81,8 +81,8 @@ classdef ThemeParkProtocol < handle
                 % keep looping for as long as stimuli are presented
                 while true
                     
-                    % wait for bytes from stimulus computer
-                    while obj.tcp_client.NumBytesAvailable == 0
+                    % wait for info from stimulus computer
+                    while obj.tcp_client_stimulus.NumBytesAvailable == 0
                         pause(0.001);
                         if obj.abort
                             obj.running = false;
@@ -91,8 +91,10 @@ classdef ThemeParkProtocol < handle
                         end
                     end
                     
+                    obj.lick_detected = -1;
+                    
                     % get protocol type 's_plus' or 's_minus'
-                    obj.current_stimulus_type = obj.tcp_client.readline();
+                    obj.current_stimulus_type = obj.tcp_client_stimulus.readline();
                     
                     % make sure return value is s_plus or s_minus
                     assert(ismember(obj.current_stimulus_type, {'s_plus', 's_minus'}), ...
@@ -100,6 +102,10 @@ classdef ThemeParkProtocol < handle
                     
                     % next trial
                     obj.current_trial = obj.current_trial + 1;
+                    
+                    % print info about the trial
+                    fprintf('Trial: %i, stimulus: %s, bytes available: %i\n', ...
+                        obj.current_trial, obj.current_stimulus_type, obj.tcp_client_stimulus.NumBytesAvailable);
                     
                     % if 's_minus' trial then we suppress the giving of reward
                     if strcmp(obj.current_stimulus_type, 's_minus')
@@ -113,7 +119,7 @@ classdef ThemeParkProtocol < handle
                     
                     % send signal back to visual stimulus computer
                     %   assumes that vis stim computer is waiting...
-                    obj.tcp_client.writeline('start_trial');
+                    obj.tcp_client_stimulus.writeline('start_trial');
                     
                     % wait for update of licking variable
                     while obj.lick_detected == -1
@@ -172,8 +178,8 @@ classdef ThemeParkProtocol < handle
         function cleanup(obj)
             
             obj.running = false;
-            obj.tcp_client.writeline('rc2_stopping');
-            delete(obj.tcp_client);
+            obj.tcp_client_stimulus.writeline('rc2_stopping');
+            delete(obj.tcp_client_stimulus);
             
             % log the info
             fname = [obj.rc2ctl.saver.save_root_name(), '_themepark.mat'];

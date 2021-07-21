@@ -50,22 +50,22 @@ classdef ThemeParkRC2 < handle
             tcp_client = tcpclient(obj.remote_ip, obj.remote_port_prepare);
             % setup another connection which handles the stimulus
             tcp_client_stimulus = tcpclient(obj.remote_ip, obj.remote_port_stimulus);
-            
+           
             % send protocol, animal and session name
             cmd = sprintf('protocol%i:%s_%s', protocol_id, animal_id, session_name);
+            fprintf('sending protocol information to visual stimulus computer\n');
             tcp_client.writeline(cmd);
             
             % block until we get a response
-            fprintf('Waiting for response from visual stimulus computer:\n');
+            fprintf('waiting for visual stimulus computer to finish preparing\n');
             while tcp_client.NumBytesAvailable == 0
             end
             return_message = tcp_client.readline();
             
-            
             if strcmp(return_message, 'abort')
-                error('Return signal from visual stimulus computer was to abort');
+                error('return signal from visual stimulus computer was to abort');
             elseif ~strcmp(return_message, 'visual_stimulus_setup_complete')
-                error('Unknown return signal from visual stimulus computer');
+                error('unknown return signal from visual stimulus computer');
             end
             
             % set the save name
@@ -76,10 +76,6 @@ classdef ThemeParkRC2 < handle
             config                              = obj.config; %#ok<*PROPLC> % original config
             config.lick_detect.enable           = true;
             
-            % temp
-%             config.lick_detect.trigger_channel      = 3;   % index of channel in "config.nidaq.ai.channel_names" not analog input channel ID
-%             config.lick_detect.lick_channel         = 5;   % index of channel in "config.nidaq.ai.channel_names" not analog input channel ID
-%             config.lick_detect.detection_window_is_triggered = 1;
             config.lick_detect.lick_threshold       = 2;
             
             if protocol_id == 1
@@ -141,6 +137,7 @@ classdef ThemeParkRC2 < handle
             
             % close the gui
             if ismember(protocol_id, valid_protocol_ids)
+                delete(tcp_client);
                 delete(tcp_client_stimulus);
                 delete(obj.protocol);
                 delete(obj.protocol_gui);

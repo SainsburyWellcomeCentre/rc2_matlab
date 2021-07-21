@@ -54,7 +54,7 @@ if online_data_exists
     
     % if not equal issue a warning
     if n_trials ~= online_data.n_trials
-        warning('Number of trials save to .mat file and number of expected trials from raw data do not match');
+        fprintf('Number of trials save to .mat file and number of expected trials from raw data do not match\n');
         
     end
 end
