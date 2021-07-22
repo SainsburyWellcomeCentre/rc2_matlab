@@ -1,64 +1,69 @@
-animal_id = 'CAA-1114768';
+animal_id = 'test_2_cameras_themepark';
 session_n = 1;
 
 cam_data_dir = 'C:\Users\Margrie_Lab1\Desktop\cam_test';
-bin_data_dir = 'C:\Users\Margrie_Lab1\Documents\temp_data';
+bin_data_dir = 'C:\Users\Margrie_Lab1\Documents\raw_data';
 
+n_cameras = 2;
+show_frames = false;
 
-show_frames = true;
 
 
 %% Load data
 bin_fname  = fullfile(bin_data_dir, animal_id, sprintf('%s_%i_001.bin', animal_id, session_n));
-cam0_fname = fullfile(cam_data_dir, sprintf('%s_%i', animal_id, session_n), 'camera0.mp4');
-cam1_fname = fullfile(cam_data_dir, sprintf('%s_%i', animal_id, session_n), 'camera1.mp4');
 
-% create video reader object
-vr0 = VideoReader(cam0_fname);
-vr1 = VideoReader(cam1_fname);
+cam_fname = cell(1, n_cameras);
+vr = cell(1, n_cameras);
+for cam_i = 1 : n_cameras
+    
+    cam_fname{cam_i} = fullfile(cam_data_dir, sprintf('%s_%i', animal_id, session_n), sprintf('camera%i.mp4', cam_i-1));
+    
+    if ~exist(cam_fname{cam_i}, 'file')
+        avi_fname = strrep(cam_fname{cam_i}, '.mp4', '.avi');
+        cmd = sprintf('ffmpeg -i %s %s', avi_fname, cam_fname{cam_i});
+        system(cmd)
+    end
+    
+    vr{cam_i} = VideoReader(cam_fname{cam_i});
+end
 
 % load bin data
 [data, dt, channel_names, config] = read_rc2_bin(bin_fname);
 
 % preallocate arrays
-brightness0 = nan(1, 1e6);
-brightness1 = nan(1, 1e6);
+brightness = nan(cam_i, 1e6);
 
 % boxes to look at brightness in video frames
-y0 = 1:50;
-x0 = 1:50;
-y1 = 44:84;
-x1 = 475:569;
-
+bbox_x = {1:40, 475:569, 1:400};
+bbox_y = {1:50, 44:84, 1:400};
 
 cnt = 0;
 
-
-while vr1.hasFrame
+while vr{cam_i}.hasFrame
     
     cnt = cnt + 1;
     
-    frame0 = vr0.readFrame();
-    frame0 = frame0(:, :, 1);
-    brightness0(cnt) = sum(sum(frame0(y0, x0)));
+    frame = cell(1, n_cameras);
+    for cam_i = 1 : n_cameras
+        frame{cam_i} = vr{cam_i}.readFrame();
+        frame{cam_i} = frame{cam_i}(:, :, 1);
+        brightness(cam_i, cnt) = sum(sum(frame{cam_i}(bbox_y{cam_i}, bbox_x{cam_i})));
+    end
     
-    frame1 = vr1.readFrame();
-    frame1 = frame1(:, :, 1);
-    brightness1(cnt) = sum(sum(frame1(y1, x1)));
     
     if show_frames
         
         if cnt == 1
             figure()
-            subplot(1, 2, 1);
-            h_im0 = imagesc(frame0);
-            axis image
-            subplot(1, 2, 2);
-            h_im1 = imagesc(frame1);
-            axis image
+            for cam_i = 1 : n_cameras
+                subplot(1, n_cameras, cam_i);
+                h_im(cam_i) = imagesc(frame{cam_i});
+                axis image
+            end
         else
-            set(h_im0, 'cdata', frame0);
-            set(h_im1, 'cdata', frame1);
+            for cam_i = 1 : n_cameras
+                set(h_im(cam_i), 'cdata', frame{cam_i});
+            end
         end
         
         pause(1/100)
@@ -69,24 +74,34 @@ while vr1.hasFrame
 end
 
 % remove any extra entries
-brightness0(cnt+1:end) = [];
-brightness1(cnt+1:end) = [];
-
+brightness(:, cnt+1:end) = [];
 
 
 %% Display data
+n_samples_per_trigger = 167;
+pd_offset = 1.08;
+cam_offset = 127500;
+
 t = (0:size(data, 1)-1)*dt;
+
 figure
 hold on
-plot(t, data(:, 1)-1.08);
+plot(t, data(:, 1) - pd_offset);
 
-t_cam = t(1:167:end);
+t_cam = t(1:n_samples_per_trigger:end);
+
+
 % t_cam = (t_cam(1:length(brightness0)) + t_cam(2:length(brightness0)+1))/2;
-plot(t_cam, (brightness0(1:length(t_cam))-127500)/1e5)
-plot(t_cam, (brightness1(1:length(t_cam))-127500)/1e5)
+for cam_i = 1 : n_cameras
+    if length(t_cam) > size(brightness, 2)
+        plot(t_cam(1:size(brightness, 2)), (brightness(cam_i, :) - cam_offset)/1e5);
+    else
+        plot(t_cam, (brightness(cam_i, 1:length(t_cam)) - cam_offset)/1e5)
+    end
+end
 
 xlabel('(s)');
 ylabel('a.u.');
 
-legend({'Photodiode', 'Cam0 brightness', 'Cam1 brightness'});
+legend({'Photodiode', 'Cam0 brightness', 'Cam1 brightness', 'Cam2 brightness'});
 
