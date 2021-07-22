@@ -174,7 +174,7 @@ config.lick_detect.n_lick_windows       = 2;
 config.lick_detect.n_consecutive_windows= 4;
 config.lick_detect.trigger_channel      = 3;   % index of channel in "config.nidaq.ai.channel_names" not analog input channel ID
 config.lick_detect.lick_channel         = 5;   % index of channel in "config.nidaq.ai.channel_names" not analog input channel ID
-config.lick_detect.detection_window_is_triggered = 1;  % 0 = rewards given on lick detection, 1 = rewards given in window after trigger rise detected, 2 = rewards given when trigger is high
+config.lick_detect.detection_trigger_type = 1;  % 1 = rewards given in window after trigger rise detected, 2 = rewards given when trigger is high
 config.lick_detect.lick_threshold       = 2;
 
 

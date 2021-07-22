@@ -15,9 +15,7 @@ classdef ThemeParkProtocol < handle
         
         stimulus_type_list = {}
         is_correct = []
-        lick_detected = -1
         
-        h_listener_lick
         h_listener_reward
     end
     
@@ -42,17 +40,13 @@ classdef ThemeParkProtocol < handle
             obj.tcp_client_stimulus = tcp_client_stimulus;
             obj.protocol_id = protocol_id;
             
-            obj.h_listener_lick = addlistener(obj.rc2ctl.lick_detector, 'lick_occurred_in_window', ...
-                'PostSet', @obj.lick_notification);
-            obj.h_listener_reward = addlistener(obj.rc2ctl.reward, 'n_rewards_counter', ...
-                'PostSet', @obj.n_rewards_given_updated);
+            obj.h_listener_reward = addlistener(obj.rc2ctl.reward, 'n_rewards_counter', 'PostSet', @obj.n_rewards_given_updated);
         end
         
         
         
         function delete(obj)
             
-            delete(obj.h_listener_lick);
             delete(obj.h_listener_reward);
         end
         
@@ -82,30 +76,17 @@ classdef ThemeParkProtocol < handle
                 while true
                     
                     % wait for info from stimulus computer
-                    while obj.tcp_client_stimulus.NumBytesAvailable == 0
-                        pause(0.001);
-                        if obj.abort
-                            obj.running = false;
-                            obj.abort = false;
-                            return
-                        end
-                    end
-                    
-                    obj.lick_detected = -1;
-                    
-                    % get protocol type 's_plus' or 's_minus'
-                    obj.current_stimulus_type = obj.tcp_client_stimulus.readline();
+                    abort_trial = obj.wait_for_trial_start();
+                    if abort_trial; return; end
                     
                     % make sure return value is s_plus or s_minus
-                    assert(ismember(obj.current_stimulus_type, {'s_plus', 's_minus'}), ...
-                        'Unknown protocol type');
+                    assert(ismember(obj.current_stimulus_type, {'s_plus', 's_minus'}), 'unknown protocol type');
                     
                     % next trial
                     obj.current_trial = obj.current_trial + 1;
                     
                     % print info about the trial
-                    fprintf('Trial: %i, stimulus: %s, bytes available: %i\n', ...
-                        obj.current_trial, obj.current_stimulus_type, obj.tcp_client_stimulus.NumBytesAvailable);
+                    fprintf('Trial: %i, stimulus: %s\n', obj.current_trial, obj.current_stimulus_type);
                     
                     % if 's_minus' trial then we suppress the giving of reward
                     if strcmp(obj.current_stimulus_type, 's_minus')
@@ -115,21 +96,15 @@ classdef ThemeParkProtocol < handle
                     end
                     
                     % reset the lick
-                    obj.rc2ctl.lick_detector.reset_window();
+                    obj.rc2ctl.lick_detector.start_trial();
                     
                     % send signal back to visual stimulus computer
                     %   assumes that vis stim computer is waiting...
                     obj.tcp_client_stimulus.writeline('start_trial');
                     
-                    % wait for update of licking variable
-                    while obj.lick_detected == -1
-                        pause(0.001);
-                        if obj.abort
-                            obj.running = false;
-                            obj.abort = false;
-                            return
-                        end
-                    end
+                    % wait for trial to end
+                    abort_trial = obj.wait_for_trial_end();
+                    if abort_trial; return; end
                     
                     % store stimulus type
                     obj.stimulus_type_list{obj.current_trial} = obj.current_stimulus_type;
@@ -137,7 +112,7 @@ classdef ThemeParkProtocol < handle
                     % if the protocol is S+, then lick is correct response
                     if strcmp(obj.current_stimulus_type, 's_plus')
                         
-                        if obj.lick_detected
+                        if obj.rc2ctl.lick_detector.lick_detected
                             % correct S+ trial
                             obj.is_correct(obj.current_trial) = true;
                             obj.n_correct_s_plus_trials = obj.n_correct_s_plus_trials + 1;
@@ -149,7 +124,7 @@ classdef ThemeParkProtocol < handle
                         
                     elseif strcmp(obj.current_stimulus_type, 's_minus')
                         
-                        if obj.lick_detected
+                        if obj.rc2ctl.lick_detector.lick_detected
                             % incorrect S- trial
                             obj.is_correct(obj.current_trial) = false;
                             obj.n_incorrect_s_minus_trials = obj.n_incorrect_s_minus_trials + 1;
@@ -159,8 +134,6 @@ classdef ThemeParkProtocol < handle
                             obj.n_correct_s_minus_trials = obj.n_correct_s_minus_trials + 1;
                         end
                     end
-                    
-                    obj.lick_detected = -1;
                 end
             end
             % let cleanup handle the stopping
@@ -200,15 +173,7 @@ classdef ThemeParkProtocol < handle
             catch
             end
             
-            delete(obj.h_listener_lick);
             delete(obj.h_listener_reward);
-        end
-        
-        
-        
-        function lick_notification(obj, ~, ~)
-            
-            obj.lick_detected = obj.rc2ctl.lick_detector.lick_occurred_in_window;
         end
         
         
@@ -216,6 +181,44 @@ classdef ThemeParkProtocol < handle
         function n_rewards_given_updated(obj, ~, ~)
             
             obj.n_rewards_given = obj.rc2ctl.reward.n_rewards_counter;
+        end
+        
+        
+        
+        function abort_trial = wait_for_trial_start(obj)
+            
+            abort_trial = false;
+            while obj.tcp_client_stimulus.NumBytesAvailable == 0
+                pause(0.001);
+                if obj.abort
+                    obj.running = false;
+                    obj.abort = false;
+                    abort_trial = true;
+                    return
+                end
+            end
+            
+            % get protocol type 's_plus' or 's_minus'
+            obj.current_stimulus_type = obj.tcp_client_stimulus.readline();
+        end
+        
+        
+        
+        function abort_trial = wait_for_trial_end(obj)
+            
+            abort_trial = false;
+            while obj.tcp_client_stimulus.NumBytesAvailable == 0
+                pause(0.001);
+                if obj.abort
+                    obj.running = false;
+                    obj.abort = false;
+                    abort_trial = true;
+                    return
+                end
+            end
+            
+            msg = obj.tcp_client_stimulus.readline();
+            assert(strcmp(msg, 'trial_end'));
         end
     end
 end

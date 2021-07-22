@@ -14,19 +14,14 @@ classdef LickDetect < handle
     
     properties
         
+        lick_detected
         n_windows
         window_size_ms
         n_lick_windows
         n_consecutive_windows
-        detection_window_is_triggered
+        detection_trigger_type
         lick_threshold
         enable_reward = true
-    end
-    
-    properties (SetObservable = true)
-        n_licks_detected = 0
-        last_lick_time = nan
-        lick_occurred_in_window = -1
     end
     
     properties (SetAccess = private, Hidden = true)
@@ -91,7 +86,7 @@ classdef LickDetect < handle
             obj.n_consecutive_windows = config.lick_detect.n_consecutive_windows;
             obj.trigger_channel = config.lick_detect.trigger_channel;
             obj.lick_channel = config.lick_detect.lick_channel;
-            obj.detection_window_is_triggered = config.lick_detect.detection_window_is_triggered;
+            obj.detection_trigger_type = config.lick_detect.detection_trigger_type;
             
             % optional fields
             if isfield(config.lick_detect, 'trigger_channel_threshold')
@@ -103,7 +98,6 @@ classdef LickDetect < handle
             
             obj.total_window_samples = obj.n_samples_per_window * obj.n_windows;
             
-            obj.reset_counters();
             obj.reset_window();
         end
         
@@ -120,21 +114,15 @@ classdef LickDetect < handle
             
             if ~obj.enabled, return, end
             
-            obj.reset_counters();
             obj.reset_window();
         end
         
         
-        
-        function reset_counters(obj)
+        function start_trial(obj)
             
-            if ~obj.enabled, return, end
-            
-            obj.n_licks_detected    = 0;
-            obj.lick_times          = nan(100000, 1);
-            obj.last_lick_time      = nan;
+            obj.lick_detected = false;
+            obj.reset_window();
         end
-        
         
         
         function reset_window(obj)
@@ -193,30 +181,24 @@ classdef LickDetect < handle
             % a subset of consecutive windows
             lick_detected = any(sum(lick_in_window(obj.consecutive_window_idx), 1) >= obj.n_lick_windows);
             
-            % old criteria - >= obj.n_lick_windows across all windows
-%             lick_detected = sum(lick_in_window) >= obj.n_lick_windows;
-            
             obj.current_window_sample_idx = obj.current_window_sample_idx + length(lick_data);
-%             obj.last_lick_sample_value = lick_data(end);
         end
         
         
         
-        function lick_detected = loop(obj)
+        function loop(obj)
             
             if ~obj.enabled, return, end
             
-            % 'detection_window_is_triggered' == 0
-            %       look for licks continuously
-            % 'detection_window_is_triggered' == 1
+            % 'detection_trigger_type' == 1
             %       look for a rise in the trigger input, and then look for
             %       licks in a window after that rise
-            % 'detection_window_is_triggered' == 2
+            % 'detection_trigger_type' == 2
             %       look for the trigger input to be high, give a reward
             %       upon licks
-            if obj.detection_window_is_triggered == 1
+            if obj.detection_trigger_type == 1
                 
-                lick_detected = false;
+                lick_detected_internal = false;
                 
                 % look for rise in trigger channel
                 if ~obj.running  % detection is not running
@@ -226,26 +208,28 @@ classdef LickDetect < handle
                     if trigger_detected
                         obj.running = true;
                         lick_data = obj.ctl.data(idx:end, obj.lick_channel);
-                        lick_detected = obj.detect_lick(lick_data);
+                        lick_detected_internal = obj.detect_lick(lick_data);
                     end
                     
                 else  % detection is running
                     
                     lick_data = obj.ctl.data(:, obj.lick_channel);
-                    lick_detected = obj.detect_lick(lick_data);
+                    lick_detected_internal = obj.detect_lick(lick_data);
                 end
                 
-                if lick_detected
-                    obj.on_lick_detected()
-                end
-                
-                if obj.current_window_sample_idx > obj.total_window_samples
-                    % if beyond the lick window reset
-                    obj.lick_occurred_in_window = 0;
+                if lick_detected_internal
+                    obj.lick_detected = true;
+                    if obj.enable_reward
+                        obj.ctl.give_reward();
+                    end
                     obj.reset_window();
                 end
                 
-            elseif obj.detection_window_is_triggered == 2
+                if obj.current_window_sample_idx > obj.total_window_samples
+                    obj.reset_window();
+                end
+                
+            elseif obj.detection_trigger_type == 2
                 
                 % trigger channel data
                 trigger_data = obj.ctl.data(:, obj.trigger_channel);
@@ -254,83 +238,35 @@ classdef LickDetect < handle
                 % take lick data where trigger high
                 trigger_high = trigger_data > obj.trigger_channel_threshold;
                 
+                % store for next iteration
+                obj.last_trigger_sample_value = trigger_data(end);
+                
                 % no trigger detected.. do nothing
                 if sum(trigger_high) == 0
-                    obj.last_trigger_sample_value = obj.ctl.data(end, obj.trigger_channel);
                     obj.last_lick_sample_value = obj.ctl.data(end, obj.lick_channel);
                     return
                 end
                 
-                % trigger went high in this window
-                if any(diff(trigger_high) == 1)
-                    obj.running = true;
-                end
+                % get lick data - append last lick value
+                lick_data = [obj.last_lick_sample_value; obj.ctl.data(:, obj.lick_channel)];
+                obj.last_lick_sample_value = lick_data(end);
                 
-                lick_data = obj.ctl.data(trigger_high(2:end), obj.lick_channel);
+                % find points where lick data crosses threshold
+                %    we append a false at the beginning because if the lick
+                %    data went high on that last sample, it should have
+                %    been picked up in the previous window, and also the
+                %    lick data will already be above threshold
+                lick_crossed_threshold = [false; diff(lick_data > obj.lick_threshold, [], 1) == 1];
                 
-                % append the last value from the previous batch or previous
-                % sample
-                if trigger_high(2)
-                    lick_data = [obj.last_lick_sample_value; lick_data];
-                end
-                
-                % look for rises in the lick data in this time
-                lick_detected = any(diff(lick_data > obj.lick_threshold, [], 1) == 1);
-                
-                % if lick detected, give reward and store information
-                if lick_detected
-                    obj.on_lick_detected();
-                end
-                
-                % if trigger was previously detected but window ends low,
-                % then no detection longer running
-                % print out lick_occurred_in_window false... in case no
-                % lick was detected
-                if obj.running && trigger_high(end) == 0
-                    obj.lick_occurred_in_window = 0;
-                    obj.running = false;
-                end
-                
-                % store the trigger and lick channel value at last window
-                obj.last_trigger_sample_value = obj.ctl.data(end, obj.trigger_channel);
-                obj.last_lick_sample_value = obj.ctl.data(end, obj.lick_channel);
-                
-            else
-                
-                % if lick detection window not externally triggered, just
-                % keep looking for licks
-                lick_data = obj.ctl.data(:, obj.lick_channel);
-                lick_detected = obj.detect_lick(lick_data);
-                
-                if lick_detected
-                    obj.on_lick_detected()
-                end
-                
-                if obj.current_window_sample_idx > obj.total_window_samples
-                    % if beyond the lick window reset
-                    obj.lick_occurred_in_window = 0;
-                    obj.reset_window();
+                % if lick crossed threshold whilst trigger was high, reward
+                if any(trigger_high(lick_crossed_threshold))
+                    % give the reward
+                    if obj.enable_reward
+                        obj.ctl.give_reward();
+                    end
+                    obj.lick_detected = true;
                 end
             end
-        end
-        
-        
-        
-        function on_lick_detected(obj)
-            
-            % store the time of the lick
-            obj.n_licks_detected = obj.n_licks_detected + 1;
-            obj.last_lick_time = toc(obj.ctl.tic);
-            obj.lick_times(obj.n_licks_detected) = obj.last_lick_time;
-            
-            % give the reward and reset the window
-            if obj.enable_reward
-                obj.ctl.give_reward();
-            end
-            
-            obj.lick_occurred_in_window = 1;
-            
-            obj.reset_window();
         end
     end
 end
