@@ -29,8 +29,9 @@ classdef ProtocolGUIController < handle
         
         
         function delete(obj)
-            if isvalid(obj.view.gui.UIFigure)
-                close(obj.view.gui.UIFigure);
+            delete(obj.view);
+            if isvalid(obj.protocol)
+                obj.protocol.stop();
             end
         end
         
