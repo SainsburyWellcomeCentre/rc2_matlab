@@ -60,9 +60,9 @@ config.nidaq.log_every                  = 1000;
 % device name
 config.nidaq.ai.dev                     = 'Dev1';
 % nominal channel names (for reference)
-config.nidaq.ai.channel_names           = {'camera', 'scanimage_frameclock', 'photodiode1', 'photodiode2'};
+config.nidaq.ai.channel_names           = {'camera', 'scanimage_frameclock', 'photodiode1', 'photodiode2','grab_start'};
 % 
-config.nidaq.ai.channel_id              = [0:3];
+config.nidaq.ai.channel_id              = [0:4];
 
 
 % offsets and scales to apply to the 
@@ -79,8 +79,8 @@ if config.use_calibration_file
     config.nidaq.ai.scale                   = calibration.scale;
 else
     % default to use if no calibration file
-    config.nidaq.ai.offset                  = [0, 0, 0, 0]; % 
-    config.nidaq.ai.scale                   = [1, 1, 1, 1];
+    config.nidaq.ai.offset                  = [0, 0, 0, 0, 0]; % 
+    config.nidaq.ai.scale                   = [1, 1, 1, 1, 1];
 end
 
 
@@ -138,7 +138,7 @@ config.nidaq.do.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.
 
 config.nidaq.di.dev             = 'Dev1';
 config.nidaq.di.channel_names   = {'from_soloist', 'from_teensy'};
-config.nidaq.di.channel_id      = {'port1/line0', 'port1/line1'};
+config.nidaq.di.channel_id      = {'port0/line0', 'port0/line1'};
 
 
 %%%%%%%%%%%%%%%%%%%%%%
