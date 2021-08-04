@@ -19,8 +19,8 @@ classdef ThreePhotonProtocols < handle
         
         function obj = ThreePhotonProtocols()
             
-            obj.config = config_default_3P(false);
-            obj.ctl = Controller(obj.config);
+            obj.config = config_default_3P();
+            obj.ctl = RC2Controller(obj.config);
         end
         
         

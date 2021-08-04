@@ -1,8 +1,8 @@
 % saving Analog Input
-config = config_default_3P(false);
+config = config_default_3P();
 %%
 
-ctl = Controller(config);
+ctl = RC2Controller(config);
 %%
 ctl.saver.save_to = 'D:\Data\3PData';
 
