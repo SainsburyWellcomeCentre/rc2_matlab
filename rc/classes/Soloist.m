@@ -37,7 +37,6 @@ classdef Soloist < handle
         %   
         %       config - configuration structure
         
-        
             obj.enabled = config.soloist.enable;
             if ~obj.enabled, return, end
             
@@ -269,6 +268,8 @@ classdef Soloist < handle
         %
         %   'no_gear', if true run without gear mode
         
+            if ~obj.enabled; return; end
+            
             VariableDefault('no_gear', false);
         
             if ~obj.enabled, return, end

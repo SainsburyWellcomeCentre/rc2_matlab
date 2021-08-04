@@ -28,6 +28,9 @@ classdef Teensy < handle
         function load(obj, script, force)
             % script = 'forward_only' or 'forward_and_backward'
             %   'calibration_soloist'
+            
+            if ~obj.enabled; return; end
+            
             VariableDefault('force', false);
             
             if ~obj.enabled, return, end
