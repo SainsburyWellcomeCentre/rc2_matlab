@@ -88,6 +88,7 @@ classdef ThemeParkProtocol < handle
                     % print info about the trial
                     fprintf('Trial: %i, stimulus: %s\n', obj.current_trial, obj.current_stimulus_type);
                     
+                    fprintf('setting lick detection variables...');
                     % if 's_minus' trial then we suppress the giving of reward
                     if strcmp(obj.current_stimulus_type, 's_minus')
                         obj.rc2ctl.lick_detector.enable_reward = false;
@@ -97,9 +98,11 @@ classdef ThemeParkProtocol < handle
                     
                     % reset the lick
                     obj.rc2ctl.lick_detector.start_trial();
+                    fprintf('done\n');
                     
                     % send signal back to visual stimulus computer
                     %   assumes that vis stim computer is waiting...
+                    fprintf('sending start message to vis stim computer\n');
                     obj.tcp_client_stimulus.writeline('start_trial');
                     
                     % wait for trial to end
@@ -107,6 +110,7 @@ classdef ThemeParkProtocol < handle
                     if abort_trial; return; end
                     
                     % store stimulus type
+                    fprintf('trial finished, updating response variables...');
                     obj.stimulus_type_list{obj.current_trial} = obj.current_stimulus_type;
                     
                     % if the protocol is S+, then lick is correct response
@@ -134,6 +138,8 @@ classdef ThemeParkProtocol < handle
                             obj.n_correct_s_minus_trials = obj.n_correct_s_minus_trials + 1;
                         end
                     end
+                    fprintf('done\n');
+                    
                 end
             end
             % let cleanup handle the stopping
@@ -150,6 +156,7 @@ classdef ThemeParkProtocol < handle
         
         function cleanup(obj)
             
+            fprint('trial stopped, cleaning up\n');
             obj.running = false;
             obj.tcp_client_stimulus.writeline('rc2_stopping');
             delete(obj.tcp_client_stimulus);
@@ -187,6 +194,10 @@ classdef ThemeParkProtocol < handle
         
         function abort_trial = wait_for_trial_start(obj)
             
+            if obj.tcp_client_stimulus.NumBytesAvailable == 0
+                fprintf('waiting for trial type\n');
+            end
+            
             abort_trial = false;
             while obj.tcp_client_stimulus.NumBytesAvailable == 0
                 pause(0.001);
@@ -199,12 +210,18 @@ classdef ThemeParkProtocol < handle
             end
             
             % get protocol type 's_plus' or 's_minus'
+            fprintf('reading trial type... ');
             obj.current_stimulus_type = obj.tcp_client_stimulus.readline();
+            fprintf('%s\n', obj.current_stimulus_type);
         end
         
         
         
         function abort_trial = wait_for_trial_end(obj)
+            
+            if obj.tcp_client_stimulus.NumBytesAvailable == 0
+                fprintf('waiting for end of trial message\n');
+            end
             
             abort_trial = false;
             while obj.tcp_client_stimulus.NumBytesAvailable == 0
@@ -217,7 +234,9 @@ classdef ThemeParkProtocol < handle
                 end
             end
             
+            fprintf('reading end of trial message');
             msg = obj.tcp_client_stimulus.readline();
+            fprintf('%s\n', msg);
             assert(strcmp(msg, 'trial_end'));
         end
     end
