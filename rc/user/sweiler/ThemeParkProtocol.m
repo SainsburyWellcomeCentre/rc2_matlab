@@ -156,7 +156,7 @@ classdef ThemeParkProtocol < handle
         
         function cleanup(obj)
             
-            fprint('trial stopped, cleaning up\n');
+            fprintf('trial stopped, cleaning up\n');
             obj.running = false;
             obj.tcp_client_stimulus.writeline('rc2_stopping');
             delete(obj.tcp_client_stimulus);
