@@ -14,7 +14,7 @@ classdef Coupled < handle
         log_trial = false
         log_fname = ''
         
-        solenoid_correction = 2.35  % millivolts
+        solenoid_correction = 0.9500 % 2.35  % millivolts
     end
     
     properties (SetAccess = private)
