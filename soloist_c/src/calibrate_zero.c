@@ -23,10 +23,7 @@ main(int argc, char **argv)
     SoloistHandle *handles;
 	DWORD handle_count = 0;
     
-    DOUBLE cnts_per_unit;
     DOUBLE return_value, return_value_pos, return_value_vel;
-    double max_speed_scale;
-    double gear_scale;
     int gear_set;
     int leave_enabled;
     
@@ -55,15 +52,8 @@ main(int argc, char **argv)
     // Connect to soloist.
     if(!SoloistConnect(&handles, &handle_count)) { cleanup(handles, handle_count); }
     
-    // Get the number of counts per unit.
-    if(!SoloistParameterGetValue(handles[0], PARAMETERID_CountsPerUnit, 1, &cnts_per_unit)) { cleanup(handles, handle_count); }
-    
-    // Calculate the scale from the input voltage, speed and counts per unit
-    max_speed_scale = (MAX_INPUT_SPEED * cnts_per_unit)/1000;
-    gear_scale = 0; //-(max_speed_scale * (1/MAX_INPUT_VOLTAGE));
-    
     // Set the gearing parameters...
-    gear_set = set_gear_params(handles, GEARCAM_SOURCE, gear_scale, DEADBAND, 0);
+    gear_set = set_gear_params(handles, GEARCAM_SOURCE, 0, 0, 0);
     if (gear_set != 0) { cleanup(handles, handle_count); }
     
     // Enable
