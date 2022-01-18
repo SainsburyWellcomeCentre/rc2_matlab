@@ -1,18 +1,50 @@
 classdef VisStimSequence < handle
-    
+% VisStimSequence Class for starting the visual stimulus from the GUI
+%
+%   VisStimSequence Properties:
+%       running                 - whether the trial is currently running
+%                                 (true = running, false = not running)
+%       current_trial           - set to 1
+%
+%   VisStimSequence Methods:
+%       run                     - run the trial
+%       stop                    - stop the trial
+%
+%
+%   The reason this class exists is to provide an interface like
+%   ProtocolSequence (which the GUI uses to run training and experiments),
+%   but for simply sending a trigger to the visual stimulus computer to
+%   start a visual stimulus.
+%
+%   However, there are better ways of achiving this, e.g. maybe create a VisStim
+%   trial class and then insert it into an object of ProtocolSequence
+%   class.
+%
+%   TODO: there should be a get_config method
+%
+%   See also: VisStimSequence, run
+
+
     properties
+        
         ctl
         running = false
     end
     
     properties (SetObservable = true)
+        
         current_trial = 1
     end
+    
+    
     
     methods
         
         function obj = VisStimSequence(ctl)
-        %%obj = VISSTIMSEQUENCE(ctl)
+        % VisStimSequence
+        %
+        %   VisStimSequence(CTL)
+        %
         %   Protocol for running the visual stimulus.
         %       Start analog input (NIDAQ) recording and clock output.
         %       Sets digital output to visual stimulus low to start the presentation.  
@@ -39,8 +71,16 @@ classdef VisStimSequence < handle
             obj.ctl = ctl;
         end
         
+        
+        
         function run(obj)
-            
+        %%run Runs the "trial"
+        %
+        %   run() runs the "trial".
+        %       1. Starts NIDAQ acquisition
+        %       2. Sets digital output to vis stim computer high
+        %       3. Waits for `stop`
+        
             % function to run when function stops
             h = onCleanup(@obj.cleanup);
             
@@ -65,8 +105,15 @@ classdef VisStimSequence < handle
             end
         end
         
+        
+        
         function stop(obj)
-           
+        %%stop Stops the "trial"
+        %
+        %   stop()
+        %       1. Sets digital output to vis stim computer low
+        %       2. Stops NIDAQ acquisition
+        
             % set abort property true
             obj.running = false;
            
@@ -78,7 +125,12 @@ classdef VisStimSequence < handle
         end
         
         
+        
         function cleanup(obj)
+        %%cleanup Stops the "trial"
+        %
+        %   cleanup() calls `stop`
+        
             obj.stop();
         end
     end

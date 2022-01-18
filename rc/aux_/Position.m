@@ -1,5 +1,18 @@
 classdef Position < handle
-    
+% Position Class for handling the assessment of position of the stage
+% during a trial
+%
+%   Position Properties:
+%       dt                  - 1/sampling rate of velocity trace
+%       position            - current position estimate
+%       deadband            - voltage value below which we do not integrate the value
+%       integrate_on        - true or false, are we currently integrating the trace
+%
+%   Position Methods:
+%       integrate           - perform integration of new velocity data
+%       start               - set position to zero and start integrating
+%       stop                - stop integrating
+
     properties (SetAccess = private)
         
         dt

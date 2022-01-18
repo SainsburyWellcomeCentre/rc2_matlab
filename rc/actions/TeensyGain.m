@@ -1,5 +1,21 @@
 classdef TeensyGain < handle
-    
+% TeensyGain Class for handling digital output sent to the Soloist.
+%
+%   TeensyGain Properties:
+%       gain_up_state       - current state of the gain up digital output (1 or 0)
+%       gain_down_state     - current state of the gain down digital output (1 or 0)
+%       gain_up_chan        - index of the gain up channel in configuration
+%       gain_down_chan      - index of the gain down channel in configuration
+%       ni                  - handle to the NI object
+%
+%   TeensyGain Methods:
+%       gain_up_on           - set gain up digital output high
+%       gain_up_off          - set gain up digital output low
+%       gain_down_on         - set gain down digital output high
+%       gain_down_off        - set gain down digital output low
+%
+% This class controls both the gain up and gain down signals to the Teensy.
+
     properties (SetAccess = private)
         gain_up_state
         gain_down_state

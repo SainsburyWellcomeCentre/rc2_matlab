@@ -1,8 +1,44 @@
 classdef LocoVest2Loco < handle
-    
+%   This is not being used
+%
+% LocoVest2Loco Old class for implementing trial in which there is a
+% change in gain between treadmill velocity and stage velocity.
+%
+%   The trial starts with a gain of 1 between the treadmill velocity and
+%   stage velocity. Then at a certain point along the trial, the gain is
+%   ramped down to 0 so that the treadmill can move but not the stage.
+%
+%   LocoVest2Loco Properties:
+%       start_dwell_time        - time in seconds to wait at the beginning of the trial
+%       start_pos               - position (in Soloist units) at the start of the trial 
+%       back_limit              - backward position beyond which the trial is stopped
+%       forward_limit           - forward position beyond which the trial is stopped and reward given
+%       switch_pos              - position at which the trigger is sent to the Teensy to change the gain
+%       handle_acquisition      - whether we are running this as a single trial (true) or as part of a sequence (false)
+%       wait_for_reward         - whether to wait for the reward to be
+%                                 given before ending the trial (true) or
+%                                 end the trial immediately (false)
+%       enable_vis_stim         - whether to send a digital output to the
+%                                 visual stimulus computer to enable the
+%                                 display (true = enable, false = disable)
+%       log_trial               - whether to log the velocity data for this
+%                                 trial
+%       log_fname               - name of the file in which to log the
+%                                 single trial data
+%
+%       running                 - read only, whether the trial is currently running
+%                                 (true = running, false = not running)
+%
+%   LocoVest2Loco Methods:
+%       run                     - run the trial
+%       stop                    - stop the trial
+%       get_config              - return configuration information for the trial
+%
+%   See also: LocoVest2Loco, run
+
     properties
         
-        start_dwell_time = 5 % must be > 3
+        start_dwell_time = 5
         
         start_pos
         back_limit
@@ -20,23 +56,32 @@ classdef LocoVest2Loco < handle
         switch_pos
     end
     
-    
     properties (SetAccess = private)
         
         running = false
         abort = false
     end
     
-    
     properties (Hidden = true)
+        
         ctl
     end
+    
     
     
     methods
         
         function obj = LocoVest2Loco(ctl, config)
-            
+        % LocoVest2Loco
+        %
+        %   LocoVest2Loco(CTL, CONFIG) creates object handling trials in
+        %   which there is a change in gain between treadmill velocity and
+        %   stage velocity. CTL is an object of class RC2Controller, giving
+        %   access to the setup and CONFIG is the main configuration
+        %   structure for the setup.
+        %
+        %   See also: run
+        
             obj.ctl = ctl;
             
             % forward and backward positions as if on the stage
@@ -48,18 +93,87 @@ classdef LocoVest2Loco < handle
         end
         
         
+        
         function val = get.distance_forward(obj)
+        %%distance_forward Amount of distance, in mm, to move forward
+        %%before stopping the trial
+        
             val = obj.start_pos - obj.forward_limit;
         end
         
         
+        
         function val = get.distance_backward(obj)
+        %%distance_backward Amount of distance, in mm, to move backward
+        %%before stopping the trial
+        
             val = obj.start_pos - obj.back_limit;
         end
         
         
+        
         function final_position = run(obj)
-            
+        %%run Runs the trial
+        %
+        %   MOVED_FORWARD = run() runs the trial. MOVED_FORWARD is either 0
+        %   or 1 - 1 indicates the stage moved forward during the trial, 0
+        %   indicates that the stage moved backward during the trial or
+        %   an error occurred.
+        %
+        %   Following procedure is performed:
+        %
+        %       1. Communicate with the Soloist
+        %       2. Block the treadmill (if not already blocked)
+        %       3. Send signal to switch off the visual stimulus (if not already off)
+        %       4. Load the script 'forward_only' to the Teensy (if not already loaded)
+        %       5. Save configuration information about the trial
+        %       6. Make sure multiplexer is listening to correct source (Teensy)
+        %       7. Set TriggerInput to listen to the Soloist input
+        %       8. If this is being run as a single trial, play the sound and start NIDAQ
+        %       acqusition (do not do this if being run as a sequence, as
+        %       the ProtocolSequence object will handle acquisition and
+        %       sound)
+        %       9. Move the stage to the start position
+        %       10. Send signal to switch on the visual stimulus (if
+        %       `enable_vis_stim` is true)
+        %       11. Start the command to control the stage (see
+        %       Soloist.mismatch_ramp_down_at). This puts the stage in
+        %       gearing until position in `switch_pos` is reached when the
+        %       gain is ramped down.
+        %       12. Start integrating the position on the PC
+        %       13. Wait for `start_dwell_time` seconds       
+        %       14. Unblock the treadmill
+        %       15. If `log_trial` is true, velocity data about this trial
+        %       is saved
+        %       16. Now wait for the position in Position class to reach
+        %       the `forward` position.
+        %
+        %       After reaching the end:
+        %           17. Block the treadmill
+        %           18. Send signal to switch off visual stimulus
+        %           19. If `log_trial` is true, stop logging the trial
+        %           20. If position is positive (i.e. moved forward)
+        %           provide a reward
+        %           21. If this is being run as a single trial, stop NIDAQ
+        %           acqusition and sound (do not do this if being run as a sequence, as
+        %           the ProtocolSequence object will handle acquisition and
+        %           sound)
+        %
+        %       If error occurs:
+        %           a. stop any Soloist programs
+        %           b. Block the treadmill
+        %           c. Send signal to switch off visual stimulus
+        %           d. Stop NIDAQ acquisition
+        %           e. Stop logging the trial
+        %           f. Stop the sound
+        %
+        %   Stopping of the trial:
+        %
+        %       Only at certain points in execution does the program listen for a stop
+        %       signal. Therefore, the trial may continue for some time after
+        %       the `stop` method is run (e.g. when the stage is moving to its
+        %       start position).
+        
             try
                 
                 % report the end position
@@ -212,16 +326,28 @@ classdef LocoVest2Loco < handle
         end
         
         
+        
         function stop(obj)
-            % if the stop method is called, set the abort property
-            % temporarily to false
-            % the main loop will detect this and abort properly
+        %%stop Stop the trial
+        %
+        %   stop()
+        %   if the stop method is called, the `abort` property is
+        %   temporarily set to true. The main loop will detect this and
+        %   abort properly 
+        
             obj.abort = true;
         end
         
         
+        
         function cfg = get_config(obj)
-            
+        %%get_config Return the configuration information for the trial
+        %
+        %   CONFIG = get_config() returns a Nx2 cell array with
+        %   configuration information about the protocol.
+        %
+        %   See also: RC2Controller.get_config, Saver.save_config
+        
             cfg = {
                 'prot.time_started',        datestr(now, 'yyyymmdd_HH_MM_SS')
                 'prot.type',                class(obj);
@@ -248,8 +374,20 @@ classdef LocoVest2Loco < handle
         end
         
         
+        
         function cleanup(obj)
-            
+        %%cleanup Execute upon stopping or ending the trial
+        %
+        %   cleanup() upon finishing the run method the following is
+        %   executed:
+        %
+        %           a. Block the treadmill
+        %           b. Send signal to switch off visual stimulus
+        %           c. If `handle_acquisition` is true, stop any Soloist
+        %           programs, stop NIDAQ acquisition and stop the sound
+        %           d. If `log_trial` is true, stop the logging of single
+        %           trial data
+        
             obj.running = false;
             obj.abort = false;
             
@@ -266,7 +404,6 @@ classdef LocoVest2Loco < handle
             if obj.log_trial
                 obj.ctl.stop_logging_single_trial();
             end
-            
         end
     end
 end

@@ -1,5 +1,17 @@
 classdef VisStim < handle
-    
+% VisStim Class for handling digital output sent to the visual
+% stimulus computer for disabling it
+%
+%   VisStim Properties:
+%       enabled         - whether to use this module
+%       chan            - index of the channel in configuration
+%       state           - current state of the digital output (1 or 0)
+%       ni              - handle to the NI object
+%
+%   VisStim Methods:
+%       on              - set digital output high
+%       off             - set digital output low
+
     properties (SetAccess = private)
         
         chan

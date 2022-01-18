@@ -1,4 +1,10 @@
 function config = load_config()
+%%LOAD_CONFIG Auxiliary function for manually selecting a config file and
+%%loading it
+%
+%   CONFIG = load_config() opens a user interface for selecting a config
+%   file. Then performs the loading and returns the configuration structure
+%   in CONFIG.
 
 % select config file
 this_dir = fileparts(mfilename('fullpath'));

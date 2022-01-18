@@ -1,5 +1,17 @@
 classdef DisableTeensy < handle
-    
+% DisableTeensy Class for handling digital output sent to the Teensy for
+% disabling it.
+%
+%   DisableTeensy Properties:
+%       enabled         - whether to use this module
+%       chan            - index of the channel in configuration
+%       state           - current state of the digital output (1 or 0)
+%       ni              - handle to the NI object
+%
+%   DisableTeensy Methods:
+%       on              - set digital output high
+%       off             - set digital output low
+
     properties (SetAccess = private)
         
         chan
@@ -43,7 +55,7 @@ classdef DisableTeensy < handle
         
         
         function on(obj)
-        %%ON(obj)
+        %%ON()
         %   Disable velocity output on Teensy
         
             obj.ni.do_toggle(obj.chan, true);
@@ -52,7 +64,7 @@ classdef DisableTeensy < handle
         
         
         function off(obj)
-        %%OFF(obj)
+        %%OFF()
         %   Do not disable: i.e. enable velocity output on Teensy
         
             obj.ni.do_toggle(obj.chan, false);

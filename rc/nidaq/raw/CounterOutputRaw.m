@@ -1,12 +1,37 @@
 classdef CounterOutputRaw < handle
-    
+% CounterOutputRaw Class for handling counter outputs on the NIDAQ
+%
+%   CounterOutputRaw Properties:
+%       enabled         - whether to use this module
+%       task_handle     - handle to the daq.ni.NIDAQmx.DAQmxCreateTask object
+%       channel_names   - names of the CO channels
+%       channel_ids     - IDs of the CO channels
+%       init_delay      - the number of timebase ticks to wait before generating the first pulse
+%       low_samps       - the number of timebase ticks that the pulse is low
+%       high_samps      - the number of timebase ticks that the pulse is high
+%       clock_src       - the terminal determining the timebase
+%
+%   CounterOutputRaw Methods:
+%       delete          - destructor, clears the task
+%       start           - start the task
+%       stop            - stop the task
+%       close           - clear the task
+%       handle_fault    - handles faults and prints error message
+%
+%   See also: NI
+%   See also
+%   https://zone.ni.com/reference/en-XX/help/370471AM-01/TOC3.htm
+%   for description of underlying C functions
+
     properties
+        
         task_handle
         channel_names
         channel_ids
     end
     
     properties (SetAccess = private)
+        
         init_delay
         low_samps
         high_samps
@@ -18,7 +43,14 @@ classdef CounterOutputRaw < handle
     methods
         
         function obj = CounterOutputRaw(config)
-            
+        % CounterOutputRaw
+        %
+        %   CounterOutputRaw(CONFIG) creates the counter output task with
+        %   the details described in CONFIG (the main configuration
+        %   structure with `co` field.
+        %
+        %   See README for details on the configuration.
+        
             obj.init_delay = config.nidaq.co.init_delay;
             obj.low_samps = config.nidaq.co.pulse_dur - config.nidaq.co.pulse_high;
             obj.high_samps = config.nidaq.co.pulse_high;
@@ -28,6 +60,7 @@ classdef CounterOutputRaw < handle
             obj.handle_fault(status, 'DAQmxCreateTask');
             
             for i = 1:length(config.nidaq.co.channel_names)
+                
                 obj.channel_names{i} = config.nidaq.co.channel_names{i};
                 obj.channel_ids{i} = sprintf('ctr%i', config.nidaq.co.channel_id(i));
                 dev_str = sprintf('%s/ctr%i', config.nidaq.co.dev, config.nidaq.co.channel_id(i));
@@ -41,29 +74,56 @@ classdef CounterOutputRaw < handle
         end
         
         
+        
         function delete(obj)
+        %%delete Destructor, clears the task
             obj.close();
         end
         
         
+        
         function start(obj)
+        %%start Start the task
+        %
+        %   start() calls daq.ni.NIDAQmx.DAQmxStartTask
+        
             status = daq.ni.NIDAQmx.DAQmxStartTask(obj.task_handle);
             obj.handle_fault(status, 'DAQmxStartTask');
         end
         
+        
+        
         function stop(obj)
+        %%stop Stop the task
+        %
+        %   stop() calls daq.ni.NIDAQmx.DAQmxStopTask
+        
             status = daq.ni.NIDAQmx.DAQmxStopTask(obj.task_handle);
             obj.handle_fault(status, 'DAQmxStopTask');
         end
         
+        
+        
         function close(obj)
+        %%close Clear the task
+        %
+        %   close() calls daq.ni.NIDAQmx.DAQmxClearTask
+        
             status = daq.ni.NIDAQmx.DAQmxClearTask(obj.task_handle);
             if status ~= 0
                 fprintf('couldn''t clear co task\n')
             end
         end
         
+        
+        
         function handle_fault(obj, status, loc)
+        %%handle_fault Handle faults
+        %
+        %   handle_fault(STATUS, SRC) prints an message if STATUS is not 0,
+        %   identifying the source of the error with the string SRC. The
+        %   task is cleared.
+        
             if status ~= 0
                 fprintf('%s: error: %i, %s\n', class(obj), status, loc);
                 obj.close()

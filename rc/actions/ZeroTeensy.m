@@ -1,5 +1,17 @@
 classdef ZeroTeensy < handle
-    
+% ZeroTeensy Class for handling digital output sent Teensy to zero position
+% variable.
+%
+%   ZeroTeensy Properties:
+%       enabled         - whether to use this module
+%       chan            - index of the channel in configuration
+%       ni              - handle to the NI object
+%
+%   ZeroTeensy Methods:
+%       zero           - send a trigger pulse to the Teensy
+%
+% On `start` a 500ms pulse is sent to the soloist.
+
     properties (Hidden = true)
         ni
     end

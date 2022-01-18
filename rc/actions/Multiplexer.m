@@ -1,5 +1,20 @@
 classdef Multiplexer < handle
-    
+% Multiplexer Class for handling the behaviour of the multiplexer
+%
+%   Multiplexer Properties:
+%       enabled         - whether to use this module
+%       chan            - index of the channel in digital output configuration
+%       vals            - structure with fields 'teensy' and 'ni'.
+%                         Indicates which input the multiplexer "listens
+%                         to" when the digital input to the mux is high or
+%                         low.
+%       ni              - handle to the NI object
+%
+%   Multiplexer Methods:
+%       listen_to       - whether to listen to the 'teensy' or 'ni' input
+%
+%   TODO: add state property?
+
     properties (Hidden = true)
         
         ni
@@ -46,9 +61,9 @@ classdef Multiplexer < handle
         
         
         function listen_to(obj, src)
-        %%LISTEN_TO(obj, src)
+        %%LISTEN_TO(src)
         %   Which input should we listen to?
-            % src = 'teensy' or 'ni'
+        %       src = 'teensy' or 'ni'
             obj.ni.do_toggle(obj.chan, obj.vals.(src));
         end
     end

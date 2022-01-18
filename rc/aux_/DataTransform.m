@@ -1,5 +1,14 @@
 classdef DataTransform < handle
-    
+% DataTransform Class for transforming the incoming data on the analog
+% inputs into a sensible unit.
+%
+%   DataTransform Properties:
+%       offset         - offset to subtract on each channel
+%       scale          - scale to apply to each channel after offset subtraction
+%
+%   DataTransform Methods:
+%       transform       - perform offset subtraction and scaling
+
     properties
         
         offset
