@@ -17,6 +17,8 @@ classdef Saver < handle
 %       voltage_range   - total voltage range
 %       fid_single_trial    - file identifier to file where single trial is
 %                             being saved
+%       single_trial_log_channel_idx - index of the analog input to save
+%                                      when logging data for a single trial
 %       is_logging_single_trial - boolean, are we currently saving a
 %                                 single trial
 %       ctl                 - object of class RC2Controller
@@ -27,6 +29,9 @@ classdef Saver < handle
 %       set_prefix      - set the `prefix` property
 %       set_suffix      - set the `suffix` property
 %       set_index       - set the `index` property
+%       set_single_trial_log_channel - set the `single_trial_log_channel_idx` 
+%                                      property by using the name of an
+%                                      analog input
 %       logging_fname   - return the full path to the current logging .bin file
 %       cfg_fname       - return the full path to the current configuration .cfg file
 %       create_directory - create the directory in which to put the .bin files
@@ -67,6 +72,7 @@ classdef Saver < handle
         voltage_range
         
         fid_single_trial
+        single_trial_log_channel_idx = 1
         is_logging_single_trial = false
     end
     
@@ -80,9 +86,11 @@ classdef Saver < handle
         function obj = Saver(ctl, config)
         % Saver
         %
-        %   Saver(CTL, CONFIG)
+        %   Saver(CTL, CONFIG) creates object to deal with logging data and
+        %   saving config information. CTL is an object of class
+        %   Controller/RC2Controller, and CONFIG is a structure containing
+        %   the setup configuration information at startup.
         
-            %TODO: remove ctl
             obj.ctl = ctl;
             obj.save_to = config.saving.save_to;
             obj.config_file = config.saving.config_file;
@@ -90,6 +98,10 @@ classdef Saver < handle
             obj.git_dir = config.saving.git_dir;
             obj.prefix = datestr(now, 'yyyymmddHHMM');
             obj.suffix = datestr(now, 'SS');
+            
+            if isfield(config.saving, 'single_trial_log_channel_name')
+                obj.set_single_trial_log_channel(config.saving.single_trial_log_channel_name);
+            end
             
             obj.voltage_range = obj.ai_max_voltage - obj.ai_min_voltage;
         end
@@ -185,6 +197,29 @@ classdef Saver < handle
             
             if obj.is_logging; return; end
             obj.index = round(val);
+        end
+        
+        
+        
+        function set_single_trial_log_channel(obj, channel_name)
+        %%set_single_trial_log_channel Set the channel to save when saving
+        %%single trial data.
+        %
+        %   set_single_trial_log_channel(CHANNEL_NAME) takes a string in
+        %   CHANNEL_NAME matching one of the analog inputs and sets the
+        %   `single_trial_log_channel_idx` property. If no such channel
+        %   name is found, `single_trial_log_channel_idx` is set to 1 (the
+        %   first analog input.
+        
+            idx = find(strcmp(obj.ctl.ni.ai.channel_names, channel_name));
+            
+            if isempty(idx)
+                obj.single_trial_log_channel_idx = 1;
+                warning('Channel name `%s` not found, logging first channel on the analog input', ...
+                        channel_name);
+            else
+                obj.single_trial_log_channel_idx = idx;
+            end
         end
         
         
@@ -363,7 +398,9 @@ classdef Saver < handle
             
             fwrite(obj.fid, data(:), 'int16');
             
-            obj.log_single_trial(data(1, :)); %TODO:  channel to save for trial
+            single_trial_data = data(obj.single_trial_log_channel_idx, :);
+            
+            obj.log_single_trial(single_trial_data);
         end
         
         

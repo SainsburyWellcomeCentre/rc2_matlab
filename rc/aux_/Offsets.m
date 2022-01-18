@@ -75,6 +75,9 @@ classdef Offsets < handle
         
         ctl
         error_mtx
+        
+        ao_ai_difference_V
+        ni_idle_voltage
     end
     
     
@@ -90,6 +93,10 @@ classdef Offsets < handle
             obj.ctl = ctl;
             obj.error_mtx = config.offset_error_mtx;
             
+            if isfield(config, 'ao_ai_difference_V')
+                obj.ao_ai_difference_V = config.ao_ai_difference_V;
+                obj.ni_idle_voltage = config.ni_idle_voltage;
+            end
         end
         
         
@@ -133,6 +140,12 @@ classdef Offsets < handle
         %   apply on the NIDAQ analog output given the
         %   `nominal_stationary_offset` property in STATIONARY_OFFSET.
             
+            if ~isempty(obj.ao_ai_difference_V)
+                val = obj.ni_idle_voltage;
+                return
+            end
+                
+            
             % subtract error on AO
             if strcmp(solenoid_state, 'up') && strcmp(gear_mode, 'on')
                 
@@ -173,6 +186,11 @@ classdef Offsets < handle
         %           with solenoid down and gear mode on
         %           3. currently always uses error value in 4th row of 4th
         %           column.. don't see the reason for this
+            
+            if ~isempty(obj.ao_ai_difference_V)
+                data = data - obj.ao_ai_difference_V;
+                return
+            end
             
             % subtract error on AI - assume that solenoid was 'down' and gear
             % mode 'on' during recording... baseline should be around 0.5V
