@@ -1,5 +1,22 @@
 classdef Sound < handle
-    
+% Sound Class for handling sound output
+%
+%   Sound Properties:
+%       enabled         - whether to use this module (default true)
+%       looping         - whether to loop the sound (default true)
+%       audio           - object of class audioplayer
+%       reset           - helper object of class audioplayer
+%       state           - current state of the audio       
+%
+%   Sound Methods:
+%       enable          - enable the module
+%       disable         - disable the module (stop the sound as well)
+%       play            - play the sound
+%       stop            - stop the sound
+%       repeat          - callback for repeating the sound
+%
+%   See also: audioplayer
+
     properties
         
         looping = true
@@ -66,13 +83,22 @@ classdef Sound < handle
         
         
         function enable(obj)
+        %%enable Enable the module
+        %
+        %   enable()
+            
             if ~obj.global_enabled, return, end
             obj.enabled = true;
         end
         
         
         function disable(obj)
+        %%disable Disable the module (stop the sound as well)
+        %
+        %   disable()
+        
             if ~obj.global_enabled, return, end
+            
             % stop the sound and set enabled flag to false
             obj.stop();
             obj.enabled = false;
@@ -80,6 +106,10 @@ classdef Sound < handle
         
         
         function play(obj)
+        %%play Play the sound
+        %
+        %   play() starts playing the sound.
+        
             if ~obj.global_enabled, return, end
             % if sound is currently disabled or it is already running
             % do nothing.
@@ -93,7 +123,12 @@ classdef Sound < handle
         
         
         function stop(obj)
+        %%stop Stop the sound
+        %
+        %   stop() stops playing the sound.
+        
             if ~obj.global_enabled, return, end
+            
             % if sound is currently disabled or it is not running
             % do nothing.
             if ~obj.enabled; return; end
@@ -112,8 +147,12 @@ classdef Sound < handle
         
         
         function repeat(obj, ~, ~)
-            
+        %%repeat Callback for repeating the sound
+        %
+        %   repeat() repeats the sound.
+        
             if ~obj.global_enabled, return, end
+            
             % if state is false, don't start again.
             if ~obj.state; return; end
             

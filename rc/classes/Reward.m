@@ -1,5 +1,24 @@
 classdef Reward < handle
-    
+% Reward Class for controlling the behaviour of rewards
+%
+%   Reward Properties:
+%       randomize       - whether to randomize the time of reward
+%       min_time        - if using randomization the minimum time after
+%                         activation the reward should be given
+%       max_time        - if using randomization the maximum time after
+%                         activation the reward should be given
+%       duration        - the duration of the reward in milliseconds
+%
+%   Private:
+%       min_duration    - minimum allowable duration in milliseconds (default = 1ms)
+%       max_duration    - maximum allowable duration in milliseconds (default = 500ms)
+%       rand_timer      - timer object controlling random rewards
+%       pump            - object of Pump class sending the pump signal
+%       
+%   Reward Methods:
+%       start_reward       - activate the reward (either give or start timer)
+%       set_duration       - set the duration of the reward
+%       give_reward        - immediately give a reward
     
     properties
         

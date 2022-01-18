@@ -28,11 +28,19 @@ main(int argc, char **argv)
     double max_speed_scale;
     double gear_scale;
     int gear_set;
+    int leave_enabled;
     
     // Check number of arguments.
     if (argc < 3) {
         printf("must have at least 3 numeric arguments.\n");
         return 1;
+    }
+    
+    // Set default to disable the stage at end
+    if (argc < 4) {
+        leave_enabled = 0;
+    } else {
+        leave_enabled = atoi(argv[4]);
     }
     
     // Arguments
@@ -102,8 +110,10 @@ main(int argc, char **argv)
         SoloistIOAnalogInput(handles[0], AI_CHANNEL, &(ai_value[iter++]));
     }
     
-    // Disable the axis.
-    if(!SoloistMotionDisable(handles[0])) { cleanup(handles, handle_count); }
+    // If we have requested, stay enabled.
+    if (!leave_enabled) {
+        if(!SoloistMotionDisable(handles[0])) { cleanup(handles, handle_count); }
+    }
     
     // Reset the gear parameters to their defaults.
     reset_gear(handles, handle_count);

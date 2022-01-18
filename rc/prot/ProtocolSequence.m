@@ -1,6 +1,28 @@
 classdef ProtocolSequence < handle
-    
+% ProtocolSequence Class for handling a sequence of trial objects
+%
+%   ProtocolSequence Properties:
+%       randomize_reward    - whether to randomize the timing of the reward after the trial
+%
+%    The following are for internal use:
+%       sequence            - cell array containing objects of the trial classes
+%       abort               - internal, whether to abort the sequence
+%       current_sequence    - currently running trial
+%       current_reward_state - internal, the state of the reward randomization before the sequence
+%       current_trial       - current index of the trial running
+%       forward_trials      - number of trials which have finished forward
+%       backward_trials     - number of trials which have finished backward
+%
+%   ProtocolSequence Methods:
+%       add             - adds an object of trial class to the sequence.
+%       run             - run the sequence of trials in `sequence`
+%       prepare         - prepare for running a sequence of trials
+%       stop            - stops running the sequence of trials
+%
+%   See also: ProtocolSequence
+
     properties
+        
         ctl
         sequence = {}
         running = false;
@@ -11,24 +33,49 @@ classdef ProtocolSequence < handle
     end
     
     properties (SetObservable = true)
+        
         current_trial = 1;
         forward_trials = 0;
         backward_trials = 0;
     end
     
     
+    
     methods
+        
         function obj = ProtocolSequence(ctl)
+        % ProtocolSequence
+        %
+        %   ProtocolSequence(CTL) creates the object, and takes CTL, an
+        %   object of class RC2Controller as argument.
+        
             obj.ctl = ctl;
         end
         
+        
+        
         function add(obj, protocol)
+        %%add Adds an object of trial class to the sequence.
+        %
+        %   add(TRIAL) adds the object TRIAL to the protocol sequence. It
+        %   should be one of the objects Coupled, EncoderOnly, StageOnly,
+        %   ReplayOnly, CoupledMismatch, EncoderOnlyMismatch or another
+        %   class with `run` and `stop` methods and `handle_acquisition`
+        %   and `wait_for_reward` properties.
+        
             obj.sequence{end+1} = protocol;
         end
         
         
+        
         function run(obj)
-            
+        %%run Run the sequence of trials
+        %
+        %   run() runs the sequence of trials in `sequence` by calling
+        %   their `run` method. 
+        %
+        %   Also starts NIDAQ acquisition and starts playing the sound.
+        
             obj.prepare()
             
             h = onCleanup(@obj.cleanup);
@@ -39,6 +86,7 @@ classdef ProtocolSequence < handle
             obj.running = true;
             
             for i = 1 : length(obj.sequence)
+                
                 obj.current_sequence = obj.sequence{i};
                 obj.current_trial = i;
                 
@@ -62,8 +110,15 @@ classdef ProtocolSequence < handle
         end
         
         
+        
         function prepare(obj)
-            
+        %%prepare Prepare for running a sequence of trials
+        %
+        %   prepare() initializes internal variables, sets the reward to be
+        %   randomized if necessary, and sets the `handle_acquisition` and
+        %   `wait_for_reward` of the trials to false. The `wait_for_reward`
+        %   property of the last trial is set to true.
+        
             obj.current_trial = 1;
             obj.backward_trials = 0;
             obj.forward_trials = 0;
@@ -90,8 +145,12 @@ classdef ProtocolSequence < handle
         end
         
         
+        
         function stop(obj)
-            
+        %%stop Stops running the sequence of trials
+        %
+        %   stop() calls the `stop` method of the currently running trial.
+        
             if isempty(obj.current_sequence)
                 return
             end
@@ -103,7 +162,14 @@ classdef ProtocolSequence < handle
         end
         
         
+        
         function cleanup(obj)
+        %%cleanup Function to run when the `run` exits
+        %
+        %   cleanup() is here just for safety to stop tasks on the setup
+        %   (these should already be called when an individual trial is
+        %   stopped).
+        
             fprintf('running cleanup in protseq\n')
             obj.running = false;
             obj.ctl.soloist.stop();

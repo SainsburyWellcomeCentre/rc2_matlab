@@ -1,5 +1,64 @@
 classdef StageOnly < handle
-    
+% StageOnly Class for handling trials in which the linear stage is
+% controlled by a waveform
+%
+%   StageOnly Properties:
+%       start_dwell_time        - time in seconds to wait at the beginning of the trial
+%       start_pos               - position (in Soloist units) at the start of the trial 
+%       back_limit              - backward position beyond which the trial is stopped
+%       forward_limit           - foreward position beyond which the trial is stopped and reward given
+%       direction               - direction of travel (name of Teensy script, e.g. 'forward_only' or 'forward_and_backward')
+%       handle_acquisition      - whether we are running this as a single trial (true) or as part of a sequence (false)
+%       wait_for_reward         - whether to wait for the reward to be
+%                                 given before ending the trial (true) or
+%                                 end the trial immediately (false)
+%       enable_vis_stim         - whether to send a digital output to the
+%                                 visual stimulus computer to enable the
+%                                 display (true = enable, false = disable)
+%       initiate_trial          - whether to let the treadmill velocity initiate the start of the trial
+%       initiation_speed        - speed of treadmill which initiates the trial (in cm/s)
+%       wave_fname              - full path to the .bin file containing the
+%                                 waveform to play
+%
+%     For internal use:
+%
+%       waveform                - # samples x # AO channels matrix, voltage
+%                                 waveforms to play on the analog outputs
+%       running                 - whether the trial is currently running
+%                                 (true = running, false = not running)
+%
+%   StageOnly Methods:
+%       load_wave               - loads the waveform from the .bin file
+%       run                     - run the trial
+%       stop                    - stop the trial
+%       get_config              - return configuration information for the trial
+%
+%
+%   Important:
+%
+%       Currently the waveform to send to the Soloist is read from a .bin
+%       file, which is assumed to contain single channel of data
+%  
+%       It is assumed that the .bin file contains a sequence of int16
+%       values which have been transformed from a voltage with the equation
+%           int16 val = -2^15 + 2^16 * (voltage + 10)/20;
+%       i.e. range -10 to 10
+%
+%       The int16 value are then transformed back into a voltage to be
+%       played on the analog output.
+%
+%   TODO: make this more general and don't make assumptions about the
+%   nature of the data in .bin (e.g. each single trial .bin should have
+%   a separate config file).
+%
+%   TODO: do not assume that the waveform came from an analog input
+%   recording (i.e. don't add an offset here to correct for small
+%   differences between AI value and AO value). 
+%
+%   TODO: remove `log_trial` and associated parts of the code
+%
+%   See also: StageOnly, run
+
     properties
         
         start_dwell_time = 5;
@@ -32,9 +91,25 @@ classdef StageOnly < handle
     end
     
     
+    
     methods
         
         function obj = StageOnly(ctl, config, fname)
+        % StageOnly
+        %
+        %   StageOnly(CTL, CONFIG, FILENAME) creates object handling trials
+        %   in which the linear stage velocity is controlled by a waveform.
+        %   CTL is an object of class RC2Controller, giving 
+        %   access to the setup and CONFIG is the main configuration
+        %   structure for the setup.
+        %
+        %   FILENAME is the full path to the .bin file from which to read
+        %   the waveform data to output on the analog outputs. It is
+        %   optional, but if omitted, the `wave_fname` property should be
+        %   set to a full path after object creation.
+        %
+        %   See also: run
+        
             VariableDefault('fname', []);
             
             obj.ctl = ctl;
@@ -46,7 +121,14 @@ classdef StageOnly < handle
         end
         
         
+        
         function load_wave(obj)
+        %%load_wave Loads the waveform from the .bin file    
+        %
+        %   load_wave() loads the waveform contained in `wave_fname`. See
+        %   the `Important` section in the main class documentation about
+        %   the assumed nature of the .bin file.
+        
             if isempty(obj.wave_fname); return; end
             
             w = double(read_bin(obj.wave_fname, 1)); % file must be single channel
@@ -61,8 +143,77 @@ classdef StageOnly < handle
         end
         
         
+        
         function final_position = run(obj)
-            
+        %%run Runs the trial
+        %
+        %   MOVED_FORWARD = run() runs the trial. MOVED_FORWARD is either 0
+        %   or 1 - 1 indicates the stage moved forward during the trial, 0
+        %   indicates that the stage moved backward during the trial or
+        %   an error occurred.
+        %
+        %   Following procedure is performed:
+        %
+        %       1. The waveform is loaded
+        %           If the `waveform` is empty, we exit the trial
+        %       2. Communicate with the Soloist
+        %       3. Block the treadmill (if not already blocked)
+        %       4. Send signal to switch off the visual stimulus (if not already off)
+        %       5. Save configuration information about the trial
+        %       6. Make sure multiplexer is listening to correct source (NIDAQ)
+        %       7. Set TriggerInput to listen to the Soloist input
+        %       8. Queue the waveform to the analog outputs
+        %       9. If this is being run as a single trial, play the sound and start NIDAQ
+        %       acqusition (do not do this if being run as a sequence, as
+        %       the ProtocolSequence object will handle acquisition and
+        %       sound)
+        %       10. Move the stage to the start position
+        %       11. Send signal to the Teensy to disable velocity output
+        %       while:
+        %       12. Analog input offset is measured on the Soloist
+        %       controller (calibration)
+        %       13. If `enable_vis_stim` is true send signal to the visual
+        %       stimulus to turn on 
+        %       14. If `initiate_trial` is true, unblock the treadmill and
+        %       wait for the treadmill velocity to reach `initiation_speed`
+        %           TODO: ASSUMES VELOCITY IS ON THE FIRST ANALOG INPUT CHANNEL
+        %       When velocity reached, block the treadmill
+        %       15. Stage is put into gearing (see
+        %       Soloist.listen_until)
+        %       16. Wait for `start_dwell_time` seconds
+        %       17. Start playing the voltage on the analog output
+        %       18. Now wait for a trigger from the Soloist indicating that
+        %       the stage has reached either the backward or forward limit
+        %       (`back_limit`/`forward_limit`)
+        %       If the AO finishes before the trigger is received, then
+        %       send a linear increasing ramp voltage from the AO until the
+        %       trigger from the Soloist is received (see
+        %       RC2Controller.ramp_velocity).
+        %       After trigger received:
+        %           19. Send signal to switch off visual stimulus
+        %           20. Provide a reward
+        %           21. If this is being run as a single trial, stop NIDAQ
+        %           acqusition and sound (do not do this if being run as a sequence, as
+        %           the ProtocolSequence object will handle acquisition and
+        %           sound)
+        %           22. Switch multiplexer to listen to the Teensy
+        %
+        %       If error occurs:
+        %           a. stop any Soloist programs
+        %           b. Block the treadmill
+        %           c. Send signal to switch off visual stimulus
+        %           d. Stop NIDAQ acquisition
+        %           e. Stop the sound
+        %           f. Switch multiplexer to listen to the Teensy
+        %
+        %
+        %   Stopping of the trial:
+        %
+        %       Only at certain points in execution does the program listen for a stop
+        %       signal. Therefore, the trial may continue for some time after
+        %       the `stop` method is run (e.g. when the stage is moving to its
+        %       start position).
+        
             try
                 
                 % always assume it has finished in positive direction
@@ -136,7 +287,7 @@ classdef StageOnly < handle
                 obj.ctl.disable_teensy.on();
                 obj.ctl.soloist.reset_pso();
                 real_time_offset_error = ...
-                    obj.ctl.soloist.calibrate_zero(obj.back_limit, obj.forward_limit, 0); % obj.ctl.soloist.ai_offset
+                    obj.ctl.soloist.calibrate_zero(obj.back_limit, obj.forward_limit, 0, [], true); % obj.ctl.soloist.ai_offset
                 obj.ctl.disable_teensy.off();
                 
                 % Retrieve the *EXPECTED* offset on the soloist, given the
@@ -319,13 +470,28 @@ classdef StageOnly < handle
         end
         
         
+        
         function stop(obj)
+        %%stop Stop the trial
+        %
+        %   stop()
+        %   if the stop method is called, the `abort` property is
+        %   temporarily set to true. The main loop will detect this and
+        %   abort properly 
+        
             obj.abort = true;
         end
         
         
+        
         function cfg = get_config(obj)
-            
+        %%get_config Return the configuration information for the trial
+        %
+        %   CONFIG = get_config() returns a Nx2 cell array with
+        %   configuration information about the protocol.
+        %
+        %   See also: RC2Controller.get_config, Saver.save_config
+        
             cfg = {
                 'prot.time_started',        datestr(now, 'yyyymmdd_HH_MM_SS')
                 'prot.type',                class(obj);
@@ -351,8 +517,19 @@ classdef StageOnly < handle
         end
         
         
+        
         function cleanup(obj)
-            
+        %%cleanup Execute upon stopping or ending the trial
+        %
+        %   cleanup() upon finishing the run method the following is
+        %   executed:
+        %
+        %           a. Block the treadmill
+        %           b. Send signal to switch off visual stimulus
+        %           c. If `handle_acquisition` is true, stop any Soloist
+        %              programs, stop NIDAQ acquisition and stop the sound
+        %           d. Switch multiplexer to listen to the Teensy
+        
             obj.running = false;
             obj.abort = false;
             

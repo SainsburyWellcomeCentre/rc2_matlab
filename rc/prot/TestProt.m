@@ -1,5 +1,6 @@
 classdef TestProt < handle
-    
+% TestProt - test protocol.  Not used.
+
     properties
         
         start_pos

@@ -1,5 +1,19 @@
 classdef StartSoloist < handle
-    
+% StartSoloist Class for handling digital output sent to the Soloist.
+%
+%   StartSoloist Properties:
+%       enabled         - whether to use this module
+%       chan            - index of the channel in configuration
+%       ni              - handle to the NI object
+%
+%   StartSoloist Methods:
+%       start           - send a trigger pulse to the soloist
+%
+% On `start` a 500ms pulse is sent to the soloist.
+%
+% TODO: the trigger can be quite general use, so perhaps rename
+% TriggerSoloist
+
     properties (Hidden = true)
         ni
     end

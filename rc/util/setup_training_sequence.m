@@ -1,20 +1,23 @@
 function seq = setup_training_sequence(ctl, closed_loop, reward_position, distance, back_distance, n_loops, forward_only)
-%%seq = SETUP_TRAINING_SEQUENCE(ctl, closed_loop reward_position, distance, back_distance, n_loops, forward_only)
-%   Sets up a protocol sequence for training. This is a standard sequence
-%   so contained in the main program.
+%%SETUP_TRAINING_SEQUENCE Sets up a protocol sequence for training. This is
+%%a standard sequence so contained in the main program. 
+%
+%   seq = SETUP_TRAINING_SEQUENCE(ctl, closed_loop reward_position, distance, back_distance, n_loops, forward_only)
+%       
 %       Inputs:
-%               ctl:                controller object
+%               ctl:                object of main RC2Controller class
 %               closed_loop:        true = closed loop, false = open loop
-%               reward_position:    position along the controller
+%               reward_position:    position along the linear stage to stop trial and reward
 %               distance:           distance to start from reward position
-%               back_distance:      amount to move backward before stopping
+%               back_distance:      amount to move backward before stopping trial
 %               n_loops:            the number of loops of the protocol to
 %                                   setup
 %               forward_only:       true = only allow forward movement
 %                                   false = allow backward movement as well
 %       Outputs:
-%               seq:                protocol sequence
-
+%               seq:                protocol sequence of ProtocolSequence class
+%
+%  See also: Coupled, EncoderOnly, ProtocolSequence
 
 % setup a single training protocol
 config.stage.start_pos = reward_position + distance;

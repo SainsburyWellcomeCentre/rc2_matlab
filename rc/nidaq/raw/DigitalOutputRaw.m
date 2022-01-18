@@ -1,7 +1,34 @@
 classdef DigitalOutputRaw < handle
-    
+% DigitalOutputRaw Class for handling digital outputs on the NIDAQ
+%
+%   DigitalOutputRaw Properties:
+%       enabled         - whether to use this module
+%       task_handle     - handle to the daq.ni.NIDAQmx.DAQmxCreateTask object
+%       ai_task         - handle to the AI task which is used to run the DO task
+%       n_chan          - number of DO channels
+%       channel_names   - names of the DO channels
+%       channel_ids     - IDs of the DO channels
+%       state           - # channels x 1 vector indicating the state of each digital output
+%       clock_src       - the terminal determining the timebase
+%       is_running      - whether the DO task is running
+%
+%   DigitalOutputRaw Methods:
+%       delete          - destructor, clears the task
+%       get_toggle      - return data for toggling the state of the digital oututs
+%       get_pulse       - return data for pulsing one of the digital output channels
+%       start           - start the task
+%       stop            - stop the task
+%       close           - clear the task
+%       handle_fault    - handles faults and prints error message
+%
+%   See also: NI
+%   See also
+%   https://zone.ni.com/reference/en-XX/help/370471AM-01/TOC3.htm
+%   for description of underlying C functions
+
     properties
         enabled
+
         task_handle
         ai_task
         
@@ -22,9 +49,19 @@ classdef DigitalOutputRaw < handle
     end
     
     
+    
     methods
         
-        function obj = DigitalOutputRaw(config, ai_task)
+        function obj = DigitalOutputRaw(config, ai_task)  
+        % DigitalOutputRaw
+        %
+        %   DigitalOutputRaw(CONFIG, AI_TASK) creates the digital output
+        %   task with details described in CONFIG (the main configuration
+        %   structure with `do` field. Also takes AI_TASK, the handle to
+        %   the analog input task which is used to trigger and time the
+        %   digital output tasks.
+        %
+        %   See README for details on the configuration.
             
             obj.enabled = config.nidaq.do.enable;
             if ~obj.enabled, return, end
@@ -37,9 +74,10 @@ classdef DigitalOutputRaw < handle
             [status, obj.task_handle] = daq.ni.NIDAQmx.DAQmxCreateTask(char(0), uint64(0));
             obj.handle_fault(status, 'DAQmxCreateTask');
             
-            
             obj.n_chan = length(config.nidaq.do.channel_names);
+            
             for i = 1 : obj.n_chan
+                
                 obj.channel_names{i} = config.nidaq.do.channel_names{i};
                 obj.channel_ids{i} = config.nidaq.do.channel_id{i};
                 dev_str = sprintf('%s/%s', config.nidaq.do.dev, config.nidaq.do.channel_id{i});
@@ -59,14 +97,31 @@ classdef DigitalOutputRaw < handle
         end
         
         
+        
         function delete(obj)
+        %%delete Destructor, clears the task
+        
             if ~obj.enabled, return, end
             obj.close()
         end
         
         
+        
         function data = get_toggle(obj, chan, direction)
-            
+        %%get_toggle Return data for toggling the state of the digital
+        %%oututs
+        %
+        %   DATA = get_toggle(CHANNEL_IDX, DIRECTION) returns data to write to the
+        %   digital output lines in order to toggle the state of CHANNEL_ID.
+        %   The CHANNEL_ID should be an integer from 1 to # DO channels,
+        %   and DIRECTION should be a boolean, true or false, determining
+        %   whether to send the channel high or low.
+        %
+        %   A 2 x # DO channels boolean matrix is returned in DATA to write
+        %   to the digital output lines.
+        %
+        %   See also: start
+        
             if ~obj.enabled, return, end
             
             toggle_length = 2;
@@ -82,8 +137,22 @@ classdef DigitalOutputRaw < handle
         end
         
         
+        
         function data = get_pulse(obj, chan, dur)
-            
+        %%get_pulse Return data for pulsing one of the digital output
+        %%channels
+        %
+        %   DATA = get_pulse(CHANNEL_ID, DURATION) returns data to write to the
+        %   digital output lines in order to send a digital pulse on CHANNEL_ID.
+        %   The CHANNEL_ID should be an integer from 1 to # DO channels,
+        %   and DURATION is a value, in milliseconds, determining the
+        %   duration of the pulse.
+        %
+        %   A # samples x # DO channels boolean matrix is returned in DATA
+        %   to write to the digital output lines.
+        %
+        %   See also: start
+        
             if ~obj.enabled, return, end
             
             n_samples = round(obj.rate*dur*1e-3);
@@ -101,8 +170,18 @@ classdef DigitalOutputRaw < handle
         end
         
         
+        
         function start(obj, data)
-            
+        %%start Start the DO task
+        %
+        %   start(DATA) writes the data in DATA to the digital output
+        %   lines, and starts the digital output task. If the analog input
+        %   task is not running, it is started. DATA should be a # samples
+        %   x # DO channels matrix of zeros and ones determining the output
+        %   on the digital lines.
+        %
+        %   See also: get_toggle, get_duration
+        
             if ~obj.enabled, return, end
             
             if obj.is_running
@@ -149,8 +228,13 @@ classdef DigitalOutputRaw < handle
             obj.state = data(end, :);
         end
         
+        
+        
         function stop(obj)
-            
+        %%stop Stop the task
+        %
+        %   stop() stops the take with DAQmxStopTask
+        
             if ~obj.enabled, return, end
             
             status = daq.ni.NIDAQmx.DAQmxStopTask(obj.task_handle);
@@ -158,8 +242,13 @@ classdef DigitalOutputRaw < handle
             obj.is_running = false;
         end
         
+        
+        
         function close(obj)
-            
+        %%close Clear the task
+        %
+        %   close() calls daq.ni.NIDAQmx.DAQmxClearTask
+        
             if ~obj.enabled, return, end
             
             status = daq.ni.NIDAQmx.DAQmxClearTask(obj.task_handle);
@@ -169,8 +258,14 @@ classdef DigitalOutputRaw < handle
         end
         
         
+        
         function handle_fault(obj, status, loc)
-            
+        %%handle_fault Handle faults
+        %
+        %   handle_fault(STATUS, SRC) prints an message if STATUS is not 0,
+        %   identifying the source of the error with the string SRC. The
+        %   task is cleared.
+        
             if ~obj.enabled, return, end
             
             if status ~= 0

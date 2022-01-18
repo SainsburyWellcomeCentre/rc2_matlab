@@ -1,5 +1,14 @@
 classdef ProcHandler < handle
-    
+% ProcHandler Class for loose wrapper around a MATLAB java.lang.Process object
+%
+%   ProcHandler Properties:
+%       proc           - the java.lang.Process object
+%
+%   ProcHandler Methods:
+%       delete         - destructor
+%       wait_for       - blocks and waits for process to finish
+%       kill           - kills the process
+
     properties (SetAccess = private)
         
         proc
@@ -25,6 +34,7 @@ classdef ProcHandler < handle
         
         
         function delete(obj)
+        %%delete Destructor
             obj.kill();
         end
         

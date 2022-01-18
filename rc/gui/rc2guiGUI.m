@@ -1,4 +1,7 @@
 function varargout = rc2guiGUI(varargin)
+%%RC2GUIGUI Automatically generated code by GUIDE.
+% UI elements point to methods in rc2guiController.
+
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...

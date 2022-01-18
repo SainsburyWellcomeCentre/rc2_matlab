@@ -1,5 +1,25 @@
 classdef AnalogOutput < handle
-    
+% AnalogOutput Class for handling analog outputs on the NIDAQ
+%
+%   AnalogOutput Properties:
+%       enabled         - whether to use this module
+%       task            - handle to the AI session object
+%       channel_names   - names of the AI channels
+%       channel_ids     - IDs of the AI channels
+%       chan            - cell array with the handle to the channel objects
+%       idle_offset     - offsets to apply on the analog outputs in an idle state
+%       max_voltage     - maximum absolute voltage to apply on the analog outputs
+%
+%   AnalogOutput Methods:
+%       delete          - destructor, deletes the task
+%       set_to_idle     - set the analog outputs to their idle state
+%       write           - write data to the analog outputs (doesn't output)
+%       start           - starts the AI task in the background
+%       stop            - stop the AI task
+%       close           - delete the AI task
+%
+%   See also: NI
+
     properties
         enabled
         task
@@ -16,11 +36,14 @@ classdef AnalogOutput < handle
     methods
         
         function obj = AnalogOutput(config)
-        %%obj = AnalogOutput(config)
-        %   Handles analog output.
-        %       The property "ai_ao_error" is added to all data
-        %       But it may be more sensible to move this somewhere else
-            
+        % AnalogOutput
+        %
+        %   AnalogOutput(CONFIG) creates the analog output task with
+        %   the details described in CONFIG (the main configuration
+        %   structure with `ao` field.
+        %
+        %   See README for details on the configuration.
+        
             obj.enabled = config.nidaq.ao.enable;
             if ~obj.enabled
                 obj.task.Rate = nan;
@@ -28,7 +51,9 @@ classdef AnalogOutput < handle
             end
             
             obj.task = daq.createSession('ni');
+            
             for i = 1:length(config.nidaq.ao.channel_names)
+                
                 obj.channel_names{i} = config.nidaq.ao.channel_names{i};
                 obj.channel_ids{i} = sprintf('ao%i', config.nidaq.ao.channel_id(i));
                 obj.chan{i} = addAnalogOutputChannel(obj.task, config.nidaq.ao.dev, config.nidaq.ao.channel_id(i), 'Voltage');
@@ -48,14 +73,25 @@ classdef AnalogOutput < handle
         end
         
         
+        
         function delete(obj)
+        %%delete Destructor, deletes the task
+        
             if ~obj.enabled, return, end
+            
             obj.close()
         end
         
         
+        
         function set_to_idle(obj)
-            
+        %%set_to_idle Set the analog outputs to their idle state
+        %
+        %   set_to_idle() sets the analog outputs to whatever value is in
+        %   `idle_offset` property
+        %
+        %   TODO: check that voltage is not > max_voltage
+        
             if ~obj.enabled, return, end
             
             % Stop any running tasks first
@@ -74,8 +110,15 @@ classdef AnalogOutput < handle
         end
         
         
+        
         function write(obj, data)
-            
+        %%write Write data to the analog outputs (doesn't output)
+        %
+        %   write(DATA) queues the data in DATA to the analog outputs. DATA
+        %   should be a # samples x # AO channels matrix with values in
+        %   volts to output on the analog outputs. If any data is >
+        %   `max_voltage` or < -`max_voltage` it is clipped.
+        
             if ~obj.enabled, return, end
             
             % to avoid DANGER, clip voltage at limits!!
@@ -90,22 +133,40 @@ classdef AnalogOutput < handle
         end
         
         
+        
         function start(obj)
+        %%start Starts the AO task in the background
+        %
+        %   start()
+        
             if ~obj.enabled, return, end
+            
             obj.task.startBackground();
         end
         
         
+        
         function stop(obj)
+        %%stop Stop the AO task
+        %
+        %   stop()
+        
             if ~obj.enabled, return, end
+            
             if isvalid(obj.task)
                 obj.task.stop()
             end
         end
         
         
+        
         function close(obj)
+        %%close Delete the AO task
+        %
+        %   close()
+        
             if ~obj.enabled, return, end
+            
             if isvalid(obj.task)
                 delete(obj.task)
             end

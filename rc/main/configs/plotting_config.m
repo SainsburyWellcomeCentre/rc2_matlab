@@ -1,7 +1,8 @@
 function config = plotting_config()
 %%config = PLOTTING_CONFIG()
 % Configuration settings for display of traces.
-
+%
+%   TODO: no reason for the axes positions to be here.
 
 config.time = 5; %s
 config.fig.position = [1340, 80, 1333, 630];

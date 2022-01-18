@@ -1,5 +1,17 @@
 classdef Treadmill < handle
-    
+% Treadmill Class for handling digital output sent to solenoid block on the
+% treadmill
+%
+%   Treadmill Properties:
+%       enabled         - whether to use this module
+%       chan            - index of the channel in configuration
+%       state           - current state of the digital output (1 or 0)
+%       ni              - handle to the NI object
+%
+%   Treadmill Methods:
+%       block           - set digital output high
+%       unblock         - set digital output low
+
     properties (SetAccess = private)
         
         enabled
