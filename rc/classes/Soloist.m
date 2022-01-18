@@ -350,18 +350,17 @@ classdef Soloist < handle
         %   into gear mode and thus may move suddenly and unexpectedly.
         %
         %   RESIDUAL_OFFSET_MV = calibrate_zero(BACKWARD_POSITION, FORWARD_POSITION, AI_OFFSET, GEAR_OFF, LEAVE_ENABLED)
-        %   runs the calibrate_zero.exe or calibrate_zero_no_gear.exe
+        %   runs the calibrate_zero.exe 
         %   programs. BACKWARD_POSITION and FORWARD_POSITION determine the
         %   limits which if the stage moves beyond them the executable will
         %   stop (must be in Soloist controller units, e.g. mm, and within
         %   the bounds specified by `max_limits` property. AI_OFFSET is the
         %   offset in millivolts to apply before taking the measurement (i.e. output of
         %   this function will be *relative* to this value). GEAR_OFF
-        %   should be a boolean, true or false, and determines whether to
-        %   take the measurement in gear mode (false, default) or not in
-        %   gear mode (true). LEAVE_ENABLED is a logical, true or false,
-        %   and determines whether to leave the stage enabled after the
-        %   measurement has been made (true) or disable the stage after the
+        %   has no effect, but is left for backward compatibility.
+        %   LEAVE_ENABLED is a logical, true or false, and determines
+        %   whether to leave the stage enabled after the measurement has
+        %   been made (true) or disable the stage after the 
         %   measurement (false). 
         %
         %   FORWARD_POSITION must be < BACKWARD_POSITION.
@@ -417,13 +416,8 @@ classdef Soloist < handle
                 return
             end
             
-            if no_gear
-                fname = obj.full_command('calibrate_zero_no_gear');
-                cmd = sprintf('%s %i %i %.8f %i', fname, back_pos, forward_pos, offset);
-            else
-                fname = obj.full_command('calibrate_zero');
-                cmd = sprintf('%s %i %i %.8f %i', fname, back_pos, forward_pos, offset, leave_enabled);
-            end
+            fname = obj.full_command('calibrate_zero');
+            cmd = sprintf('%s %i %i %.8f %i', fname, back_pos, forward_pos, offset, leave_enabled);
             
             disp(cmd)
             
