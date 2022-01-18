@@ -27,8 +27,12 @@ classdef DigitalOutputRaw < handle
 %   for description of underlying C functions
 
     properties
+        
         enabled
-
+    end
+    
+    properties (SetAccess = private)
+        
         task_handle
         ai_task
         
@@ -40,10 +44,6 @@ classdef DigitalOutputRaw < handle
         channel_ids = {}
         state
         clock_src = ''
-    end
-    
-    
-    properties (SetAccess = private)
         
         is_running = false;
     end

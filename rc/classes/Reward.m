@@ -42,10 +42,11 @@ classdef Reward < handle
         total_duration_on = 0;
     end
     
-    properties (Hidden = true)
+    properties (SetAccess = private, Hidden = true)
         
         pump
     end
+    
     
     
     methods
@@ -65,6 +66,7 @@ classdef Reward < handle
             % duration
             obj.duration = config.reward.duration;
         end
+        
         
         
         function reset_n_rewards_counter(obj)
@@ -123,6 +125,7 @@ classdef Reward < handle
         end
         
         
+        
         function status = set_duration(obj, val)
         %%status = SET_DURATION(obj, val)
         %   Sets the duration of the reward (i.e. pump on)
@@ -144,6 +147,7 @@ classdef Reward < handle
     end
     
     
+    
     methods (Access = private)
         
         function give_reward(obj, ~, ~)
@@ -155,6 +159,7 @@ classdef Reward < handle
             obj.n_rewards_counter = obj.n_rewards_counter + 1;
             obj.total_duration_on = obj.total_duration_on + obj.duration;
         end
+        
         
         
         function delete_timer(obj, ~, ~)

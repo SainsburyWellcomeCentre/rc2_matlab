@@ -60,6 +60,7 @@ classdef Pump < handle
         end
         
         
+        
         function on(obj)
         %%on Send digital output to pump high
         %
@@ -72,6 +73,7 @@ classdef Pump < handle
         end
         
         
+        
         function off(obj)
         %%off Send digital output to pump high
         %
@@ -82,6 +84,7 @@ classdef Pump < handle
             obj.ni.do_toggle(obj.chan, false);
             obj.state = false;
         end
+        
         
         
         function pulse(obj, duration)

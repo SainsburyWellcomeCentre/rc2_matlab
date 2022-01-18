@@ -25,9 +25,12 @@ classdef NI < handle
 %   See also: AnalogInput, AnalogOutput, CounterOutputRaw,
 %   DigitalOutputRaw, DigitalInput
 
-    properties (SetAccess = private)
+    properties
         
         enabled
+    end
+    
+    properties (SetAccess = private)
         
         ai
         ao
@@ -156,25 +159,36 @@ classdef NI < handle
         
         
         function val = ao_task_is_running(obj)
+            
             if ~obj.enabled, return, end
+            
             val = obj.ao.is_running;
         end
         
         
+        
         function val = ao_rate(obj)
+            
             if ~obj.enabled, return, end
+            
             val = obj.ao.rate;
         end
         
         
+        
         function val = get.ao_idle_offset(obj)
+            
             if ~obj.enabled, val = nan; return, end
+            
             val = obj.ao.idle_offset;
         end
         
         
+        
         function val = ai_rate(obj)
+            
             if ~obj.enabled, val = nan; return, end
+            
             val = obj.ai.rate;
         end
         
@@ -266,6 +280,7 @@ classdef NI < handle
             obj.do.close()
             obj.di.close()
         end
+        
         
         
         function cfg = config(obj)

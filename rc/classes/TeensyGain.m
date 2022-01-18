@@ -16,22 +16,22 @@ classdef TeensyGain < handle
 %
 % This class controls both the gain up and gain down signals to the Teensy.
 
-    properties (SetAccess = private)
+    properties
         
         gain_up_enabled
         gain_down_enabled
+    end
+    
+    properties (SetAccess = private)
         
         gain_up_state
         gain_down_state
-    end
-    
-    properties (Hidden = true)
-        ni
-    end
-    
-    properties (Hidden  = true, SetAccess = private)
         gain_up_chan
         gain_down_chan
+    end
+    
+    properties (SetAccess = private, Hidden = true)
+        ni
     end
     
     
@@ -70,6 +70,7 @@ classdef TeensyGain < handle
         end
         
         
+        
         function gain_up_on(obj)
         %%GAIN_UP_ON(obj)
         %   Send the signal for teensy gain up
@@ -77,6 +78,7 @@ classdef TeensyGain < handle
             obj.ni.do_toggle(obj.gain_up_chan, true);
             obj.gain_up_state = true;
         end
+        
         
         
         function gain_up_off(obj)
@@ -88,6 +90,7 @@ classdef TeensyGain < handle
         end
         
         
+        
         function gain_down_on(obj)
         %%GAIN_DOWN_ON(obj)
         %   Send the signal for teensy gain down
@@ -97,6 +100,7 @@ classdef TeensyGain < handle
         end
         
         
+        
         function gain_down_off(obj)
         %%GAIN_DOWN_OFF(obj)
         %   Stop the signal for teensy gain down
@@ -104,6 +108,5 @@ classdef TeensyGain < handle
             obj.ni.do_toggle(obj.gain_down_chan, false);
             obj.gain_down_state = false;
         end
-        
     end
 end

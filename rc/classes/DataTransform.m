@@ -16,6 +16,7 @@ classdef DataTransform < handle
     end
     
     
+    
     methods
         
         function obj = DataTransform(config)
@@ -29,6 +30,7 @@ classdef DataTransform < handle
             obj.offset = config.nidaq.ai.offset;
             obj.scale = config.nidaq.ai.scale;
         end
+        
         
         
         function data = transform(obj, data)

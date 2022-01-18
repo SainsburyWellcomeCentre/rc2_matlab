@@ -67,7 +67,6 @@ classdef RC2Controller < handle
 
     properties
         
-        tic
         ni
         teensy
         soloist
@@ -89,11 +88,14 @@ classdef RC2Controller < handle
         teensy_gain
         delayed_velocity
         lick_detector
+    end
+    
+    properties (SetAccess = private, Hidden = true)
         
+        tic
         data
         tdata
     end
-    
     
     properties (SetObservable = true, SetAccess = private, Hidden = true)
         
@@ -143,6 +145,7 @@ classdef RC2Controller < handle
             obj.start_soloist = StartSoloist(obj.ni, config);
             obj.teensy_gain = TeensyGain(obj.ni, config);
         end
+        
         
         
         function delete(obj)

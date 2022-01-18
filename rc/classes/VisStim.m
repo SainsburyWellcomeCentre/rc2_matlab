@@ -12,14 +12,18 @@ classdef VisStim < handle
 %       on              - set digital output high
 %       off             - set digital output low
 
-    properties (SetAccess = private)
+    properties
         
         enabled
+    end
+    
+    properties (SetAccess = private)
+        
         chan
         state
     end
     
-    properties (Hidden = true)
+    properties (SetAccess = private, Hidden = true)
         
         ni
     end
@@ -58,6 +62,7 @@ classdef VisStim < handle
         end
         
         
+        
         function off(obj)
         %%OFF(obj)
         %   Send screen black and reset position.
@@ -66,6 +71,8 @@ classdef VisStim < handle
             obj.ni.do_toggle(obj.chan, true);
             obj.state = true;
         end
+        
+        
         
         function on(obj)
         %%ON(obj)

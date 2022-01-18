@@ -13,20 +13,28 @@ classdef TriggerInput < handle
 %       listen_to       - set which channel to listen to
 %       read            - read the state of the channel currently listened to
 
-    properties (Hidden = true)
-        
-        ni
-    end
     
-    properties (Hidden = true, SetAccess = private)
+    properties
         
         enabled
+    end
+    
+    properties (SetAccess = private)
+        
         teensy_channel
         soloist_channel
         current_channel
     end
     
+    properties (SetAccess = private, Hidden = true)
+        
+        ni
+    end
+    
+    
+    
     methods
+        
         function obj = TriggerInput(ni, config)
         %%obj = TRIGGERINPUT(ni, config)
         %   There is a single trigger input class which listens to either
@@ -48,6 +56,7 @@ classdef TriggerInput < handle
         end
         
         
+        
         function listen_to(obj, src)
         %%LISTEN_TO(obj, src)
         %   Set the current channel to listen to one of the two inputs.
@@ -61,6 +70,7 @@ classdef TriggerInput < handle
                 obj.current_channel = obj.soloist_channel;
             end
         end
+        
         
         
         function data = read(obj)

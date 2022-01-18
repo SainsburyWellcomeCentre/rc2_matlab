@@ -20,7 +20,7 @@ classdef rc2guiView < handle
 %       sound_enabled               - callback after `enabled` property of Sound class updated
 %       delete                      - destructor
 
-    properties
+    properties (SetAccess = private)
         
         controller
         gui
@@ -80,6 +80,7 @@ classdef rc2guiView < handle
         end
         
         
+        
         function hide_ui(obj)
         %%hide_ui Hides UI features until 'HOME' is pressed
         %
@@ -102,6 +103,7 @@ classdef rc2guiView < handle
             set(obj.handles.edit_file_index, 'enable', 'off');
             set(obj.handles.checkbox_enable_save, 'enable', 'off');
         end
+        
         
         
         function show_ui_after_home(obj)

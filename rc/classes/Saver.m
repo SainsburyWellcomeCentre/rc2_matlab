@@ -76,9 +76,11 @@ classdef Saver < handle
         is_logging_single_trial = false
     end
     
-    properties (Hidden = true)
+    properties (SetAccess = private, Hidden = true)
+        
         ctl
     end
+    
     
     
     methods

@@ -19,7 +19,7 @@ classdef DisableTeensy < handle
         state
     end
     
-    properties (Hidden = true)
+    properties (SetAccess = private, Hidden = true)
         
         ni
     end
@@ -58,6 +58,7 @@ classdef DisableTeensy < handle
         end
         
         
+        
         function on(obj)
         %%ON()
         %   Disable velocity output on Teensy
@@ -66,6 +67,7 @@ classdef DisableTeensy < handle
             obj.ni.do_toggle(obj.chan, true);
             obj.state = true;
         end
+        
         
         
         function off(obj)

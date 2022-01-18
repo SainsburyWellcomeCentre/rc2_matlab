@@ -23,6 +23,7 @@ classdef Position < handle
     end
     
     
+    
     methods
         
         function obj = Position(config)
@@ -49,6 +50,7 @@ classdef Position < handle
         end
         
         
+        
         function integrate(obj, velocity)
         %INTEGRATE(obj, data)
         %   Take the current velocity vector and integrate it to update 
@@ -65,12 +67,14 @@ classdef Position < handle
         end
         
         
+        
         function start(obj)
         %%START(obj)
         %   Set the position to zero and set integrate on.
             obj.position = 0;
             obj.integrate_on = true;
         end
+        
         
         
         function stop(obj)

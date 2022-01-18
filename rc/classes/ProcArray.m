@@ -27,6 +27,7 @@ classdef ProcArray < handle
         end
         
         
+        
         function add_process(obj, proc)
         %%add_process Adds a process to the array
         %
@@ -35,6 +36,7 @@ classdef ProcArray < handle
         
             obj.processes{end+1} = proc;
         end
+        
         
         
         function clear_all(obj)

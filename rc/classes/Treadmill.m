@@ -12,14 +12,17 @@ classdef Treadmill < handle
 %       block           - set digital output high
 %       unblock         - set digital output low
 
-    properties (SetAccess = private)
+    properties
         
         enabled
+    end
+    
+    properties (SetAccess = private)
         chan
         state
     end
     
-    properties (Hidden = true)
+    properties (SetAccess = private, Hidden = true)
         
         ni
     end
@@ -55,6 +58,7 @@ classdef Treadmill < handle
         end
         
         
+        
         function block(obj)
         %%BLOCK(obj)
         %   Block the treadmill, by toggling the digital output.
@@ -62,6 +66,8 @@ classdef Treadmill < handle
             obj.ni.do_toggle(obj.chan, true);
             obj.state = 'up';
         end
+        
+        
         
         function unblock(obj)
         %%UNBLOCK(obj)

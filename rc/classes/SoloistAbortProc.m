@@ -24,6 +24,7 @@ classdef SoloistAbortProc < handle
     end
     
     
+    
     methods
         
         function obj = SoloistAbortProc(cmd)

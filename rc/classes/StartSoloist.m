@@ -14,13 +14,18 @@ classdef StartSoloist < handle
 % TODO: the trigger can be quite general use, so perhaps rename
 % TriggerSoloist
 
-    properties (Hidden = true)
-        ni
+    properties
+        
+        enabled
     end
     
-    properties (Hidden  = true, SetAccess = private)
-        enabled
+    properties (SetAccess = private)
+        
         chan
+    end
+    
+    properties (SetAccess = private, Hidden  = true)
+        ni
     end
     
     
@@ -45,6 +50,7 @@ classdef StartSoloist < handle
             this_name = config.start_soloist.do_name;
             obj.chan = find(strcmp(this_name, all_channel_names));
         end
+        
         
         
         function start(obj)

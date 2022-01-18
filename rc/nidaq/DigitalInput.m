@@ -22,6 +22,9 @@ classdef DigitalInput < handle
     properties
         
         enabled
+    end
+    
+    properties (SetAccess = private)
         
         task
         ai_task

@@ -17,8 +17,13 @@ classdef Teensy < handle
         enabled
         exe
         dir
+    end
+    
+    properties (SetAccess = private)
+        
         current_script
     end
+        
     
     
     methods
@@ -46,6 +51,7 @@ classdef Teensy < handle
         end
         
         
+        
         function load(obj, script, force)
         %%load Loads a script onto the Teensy
         %
@@ -67,11 +73,11 @@ classdef Teensy < handle
             end
             
             cmd = sprintf('"%s" --upload %s', obj.exe, obj.full_script(script));
-%             disp(cmd)
             system(cmd)
             
             obj.current_script = script;
         end
+        
         
         
         function fname = full_script(obj, script)

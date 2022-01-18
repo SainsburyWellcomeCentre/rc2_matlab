@@ -15,7 +15,9 @@ classdef ProcHandler < handle
     end
     
     
+    
     methods
+        
         function obj = ProcHandler(proc)
         %obj = PROCHANDLER(proc)
         %   Class providing loose wrapper around a MATLAB java.lang.Process
@@ -33,10 +35,13 @@ classdef ProcHandler < handle
         end
         
         
+        
         function delete(obj)
         %%delete Destructor
+        
             obj.kill();
         end
+        
         
         
         function wait_for(obj, timeout)
@@ -44,6 +49,7 @@ classdef ProcHandler < handle
             % wait for the process in 'proc' to complete
             %   poll every 'timeout' seconds
             %       to allow MATLAB to run other things
+            
             while obj.proc.isAlive()
                 pause(timeout)
             end
@@ -53,10 +59,12 @@ classdef ProcHandler < handle
         end
         
         
+        
         function kill(obj)
             %   Although this terminates the process
             %       it does not allow the process to run any kind of
             %       clean up on Windows
+            
             obj.proc.destroy();
         end
     end

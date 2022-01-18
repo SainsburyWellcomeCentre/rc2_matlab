@@ -30,7 +30,8 @@ classdef Plotting < handle
 %       reset_vals          - reset the values of the properties between acquisitions
 %       ni_callback         - callback function which updates the plot during acquisition
 
-    properties
+    properties (SetAccess = private)
+        
         n_chans
         chan_names
         chans_to_plot
@@ -53,6 +54,8 @@ classdef Plotting < handle
         units
         ax_positions
     end
+    
+    
     
     methods
         
@@ -98,6 +101,7 @@ classdef Plotting < handle
         end
         
         
+        
         function delete(obj)
         %%delete Destructor
         
@@ -106,11 +110,13 @@ classdef Plotting < handle
         end
         
         
+        
         function close_request(obj, ~, ~)
         %%close_request Hide the figure, don't close
         
             set(obj.fig, 'visible', 'off');
         end
+        
         
         
         function start_vals(obj)
@@ -137,6 +143,7 @@ classdef Plotting < handle
         end
         
         
+        
         function reset_vals(obj)
         %%reset_vals Reset the values of the properties between acquisitions
         
@@ -149,6 +156,7 @@ classdef Plotting < handle
                 set(obj.lines(i), 'ydata', obj.plot_data(:, i));
             end
         end
+        
         
         
         function ni_callback(obj, data)

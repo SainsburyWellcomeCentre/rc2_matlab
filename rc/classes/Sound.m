@@ -82,6 +82,7 @@ classdef Sound < handle
         end
         
         
+        
         function enable(obj)
         %%enable Enable the module
         %
@@ -90,6 +91,7 @@ classdef Sound < handle
             if ~obj.global_enabled, return, end
             obj.enabled = true;
         end
+        
         
         
         function disable(obj)
@@ -103,6 +105,7 @@ classdef Sound < handle
             obj.stop();
             obj.enabled = false;
         end
+        
         
         
         function play(obj)
@@ -120,6 +123,7 @@ classdef Sound < handle
             play(obj.audio)
             obj.state = true;
         end
+        
         
         
         function stop(obj)
@@ -144,6 +148,7 @@ classdef Sound < handle
             % zero...
             play(obj.reset);
         end
+        
         
         
         function repeat(obj, ~, ~)

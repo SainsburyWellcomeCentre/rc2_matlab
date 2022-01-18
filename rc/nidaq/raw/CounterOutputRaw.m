@@ -26,14 +26,14 @@ classdef CounterOutputRaw < handle
     properties
 
         enabled
-
-        task_handle
-        channel_names = {}
-        channel_ids = {}
     end
     
     properties (SetAccess = private)
 
+        task_handle
+        channel_names = {}
+        channel_ids = {}
+        
         init_delay = nan
         low_samps = nan
         high_samps = nan

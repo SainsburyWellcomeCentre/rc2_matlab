@@ -15,17 +15,18 @@ classdef Multiplexer < handle
 %
 %   TODO: add state property?
 
-    properties (Hidden = true)
-        
-        ni
-    end
-    
-    properties (SetAccess = private, Hidden = true)
+    properties (SetAccess = private)
         
         enabled
         chan
         vals
     end
+    
+    properties (SetAccess = private, Hidden = true)
+        
+        ni
+    end
+    
     
     
     methods

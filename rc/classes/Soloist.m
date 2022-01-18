@@ -185,6 +185,7 @@ classdef Soloist < handle
         end
         
         
+        
         function reset_pso(obj)
         %%reset_pso Resets the PSO on the controller.
         %
@@ -340,6 +341,7 @@ classdef Soloist < handle
         end
         
         
+        
         function average_offset_mV = calibrate_zero(obj, back_pos, forward_pos, offset, no_gear, leave_enabled)
         %%calibrate_zero Measures the analog input voltage to the Soloist
         %%controller.
@@ -458,7 +460,6 @@ classdef Soloist < handle
         
         
         
-        
         function proc = listen_until(obj, back_pos, forward_pos, wait_for_trigger)
         %%listen_until Couples the voltage input to the Soloist controller
         %%to the velocity of the linear stage.
@@ -529,6 +530,7 @@ classdef Soloist < handle
         end
         
         
+        
         function proc = mismatch_ramp_down_at(obj, back_pos, forward_pos)
         %%mismatch_ramp_down_at Couples the voltage input to the Soloist controller
         %%to the velocity of the linear stage until a position is reached
@@ -592,6 +594,7 @@ classdef Soloist < handle
             proc = ProcHandler(p_java);
             obj.proc_array.add_process(proc);
         end
+        
         
         
         function proc = mismatch_ramp_up_until(obj, back_pos, forward_pos)
@@ -684,6 +687,7 @@ classdef Soloist < handle
         end
         
         
+        
         function set_gear_scale(obj, val)
         %%set_gear_scale Set the `gear_scale` property
         %
@@ -699,6 +703,7 @@ classdef Soloist < handle
             
             obj.gear_scale = val;
         end
+        
         
         
         function set_deadband(obj, val)
@@ -723,6 +728,7 @@ classdef Soloist < handle
             obj.deadband = val;
         end
     end
+    
     
     
     methods (Access = private)

@@ -22,6 +22,9 @@ classdef AnalogInput < handle
     properties
         
         enabled
+    end
+    
+    properties (SetAccess = private)
         
         task
         channel_names = {}
@@ -136,6 +139,7 @@ classdef AnalogInput < handle
                 delete(obj.task)
             end
         end
+        
         
         
         function val = rate(obj)

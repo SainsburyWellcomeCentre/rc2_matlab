@@ -66,10 +66,13 @@ classdef rc2guiController < handle
 %   TODO: `current_script` and `set_script` are not named correctly as it
 %         is a function that is run.
 
-    properties
+    properties (SetAccess = private)
         
         setup
         view
+    end
+    
+    properties
         
         move_to_pos
         reward_distance

@@ -21,7 +21,12 @@ classdef AnalogOutput < handle
 %   See also: NI
 
     properties
+        
         enabled
+    end
+    
+    properties (SetAccess = private)
+        
         task
         channel_names = {}
         channel_ids = {}
@@ -31,6 +36,7 @@ classdef AnalogOutput < handle
         
         max_voltage = 3.3;
     end
+    
     
     
     methods
@@ -173,17 +179,23 @@ classdef AnalogOutput < handle
         end
         
         
+        
         function val = is_running(obj)
+            
             if ~obj.enabled
                 val = false;
                 return
             end
+            
             val = obj.task.IsRunning;
         end
         
         
+        
         function val = rate(obj)
+            
             if ~obj.enabled, return, end
+            
             val = obj.task.Rate;
         end
     end

@@ -34,8 +34,13 @@ classdef DelayedVelocity < handle
         
         enabled
         delay_ms = 0
+    end
+    
+    properties (SetAccess = private, Hidden = true)
+        
         ni
     end
+    
     
     
     methods

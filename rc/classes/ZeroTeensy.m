@@ -12,13 +12,19 @@ classdef ZeroTeensy < handle
 %
 % On `start` a 500ms pulse is sent to the soloist.
 
-    properties (Hidden = true)
-        ni
+    properties
+        
+        enabled
     end
     
-    properties (Hidden  = true, SetAccess = private)
-        enabled
+    properties (SetAccess = private)
+        
         chan
+    end
+    
+    properties (SetAccess = private, Hidden  = true)
+        
+        ni
     end
     
     
@@ -45,6 +51,7 @@ classdef ZeroTeensy < handle
             this_name = config.zero_teensy.do_name;
             obj.chan = find(strcmp(this_name, all_channel_names));
         end
+        
         
         
         function zero(obj)
