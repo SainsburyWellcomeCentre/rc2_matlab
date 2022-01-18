@@ -137,7 +137,7 @@ classdef CoupledMismatch < handle
                 
                 % Subtract the residual voltage (if the residual error was
                 % positive, we need to subtract it)
-                obj.ctl.soloist.ai_offset = -real_time_offset_error + 1.2;%obj.ctl.soloist.ai_offset - real_time_offset_error;
+                obj.ctl.soloist.ai_offset = -real_time_offset_error + 5.2680;%obj.ctl.soloist.ai_offset - real_time_offset_error;
                 
                 % the soloist will connect, setup some parameters and then
                 % wait for the solenoid signal to go low
