@@ -60,7 +60,7 @@ classdef CoupledMismatch < handle
         log_trial = false
         log_fname = ''
         
-        solenoid_correction = 1.55 % 2.35  % millivolts
+        solenoid_correction = 5.2680 % 2.35  % millivolts
     end
     
     properties (SetAccess = private)
