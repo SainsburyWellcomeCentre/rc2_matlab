@@ -21,7 +21,7 @@ PROGRAM
 	
 	ramping_up = 1
 	ramp_up_over_us = 200000
-	gear_scale = -4000
+	gear_scale = -400000
 	
 	' Make sure gain is at 0
 	SETPARM GearCamScaleFactor, 0

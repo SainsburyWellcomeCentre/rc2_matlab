@@ -21,7 +21,7 @@ PROGRAM
 	
 	ramping_down = 1
 	ramp_down_over_us = 500000
-	gear_scale = -4000
+	gear_scale = -400000
 	
 	STARTSYNC -2
 	
