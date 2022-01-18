@@ -49,7 +49,7 @@ main(int argc, char **argv)
     if(!SoloistPSOOutputPulse(handles[0])) { cleanup(handles, handle_count); }
     
     // Set the gearing parameters...
-    gear_set = set_gear_params(handles, GEARCAM_SOURCE, GEAR_SCALE, deadband, 0);
+    gear_set = set_gear_params(handles, GEARCAM_SOURCE, gear_scale, deadband, 0);
     if (gear_set != 0) { cleanup(handles, handle_count); }
     
     // Enable
