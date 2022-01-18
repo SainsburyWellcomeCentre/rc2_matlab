@@ -6,7 +6,7 @@
 #define AI_CHANNEL                      0
 #define AO_CHANNEL                      0
 #define AO_SERVO_VALUE                  4
-#define AO_SCALE_FACTOR                 0.001f
+#define AO_SCALE_FACTOR                 0.00001f
 #define DI_PORT                         0
 #define DI_BIT                          0
 #define RAMP_RATE                       200
@@ -14,14 +14,14 @@
 #define SPEED_LIMIT 					1200
 #define MAX_INPUT_VOLTAGE               2.5
 #define GEARCAM_SOURCE                  2
-#define GEAR_SCALE 						-4000
+#define GEAR_SCALE 						0
 #define DEADBAND                        0.005
 
 #define AI_OFFSET 						-508.0
 #define DEFAULT_GEARSOURCE              1
 #define DEFAULT_GEARSCALEFACTOR         1
 #define DEFAULT_ANALOGDEADBAND          0.05
-#define DEFAULT_GAINKPOS                86.43
+#define DEFAULT_GAINKPOS                128.7
 #define DEFAULT_RAMPRATE                200
 #define DEFAULT_RAMPMODE                RAMPMODE_Rate
 #define DEFAULT_POSITION                20
