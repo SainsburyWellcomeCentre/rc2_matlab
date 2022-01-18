@@ -1,4 +1,3 @@
-#include "C:\Program Files (x86)\Aerotech\Soloist\CLibrary\Include\Soloist.h"
 #include "rc_soloist.h"
 #include <iostream>
 #include <string>
@@ -6,6 +5,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <tchar.h>
+
 
 
 int
@@ -36,14 +36,19 @@ main () {
             if(!SoloistMotionDisable(handles[0])) { cleanup(handles, handle_count); }
             if(!SoloistDisconnect(handles)) { cleanup(handles, handle_count); }
             printf("shutdown...\n");
+            
         } else if (line.compare("stop") == 0) {
+            
             if(!SoloistMotionDisable(handles[0])) { cleanup(handles, handle_count); }
             printf("stopped...\n");
             // Reset gear parameters
             reset_gear(handles, handle_count);
+            
         } else if (line.compare("reset_pso") == 0) {
+            
             if(!SoloistPSOControl(handles[0], PSOMODE_Reset)) { cleanup(handles, handle_count); }
             printf("pso_reset...\n");
+            
         }
     }
     

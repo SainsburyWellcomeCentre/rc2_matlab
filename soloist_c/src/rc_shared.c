@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <tchar.h>
-#include "C:\Program Files (x86)\Aerotech\Soloist\CLibrary\Include\Soloist.h"
 #include "rc_soloist.h"
 
 

@@ -1,4 +1,3 @@
-#include "C:\Program Files (x86)\Aerotech\Soloist\CLibrary\Include\Soloist.h"
 #include "rc_soloist.h"
 #include <stdio.h>
 #include <stdlib.h>
