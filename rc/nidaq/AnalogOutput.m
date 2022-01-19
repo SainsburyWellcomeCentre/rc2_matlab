@@ -23,6 +23,7 @@ classdef AnalogOutput < handle
     properties
         
         enabled
+        idle_offset
     end
     
     properties (SetAccess = private)
@@ -31,8 +32,6 @@ classdef AnalogOutput < handle
         channel_names = {}
         channel_ids = {}
         chan = {}
-        
-        idle_offset
         
         max_voltage = 3.3;
     end
