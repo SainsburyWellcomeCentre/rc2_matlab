@@ -21,9 +21,11 @@ print_error()
 void
 cleanup(SoloistHandle *handles, DWORD handle_count)
 {
+    
 	print_error();
     if(handle_count > 0) {
 		if(!SoloistMotionDisable(handles[0])) { print_error(); }
+        reset_gear(handles, handle_count);
 		if(!SoloistDisconnect(handles)) { print_error(); }
     }
     exit(-1);
