@@ -5,6 +5,7 @@
 HEADER
 
 	INCLUDE "AeroBasicInclude.abi"
+    INCLUDE "rc_shared_header.abi"
 
 END HEADER
 
@@ -12,16 +13,12 @@ END HEADER
 PROGRAM
 
 	DIM ramping_down AS INTEGER
-	DIM ramp_down_over_us AS DOUBLE
-	DIM gear_scale AS DOUBLE
 	
 	DIM current_time AS DOUBLE
 	DIM current_scale AS DOUBLE
 	DIM factor AS DOUBLE
 	
 	ramping_down = 1
-	ramp_down_over_us = 200000
-	gear_scale = -400000
 	
 	STARTSYNC -2
 	

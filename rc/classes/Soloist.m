@@ -514,6 +514,8 @@ classdef Soloist < handle
                 return
             end
             
+            obj.write_abi_header();
+            
             fname = obj.full_command('listen_until');
             cmd = sprintf('%s %i %i %.8f %.8f %.8f %i "%s"', fname, back_pos, forward_pos, obj.ai_offset, obj.gear_scale, obj.deadband, wait_for_trigger, obj.ab_dir);
             disp(cmd)
@@ -579,6 +581,8 @@ classdef Soloist < handle
                     class(obj), 'mismatch_ramp_down_at');
                 return
             end
+            
+            obj.write_abi_header();
             
             fname = obj.full_command('mismatch_ramp_down_at');
             cmd = sprintf('%s %i %i %.8f %.8f %.8f "%s"', fname, back_pos, forward_pos, obj.ai_offset, obj.gear_scale, obj.deadband, obj.ab_dir);
@@ -646,6 +650,8 @@ classdef Soloist < handle
                     class(obj), 'mismatch_ramp_up_until');
                 return
             end
+            
+            obj.write_abi_header();
             
             fname = obj.full_command('mismatch_ramp_up_until');
             cmd = sprintf('%s %i %i %.8f %.8f %.8f "%s"', fname, back_pos, forward_pos, obj.ai_offset, obj.gear_scale, obj.deadband, obj.ab_dir);
@@ -722,6 +728,31 @@ classdef Soloist < handle
             end
             
             obj.deadband = val;
+        end
+        
+        
+        
+        function write_abi_header(obj)
+        %%write_abi_header Write Soloist parameters to a header file
+        %
+        %   write_abi_header() writes the parameters in `gear_scale` to a
+        %   header file for the .ab scripts to read and use when setting
+        %   the GearCamScaleFactor.
+        
+            % temporary 
+            header_dir = 'C:\Users\treadmill\Code\rc2_matlab\soloist_c\ab\rc_shared_header.abi';
+            
+            str = {'HEADER', ...
+                   'DEFINE ramp_up_over_us 200000', ...
+                   'DEFINE ramp_down_over_us 500000', ...
+                   'DEFINE gear_scale -400000', ...
+                   'END HEADER'};
+            
+            file_text = strjoin(str, '\n');
+            
+            fid = fopen(header_dir, 'w');
+            fprintf(fid, '%s', file_text);
+            fclose(fid);
         end
     end
     
