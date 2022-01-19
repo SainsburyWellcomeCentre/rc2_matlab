@@ -5,6 +5,7 @@
 HEADER
 
 	INCLUDE "AeroBasicInclude.abi"
+    INCLUDE "rc_shared_header.abi"
 
 END HEADER
 
@@ -12,8 +13,6 @@ END HEADER
 PROGRAM
 
 	DIM ramping_up AS INTEGER
-	DIM ramp_up_over_us AS DOUBLE
-	DIM gear_scale AS DOUBLE
 	
 	DIM current_time AS DOUBLE
 	DIM current_scale AS DOUBLE
@@ -21,8 +20,6 @@ PROGRAM
 	DIM ready_to_go AS DOUBLE
 	
 	ramping_up = 1
-	ramp_up_over_us = 200000
-	gear_scale = -400000
 	ready_to_go = 0
 	
 	' Make sure gain is at 0
