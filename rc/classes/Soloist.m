@@ -51,6 +51,8 @@ classdef Soloist < handle
 %       set_gear_scale      - set the `gear_scale` property
 %       set_deadband        - set the `deadband` property
 %       full_command        - create a full path to the executables
+%       ab_dir              - directory with the .ab files
+%       base_dir            - return the root soloist directory.
 %
 %   TODO: `ai_offset` and `deadband` should be private properties (may
 %         affect Trial classes)
@@ -513,7 +515,7 @@ classdef Soloist < handle
             end
             
             fname = obj.full_command('listen_until');
-            cmd = sprintf('%s %i %i %.8f %.8f %.8f %i', fname, back_pos, forward_pos, obj.ai_offset, obj.gear_scale, obj.deadband, wait_for_trigger);
+            cmd = sprintf('%s %i %i %.8f %.8f %.8f %i "%s"', fname, back_pos, forward_pos, obj.ai_offset, obj.gear_scale, obj.deadband, wait_for_trigger, obj.ab_dir);
             disp(cmd)
             
             % start running the process
@@ -579,7 +581,7 @@ classdef Soloist < handle
             end
             
             fname = obj.full_command('mismatch_ramp_down_at');
-            cmd = sprintf('%s %i %i %.8f %.8f %.8f', fname, back_pos, forward_pos, obj.ai_offset, obj.gear_scale, obj.deadband);
+            cmd = sprintf('%s %i %i %.8f %.8f %.8f "%s"', fname, back_pos, forward_pos, obj.ai_offset, obj.gear_scale, obj.deadband, obj.ab_dir);
             disp(cmd)
             
             % start running the process
@@ -646,7 +648,7 @@ classdef Soloist < handle
             end
             
             fname = obj.full_command('mismatch_ramp_up_until');
-            cmd = sprintf('%s %i %i %.8f %.8f %.8f', fname, back_pos, forward_pos, obj.ai_offset, obj.gear_scale, obj.deadband);
+            cmd = sprintf('%s %i %i %.8f %.8f %.8f "%s"', fname, back_pos, forward_pos, obj.ai_offset, obj.gear_scale, obj.deadband, obj.ab_dir);
             disp(cmd)
             
             % start running the process
@@ -733,7 +735,40 @@ classdef Soloist < handle
         %   FULLFILE = full_command(COMMAND) creates a full path from a
         %   command string COMMAND.
         
-            fname = fullfile(obj.dir, sprintf('%s.exe', cmd));
+            fname = fullfile(obj.base_dir, 'exe', sprintf('%s.exe', cmd));
+        end
+        
+        
+        
+        function dname = ab_dir(obj)
+        %%ab_dir Return directory with the .ab files
+        %
+        %   DIRECTORY_NAME = ab_dir()
+        %   full path to the directory containing the .ab Aerobasic
+        %   scripts.
+        
+            dname = fullfile(obj.base_dir, 'ab');
+        end
+        
+        
+        
+        function dname = base_dir(obj)
+        %%base_dir Return the base soloist directory.
+        %
+        %   DIRECTORY_NAME = base_dir()
+        %   returns the directory with the 'ab', 'exe' and 'src'
+        %   directories. Required for backward compatibility where only the
+        %   'exe' directory was provided to the class.
+            
+            [dname, end_dir] = fileparts(obj.dir);
+            
+            if ~strcmp(end_dir, 'exe')
+                dname = obj.dir;
+            end
+            
+            % check user hasn't multiple 'exe' folders
+            [~, end_dir] = fileparts(obj.dir);
+            assert(~strcmp(end_dir, 'exe'), 'Shouldn''t have nested ''exe'' directories');
         end
     end
 end

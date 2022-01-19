@@ -51,3 +51,15 @@ reset_gear(SoloistHandle *handles, DWORD handle_count) {
     int gear_set = set_gear_params(handles, DEFAULT_GEARSOURCE, DEFAULT_GEARSCALEFACTOR, DEFAULT_ANALOGDEADBAND, DEFAULT_GAINKPOS);
     if (gear_set != 0) { cleanup(handles, handle_count); }
 }
+
+
+char *
+get_ab_path(char *ab_dir, char *suffix) {
+// return paths to the aerobasic scripts
+	char *full_path;
+	full_path = (char *) malloc(strlen(ab_dir) + 1);
+	strcpy(full_path, ab_dir);
+	full_path = (char *) realloc(full_path, strlen(full_path) + strlen(suffix) + 1);
+	strcat(full_path, suffix);
+	return full_path;
+}

@@ -14,8 +14,8 @@ main(int argc, char **argv)
 	DWORD handle_count = 0;
     
     // Check the arguments
-    if (argc < 5) {
-        printf("must have at least 5 numeric arguments.\n");
+    if (argc < 6) {
+        printf("must have 6 arguments.\n");
         return 1;
     }
     
@@ -25,14 +25,18 @@ main(int argc, char **argv)
     DOUBLE ai_offset = atof(argv[3]);
     DOUBLE gear_scale = atof(argv[4]);
     DOUBLE deadband = atof(argv[5]);
+    char *ab_directory = argv[6];
     TASKSTATE task_state;
     
     DOUBLE return_value, return_value_pos, return_value_vel;
     int gear_set;
     DWORD ready_to_go = 1; // digital input starts high
     
-    // Path to the aerobasic script which will control ramping down of the gain
-    LPCSTR ab_script = "C:\\Users\\treadmill\\Code\\rc2_matlab\\soloist_c\\ab\\ramp_down_gain.ab";
+    // Path to the aerobasic script which will control ramping up of the gain
+    char *ab_script;
+	char suffix[] = "\\ramp_down_gain.ab";
+	
+ 	ab_script = get_ab_path(ab_directory, suffix);
     
     // Connect to soloist.
     if(!SoloistConnect(&handles, &handle_count)) { cleanup(handles, handle_count); }
