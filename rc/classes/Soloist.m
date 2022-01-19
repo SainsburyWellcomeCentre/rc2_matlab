@@ -767,7 +767,7 @@ classdef Soloist < handle
             end
             
             % check user hasn't multiple 'exe' folders
-            [~, end_dir] = fileparts(obj.dir);
+            [~, end_dir] = fileparts(dname);
             assert(~strcmp(end_dir, 'exe'), 'Shouldn''t have nested ''exe'' directories');
         end
     end
