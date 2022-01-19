@@ -739,18 +739,18 @@ classdef Soloist < handle
         %   header file for the .ab scripts to read and use when setting
         %   the GearCamScaleFactor.
         
-            % temporary 
-            header_dir = 'C:\Users\treadmill\Code\rc2_matlab\soloist_c\ab\rc_shared_header.abi';
+            % header file
+            header_fname = fullfile(obj.ab_dir, 'rc_shared_header.abi');
             
             str = {'HEADER', ...
                    'DEFINE ramp_up_over_us 200000', ...
                    'DEFINE ramp_down_over_us 500000', ...
-                   'DEFINE gear_scale -400000', ...
+                   sprintf('DEFINE gear_scale %.2f', obj.gear_scale), ...
                    'END HEADER'};
             
             file_text = strjoin(str, '\n');
             
-            fid = fopen(header_dir, 'w');
+            fid = fopen(header_fname, 'w');
             fprintf(fid, '%s', file_text);
             fclose(fid);
         end
