@@ -12,8 +12,8 @@ main(int argc, char **argv)
     SoloistHandle *handles;
 	DWORD handle_count = 0;
     
-    if (argc < 7) {
-        printf("must have 7 arguments.\n");
+    if (argc < 6) {
+        printf("must have 6 arguments.\n");
         return 1;
     }
     
@@ -21,10 +21,9 @@ main(int argc, char **argv)
     DOUBLE backward_limit = atof(argv[1]);
     DOUBLE forward_limit = atof(argv[2]);
     DOUBLE ai_offset = atof(argv[3]);
-    DOUBLE gear_scale = atof(argv[4]);
-    DOUBLE deadband = atof(argv[5]);
-    DWORD wait_for_trigger = atoi(argv[6]);
-    char *ab_directory = argv[7];
+    DOUBLE deadband = atof(argv[4]);
+    DWORD wait_for_trigger = atoi(argv[5]);
+    char *ab_directory = argv[6];
     TASKSTATE task_state;
     
     DOUBLE return_value, return_value_pos, return_value_vel;

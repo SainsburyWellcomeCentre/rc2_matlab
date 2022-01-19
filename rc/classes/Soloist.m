@@ -517,7 +517,7 @@ classdef Soloist < handle
             obj.write_abi_header();
             
             fname = obj.full_command('listen_until');
-            cmd = sprintf('%s %i %i %.8f %.8f %.8f %i "%s"', fname, back_pos, forward_pos, obj.ai_offset, obj.gear_scale, obj.deadband, wait_for_trigger, obj.ab_dir);
+            cmd = sprintf('%s %i %i %.8f %.8f %i "%s"', fname, back_pos, forward_pos, obj.ai_offset, obj.deadband, wait_for_trigger, obj.ab_dir);
             disp(cmd)
             
             % start running the process
