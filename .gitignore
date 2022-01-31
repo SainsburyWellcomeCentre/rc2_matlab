@@ -10,3 +10,4 @@
 *.bas
 *.bcm
 *.exe
+soloist_c/src/options.h

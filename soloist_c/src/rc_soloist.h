@@ -2,24 +2,7 @@
 #define RC_SOLOIST_H
 
 #include "C:\Program Files (x86)\Aerotech\Soloist\CLibrary\Include\Soloist.h"
-
-#define AI_CHANNEL                      0
-#define AO_CHANNEL                      0
-#define AO_SERVO_VALUE                  4
-#define AO_SCALE_FACTOR                 0.00001f
-#define DI_PORT                         0
-#define SPEED_LIMIT 					1200
-#define GEARCAM_SOURCE                  2
-
-#define DEFAULT_GEARSOURCE              1
-#define DEFAULT_GEARSCALEFACTOR         1
-#define DEFAULT_ANALOGDEADBAND          0.05
-#define DEFAULT_GAINKPOS                128.7
-#define DEFAULT_RAMPRATE                200
-#define DEFAULT_RAMPMODE                RAMPMODE_Rate
-#define DEFAULT_POSITION                20
-#define DEFAULT_SPEED					300
-
+#include options.h
 
 // Common functions in rc_shared.c
 void cleanup(SoloistHandle *handles, DWORD handle_count);
