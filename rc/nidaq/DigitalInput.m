@@ -1,48 +1,26 @@
 classdef DigitalInput < handle
-% DigitalInput Class for handling digital inputs on the NIDAQ
-%
-%   DigitalInput Properties:
-%       enabled         - whether to use this module
-%       task            - handle to the DI session object
-%       ai_task         - not used
-%       channel_names   - names of the AI channels
-%       channel_ids     - IDs of the AI channels
-%       chan            - cell array with the handle to the channel objects
-%       n_chan          - number of digital input channels
-%       state           - not used
-%       ai_chan         - not used
-%
-%   DigitalInput Methods:
-%       read            - read the state of all digital inputs
-%       read_channel    - read the state of a digital input
-%       close           - delete the task
-%
-%   See also: NI
+    % DigitalInput class for handling digital inputs on the NIDAQ.
 
     properties
-        
-        task
-        ai_task
-        channel_names
-        channel_ids
-        chan = {}
-        n_chan
-        state
-        ai_chan
+        task % The DI `session object <https://uk.mathworks.com/help/daq/daq.interfaces.dataacquisition.daq.html>`_.
+        ai_task % Not in use.
+        channel_names = {} % Names of the DI channels.
+        channel_ids = {} % IDs of the DI channels.
+        chan = {} % Cell array with the handle to the channel objects.
+        n_chan % number of digital input channels
+        state % Not in use.
+        ai_chan % Not in use.
     end
-    
     
     
     methods
         
         function obj = DigitalInput(config)
-        % DigitalInput
-        %
-        %   DigitalInput(CONFIG) creates the digital input task with
-        %   the details described in CONFIG (the main configuration
-        %   structure with `di` field.
-        %
-        %   See README for details on the configuration.
+            % Constructor for a :mod:`rc.nidaq` :class:`DigitalInput` task.
+            % DigitalInput(config) creates the digital input task with the details
+            % described in the main configuration structure with `ai` field.
+            %
+            % :param config: The main configuration structure.
         
             obj.task = daq.createSession('ni');
             
@@ -59,36 +37,28 @@ classdef DigitalInput < handle
         end
         
         
-        
         function data = read(obj)
-        %%read Read the state of all digital inputs
-        %
-        %   DATA = read() returns the state of all digital inputs in DATA a
-        %   1 x # DI channels boolean array.
+            % Read the state of all digital inputs.
+            %
+            % :return: A data matrix with the state of all digital inputs in a 1 x :attr:`n_chan` boolean array.
         
             data = obj.task.inputSingleScan();
         end
         
         
-        
         function data = read_channel(obj, chan)
-        %%read_channel Read the state of a digital input
-        %
-        %   DATA = read_channel(CHANNEL_IDX) returns the state the digital
-        %   input given by CHANNEL_IDX (which should be an integer between
-        %   1 and # DI channels), in DATA a boolean true (high) or false
-        %   (low).
+            % Read the state of a digitial input channel.
+            %
+            % :param chan: The index of the channel to read between 1 and :attr:`n_chan`.
+            % :return: A boolean representing the high/low state of the digital input channel.
         
             data = obj.read();
             data = data(chan);
         end
         
         
-        
         function close(obj)
-        %%close Delete the DI task
-        %
-        %   close()
+            % Delete the DI task.
         
             if isvalid(obj.task)
                 delete(obj.task);

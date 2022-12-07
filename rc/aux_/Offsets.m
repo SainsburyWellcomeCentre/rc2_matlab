@@ -1,94 +1,79 @@
 classdef Offsets < handle
-% Offsets Class for handling voltage offsets which appear on the setup
-%
-%   Offsets Properties:
-%       nominal_stationary_offset   - a "desired" voltage value which we
-%                                     want to output from the NIDAQ analog ouput
-%       error_mtx                   - a matrix of "error" values 
-%                                     to apply under different states of
-%                                     the setup 
-%       ctl                         - object of class RC2Controller
-%
-%   Offsets Methods:
-%       get_soloist_offset       - currently not used
-%       get_ni_ao_offset         - get the offset to apply to the NI analog
-%                                  output in different setup states to
-%                                  maintain stability of the setup
-%       transform_ai_ao_data     - given a voltage waveform on the analog
-%                                   input, convert to a waveform to apply
-%                                   to the analog output which 
-%                                   results in the same input to the
-%                                   Soloist and visual stimulus computer
-%
-% Several offsets appear in the operation of the setup, due to electrical
-% artefacts (such as switching on LEDs, or the state of the solenoid).
-%
-% There are also differences when sending signals from the Teensy or the NI
-% (i.e. despite commanding 0.5V from the Teensy and NI, there will be an
-% error involved in both (observed teensy voltage = 0.5 + teensy_error,
-% observed NI voltage = 0.5 + NI_error)). 
-%
-% Sources of offset error:
-%   difference between commanded voltage on Teensy and NI
-%   difference between recorded voltage on analog input and replayed analog
-%   output
-%   introduction of different offset when solenoid block is on or off
-%
-% The error_mtx is a 4x7 matrix of error values under different setup
-% conditions and which offset we are looking at.
-%
-%   ROW,    STATE OF THE SETUP
-%   1       solenoid up, gear mode on
-%   2       solenoid up, gear mode off
-%   3       solenoid down, gear mode on
-%   4       solenoid down, gear mode off
-%
-%   COL,    OFFSET TYPE
-%   1       difference between commanded voltage on Teensy and observed voltage on NIDAQ AI
-%   2       NOT USED
-%   3       NOT USED
-%   4       difference between commanded voltage on Teensy and observed voltage on the visual stimulus computer
-%   5       difference between commanded voltage from NIDAQ AO and observed voltage on the visual stimulus computer
-%   6       NOT USED
-%   7       NOT USED
-%
-% TODO: currently handling of offsets has not been implemented well and is too
-% complicated. It seems to work and the setup is stable, but there should
-% be a systematic procedure for handling these offsets, which currently
-% there is not.
-%
-% At a later date, we switched to calibrating the stage at the beginning of every
-% trial in which the stage moves. This removed the need for most of this class.
-%
-% However, we still have to account for the voltage difference between
-% solenoid UP and DOWN (which is dealt with separately from this class).
-%
-% As well,differences between commanded voltage from the Teensy and
-% NIDAQ, so that the stage and visual stimulus are stationary at the
-% baseline voltage... in this case, this class is still used.
-%
-% See also: calibration_script
+    % Offsets class for handling voltage offsets which appear on the setup.
+    %
+    % Several offsets appear in the operation of the setup, due to electrical
+    % artefacts (such as switching on LEDs, or the state of the solenoid).
+    %
+    % There are also differences when sending signals from the Teensy or the NI
+    % (i.e. despite commanding 0.5V from the Teensy and NI, there will be an
+    % error involved in both (observed teensy voltage = 0.5 + teensy_error,
+    % observed NI voltage = 0.5 + NI_error)). 
+    %
+    % Sources of offset error: Difference between commanded voltage on Teensy and NI
+    % ; Difference between recorded voltage on analog input and replayed analog output
+    % ; Introduction of different offset when solenoid block is on or off.
+    %
+    % The error_mtx is a 4x7 matrix of error values under different setup
+    % conditions and which offset we are looking at.
+    %
+    %  ROW --- STATE OF THE SETUP
+    %
+    %  1 ----- solenoid up, gear mode on
+    %
+    %  2 ----- solenoid up, gear mode off
+    %
+    %  3 ----- solenoid down, gear mode on
+    %
+    %  4 ----- solenoid down, gear mode off
+    %
+    %  COL --- OFFSET TYPE
+    %
+    %  1 ----- Difference between commanded voltage on Teensy and observed voltage on NIDAQ AI
+    %
+    %  2 ----- NOT USED
+    %
+    %  3 ----- NOT USED
+    %
+    %  4 ----- Difference between commanded voltage on Teensy and observed voltage on the visual stimulus computer
+    %
+    %  5 ----- Difference between commanded voltage from NIDAQ AO and observed voltage on the visual stimulus computer
+    %
+    %  6 ----- NOT USED
+    %
+    %  7 ----- NOT USED
+    %
+    % TODO: currently handling of offsets has not been implemented well and is too
+    % complicated. It seems to work and the setup is stable, but there should
+    % be a systematic procedure for handling these offsets, which currently
+    % there is not.
+    %
+    % At a later date, we switched to calibrating the stage at the beginning of every
+    % trial in which the stage moves. This removed the need for most of this class.
+    %
+    % However, we still have to account for the voltage difference between
+    % solenoid UP and DOWN (which is dealt with separately from this class).
+    %
+    % As well, differences between commanded voltage from the Teensy and
+    % NIDAQ, so that the stage and visual stimulus are stationary at the
+    % baseline voltage... in this case, this class is still used.
+    %
+    % See also: calibration_script
 
     properties
-        
-        nominal_stationary_offset = 0.5
-        
-        ctl
-        error_mtx
-        
+        nominal_stationary_offset = 0.5 % A desired voltage value to output from the NIDAQ analog output.
+        ctl % :class:`rc2.main.Controller` object.
+        error_mtx % A matrix of error values to apply under different states of the setup.
         ao_ai_difference_V
         ni_idle_voltage
     end
     
     
     methods
-        
         function obj = Offsets(ctl, config)
-        % Offsets
-        %
-        %   Offsets(CTL, CONFIG) class for dealing with offsets on the
-        %   setup. Takes the main RC2Controller object, CTL, and the CONFIG
-        %   configuration structure.
+            % Constructor for a :class:`rc.aux_.Offsets` class.
+            %
+            % :param ctl: The primary :class:`rc2.main.Controller` object.
+            % :param config: The main configuration structure.
         
             obj.ctl = ctl;
             obj.error_mtx = config.offset_error_mtx;
@@ -101,7 +86,7 @@ classdef Offsets < handle
         
         
         function val = get_soloist_offset(obj, soloist_input_src, solenoid_state, gear_mode)
-        %%Currently not used by the rest of the program
+            % Currently not used by the rest of the program.
         
             if strcmp(solenoid_state, 'up') && strcmp(gear_mode, 'on')
                 row = 1;
@@ -130,15 +115,11 @@ classdef Offsets < handle
         
         
         function val = get_ni_ao_offset(obj, solenoid_state, gear_mode)
-        %%get_ni_ao_offset Given the `nominal_stationary_offset` get the
-        %%actual offset to apply on the NIDAQ AO given the state of the
-        %%setup.
-        %
-        %   STATIONARY_OFFSET = get_ni_ao_offset(SOLENOID, GEAR_MODE)
-        %   given the state of the solenoid, SOLENOID which can be 'up' or
-        %   'down', and GEAR_MODE ('on' or 'off'), return the actual offset to
-        %   apply on the NIDAQ analog output given the
-        %   `nominal_stationary_offset` property in STATIONARY_OFFSET.
+            % Given the :attr:`nominal_stationary_offset` get the actual offset to apply on the NIDAQ AO given the state of the setup.
+            %
+            % :param solenoid_state: Current state of the solenoid, can be 'up' or 'down',
+            % :param gear_mode: The current gear mode 'on' or 'off'.
+            % :return: The actual offset to apply.
             
             if ~isempty(obj.ao_ai_difference_V)
                 val = obj.ni_idle_voltage;
@@ -167,25 +148,19 @@ classdef Offsets < handle
         end
         
         
-        
         function data = transform_ai_ao_data(obj, data, solenoid_state, gear_mode)
-        %%transform_ai_ao_data given a voltage waveform on the analog input,
-        %%convert to a waveform to apply to the analog output which
-        %%results in the same input to the Soloist and visual stimulus
-        %%computer 
-        %
-        %   DATA_CORRECTED = transform_ai_ao_data(DATA, SOLENOID, GEAR_MODE)
-        %   given the state of the solenoid, SOLENOID which can be 'up' or
-        %   'down', and GEAR_MODE ('on' or 'off'), take a Nx1 vector DATA of
-        %   recorded velocity data and apply a correction, so that the
-        %   eventual voltage seen by the components is the same as the
-        %   original. Return Nx1 corrected vector, DATA_CORRECTED.
-        %
-        %   TODO:   1. completely reimplement offset corrections
-        %           2. currently assumes that the recorded data was taken
-        %           with solenoid down and gear mode on
-        %           3. currently always uses error value in 4th row of 4th
-        %           column.. don't see the reason for this
+            % Given a voltage waveform on the analog input, convert to a waveform to apply to the analog output which results in the same input to the Soloist and visual stimulus computer.
+            %
+            % :param data: N x 1 vector of recorded velocity data.
+            % :param solenoid_state: The current state of the solenoid, can be 'up' or 'down'. 
+            % :param gear_mode: The current gear mode, can be 'on' or 'off'.
+            % :return: N x 1 corrected waveform, transformed such that voltage seen by downstream components is the same as the original input data.
+
+            %   TODO:   1. completely reimplement offset corrections
+            %           2. currently assumes that the recorded data was taken
+            %           with solenoid down and gear mode on
+            %           3. currently always uses error value in 4th row of 4th
+            %           column.. don't see the reason for this
             
             if ~isempty(obj.ao_ai_difference_V)
                 data = data - obj.ao_ai_difference_V;

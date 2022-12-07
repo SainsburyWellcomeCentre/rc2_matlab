@@ -1,38 +1,21 @@
 classdef StartSoloist < handle
-% StartSoloist Class for handling digital output sent to the Soloist.
-%
-%   StartSoloist Properties:
-%       enabled         - whether to use this module
-%       chan            - index of the channel in configuration
-%       ni              - handle to the NI object
-%
-%   StartSoloist Methods:
-%       start           - send a trigger pulse to the soloist
-%
-% On `start` a 500ms pulse is sent to the soloist.
-%
-% TODO: the trigger can be quite general use, so perhaps rename
-% TriggerSoloist
+    % StartSoloist class for handling digital output sent to the Soloist.
 
     properties (Hidden = true)
-        ni
+        ni % Handle to the :class:`rc.nidaq.NI` object.
     end
     
     properties (Hidden  = true, SetAccess = private)
-        chan
+        chan % Index of the channel in configuration.
     end
     
     
-    
     methods
-        
         function obj = StartSoloist(ni, config)
-        %%obj = STARTSOLOIST(ni, config)
-        %   Main class for controlling the trigger to the soloist to start
-        %   various things.
-        %       Inputs:
-        %           ni - object for controlling the NI hardware
-        %           config - configuration structure at startup
+            % Constructor for a :class:`rc.actions.StartSoloist` action.
+            %
+            % :param ni: :class:`rc.nidaq.NI` object.
+            % :param config: The main configuration file.
             
             obj.ni = ni;
             
@@ -44,8 +27,7 @@ classdef StartSoloist < handle
         
         
         function start(obj)
-        %%START(obj)
-        %   Send the signal.
+            % Send a 500ms pulse to the Soloist.
         
             % Send a 500 ms pulse to tell the soloist to increase the gain.
             obj.ni.do_pulse(obj.chan, 500);

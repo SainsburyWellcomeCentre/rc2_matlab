@@ -1,38 +1,22 @@
 classdef DisableTeensy < handle
-% DisableTeensy Class for handling digital output sent to the Teensy for
-% disabling it.
-%
-%   DisableTeensy Properties:
-%       enabled         - whether to use this module
-%       chan            - index of the channel in configuration
-%       state           - current state of the digital output (1 or 0)
-%       ni              - handle to the NI object
-%
-%   DisableTeensy Methods:
-%       on              - set digital output high
-%       off             - set digital output low
+    % DisableTeensy class for handling digital output sent to the Teensy for disabling it.
 
     properties (SetAccess = private)
-        
-        chan
-        state
+        chan % Index of the channel in the configuration structure.
+        state % Current state of the digital output (1 or 0).
     end
     
     properties (Hidden = true)
-        
-        ni
+        ni % Handle to the :class:`rc.nidaq.NI` object.
     end
     
     
-    
     methods
-        
         function obj = DisableTeensy(ni, config)
-        %%obj = DISABLETEENSY(ni, config)
-        %   Main class for controlling the disabling of teensy
-        %       Inputs:
-        %           ni - object for controlling the NI hardware
-        %           config - configuration structure at startup
+            % Constructor for a :class:`rc.actions.DisableTeensy` action.
+            %
+            % :param ni: :class:`rc.nidaq.NI` object.
+            % :param config: The main configuration file.
         
             obj.ni = ni;
             
@@ -55,8 +39,7 @@ classdef DisableTeensy < handle
         
         
         function on(obj)
-        %%ON()
-        %   Disable velocity output on Teensy
+            % Disable velocity output on the Teensy.
         
             obj.ni.do_toggle(obj.chan, true);
             obj.state = true;
@@ -64,8 +47,7 @@ classdef DisableTeensy < handle
         
         
         function off(obj)
-        %%OFF()
-        %   Do not disable: i.e. enable velocity output on Teensy
+            % Enable velocity output on Teensy.
         
             obj.ni.do_toggle(obj.chan, false);
             obj.state = false;

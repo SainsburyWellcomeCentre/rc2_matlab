@@ -1,2 +1,2 @@
 function pass(~, ~)
-%%PASS Callback function that does nothing
+% Dummy callback function that does nothing.

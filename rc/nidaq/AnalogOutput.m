@@ -1,48 +1,23 @@
 classdef AnalogOutput < handle
-% AnalogOutput Class for handling analog outputs on the NIDAQ
-%
-%   AnalogOutput Properties:
-%       enabled         - whether to use this module
-%       task            - handle to the AI session object
-%       channel_names   - names of the AI channels
-%       channel_ids     - IDs of the AI channels
-%       chan            - cell array with the handle to the channel objects
-%       idle_offset     - offsets to apply on the analog outputs in an idle state
-%       max_voltage     - maximum absolute voltage to apply on the analog outputs
-%
-%   AnalogOutput Methods:
-%       delete          - destructor, deletes the task
-%       set_to_idle     - set the analog outputs to their idle state
-%       write           - write data to the analog outputs (doesn't output)
-%       start           - starts the AI task in the background
-%       stop            - stop the AI task
-%       close           - delete the AI task
-%
-%   See also: NI
+    % AnalogOutput class for handling analog outputs on the NIDAQ.
 
     properties
-        
-        task
-        channel_names = {}
-        channel_ids = {}
-        chan = {}
-        
-        idle_offset
-        
-        max_voltage = 3.3;
+        task % The AO `session object <https://uk.mathworks.com/help/daq/daq.interfaces.dataacquisition.daq.html>`_.  
+        channel_names = {} % Names of the AO channels.
+        channel_ids = {} % IDs of the AO channels.
+        chan = {} % Cell array with the handle to the channel objects.
+        idle_offset % Offset to apply on the analog inputs in an idle state. 
+        max_voltage = 3.3; % Maximum absolute voltage to apply on the analog outputs.
     end
     
-    
+
     methods
-        
         function obj = AnalogOutput(config)
-        % AnalogOutput
-        %
-        %   AnalogOutput(CONFIG) creates the analog output task with
-        %   the details described in CONFIG (the main configuration
-        %   structure with `ao` field.
-        %
-        %   See README for details on the configuration.
+            % Constructor for a :mod:`rc.nidaq` :class:`AnalogOutput` task
+            % AnalogInput(config) creates the analog output task with details
+            % described in the main configuration structure with `ai` field.
+            %
+            % :param config: The main configuration structure
         
             obj.task = daq.createSession('ni');
             
@@ -67,22 +42,17 @@ classdef AnalogOutput < handle
         end
         
         
-        
         function delete(obj)
-        %%delete Destructor, deletes the task
+            % Destructor for :mod:`rc.nidaq` :class:`AnalogOutput` task.
         
             obj.close()
         end
         
         
-        
         function set_to_idle(obj)
-        %%set_to_idle Set the analog outputs to their idle state
-        %
-        %   set_to_idle() sets the analog outputs to whatever value is in
-        %   `idle_offset` property
-        %
-        %   TODO: check that voltage is not > max_voltage
+            % Sets the analog outputs to the value defined by :attr:`idle_offset`
+            %  
+            %   TODO: check that voltage is not > :attr:`max_voltage`
         
             % Stop any running tasks first
             obj.stop();
@@ -100,14 +70,10 @@ classdef AnalogOutput < handle
         end
         
         
-        
         function write(obj, data)
-        %%write Write data to the analog outputs (doesn't output)
-        %
-        %   write(DATA) queues the data in DATA to the analog outputs. DATA
-        %   should be a # samples x # AO channels matrix with values in
-        %   volts to output on the analog outputs. If any data is >
-        %   `max_voltage` or < -`max_voltage` it is clipped.
+            % Write data to the analog output buffer.
+            %
+            % :param data: # samples x # AO channels matrix with values in volts. Any data > :attr:`max_voltage` or < -:attr:`max_voltage` is clipped.
         
             % to avoid DANGER, clip voltage at limits!!
             data(data > obj.max_voltage) = obj.max_voltage;
@@ -121,21 +87,15 @@ classdef AnalogOutput < handle
         end
         
         
-        
         function start(obj)
-        %%start Starts the AO task in the background
-        %
-        %   start()
-        
+            % Starts the analog output task in the background.
+
             obj.task.startBackground();
         end
         
         
-        
         function stop(obj)
-        %%stop Stop the AO task
-        %
-        %   stop()
+            % Stops the analog output task.
         
             if isvalid(obj.task)
                 obj.task.stop()
@@ -143,11 +103,8 @@ classdef AnalogOutput < handle
         end
         
         
-        
         function close(obj)
-        %%close Delete the AO task
-        %
-        %   close()
+            % Deletes the analog output task.
         
             if isvalid(obj.task)
                 delete(obj.task)
