@@ -44,3 +44,7 @@ doxygen
 ```
 make html
 ```
+
+## Troubleshooting
+
+If the documentation project builds without errors but references to doxygen generated docs do not appear in the output, delete the docs/build folder and rebuild everything.
