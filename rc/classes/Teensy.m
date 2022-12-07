@@ -5,7 +5,8 @@ classdef Teensy < handle
         enabled % Boolean specifying whether the module is used.
         exe % Full path of the Arduino executable file.
         dir % Directory containing relevant .ino files.
-        
+    end
+    
     properties (SetAccess = private)
         current_script % Name of currently loaded script.
     end

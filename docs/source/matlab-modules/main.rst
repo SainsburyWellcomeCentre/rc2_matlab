@@ -2,6 +2,6 @@ main module
 ===========
 .. /rc/main
 .. automodule:: rc.main
-.. autoclass:: Controller
+.. autoclass:: RC2Controller
     :show-inheritance:
     :members:

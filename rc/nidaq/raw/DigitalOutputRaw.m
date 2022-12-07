@@ -26,7 +26,7 @@ classdef DigitalOutputRaw < handle
             % with details described in the main configuration structure with
             % 'do' field.
             %
-            % See :ref:`usage-guides/rc2-main` for more details on configuration.
+            % See :doc:`Main Usage </usage-guides/rc2-main>` for more details on configuration.
             %
             % :param ai_task: The handle to the analog input task which is used to trigger and time the digital output tasks.
 

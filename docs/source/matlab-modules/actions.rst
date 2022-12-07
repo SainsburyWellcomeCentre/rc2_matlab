@@ -1,7 +1,7 @@
 actions module
 ==============
-.. /rc/actions
-.. automodule:: rc.actions
+.. /rc/classes
+.. automodule:: rc.classes
 .. autoclass:: DelayedVelocity
    :show-inheritance:
    :members:

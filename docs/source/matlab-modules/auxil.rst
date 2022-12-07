@@ -1,15 +1,13 @@
 aux module
 ==========
 .. /rc/aux_
-.. automodule:: rc.aux_
+.. automodule:: rc.classes
 .. autoclass:: DataTransform
    :show-inheritance:
    :members:
-.. autofunction:: load_config
 .. autoclass:: Offsets
    :show-inheritance:
    :members:
-.. autofunction:: plotting_config
 .. autoclass:: Plotting
    :show-inheritance:
    :members:
@@ -22,6 +20,11 @@ aux module
 .. autoclass:: ProcHandler
    :show-inheritance:
    :members:
+
+.. /rc/util
+.. automodule:: rc.util
+.. autofunction:: load_config
+.. .. autofunction:: plotting_config
 .. autofunction:: read_bin
 .. autofunction:: setup_training_sequence
 .. autofunction:: VariableDefault

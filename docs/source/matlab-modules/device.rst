@@ -1,7 +1,7 @@
 device module
 =============
 .. rc/dev
-.. automodule:: rc.dev
+.. automodule:: rc.classes
 .. autoclass:: Pump
    :show-inheritance:
    :members:

@@ -246,7 +246,7 @@ classdef Soloist < handle
             %
             % WARNING: ``no_gear`` is false (the default), the stage goes into gear mode and thus may move suddenly and unexpectedly.
             %
-            % See :ref:`usage-guides/rc2-soloist` for more details on zero calibration.
+            % See :doc:`Soloist Usage </usage-guides/rc2-soloist>` for more details on zero calibration.
             %
             % :param back_pos: Limit of the backward position. If stage moves beyond limit the executable will stop. Should be in soloist controller units and within the bounds specified by :attr:`max_limits`.
             % :param forward_pos: Limit of the forward position. If stage moves beyond limit the executable will stop. Should be in soloist controller units and within the bounds specified by :attr:`max_limits`.
@@ -460,7 +460,7 @@ classdef Soloist < handle
             % WARNING: The stage goes into gear mode and this may move suddenly and unexpectedly.
             % Uses the mismatch_ramp_down_at.exe program.
             %
-            % See :ref:`usage-guides/rc2-soloist` for more details on mismatch ramps.
+            % See :doc:`Soloist Usage </usage-guides/rc2-soloist>` for more details on mismatch ramps.
             %
             % :param back_pos: Limit of the backward position. Should be in soloist controller units and within the bounds specified by :attr:`max_limits`.
             % :param forward_pos: Limit of the forward position. Should be in soloist controller units and within the bounds specified by :attr:`max_limits`.
