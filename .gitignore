@@ -11,3 +11,7 @@
 *.bcm
 *.exe
 soloist_c/src/options.h
+
+docs/doxygen/html/
+docs/doxygen/latex/
+docs/doxygen/xml/

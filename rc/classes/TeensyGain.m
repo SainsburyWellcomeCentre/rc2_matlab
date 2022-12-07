@@ -1,51 +1,29 @@
 classdef TeensyGain < handle
-% TeensyGain Class for handling digital output sent to the Soloist.
-%
-%   TeensyGain Properties:
-%       gain_up_state       - current state of the gain up digital output (1 or 0)
-%       gain_down_state     - current state of the gain down digital output (1 or 0)
-%       gain_up_chan        - index of the gain up channel in configuration
-%       gain_down_chan      - index of the gain down channel in configuration
-%       ni                  - handle to the NI object
-%
-%   TeensyGain Methods:
-%       gain_up_on           - set gain up digital output high
-%       gain_up_off          - set gain up digital output low
-%       gain_down_on         - set gain down digital output high
-%       gain_down_off        - set gain down digital output low
-%
-% This class controls both the gain up and gain down signals to the Teensy.
+    % TeensyGain Class for handling digital output sent to the Soloist.
 
     properties
-        
         gain_up_enabled
         gain_down_enabled
     end
     
     properties (SetAccess = private)
-        
-        gain_up_state
-        gain_down_state
-        gain_up_chan
-        gain_down_chan
+        gain_up_state % Current state of the gain up digital output (1 or 0).
+        gain_down_state % Current state of the gain down digital output (1 or 0).
+        gain_up_chan % Index of the gain up channel in configurations structure.
+        gain_down_chan % Index of the gain down channel in configurations structure.
     end
     
     properties (SetAccess = private, Hidden = true)
-        ni
+        ni % Handle to the :class:`rc.nidaq.NI` object.
     end
-    
-    
+
     
     methods
-        
         function obj = TeensyGain(ni, config)
-        %%obj = TEENSYGAIN(ni, config)
-        %   Main class for controlling the digital inputs to the Teensy 
-        %   The teensy code listens to two digital inputs, and changes the
-        %   gain according to the state of the inputs
-        %       Inputs:
-        %           ni - object for controlling the NI hardware
-        %           config - configuration structure at startup
+            % Constructor for a :class:`rc.actions.TeensyGain` action. Teensy listens to two digital inputs and changes gain according to the state of those inputs.
+            %
+            % :param ni: :class:`rc.nidaq.NI` object.
+            % :param config: The main configuration file.
             
             obj.gain_up_enabled = config.teensy_gain_up.enable;
             obj.gain_down_enabled = config.teensy_gain_down.enable;
@@ -72,8 +50,8 @@ classdef TeensyGain < handle
         
         
         function gain_up_on(obj)
-        %%GAIN_UP_ON(obj)
-        %   Send the signal for teensy gain up
+            % Send signal to increase gain on Teensy.
+
             if ~obj.gain_up_enabled, return, end
             obj.ni.do_toggle(obj.gain_up_chan, true);
             obj.gain_up_state = true;
@@ -82,8 +60,8 @@ classdef TeensyGain < handle
         
         
         function gain_up_off(obj)
-        %%GAIN_UP_OFF(obj)
-        %   Stop the signal for teensy gain up
+            % Stop the signal to increase gain on Teensy.
+        
             if ~obj.gain_up_enabled, return, end
             obj.ni.do_toggle(obj.gain_up_chan, false);
             obj.gain_up_state = false;
@@ -92,8 +70,8 @@ classdef TeensyGain < handle
         
         
         function gain_down_on(obj)
-        %%GAIN_DOWN_ON(obj)
-        %   Send the signal for teensy gain down
+            % Send signal to decrease gain on Teensy.
+        
             if ~obj.gain_down_enabled, return, end
             obj.ni.do_toggle(obj.gain_down_chan, true);
             obj.gain_down_state = true;
@@ -102,8 +80,8 @@ classdef TeensyGain < handle
         
         
         function gain_down_off(obj)
-        %%GAIN_DOWN_OFF(obj)
-        %   Stop the signal for teensy gain down
+            % Stop the signal to decrease gain on Teensy.
+        
             if ~obj.gain_down_enabled, return, end
             obj.ni.do_toggle(obj.gain_down_chan, false);
             obj.gain_down_state = false;

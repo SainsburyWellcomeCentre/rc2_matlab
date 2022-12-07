@@ -1,17 +1,8 @@
 classdef ProcHandler < handle
-% ProcHandler Class for loose wrapper around a MATLAB java.lang.Process object
-%
-%   ProcHandler Properties:
-%       proc           - the java.lang.Process object
-%
-%   ProcHandler Methods:
-%       delete         - destructor
-%       wait_for       - blocks and waits for process to finish
-%       kill           - kills the process
+    % ProcHandler class for loose wrapper around a MATLAB `java.lang.Process <https://docs.oracle.com/javase/8/docs/api/java/lang/Process.html>`_.
 
     properties (SetAccess = private)
-        
-        proc
+        proc % The `java.lang.Process <https://docs.oracle.com/javase/8/docs/api/java/lang/Process.html>`_ object.
     end
     
     
@@ -19,16 +10,10 @@ classdef ProcHandler < handle
     methods
         
         function obj = ProcHandler(proc)
-        %obj = PROCHANDLER(proc)
-        %   Class providing loose wrapper around a MATLAB java.lang.Process
-        %   object... upon deletion it kills the process (would probably do
-        %   that anyway)
-        %   
-        %   Also provides a 'wait_for' method which waits for the process
-        %   to end, but runs a pause so that other MATLAB processing can
-        %   occur (the native .waitFor blocks)
-        %
-        %   Along with ProcArray, want to find a better solution.
+            % Constructor for a :class:`rc.aux_.ProcHandler` class.
+            % TODO - Along with ProcArray, want to find a better solution.
+            %
+            % :param proc: A `java.lang.Process <https://docs.oracle.com/javase/8/docs/api/java/lang/Process.html>`_ object.
         
             % takes a java.lang.Process (from runtime.exec())
             obj.proc = proc;
@@ -37,19 +22,18 @@ classdef ProcHandler < handle
         
         
         function delete(obj)
-        %%delete Destructor
-        
+            % Destructor for a :class:`rc.aux_.ProcHandler` class. Also kills the associated process.
+            
             obj.kill();
         end
         
         
         
         function wait_for(obj, timeout)
-        %%WAIT_FOR(obj, timeout)
-            % wait for the process in 'proc' to complete
-            %   poll every 'timeout' seconds
-            %       to allow MATLAB to run other things
-            
+            % Wait for the process in :attr:`proc` to complete. Poll with a particular interval to allow MATLAB to run other processes.
+            %
+            % :param timeout: The poll interval in seconds.
+
             while obj.proc.isAlive()
                 pause(timeout)
             end
@@ -61,10 +45,8 @@ classdef ProcHandler < handle
         
         
         function kill(obj)
-            %   Although this terminates the process
-            %       it does not allow the process to run any kind of
-            %       clean up on Windows
-            
+            % Terminate the process in :attr:`proc`. Does not allow the process to run any kind of cleanup.
+
             obj.proc.destroy();
         end
     end
