@@ -11,6 +11,7 @@ classdef NI < handle
         co % :class:`CounterOutputRaw`
         do % :class:`DigitalOutputRaw`
         di % :class:`DigitalInput`
+        ao_idle_offset % Determines voltage offset for analog out channels.
     end
     
     
