@@ -1,45 +1,25 @@
 classdef Sound < handle
-% Sound Class for handling sound output
-%
-%   Sound Properties:
-%       enabled         - whether to use this module (default true)
-%       looping         - whether to loop the sound (default true)
-%       audio           - object of class audioplayer
-%       reset           - helper object of class audioplayer
-%       state           - current state of the audio       
-%
-%   Sound Methods:
-%       enable          - enable the module
-%       disable         - disable the module (stop the sound as well)
-%       play            - play the sound
-%       stop            - stop the sound
-%       repeat          - callback for repeating the sound
-%
-%   See also: audioplayer
+    % Sound class for handling sound output.
 
     properties
-        
-        looping = true
+        looping = true % Whether to loop the sound (default true).
     end
     
     
     properties (SetAccess = private)
-        
-        audio
-        reset
-        state = false;
+        audio % `audioplayer <https://uk.mathworks.com/help/matlab/ref/audioplayer.html>`_ object.
+        reset % Helper `audioplayer <https://uk.mathworks.com/help/matlab/ref/audioplayer.html>`_ object.
+        state = false; % Current state of the audio.
     end
     
     properties (SetAccess = private, SetObservable = true)
-        
-        enabled = true
+        enabled = true % Whether to use this module (default true).
     end
     
     
-    
     methods
-        
-        function obj = Sound()
+        function obj = Sound() 
+            % Constructor for a :class:`rc.dev.Sound` device.
             
             try
                 % load a hard-coded audio file
@@ -75,18 +55,14 @@ classdef Sound < handle
         
         
         function enable(obj)
-        %%enable Enable the module
-        %
-        %   enable()
+            % Enable the device.
         
             obj.enabled = true;
         end
         
         
         function disable(obj)
-        %%disable Disable the module (stop the sound as well)
-        %
-        %   disable()
+            % Disable the device and stop sound.
         
             % stop the sound and set enabled flag to false
             obj.stop();
@@ -95,9 +71,7 @@ classdef Sound < handle
         
         
         function play(obj)
-        %%play Play the sound
-        %
-        %   play() starts playing the sound.
+            % Play the sound.
         
             if ~obj.enabled; return; end
             if obj.state; return; end
@@ -109,11 +83,9 @@ classdef Sound < handle
         
         
         function stop(obj)
-        %%stop Stop the sound
-        %
-        %   stop() stops playing the sound.
+            % Stop the sound.
         
-            % if sound is currently disabled or it is not running
+            % if sound is currently disabled or it is not running.
             % do nothing.
             if ~obj.enabled; return; end
             if ~obj.state; return; end
@@ -131,9 +103,7 @@ classdef Sound < handle
         
         
         function repeat(obj, ~, ~)
-        %%repeat Callback for repeating the sound
-        %
-        %   repeat() repeats the sound.
+            % Callback for repeating the sound.
         
             % if state is false, don't start again.
             if ~obj.state; return; end

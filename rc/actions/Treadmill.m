@@ -1,38 +1,22 @@
 classdef Treadmill < handle
-% Treadmill Class for handling digital output sent to solenoid block on the
-% treadmill
-%
-%   Treadmill Properties:
-%       enabled         - whether to use this module
-%       chan            - index of the channel in configuration
-%       state           - current state of the digital output (1 or 0)
-%       ni              - handle to the NI object
-%
-%   Treadmill Methods:
-%       block           - set digital output high
-%       unblock         - set digital output low
+    % Treadmill class for handling digital output sent to solenoid block on the treadmill.
 
     properties (SetAccess = private)
-        
-        chan
-        state
+        chan % Index of the channel in the configuration structure.
+        state % Current state of the digital output (1 or 0).
     end
     
     properties (Hidden = true)
-        
-        ni
+        ni % Handle to the :class:`rc.nidaq.NI` object.
     end
     
     
-    
     methods
-        
         function obj = Treadmill(ni, config)
-        %%obj = TREADMILL(ni, config)
-        %   Main class for controlling the treadmill/solenoid
-        %       Inputs:
-        %           ni - object for controlling the NI hardware
-        %           config - configuration structure at startup
+            % Constructor for a :class:`rc.actions.Treadmill` action.
+            %
+            % :param ni: :class:`rc.nidaq.NI` object.
+            % :param config: The main configuration file.
         
             obj.ni = ni;
             
@@ -52,16 +36,14 @@ classdef Treadmill < handle
         
         
         function block(obj)
-        %%BLOCK(obj)
-        %   Block the treadmill, by toggling the digital output.
+            % Block the treadmill, by toggling the digital output.
         
             obj.ni.do_toggle(obj.chan, true);
             obj.state = 'up';
         end
         
         function unblock(obj)
-        %%UNBLOCK(obj)
-        %   Unblock the treadmill, by toggling the digital output.
+            % Unblock the treadmill, by toggling the digital output.
         
             obj.ni.do_toggle(obj.chan, false);
             obj.state = 'down';

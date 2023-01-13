@@ -10,3 +10,9 @@
 **/easyplot.m
 *.bas
 *.bcm
+
+docs/doxygen/html/
+
+docs/doxygen/latex/
+
+docs/doxygen/xml/

@@ -1,38 +1,22 @@
 classdef VisStim < handle
-% VisStim Class for handling digital output sent to the visual
-% stimulus computer for disabling it
-%
-%   VisStim Properties:
-%       enabled         - whether to use this module
-%       chan            - index of the channel in configuration
-%       state           - current state of the digital output (1 or 0)
-%       ni              - handle to the NI object
-%
-%   VisStim Methods:
-%       on              - set digital output high
-%       off             - set digital output low
+    % VisStim class for handling digital output sent to the visual stimulus computer for disabling it.
 
     properties (SetAccess = private)
-        
-        chan
-        state
+        chan % Index of the channel in the configuration structure.
+        state % Current state of the digital output (1 or 0).
     end
     
     properties (Hidden = true)
-        
-        ni
+        ni % Handle to the :class:`rc.nidaq.NI` object.
     end
-    
-    
+
     
     methods
-        
         function obj = VisStim(ni, config)
-        %%obj = VISSTIM(ni, config)
-        %   Main class for controlling the visual stimulus
-        %       Inputs:
-        %           ni - object for controlling the NI hardware
-        %           config - configuration structure at startup
+            % Constructor for a :class:`rc.actions.VisStim` action.
+            %
+            % :param ni: :class:`rc.nidaq.NI` object.
+            % :param config: The main configuration file.
         
             obj.ni = ni;
             
@@ -55,16 +39,14 @@ classdef VisStim < handle
         
         
         function off(obj)
-        %%OFF(obj)
-        %   Send screen black and reset position.
+            % Send screen to black and reset position.
         
             obj.ni.do_toggle(obj.chan, true);
             obj.state = true;
         end
         
         function on(obj)
-        %%ON(obj)
-        %   Present the corridor.
+            % Present the corridor.
         
             obj.ni.do_toggle(obj.chan, false);
             obj.state = false;

@@ -3,11 +3,19 @@
 
 #include "options.h"
 
+/*!
+    Deals with gain control in response to a TriggerInput.
+*/
 class GainControl {
 
     public:
+		//! GainControl constructor
         GainControl();
+
+		//! Set up the gain up, down and report pins; initialise properties.
         void setup ();
+
+		//! Main loop method. Detects trigger inputs, adjusts gain and writes to gain report pin.
         void loop ();
         
         float value = 1;
