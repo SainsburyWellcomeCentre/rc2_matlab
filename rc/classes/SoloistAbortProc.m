@@ -13,7 +13,7 @@ classdef SoloistAbortProc < handle
     
     methods
         function obj = SoloistAbortProc(cmd)
-            % Constructor for a :class:`rc.dev.SoloistAbortProc` device.
+            % Constructor for a :class:`rc.classes.SoloistAbortProc` device.
             % Controls a separate process which itself controls the aborting and resetting of motion on the soloist.
             %
             % :param cmd: The full filename of the abort.exe executable.
@@ -31,7 +31,7 @@ classdef SoloistAbortProc < handle
         
         
         function delete(obj)
-            % Destructor for :class:`rc.dev.SoloistAbortProc` device.
+            % Destructor for :class:`rc.classes.SoloistAbortProc` device.
         
             % upon deletion.
             obj.close()

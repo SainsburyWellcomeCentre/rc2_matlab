@@ -71,7 +71,7 @@ classdef Offsets < handle
     
     methods
         function obj = Offsets(ctl, config)
-            % Constructor for a :class:`rc.aux_.Offsets` class.
+            % Constructor for a :class:`rc.classes.Offsets` class.
             %
             % :param ctl: The primary :class:`rc2.main.Controller` object.
             % :param config: The main configuration structure.

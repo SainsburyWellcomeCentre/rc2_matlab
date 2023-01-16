@@ -16,7 +16,7 @@ classdef StartSoloist < handle
     
     methods
         function obj = StartSoloist(ni, config)
-            % Constructor for a :class:`rc.actions.StartSoloist` action.
+            % Constructor for a :class:`rc.classes.StartSoloist` action.
             %
             % :param ni: :class:`rc.nidaq.NI` object.
             % :param config: The main configuration file.

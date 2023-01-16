@@ -20,7 +20,7 @@ classdef Sound < handle
     
     methods
         function obj = Sound(config) 
-            % Constructor for a :class:`rc.dev.Sound` device.
+            % Constructor for a :class:`rc.classes.Sound` device.
             
             obj.global_enabled = config.sound.enable;
             if ~obj.global_enabled, return, end

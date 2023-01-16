@@ -20,7 +20,7 @@ classdef TriggerInput < handle
     methods
         
         function obj = TriggerInput(ni, config)
-            % Constructor for a :class:`rc.actions.TriggerInput` action.
+            % Constructor for a :class:`rc.classes.TriggerInput` action.
             %
             % :param ni: :class:`rc.nidaq.NI` object.
             % :param config: The main configuration file.

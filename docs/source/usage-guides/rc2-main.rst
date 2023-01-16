@@ -513,7 +513,7 @@ See the :doc:`rc2-soloist` for more information.
 Controller Classes
 ------------------
 
-The :class:`rc.main.Controller` class contains all the objects for interacting with different elements on the setup.
+The :class:`rc.main.RC2Controller` class contains all the objects for interacting with different elements on the setup.
 
 At startup you create the object by passing it a properly formed configuration structure (see `Configuration`_ above)::
 
@@ -581,4 +581,4 @@ In order to replay velocity waveforms we save one analog input channel on the NI
 This data is then loaded and output on the analog output. 
 
 However, outputting the exact value read on the analog input of the NIDAQ on the analog output again leads to a slight difference in value observed by the Soloist (again a few millivolts).
-Therefore, before outputting a saved voltage another offset is applied to the values in the data before being output (see docs :class:`rc.aux_.Offsets`).
+Therefore, before outputting a saved voltage another offset is applied to the values in the data before being output (see docs :class:`rc.classes.Offsets`).

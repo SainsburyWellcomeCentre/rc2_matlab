@@ -17,7 +17,7 @@ classdef Treadmill < handle
     
     methods
         function obj = Treadmill(ni, config)
-            % Constructor for a :class:`rc.actions.Treadmill` action.
+            % Constructor for a :class:`rc.classes.Treadmill` action.
             %
             % :param ni: :class:`rc.nidaq.NI` object.
             % :param config: The main configuration file.

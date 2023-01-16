@@ -14,7 +14,7 @@ classdef DisableTeensy < handle
     
     methods
         function obj = DisableTeensy(ni, config)
-            % Constructor for a :class:`rc.actions.DisableTeensy` action.
+            % Constructor for a :class:`rc.classes.DisableTeensy` action.
             %
             % :param ni: :class:`rc.nidaq.NI` object.
             % :param config: The main configuration file.

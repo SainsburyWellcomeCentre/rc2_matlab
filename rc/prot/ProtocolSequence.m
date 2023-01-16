@@ -2,7 +2,7 @@ classdef ProtocolSequence < handle
     % ProtocolSequence class for handling a sequence of trial objects.
 
     properties
-        ctl % :class:`rc.main.Controller` object controller.
+        ctl % :class:`rc.main.RC2Controller` object controller.
         sequence = {} % Cell array containing objects of the trial classes.
         running = false; % Boolean specifying whether the sequence is running.
         abort = false; % Boolean specifying whether to abort the sequence.
@@ -22,7 +22,7 @@ classdef ProtocolSequence < handle
         function obj = ProtocolSequence(ctl)
             % Constructor for a :class:`rc.prot.ProtocolSequence` class.
             %
-            % :param ctl: a :class:`rc.main.Controller` object.
+            % :param ctl: a :class:`rc.main.RC2Controller` object.
         
             obj.ctl = ctl;
         end

@@ -180,7 +180,7 @@ AI Preview
     The `PREVIEW` button starts acquiring and displaying the analog input data in real time but does not log the data. 
     The same button is used to stop previewing the data.
 
-    See :class:`rc.aux_.Plotting` for description of the display handled by :class:`rc.main.Controller`.
+    See :class:`rc.classes.Plotting` for description of the display handled by :class:`rc.main.RC2Controller`.
 
 Experiment file
 ---------------
@@ -193,7 +193,7 @@ then `experiment_file.m` must be a function file on the MATLAB path with top lin
     function seq = experiment_file(ctl)
 
 
-The function takes as argument `ctl`, the main controller object of :class:`rc.main.Controller`.
+The function takes as argument `ctl`, the main controller object of :class:`rc.main.RC2Controller`.
 It returns an object `seq` of :class:`rc.prot.ProtocolSequence`, and this is the class which is run when `START_EXPERIMENT` is pressed.
 (i.e. the `run` method of the `seq` object). 
 

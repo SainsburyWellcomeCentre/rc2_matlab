@@ -11,7 +11,7 @@ classdef Position < handle
     
     methods       
         function obj = Position(config)
-            % Constructor for :class:`rc.aux_.Position` class.
+            % Constructor for :class:`rc.classes.Position` class.
             % Controls the assessment of position as determined on the control machine.
             % Integrates velocity trace (treadmill position). Mainly designed for training phases
             % where critical assessment of position is not necessary (i.e. position is not calculated on the teensy and a trigger sent upon reaching a particular position).

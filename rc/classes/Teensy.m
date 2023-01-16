@@ -15,7 +15,7 @@ classdef Teensy < handle
     
     methods
         function obj = Teensy(config, force)
-            % Constructor for a :class:`rc.dev.Teensy` device.
+            % Constructor for a :class:`rc.classes.Teensy` device.
             %
             % :param config: The main configuration structure.
             % :param force: Optional boolean specifying whether to forcefully load the script in config.teensy.start_script.

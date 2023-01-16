@@ -3,7 +3,7 @@ classdef Calibrate < handle
 
     properties
         data % Internal storage of recorded data.
-        ctl % :class:`rc.main.Controller` object.
+        ctl % :class:`rc.main.RC2Controller` object.
         measure_time = 10 % Time in seconds to measure voltages
     end
     
@@ -11,7 +11,7 @@ classdef Calibrate < handle
         function obj = Calibrate(ctl)
             % Constructor for a :class:`rc.main.Calibrate` class.
             %
-            % :param ctl: A :class:`rc.main.Controller` object.
+            % :param ctl: A :class:`rc.main.RC2Controller` object.
         
             obj.ctl = ctl;
         end

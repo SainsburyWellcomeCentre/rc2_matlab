@@ -33,7 +33,7 @@ classdef CoupledMismatch < handle
     end
     
     properties (Hidden = true)
-        ctl % :class:`rc.main.Controller` object controller.
+        ctl % :class:`rc.main.RC2Controller` object controller.
     end
     
     properties (Dependent = true)
@@ -46,7 +46,7 @@ classdef CoupledMismatch < handle
         function obj = CoupledMismatch(ctl, config)
             % Constructor for a :class:`rc.prot.CoupledMismatch` protocol.
             %
-            % :param ctl: :class:`rc.main.Controller` object for interfacing with the stage.
+            % :param ctl: :class:`rc.main.RC2Controller` object for interfacing with the stage.
             % :param config: The main configuration file.
         
             obj.ctl = ctl;

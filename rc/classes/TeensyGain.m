@@ -20,7 +20,7 @@ classdef TeensyGain < handle
     
     methods
         function obj = TeensyGain(ni, config)
-            % Constructor for a :class:`rc.actions.TeensyGain` action. Teensy listens to two digital inputs and changes gain according to the state of those inputs.
+            % Constructor for a :class:`rc.classes.TeensyGain` action. Teensy listens to two digital inputs and changes gain according to the state of those inputs.
             %
             % :param ni: :class:`rc.nidaq.NI` object.
             % :param config: The main configuration file.

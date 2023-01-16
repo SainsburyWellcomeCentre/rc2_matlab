@@ -31,11 +31,11 @@ classdef Saver < handle
     
     methods
         function obj = Saver(ctl, config)
-            % Constructor for a :class:`rc.saving.Saver`.
+            % Constructor for a :class:`rc.classes.Saver`.
             % Saver(ctl, config) creates object to deal with logging data and
             % saving config information.
             %
-            % :param ctl: A :class:`rc.main.Controller` object.
+            % :param ctl: A :class:`rc.main.RC2Controller` object.
             % :param config: The main configuration structure.
         
             obj.enable = config.saving.enable;

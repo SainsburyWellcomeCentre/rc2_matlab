@@ -18,7 +18,7 @@ classdef Pump < handle
     
     methods
         function obj = Pump(ni, config)
-            % Constructor for a :class:`rc.dev.Pump` device.
+            % Constructor for a :class:`rc.classes.Pump` device.
             %
             % :param ni: :class:`rc.nidaq.NI` object for controlling NI hardware.
             % :param config: The main configuration structure. 

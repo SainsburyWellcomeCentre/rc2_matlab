@@ -10,7 +10,7 @@ classdef ProcHandler < handle
     methods
         
         function obj = ProcHandler(proc)
-            % Constructor for a :class:`rc.aux_.ProcHandler` class.
+            % Constructor for a :class:`rc.classes.ProcHandler` class.
             % TODO - Along with ProcArray, want to find a better solution.
             %
             % :param proc: A `java.lang.Process <https://docs.oracle.com/javase/8/docs/api/java/lang/Process.html>`_ object.
@@ -22,7 +22,7 @@ classdef ProcHandler < handle
         
         
         function delete(obj)
-            % Destructor for a :class:`rc.aux_.ProcHandler` class. Also kills the associated process.
+            % Destructor for a :class:`rc.classes.ProcHandler` class. Also kills the associated process.
             
             obj.kill();
         end

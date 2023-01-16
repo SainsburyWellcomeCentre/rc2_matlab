@@ -28,7 +28,7 @@ classdef Plotting < handle
     
     methods
         function obj = Plotting(config)
-            % Constructor for a :class:`rc.aux_.Plotting` class.
+            % Constructor for a :class:`rc.classes.Plotting` class.
             %
             % :param config: The main configuration structure.
         
@@ -69,7 +69,7 @@ classdef Plotting < handle
         
         
         function delete(obj)
-            % Destructor for :class:`rc.aux_.Plotting` class.
+            % Destructor for :class:`rc.classes.Plotting` class.
         
             close(obj.fig);
             delete(obj.fig);

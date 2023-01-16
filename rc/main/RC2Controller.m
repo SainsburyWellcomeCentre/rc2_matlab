@@ -10,7 +10,7 @@ classdef RC2Controller < handle
         treadmill % :class:`rc.classes.Treadmill`
         multiplexer % :class:`rc.classes.Multiplexer`
         plotting % :class:`rc.classes.Plotting`
-        saver % :class:`rc.saving.Saver`
+        saver % :class:`rc.classes.Saver`
         sound % :class:`rc.classes.Sound`
         position % :class:`rc.classes.Position`
         zero_teensy % :class:`rc.classes.ZeroTeensy`

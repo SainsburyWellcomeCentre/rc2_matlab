@@ -17,7 +17,7 @@ classdef ZeroTeensy < handle
     methods
         
         function obj = ZeroTeensy(ni, config)
-            % Constructor for a :class:`rc.actions.ZeroTeensy` action. Controls zeroing
+            % Constructor for a :class:`rc.classes.ZeroTeensy` action. Controls zeroing
             % of position as measure on the Teense. The Teensy code listens to a digital
             % input and resets its position to zero, when that digital input goes high.
             %
