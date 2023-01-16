@@ -44,3 +44,7 @@ addpath(genpath(config.user)); % Add back only the current user folder
 ### Soloist Executables
 
 The .exe files for communication with the Soloist are not tracked by the git repo as they are rig specific. These executables should be built from source for a fresh install of the software of if the source files are modified (use rc/soloist_c/src/build.bat)
+
+## Documentation
+
+See the README in the docs folder for instructions on how to build the documentation.
