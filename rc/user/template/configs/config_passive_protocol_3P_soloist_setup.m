@@ -1,5 +1,8 @@
 function config = config_passive_protocol_3P_soloist_setup()
 
+% by default do not use calibration file
+VariableDefault('use_calibration', true);
+
 %%%%%%%%%%%%
 % SAVING %%%
 %%%%%%%%%%%%
@@ -9,10 +12,18 @@ config.saving.enable                    = true;
 config.saving.save_to                   = 'D:\Data\SoloistSetup';
 
 % automatically gets these file locations and directories
-config.saving.config_file               = mfilename('fullpath');        % current file path
-config.saving.main_dir                  = 'C:\Users\treadmill\Code\rc2_matlab'; % assume three levels deep
-config.saving.git_dir                   = 'C:\Users\treadmill\Code\rc2_matlab\.git';  % git directory
+config.saving.config_file               = mfilename('fullpath'); % current file path, mfilename guarantees our relative paths will be from where this file is
+config.environment_dir                  = fileparts(fileparts(fileparts(fileparts(fileparts(config.saving.config_file))))); % get top level directory
+config.saving.main_dir                  = config.environment_dir;
+config.saving.git_dir                   = fullfile(config.saving.main_dir, '.git'); % git directory
+config.user                             = fileparts(fileparts(config.saving.config_file)); % which user folder to use for calibrations etc.
 
+%%%%%%%%%%%%%%%%%
+% CALIBRATION %%%
+%%%%%%%%%%%%%%%%%
+
+config.use_calibration_file             = use_calibration;
+config.calibration_file                 = fullfile(config.user, 'calibrations\', 'calibration_20200707_b.mat');
 
 %%%%%%%%%%%%%%%%%%%%%%
 % STAGE parameters %%%
@@ -24,6 +35,15 @@ config.stage.back_limit                 = 1470;
 %config.stage.forward_limit              = 250;
 %config.stage.forward_limit              = 50;
 config.stage.max_limits                 = [1470, 15];
+
+if config.use_calibration_file
+    % load the calibration file
+    load(config.calibration_file, 'calibration')
+    
+    config.offset_error_mtx                 = calibration.offset_error_mtx;
+else
+    config.offset_error_mtx                 = zeros(4, 7);
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % General NIDAQ parameters %%%
@@ -102,7 +122,7 @@ config.nidaq.di.channel_id              = {'port1/line0', 'port1/line1'};
 %%%%%%%%%%%%%%%%%%%%%%
 config.teensy.enable            = false;
 config.teensy.exe               = 'C:\Program Files (x86)\Arduino\arduino_debug.exe';
-config.teensy.dir               = 'C:\Users\treadmill\Code\rc2_matlab\teensy_ino';
+config.teensy.dir               = fullfile(config.environment_dir, 'teensy_ino');
 config.teensy.start_script      = 'forward_only';
 
 
@@ -110,7 +130,7 @@ config.teensy.start_script      = 'forward_only';
 % SOLOIST parameters %
 %%%%%%%%%%%%%%%%%%%%%%
 config.soloist.enable           = true;
-config.soloist.dir              = 'C:\Users\treadmill\Code\rc2_matlab\soloist_c\exe';
+config.soloist.dir              = fullfile(config.environment_dir, 'soloist_c\exe');
 config.soloist.default_speed    = 200;
 config.soloist.v_per_cm_per_s   = 2.5/100;
 config.soloist.ai_offset        = -500.0;
@@ -205,3 +225,12 @@ config.plotting                         = plotting_config_3p_soloist_setup();
 assert(length(config.nidaq.ai.channel_names) == length(config.nidaq.ai.channel_id));
 assert(length(config.nidaq.ai.channel_names) == length(config.nidaq.ai.offset));
 assert(length(config.nidaq.ai.channel_names) == length(config.nidaq.ai.scale));
+
+assert(isfolder(config.environment_dir), "Environment directory not found - is your config builder in the rc/user/<user>/configs directory?");
+assert(isfolder(config.saving.main_dir), "Saving directory not found - is your config builder in the rc/user/<user>/configs directory?");
+assert(isfolder(config.saving.git_dir), "Git directory not found - is your config builder in the rc/user/<user>/configs directory? Is the project under a git repo?");
+if config.use_calibration_file
+    assert(isfile(config.calibration_file), "Config is set to use calibration file but the specified file could not be found - is your config builder in the rc/user/<user>/configs directory? Does the calibration file exist?")
+end
+assert(isfolder(config.teensy.dir), "Teensy directory not found - is your config builder in the rc/user/<user>/configs directory?");
+assert(isfolder(config.soloist.dir), "Soloist directory not found - is your config builder in the rc/user/<user>/configs directory?");
