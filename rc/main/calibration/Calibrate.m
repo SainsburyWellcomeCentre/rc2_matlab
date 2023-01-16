@@ -1,49 +1,33 @@
 classdef Calibrate < handle
-% Calibrate Class for aiding with calibration of offsets on the setup
-%
-%  Calibrate Properties:
-%       data            - internal storage of recorded data
-%       ctl             - object of class RC2Controller
-%       measure_time    - time in seconds to measure voltages
-%
-%  Calibrate Methods:
-%       h_callback      - callback during acquisition
-%       measure         - measure voltages on NIDAQ analog input
+    % Calibration class for aiding with calibration of offsets on the setup.
 
     properties
-        
-        data
-        ctl
-        measure_time = 10
+        data % Internal storage of recorded data.
+        ctl % :class:`rc.main.Controller` object.
+        measure_time = 10 % Time in seconds to measure voltages
     end
     
     methods
-        
         function obj = Calibrate(ctl)
-        % Calibrate
-        %
-        %   Cablibrates(CTL) creates object. CTL is object of class
-        %   RC2Controller.
+            % Constructor for a :class:`rc.main.Calibrate` class.
+            %
+            % :param ctl: A :class:`rc.main.Controller` object.
         
             obj.ctl = ctl;
         end
         
         
-        
         function h_callback(obj, ~, evt)
-        %%h_callback Callback function upon analog input data acquisition
+            % Callback function upon analog input data acquisition.
         
             obj.data = cat(1, obj.data, evt.Data);
         end
         
         
-        
         function data = measure(obj)
-        %%measure Measure voltages on NIDAQ analog input
-        %
-        %   DATA = measure() measures voltages on the NIDAQ analog input
-        %   channels for `measure_time` seconds and returns the data in
-        %   DATA.
+            % Measure voltages on NIDAQ analog input.
+            %
+            % :return data: Voltage measured on analog input channels for :attr:`measure_time`.
         
             obj.data = [];
             

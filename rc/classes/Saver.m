@@ -1,97 +1,42 @@
 classdef Saver < handle
-% Saver Class for handling logging of data and configurations
-%
-%   Saver Properties:
-%       enabled         - whether to use this module
-%       save_to         - top directory in which saving is occurring
-%       prefix          - prefix to apply to each saved file
-%       suffix          - suffix to apply to each saved file
-%       index           - index to apply to each saved file
-%       config_file     - full path to the original configuration file
-%       main_dir        - full path to the rollercoaster directory
-%       git_dir         - full path to the .git directory for rollercoaster
-%       fid             - current file identifier
-%       is_logging      - boolean, are we currently saving data
-%       ai_min_voltage  - minimum voltage, mapped to -2^15 (int16)
-%       ai_max_voltage  - maximum voltage, mapped to 2^15-1 (int16)
-%       voltage_range   - total voltage range
-%       fid_single_trial    - file identifier to file where single trial is
-%                             being saved
-%       single_trial_log_channel_idx - index of the analog input to save
-%                                      when logging data for a single trial
-%       is_logging_single_trial - boolean, are we currently saving a
-%                                 single trial
-%       ctl                 - object of class RC2Controller
-%
-%   Saver Methods:
-%       set_enable      - set `enable` property
-%       set_save_to     - set the `save_to` property
-%       set_prefix      - set the `prefix` property
-%       set_suffix      - set the `suffix` property
-%       set_index       - set the `index` property
-%       set_single_trial_log_channel - set the `single_trial_log_channel_idx` 
-%                                      property by using the name of an
-%                                      analog input
-%       logging_fname   - return the full path to the current logging .bin file
-%       cfg_fname       - return the full path to the current configuration .cfg file
-%       create_directory - create the directory in which to put the .bin files
-%       setup_logging   - prepare for logging of data to a file
-%       save_config     - save the setup configuration along with the .bin file
-%       append_config   - append configuration information to the config file
-%       stop_logging    - stop logging data
-%       log             - log data to .bin file
-%       start_logging_single_trial  - prepare for logging of data for single trials
-%       log_single_trial            - log data in single trial to .bin file
-%       stop_logging_single_trial   - stop logging data in single trial
-%       write_config    - write to the config file
-%
-%   Data are saved to files of the form:
-%       <save_to>\<prefix>\<prefix_suffix_index>.bin
-%   and associated config files are of the form:
-%       <save_to>\<prefix>\<prefix_suffix_index>.cfg
+    % Saver class for handling logging of data and configurations.
 
     properties (SetObservable = true)
-        
-        enable = true
-        save_to
-        prefix
-        suffix
-        index = 1
+        enable = true % Boolean specifying whether class is enabled and will save during acquisition.
+        save_to % Top directory for saving.
+        prefix % Prefix to apply to each saved file.
+        suffix % Suffix to apply to each saved file.
+        index = 1 % Index to apply to each saved file.
     end
     
     properties (SetAccess = private, Hidden = true)
-        
-        config_file
-        main_dir
-        git_dir
-        
-        fid
-        is_logging = false
-        ai_min_voltage = -10
-        ai_max_voltage = 10
-        voltage_range
-        
-        fid_single_trial
-        single_trial_log_channel_idx = 1
-        is_logging_single_trial = false
+        config_file % Full path to the original configuration file.
+        main_dir % Full path to the rollercoaster directory.
+        git_dir % Full path to the .git directory for rollercoaster.
+        fid % Current file identifier.
+        is_logging = false % Boolean indicating whether class is currently saving.
+        ai_min_voltage = -10 % Minimum analog input voltage, mapped to -2^15 (int16).
+        ai_max_voltage = 10 % Maximum analog input voltage, mapped to 2^15-1 (int16).
+        voltage_range % Total voltage range.
+        fid_single_trial % File identifier for saving a single trial.
+        single_trial_log_channel_idx = 1 % Index of the analog input to save when logging data for a single trial.
+        is_logging_single_trial = false % Boolean indicating whether class is currently saving a single trial.
     end
     
     properties (SetAccess = private, Hidden = true)
-        
-        ctl
+        ctl % Handle to :class:`RC2Controller`
     end
     
     
     
     methods
-        
         function obj = Saver(ctl, config)
-        % Saver
-        %
-        %   Saver(CTL, CONFIG) creates object to deal with logging data and
-        %   saving config information. CTL is an object of class
-        %   Controller/RC2Controller, and CONFIG is a structure containing
-        %   the setup configuration information at startup.
+            % Constructor for a :class:`rc.saving.Saver`.
+            % Saver(ctl, config) creates object to deal with logging data and
+            % saving config information.
+            %
+            % :param ctl: A :class:`rc.main.Controller` object.
+            % :param config: The main configuration structure.
         
             obj.enable = config.saving.enable;
             if ~obj.enable, return, end
@@ -110,15 +55,12 @@ classdef Saver < handle
             
             obj.voltage_range = obj.ai_max_voltage - obj.ai_min_voltage;
         end
-        
-        
+           
         
         function set_enable(obj, val)
-        %%set_enable Set `enable` property
-        %
-        %   set_enable(VALUE) sets `enable` to VALUE which should be a
-        %   boolean, true or false, and determines whether to save data
-        %   during acquisition.
+            % Set :attr:`enable` property.
+            %
+            % :param val: Boolean specifying enabled status - whether to save data during acquisition.
         
             if ~isnumeric(val) || isinf(val) || isnan(val)
                 fprintf('%s: %s ''val'' must be numeric and >= 0', class(obj), 'set_index');
@@ -131,18 +73,11 @@ classdef Saver < handle
         end
         
         
-        
         function set_save_to(obj, str)
-        %%set_save_to Set the `save_to` property
-        %
-        %   set_save_to(STRING) sets the `save_to` property to STRING,
-        %   which should be a full path to a directory in which to log data
-        %   and config info. Also resets the `index` property to 1.
-        %
-        %   Data are saved in files of format:
-        %       <save_to>\<prefix>\<prefix_suffix_index>.bin
-        %
-        %   See also: set_prefix, set_suffix, set_index
+            % Set :attr:`save_to` property. Also resets the :attr:`index` property to 1.
+            % Data are saved in files of format :attr:`save_to`/:attr:`prefix`/:attr:`prefix` _ :attr:`suffix` _ :attr:`index`.bin
+            %
+            % :param str: String representing full path to a directory in which to log data and config info.
         
             if obj.is_logging; return; end
             obj.save_to = str;
@@ -150,16 +85,11 @@ classdef Saver < handle
         end
         
         
-        
         function set_prefix(obj, str)
-        %%set_prefix Set the `prefix` property
-        %
-        %   set_prefix(STRING) sets the `prefix` property to STRING. 
-        %
-        %   Data are saved in files of format:
-        %       <save_to>\<prefix>\<prefix_suffix_index>.bin
-        %
-        %   See also: set_save_to, set_suffix, set_index
+            % Set the :attr:`prefix` property.
+            % Data are saved in files of format :attr:`save_to`/:attr:`prefix`/:attr:`prefix` _ :attr:`suffix` _ :attr:`index`.bin
+            %
+            % :param str: String representing the desired prefix.
         
             if obj.is_logging; return; end
             obj.prefix = str;
@@ -167,16 +97,11 @@ classdef Saver < handle
         end
         
         
-        
         function set_suffix(obj, str)
-        %%set_suffix Set the `suffix` property
-        %
-        %   set_suffix(STRING) sets the `suffix` property to STRING. 
-        %
-        %   Data are saved in files of format:
-        %       <save_to>\<prefix>\<prefix_suffix_index>.bin
-        %
-        %   See also: set_save_to, set_prefix, set_index
+            % Set the :attr:`suffix` property.
+            % Data are saved in files of format :attr:`save_to`/:attr:`prefix`/:attr:`prefix` _ :attr:`suffix` _ :attr:`index`.bin
+            %
+            % :param str: String representing the desired suffix.
         
             if obj.is_logging; return; end
             obj.suffix = str;
@@ -184,16 +109,11 @@ classdef Saver < handle
         end
         
         
-        
         function set_index(obj, val)
-        %%set_index Set the `index` property
-        %
-        %   set_index(VALUE) sets the `index` property to VALUE. 
-        %
-        %   Data are saved in files of format:
-        %       <save_to>\<prefix>\<prefix_suffix_index>.bin
-        %
-        %   See also: set_save_to, set_prefix, set_suffix
+            % Set the :attr:`index` property.
+            % Data are saved in files of format :attr:`save_to`/:attr:`prefix`/:attr:`prefix` _ :attr:`suffix` _ :attr:`index`.bin
+            % 
+            % :param str: Integer representing the desired index.
         
             if ~isnumeric(val) || isinf(val) || isnan(val) || val < 1
                 fprintf('%s: %s ''val'' must be numeric and >= 1', class(obj), 'set_index');
@@ -207,25 +127,28 @@ classdef Saver < handle
         
         
         function str = save_root_name(obj)
+            % Get the file name of the saving directory.
+            %
+            % :return: File name of the saving directory.
+
             str = sprintf('%s_%s_%03i', obj.prefix, obj.suffix, obj.index);
         end
         
         
         function str = save_fulldir(obj)
+            % Get the full path to the saving directory.
+            %
+            % :return: Full path to the saving directory.
+
             str = fullfile(obj.save_to, obj.prefix);
         end
 
         
         
         function set_single_trial_log_channel(obj, channel_name)
-        %%set_single_trial_log_channel Set the channel to save when saving
-        %%single trial data.
-        %
-        %   set_single_trial_log_channel(CHANNEL_NAME) takes a string in
-        %   CHANNEL_NAME matching one of the analog inputs and sets the
-        %   `single_trial_log_channel_idx` property. If no such channel
-        %   name is found, `single_trial_log_channel_idx` is set to 1 (the
-        %   first analog input.
+            % Set the :attr:`single_trial_log_channel_idx` property.
+            %
+            % :param channel_name: String representing an analog input channel name. If no matching channel can be found :attr:`single_trial_log_channel_idx` defaults to 1.
         
             idx = find(strcmp(obj.ctl.ni.ai.channel_names, channel_name));
             
@@ -239,31 +162,24 @@ classdef Saver < handle
         end
         
         
-        
         function fname = logging_fname(obj)
-        %%logging_fname Return the full path to the logging .bin file
-        %
-        %   FILENAME = logging_fname() takes the `save_to`, `prefix`,
-        %   `suffix` and `index` properties and creates the full path to a
-        %   .bin file in which to save data.
+            % Get the full path to the logging .bin file.
+            %
+            % :return: Full path to the logging .bin file.
         
             fname_ = sprintf('%s_%s_%03i.bin', obj.prefix, obj.suffix, obj.index);
             fname = fullfile(obj.save_to, obj.prefix, fname_);
         end
         
         
-        
         function fname = cfg_fname(obj)
-        %%cfg_fname Return the full path to the configuration .cfg file
-        %
-        %   FILENAME = cfg_fname() takes the `save_to`, `prefix`,
-        %   `suffix` and `index` properties and creates the full path to a
-        %   .cfg file in which to save config information.
+            % Get the full path to the configuration .cfg file.
+            %
+            % :return: Full path to configuration .cfg file.
         
             fname_ = sprintf('%s_%s_%03i.cfg', obj.prefix, obj.suffix, obj.index);
             fname = fullfile(obj.save_to, obj.prefix, fname_);
         end
-        
         
         
 %         function fname = logging_fname_single_trial(obj)
@@ -271,25 +187,15 @@ classdef Saver < handle
 %             fname = fullfile(obj.save_to, obj.prefix, fname_);
 %         end
         
-        
 
 %         function fname = cfg_fname_single_trial(obj)
 %             fname_ = sprintf('%s_%s_%03i_single_trial_%03i.cfg', obj.prefix, obj.suffix, obj.index, obj.index_single_trial);
 %             fname = fullfile(obj.save_to, obj.prefix, fname_);
 %         end
         
-        
 
         function create_directory(obj)
-        %%create_directory Create the directory in which to put the .bin
-        %%files
-        %
-        %   create_directory() creates the directory in which to put the
-        %   .bin file. This is of the form:
-        %   <save_to>\<prefix>\
-        %
-        %   See also: set_save_to, set_prefix
-        
+            % Create directory to save .bin files of the form :attr:`save_to`/:attr:`prefix`
         
             if obj.is_logging; return; end
             
@@ -301,15 +207,10 @@ classdef Saver < handle
         end
         
         
-        
         function setup_logging(obj)
-        %%setup_logging Prepare for logging of data to a file
-        %
-        %   setup_logging() is the main function for setting up before
-        %   saving to a .bin/.cfg file. Checks for existance of file and
-        %   asks user whether to overwrite. Creates any necessary
-        %   directories. Opens a stream to a bin file and saves the
-        %   configuration information.
+            % Prepare for logging of data to a file. Checks for existence of a saving .bin or .cfg file
+            % and asks user whether to overwrite. Creates any necessary directories, creates a stream to a .bin file
+            % and saves the configuration information.
         
             % if saving is not enabled, do nothing
             if ~obj.enable; return; end
@@ -336,13 +237,8 @@ classdef Saver < handle
         end
         
         
-        
         function save_config(obj)
-        %%save_config Save the setup configuration along with the .bin file
-        %
-        %   save_config() save the setup configuration to a .cfg file.
-        %
-        %   See also: cfg_fname, RC2Controller.get_config()
+            % Save the setup configuration .cfg file along with the .bin file. 
         
             if ~obj.enable; return; end
             
@@ -355,15 +251,9 @@ classdef Saver < handle
         
         
         function append_config(obj, cfg)
-        %%append_config Append configuration information to the config file
-        %
-        %   append_config(CONFIG) appends the configuration information in
-        %   CONFIG to the main .cfg file. CONFIG is a Nx2 cell array
-        %   with each row of the form {<key>, <value>}, and is saved in the
-        %   file as:
-        %       key=value
-        %   
-        %   See also: RC2Controller.get_config
+            % Append configuration information to the .cfg file.
+            %
+            % :param cfg: The configuration information to append, should be Nx2 cell array with each row as a {<key>, <value>}.
         
             if ~obj.enable; return; end
             
@@ -372,13 +262,8 @@ classdef Saver < handle
         end
         
         
-        
         function stop_logging(obj)
-        %%stop_logging Stop logging data
-        %
-        %   stop_logging() closes the .bin file stream and stops any other
-        %   logging streams (for single files). It also iterates the
-        %   `index` property.
+            % Stop logging data. Closes the .bin file stream and stops any other single file logging streams. Also iterates the :attr:`index` property.
         
             if ~obj.enable; return; end
             
@@ -394,18 +279,10 @@ classdef Saver < handle
         end
         
         
-        
         function log(obj, data)
-        %%log Log data to .bin file
-        %
-        %   log(DATA) performs the logging of voltage data from the AI. On
-        %   each AI callback, data is passed to this function and it is
-        %   stored in the file opened with `setup_logging`. The data is
-        %   first scaled into int16 values, and then stored as int16
-        %   integers. Further, if logging of single trials is on, it will
-        %   call the `log_single_trial` method.
-        %
-        %   See also: setup_logging
+            % Log data from AI task to a .bin file. Data should be passed to this method from AI callbacks. Transformed data will be stored in the file opened with :meth:`setup_logging`.
+            %
+            % :param data: Data to be logged. This method scales the input data into int16 values. If :attr:`is_logging_single_trial` is true :meth:`log_single_trial` will be called.
         
             if ~obj.enable; return; end
             if ~obj.is_logging; return; end
@@ -420,13 +297,11 @@ classdef Saver < handle
         end
         
         
-        
         function fid = start_logging_single_trial(obj, fname)
-        %%start_logging_single_trial Prepare for logging of data for single
-        %%trials
-        %
-        %   FID = start_logging_single_trial(FILENAME) sets up the logging
-        %   of a single trial. 
+            % Prepare for logging of data from single trials.
+            %
+            % :param fname: Path for save file.
+            % :return: File identifier for save file.
         
             % saving must be enabled and already logging to a main storage
             % location
@@ -452,11 +327,10 @@ classdef Saver < handle
         end
         
         
-        
         function log_single_trial(obj, data)
-        %%log_single_trial Log data in single trial to .bin file
-        %
-        %   log_single_trial(DATA) log data to the single trial .bin file.
+            % Log data in single trial to .bin file.
+            %
+            % :param data: Single trial data.
         
             if ~obj.is_logging_single_trial; return; end
             if isempty(obj.fid_single_trial); return; end
@@ -466,12 +340,8 @@ classdef Saver < handle
         end
         
         
-        
         function stop_logging_single_trial(obj)
-        %%stop_logging_single_trial Stop logging data in single trial
-        %
-        %   stop_logging_single_trial() closes the file for single trial
-        %   data.
+            % Stop logging single trial data. Closes the file for single trial data.
         
             if ~obj.is_logging_single_trial; return; end
             
@@ -484,18 +354,12 @@ classdef Saver < handle
         end
         
         
-        
         function write_config(obj, fname, cfg, mode)
-        %%write_config Write to the config file
-        %
-        %   write_config(FILENAME, CONFIG, MODE) writes configuration
-        %   information to a file. FILENAME is the full path to a file to
-        %   write to. CONFIG is the N x 2 cell array containing the config
-        %   information. MODE is either 'w' or 'a' (see fopen). 'w' will
-        %   overwrite the file if it exists, 'a' will append the data to
-        %   the file.
-        %
-        %   See also: RC2Controller.get_config
+            % Write to the configuration file.
+            %
+            % :param fname: The full path of the output file.
+            % :param cfg: Nx2 cell array containing the config information.
+            % :param mode: Char specifying `fopen <https://uk.mathworks.com/help/matlab/ref/fopen.html>`_ mode. 'w' will overwrite an existing file, 'a' will append the data to the file.
         
             if ~obj.enable; return; end
             

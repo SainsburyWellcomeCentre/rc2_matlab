@@ -1,103 +1,41 @@
 classdef Soloist < handle
-% Soloist Class for handling commands to the Soloist stage controller
-%
-%   Soloist Properties:
-%       deadband_scale      - multiply the value of the deadband in the
-%                             config structure by this value to determine
-%                             the deadband
-%       deadband            - the value of the deadband to send to the
-%                             controller (in Volts)
-%       ai_offset           - offset in mV to add to the controller when
-%                             going into gear mode (see below)
-%       max_limits          - position limits of the stage (in controller
-%                             units, usually mm, but perhaps this can
-%                             change?)
-%       homed               - whether the stage has been homed
-%       offset_limits       - limits of the `ai_offset` property
-%       gear_scale          - value of GearCamScaleFactor to apply on the
-%                             controller when in gear mode
-%       deadband_limits     - limits of the `deadband` property
-%       v_per_cm_per_s      - volts per cm/s (determined by the Teensy actually?)
-%       dir                 - directory containing the executable files
-%                             carrying out the Soloist commands
-%       proc_array          - object of class ProcArray
-%       h_abort             - handle to the process controlling rapid
-%                             aborting of the currently executing Soloist
-%                             command  
-%       default_speed       - default speed to move the stage
-%
-%   Soloist Methods:
-%       delete              - destructor for this class
-%       abort               - aborts all tasks and resets all parameters on
-%                             the soloist 
-%       stop                - disables the axis, resets the stage and stops
-%                             all the processes.
-%       reset_pso           - resets the PSO on the controller
-%       communicate         - communicates and resets the connection with
-%                             the Soloist controller 
-%       home                - homes the linear stage
-%       reset               - resets the linear stage to default position
-%                             and parameters 
-%       move_to             - moves the linear stage to a position
-%       calibrate_zero      - measures the analog input voltage to the
-%                             Soloist controller. 
-%       listen_until            - sends stage into gear mode to listen to
-%                                 the analog input (WARNING!) 
-%       mismatch_ramp_down_at   - sends stage into gear mode to listen to
-%                                 the analog input (WARNING!) 
-%       mismatch_ramp_up_until  - sends stage into gear mode to listen to
-%                                 the analog input (WARNING!) 
-%       set_offset          - set the `ai_offset` property
-%       set_gear_scale      - set the `gear_scale` property
-%       set_deadband        - set the `deadband` property
-%       full_command        - create a full path to the executables
-%       ab_dir              - directory with the .ab files
-%       base_dir            - return the root soloist directory.
-%
-%   TODO: `ai_offset` and `deadband` should be private properties (may
-%         affect Trial classes)
+    % Soloist class for handling commands to the Soloist stage controller.
 
-    properties    
-        
-        enabled
-        deadband_scale = 0.2
-        deadband
-        ai_offset
+    properties
+        enabled % Boolean specifying whether to use this module.
+        deadband_scale = 0.2 % Scaling coefficient for deadband value in main configuration structure to calculate deadband.
+        deadband % The value (in volts) of the deadband to send to the controller.
+        ai_offset % offset in mV to add to the controller when entering gear mode.
     end
     
     properties (SetAccess = private)
-        
-        max_limits
-        homed = false;
-        offset_limits = [-1000, 1000];
-        gear_scale
-        deadband_limits = [0, 1];
-        v_per_cm_per_s
+        max_limits % Position limits of the stage (in controller units, usually mm).
+        homed = false; % Boolean representing whether the stage is homed.
+        offset_limits = [-1000, 1000]; % Limits of the :attr:`ai_offset` property.
+        gear_scale % Value of GearCamScaleFactor to apply on the controller when in gear mode.
+        deadband_limits = [0, 1]; % Limits of the :attr:`deadband` property.
+        v_per_cm_per_s % Volts per cm/s (actually determined by Teensy) - NOTE AE confirm.
     end
     
     properties (SetAccess = private, Hidden = true)
-        
-        dir
-        proc_array
-        h_abort
-        default_speed
+        dir % Directory containing the executable files carrying out the Soloist commands.
+        proc_array % :class:`rc.aux_.ProcArray`
+        h_abort % Handle to the process controlling rapid aborting of the currently executing Soloist command.
+        default_speed % Default speed to move the stage.
     end
     
     
-    
     methods
-        
         function obj = Soloist(config)
-        % Soloist
-        %
-        %   Soloist(CONFIG) creates object for interfacing with the Soloist
-        %   controller via separate, standalone executable programs stored
-        %   in the direcotry `config.soloist.dir`. CONFIG is the
-        %   configuration structure.
-        
+            % Constructor for a :class:`rc.dev.Soloist` device.
+            % Interfaces with the Soloist controller via separate, 
+            % standalone executable programs stored in the directory `config.soloist.dir`.
+            %
+            % :param config: The main configuration structure.
+
             obj.enabled = config.soloist.enable;
             if ~obj.enabled, return, end
-            
+        
             % directory in which the soloist commands are stored
             obj.dir = config.soloist.dir;
             
@@ -130,23 +68,16 @@ classdef Soloist < handle
         end
         
         
-        
         function delete(obj)
-        %%delete Main object destructor
-            
-            % make sure the Soloist parameters are reset, it is disabled
-            % and all processes are deleted
+            % Destructor for :class:`rc.dev.Soloist` device.
+
             obj.abort()
         end
         
         
-        
         function abort(obj)
-        %%abort Aborts all tasks and resets all parameters on the soloist
-        %
-        %   abort() Sends 'abort' signal to the abort.exe program
-        %
-        %   See also README in Soloist directory and `abort.c` file.
+            % Aborts all tasks and resets all parameters on the soloist.
+            % Sends 'abort' signal to the abort.exe program. NOTE AE - reference to c file.
         
             if ~obj.enabled, return, end
             
@@ -161,18 +92,12 @@ classdef Soloist < handle
         end
         
         
-        
         function stop(obj)
-        %%stop Disables the axis, resets the stage and stops all the
-        %%processes. 
-        %
-        %   stop() sends 'reset_pso' and 'stop' signals to the abort.exe
-        %   program.
-        %
-        %   See also README in Soloist directory and `abort.c` file.
-            
+            % Disables the axis, resets the stage and stops all current processes.
+            % Sends 'reset_pso' and 'stop' signals to the abort.exe program.
+
             if ~obj.enabled, return, end
-            
+        
             % make sure PSO is reset
             obj.h_abort.run('reset_pso');
             
@@ -189,11 +114,8 @@ classdef Soloist < handle
         
         
         function reset_pso(obj)
-        %%reset_pso Resets the PSO on the controller.
-        %
-        %   reset_pso() sends 'reset_pso' signal to the abort.exe program. 
-        %
-        %   See also README in Soloist directory and `abort.c` file.
+            % Reset the PSO on the Soloist controller.
+            % Sends 'rest_pso' signal to the abort.exe program.
         
             if ~obj.enabled, return, end
             
@@ -203,12 +125,9 @@ classdef Soloist < handle
         
         
         function proc = communicate(obj)
-        %%communicate Communicates and resets the connection with the
-        %%Soloist controller
-        %
-        %   communicate() runs the communicate.exe program
-        %
-        %   See also README in Soloist directory and `communicate.c` file.
+            % Communicates and resets the connection with the Soloist controller.
+            %
+            % :return: :class:`rc.aux_.ProcHandler` object, handle to the process.
         
             if ~obj.enabled, return, end
             
@@ -226,12 +145,8 @@ classdef Soloist < handle
         
         
         function home(obj)
-        %%home Homes the linear stage
-        %
-        %   home() runs the home.exe program. Also resets any parameters on
-        %   the Soloist to defaults and disables the stage.
-        %
-        %   See also README in Soloist directory and `home.c` file. 
+            % Homes the linear stage.
+            % Runs the home.exe program and resets any parameters on the Soloist to defaults. Disables the stage. 
         
             if ~obj.enabled, return, end
             
@@ -251,13 +166,8 @@ classdef Soloist < handle
         
         
         function reset(obj)
-        %%reset Resets the linear stage to default position and parameters 
-        %
-        %   reset() runs the reset.exe program. Moves the linear stage to a
-        %   default position and also resets any parameters on the Soloist
-        %   to defaults and disables the stage.
-        %
-        %   See also README in Soloist directory and `reset.c` file.
+            % Resets the linear stage to the default position and parameters.
+            % Runs the reset.exe program.
         
             if ~obj.enabled, return, end
             
@@ -275,26 +185,13 @@ classdef Soloist < handle
         
         
         function proc = move_to(obj, pos, speed, end_enabled)
-        %%move_to Moves the linear stage to a position
-        %
-        %   PROCESS = move_to(POSITION, SPEED, LEAVE_ENABLED) 
-        %   runs the move_to.exe program. This moves the linear stage to
-        %   the position POSITION (units are in Soloist controller units,
-        %   which for us has always been mm), at speed SPEED (also units in
-        %   controller units, for us this has been mm/s). LEAVE_ENABLED is
-        %   a logical, true or false, and determines whether to leave the
-        %   stage enabled after the move has been made (true) or disable
-        %   the stage after the move (false).
-        %
-        %   POSITION must be within the limits specified by the
-        %   `max_limits` property. SPEED must be between 10 and 500 (hard
-        %   coded values).
-        %
-        %   The handle to the process is returned in PROCESS.
-        %
-        %   TODO: make speed limits optional?
-        %
-        %   See also README in Soloist directory and `move_to.c` file.
+            % Moves the linear stage to a position with given speed.
+            % Uses the move_to.exe program.
+            %
+            % :param pos: The position to move to in Soloist controller units (usually mm). Must be within the limits specified by the :attr:`max_limits` property.
+            % :param speed: The speed to move in Soloist controller units (usually mm/s). Must be within 10 and 500 (hard-coded values).
+            % :param end_enabled: Boolean specifying whether to leave the stage enabled (true) or disabled (false) after the move. 
+            % :return: :class:`rc.aux_.ProcHandler` object, handle to the process.
         
             % set defaults
             VariableDefault('speed', obj.default_speed);
@@ -345,33 +242,20 @@ classdef Soloist < handle
         
         
         function average_offset_mV = calibrate_zero(obj, back_pos, forward_pos, offset, no_gear, leave_enabled)
-        %%calibrate_zero Measures the analog input voltage to the Soloist
-        %%controller.
-        %
-        %   WARNING: if GEAR_OFF is false (the default), the stage goes
-        %   into gear mode and thus may move suddenly and unexpectedly.
-        %
-        %   RESIDUAL_OFFSET_MV = calibrate_zero(BACKWARD_POSITION, FORWARD_POSITION, AI_OFFSET, GEAR_OFF, LEAVE_ENABLED)
-        %   runs the calibrate_zero.exe 
-        %   programs. BACKWARD_POSITION and FORWARD_POSITION determine the
-        %   limits which if the stage moves beyond them the executable will
-        %   stop (must be in Soloist controller units, e.g. mm, and within
-        %   the bounds specified by `max_limits` property. AI_OFFSET is the
-        %   offset in millivolts to apply before taking the measurement (i.e. output of
-        %   this function will be *relative* to this value). GEAR_OFF
-        %   has no effect, but is left for backward compatibility.
-        %   LEAVE_ENABLED is a logical, true or false, and determines
-        %   whether to leave the stage enabled after the measurement has
-        %   been made (true) or disable the stage after the 
-        %   measurement (false). 
-        %
-        %   FORWARD_POSITION must be < BACKWARD_POSITION.
-        %
-        %   The residual analog input voltage on the controller is returned
-        %   in RESIDUAL_OFFSET_MV, in millivolts. This value is relative to
-        %   the AI_OFFSET value.
-        %
-        %   See also README in Soloist directory and `calibrate_zero.c` file.
+            % Measures the analog input voltage to the Soloist controller and runs the calibrate_zero.exe or calibrate_zero_no_gear.exe programs.
+            %
+            % WARNING: ``no_gear`` is false (the default), the stage goes into gear mode and thus may move suddenly and unexpectedly.
+            %
+            % See :doc:`Soloist Usage </usage-guides/rc2-soloist>` for more details on zero calibration.
+            %
+            % :param back_pos: Limit of the backward position. If stage moves beyond limit the executable will stop. Should be in soloist controller units and within the bounds specified by :attr:`max_limits`.
+            % :param forward_pos: Limit of the forward position. If stage moves beyond limit the executable will stop. Should be in soloist controller units and within the bounds specified by :attr:`max_limits`.
+            % :param offset: Offset in millivolts to apply before taking the output measurement (output of this function will be relative to this value).
+            % :param no_gear: Boolean specifying whether to take the measurement in gear mode (false, default) or not in gear mode (true).
+            % :param leave_enabled: Boolean specifying whether to leave the stage enabled after the measurement has been made (true) or disable the stage after measurement (false).
+            % :return: The residual analog input voltage on the controller relative to ``offset``
+            %
+            % ``forward_pos`` must be < ``back_pos``
         
             if ~obj.enabled; return; end
             
@@ -455,31 +339,16 @@ classdef Soloist < handle
         end
         
         
-        
         function proc = listen_until(obj, back_pos, forward_pos, wait_for_trigger)
-        %%listen_until Couples the voltage input to the Soloist controller
-        %%to the velocity of the linear stage.
-        %
-        %   WARNING: the stage goes into gear mode and thus may move
-        %   suddenly and unexpectedly. 
-        %
-        %   PROCESS = listen_until(BACKWARD_POSITION, FORWARD_POSITION, WAIT_FOR_TRIGGER)
-        %   runs the listen_until.exe. BACKWARD_POSITION and
-        %   FORWARD_POSITION determine the limits which if the stage moves
-        %   beyond them the executable will stop (must be in Soloist
-        %   controller units, e.g. mm, and within the bounds specified by
-        %   `max_limits` property.
-        %
-        %   FORWARD_POSITION must be < BACKWARD_POSITION.
-        %
-        %   WAIT_FOR_TRIGGER is optional, and can be a boolean which
-        %   determines whether the Soloist waits for a trigger before going
-        %   into gear mode and listening to the voltage input. The default
-        %   is true, wait for a trigger.
-        %
-        %   The handle to the process is returned in PROCESS.
-        %
-        %   See also README in Soloist directory and `listen_until.c` file.
+            % Couples the voltage input to the Soloist controller. Uses the listen_until.exe program.
+            % WARNING: the stage goes into gear mode and thus may move unexpectedly.
+            % 
+            % :param back_pos: Limit of the backward position. Should be in soloist controller units and within the bounds specified by :attr:`max_limits`.
+            % :param forward_pos: Limit of the forward position. Should be in soloist controller units and within the bounds specified by :attr:`max_limits`.
+            % :param wait_for_trigger: Optional boolean (default true) specifying whether Soloist should wait for trigger before going into gear mode and listening to the voltage input.
+            % :return: :class:`rc.aux_.ProcHandler` object, handle to the process.
+            %
+            % ``forward_pos`` must be < ``back_pos``
         
             if ~obj.enabled, return, end
             
@@ -530,26 +399,15 @@ classdef Soloist < handle
         
         
         function proc = mismatch_ramp_down_at(obj, back_pos, forward_pos)
-        %%mismatch_ramp_down_at Couples the voltage input to the Soloist controller
-        %%to the velocity of the linear stage until a position is reached
-        %%when the gain between voltage and velocity is ramped down to
-        %%zero.
-        %
-        %   WARNING: the stage goes into gear mode and thus may move
-        %   suddenly and unexpectedly. 
-        %
-        %   PROCESS = mismatch_ramp_down_at(BACKWARD_POSITION, FORWARD_POSITION)
-        %   runs the mismatch_ramp_down_at.exe. BACKWARD_POSITION and
-        %   FORWARD_POSITION determine the limits which if the stage moves
-        %   beyond them the executable will stop (must be in Soloist
-        %   controller units, e.g. mm, and within the bounds specified by
-        %   `max_limits` property.
-        %
-        %   FORWARD_POSITION must be < BACKWARD_POSITION.
-        %
-        %   The handle to the process is returned in PROCESS.
-        %
-        %   See also README in Soloist directory and `mismatch_ramp_down_at.c` file.
+            % Couples the voltage input to the Soloist controller to the velocity of the linear stage until a position is reached
+            % when the gain between voltage and velocity is ramped down to zero.
+            % Uses the mismatch_ramp_down_at.exe program.
+            %
+            % :param back_pos: Limit of the backward position. Should be in soloist controller units and within the bounds specified by :attr:`max_limits`.
+            % :param forward_pos: Limit of the forward position. Should be in soloist controller units and within the bounds specified by :attr:`max_limits`.
+            % :return: :class:`rc.aux_.ProcHandler` object, handle to the process.
+            %
+            % ``forward_pos`` must be < ``back_pos``
         
             if ~obj.enabled, return, end
 
@@ -598,28 +456,18 @@ classdef Soloist < handle
         
         
         function proc = mismatch_ramp_up_until(obj, back_pos, forward_pos)
-        %%mismatch_ramp_up_until After a trigger is received couples the
-        %%voltage input to the Soloist controller to the velocity of the
-        %%linear stage until a position is reached. 
-        %
-        %   WARNING: the stage goes into gear mode and thus may move
-        %   suddenly and unexpectedly. 
-        %
-        %   PROCESS = mismatch_ramp_up_until(BACKWARD_POSITION, FORWARD_POSITION)
-        %   runs the mismatch_ramp_up_until.exe. BACKWARD_POSITION and
-        %   FORWARD_POSITION determine the limits which if the stage moves
-        %   beyond them the executable will stop (must be in Soloist
-        %   controller units, e.g. mm, and within the bounds specified by
-        %   `max_limits` property. FORWARD_POSITION must be < BACKWARD_POSITION.
-        %
-        %   The handle to the process is returned in PROCESS.
-        %
-        %   Waits for a trigger to be received and then ramps up the gain
-        %   between voltage and velocity from zero to a nominal value
-        %   (defined in ramp_up_gain.ab).
-        %
-        %   See also README in Soloist directory and `mismatch_ramp_up_until.c` file.
-        
+            % After a trigger is received couples the voltage input to the Soloist controller to the velocity of the linear stage until a position is reached.
+            % WARNING: The stage goes into gear mode and this may move suddenly and unexpectedly.
+            % Uses the mismatch_ramp_down_at.exe program.
+            %
+            % See :doc:`Soloist Usage </usage-guides/rc2-soloist>` for more details on mismatch ramps.
+            %
+            % :param back_pos: Limit of the backward position. Should be in soloist controller units and within the bounds specified by :attr:`max_limits`.
+            % :param forward_pos: Limit of the forward position. Should be in soloist controller units and within the bounds specified by :attr:`max_limits`.
+            % :return: :class:`rc.aux_.ProcHandler` object, handle to the process.
+            %
+            % ``forward_pos`` must be < ``back_pos``
+
             if ~obj.enabled, return, end
         
             % check 'back_pos'
@@ -665,12 +513,10 @@ classdef Soloist < handle
         end
         
         
-        
         function set_offset(obj, val)
-        %%set_offset Set the `ai_offset` property
-        %
-        %   set_offset(VALUE) sets the `ai_offset` value to VALUE which
-        %   must be between the limits defined in `offset_limits` property.
+            % Sets the :attr:`ai_offset` property.
+            %
+            % :param val: Value to set, must be within the limits defined in the :attr:`offset_limits` property.
         
             if ~obj.enabled, return, end
             
@@ -691,9 +537,9 @@ classdef Soloist < handle
         
         
         function set_gear_scale(obj, val)
-        %%set_gear_scale Set the `gear_scale` property
-        %
-        %   set_gear_scale(VALUE) sets the `gear_scale` value to VALUE.
+            % Sets the :attr:`gear_scale` property.
+            %
+            % :param val: Value to set.
            
             if ~obj.enabled, return, end
             
@@ -709,10 +555,9 @@ classdef Soloist < handle
         
         
         function set_deadband(obj, val)
-        %%set_deadband Set the `ai_offset` property
-        %
-        %   set_deadband(VALUE) sets the `deadband` value to VALUE which
-        %   must be between the limits defined in `deadband_limits` property.
+            % Set the :attr: `deadband` property.
+            %
+            % :param val: Value to set, must be within the :attr:`deadband_limits` property.
         
             if ~obj.enabled, return, end
             
@@ -759,12 +604,15 @@ classdef Soloist < handle
     
     
     methods (Access = private)
-        
         function fname = full_command(obj, cmd)
-        %%full_command Create a full path to the executables
-        %
-        %   FULLFILE = full_command(COMMAND) creates a full path from a
-        %   command string COMMAND.
+            % Creates a full path from a command string.
+            %
+            % :param cmd: Command string.
+            % :return: Full path.
+            %%full_command Create a full path to the executables
+            %
+            %   FULLFILE = full_command(COMMAND) creates a full path from a
+            %   command string COMMAND.
         
             fname = fullfile(obj.base_dir, 'exe', sprintf('%s.exe', cmd));
         end

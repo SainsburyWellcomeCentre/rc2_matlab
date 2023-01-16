@@ -1,51 +1,42 @@
 function seq = setup_training_sequence(ctl, closed_loop, reward_position, distance, back_distance, n_loops, forward_only)
-%%SETUP_TRAINING_SEQUENCE Sets up a protocol sequence for training. This is
-%%a standard sequence so contained in the main program. 
-%
-%   seq = SETUP_TRAINING_SEQUENCE(ctl, closed_loop reward_position, distance, back_distance, n_loops, forward_only)
-%       
-%       Inputs:
-%               ctl:                object of main RC2Controller class
-%               closed_loop:        true = closed loop, false = open loop
-%               reward_position:    position along the linear stage to stop trial and reward
-%               distance:           distance to start from reward position
-%               back_distance:      amount to move backward before stopping trial
-%               n_loops:            the number of loops of the protocol to
-%                                   setup
-%               forward_only:       true = only allow forward movement
-%                                   false = allow backward movement as well
-%       Outputs:
-%               seq:                protocol sequence of ProtocolSequence class
-%
-%  See also: Coupled, EncoderOnly, ProtocolSequence
+    % Sets up a protocol sequence for training. This is a standard sequence so contained in the main program.
+    %
+    % :param ctl: A :class:`rc.main.Controller` object.
+    % :param closed_loop: Boolean specifying whether to run as closed-loop (true) or open-loop (false).
+    % :param reward_position: Position along the linear stage at which to stop trial and deliver reward.
+    % :param distance: Distance to start from reward position.
+    % :param back_distance: Amount to move backward before stopping trial.
+    % :param n_loops: The number of loops of the protocol to set up.
+    % :param forward_only: Boolean specifying whether we should only allow forward movement (true) or backward movement as well (false).
+    % :return: Protocol sequence of :class:`rc.prot.ProtocolSequence`.
 
-% setup a single training protocol
-config.stage.start_pos = reward_position + distance;
-config.stage.back_limit = config.stage.start_pos + back_distance;
-config.stage.forward_limit = reward_position;
+    % setup a single training protocol
+    config.stage.start_pos = reward_position + distance;
+    config.stage.back_limit = config.stage.start_pos + back_distance;
+    config.stage.forward_limit = reward_position;
 
-% during training don't randomize the reward
-ctl.reward.randomize = false;
+    % during training don't randomize the reward
+    ctl.reward.randomize = false;
 
-if closed_loop
-    
-    prot = Coupled(ctl, config);
-else
-    
-    prot = EncoderOnly(ctl, config);
-    prot.integrate_using = 'pc';
-end
+    if closed_loop
+        
+        prot = Coupled(ctl, config);
+    else
+        
+        prot = EncoderOnly(ctl, config);
+        prot.integrate_using = 'pc';
+    end
 
-if forward_only
-    prot.direction = 'forward_only';
-else
-    prot.direction = 'forward_and_backward';
-end
+    if forward_only
+        prot.direction = 'forward_only';
+    else
+        prot.direction = 'forward_and_backward';
+    end
 
-% setup the protocol sequence
-seq = ProtocolSequence(ctl);
+    % setup the protocol sequence
+    seq = ProtocolSequence(ctl);
 
-% it will loop n_loops number of times
-for i = 1 : n_loops
-    seq.add(prot);
-end
+    % it will loop n_loops number of times
+    for i = 1 : n_loops
+        seq.add(prot);
+    end

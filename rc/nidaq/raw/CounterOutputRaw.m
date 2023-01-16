@@ -1,57 +1,28 @@
 classdef CounterOutputRaw < handle
-% CounterOutputRaw Class for handling counter outputs on the NIDAQ
-%
-%   CounterOutputRaw Properties:
-%       enabled         - whether to use this module
-%       task_handle     - handle to the daq.ni.NIDAQmx.DAQmxCreateTask object
-%       channel_names   - names of the CO channels
-%       channel_ids     - IDs of the CO channels
-%       init_delay      - the number of timebase ticks to wait before generating the first pulse
-%       low_samps       - the number of timebase ticks that the pulse is low
-%       high_samps      - the number of timebase ticks that the pulse is high
-%       clock_src       - the terminal determining the timebase
-%
-%   CounterOutputRaw Methods:
-%       delete          - destructor, clears the task
-%       start           - start the task
-%       stop            - stop the task
-%       close           - clear the task
-%       handle_fault    - handles faults and prints error message
-%
-%   See also: NI
-%   See also
-%   https://zone.ni.com/reference/en-XX/help/370471AM-01/TOC3.htm
-%   for description of underlying C functions
+    % CounterOutputRaw Class for handling counter outputs on the NIDAQ. 
 
     properties
-
-        enabled
+        enabled % Boolean specifying whether the module is used.
     end
-    
+
     properties (SetAccess = private)
-
-        task_handle
-        channel_names = {}
-        channel_ids = {}
-        
-        init_delay = nan
-        low_samps = nan
-        high_samps = nan
-        clock_src = nan
+        task_handle % Handle to the daq.ni.NIDAQmx.DAQmxCreateTask object.
+        channel_names = {} % Names of the CO channels.
+        channel_ids = {} % IDs of the CO channels.
+        init_delay % The number of timebase ticks to wait before generating the first pulse.
+        low_samps % The number of timebase ticks that the pulse is low.
+        high_samps % The number of timebase ticks that the pulse is high.
+        clock_src % The terminal deciding the timebase.
     end
-    
     
     
     methods
         
         function obj = CounterOutputRaw(config)
-        % CounterOutputRaw
-        %
-        %   CounterOutputRaw(CONFIG) creates the counter output task with
-        %   the details described in CONFIG (the main configuration
-        %   structure with `co` field.
-        %
-        %   See README for details on the configuration.
+            % Constructor for a :class:`rc.nidaq.raw.CounterOutputRaw` task.
+            %
+            % CounterOutputRaw(config) creates the counter counter output task
+            % with the details described in the main configuration structure with the `co` field.
         
             obj.enabled = config.nidaq.co.enable;
             if ~obj.enabled, return, end
@@ -79,22 +50,16 @@ classdef CounterOutputRaw < handle
         end
         
         
-        
         function delete(obj)
-        %%delete Destructor, clears the task
-            
+            % Destructor for :class:`rc.nidaq.raw.CounterOutputRaw` task.
+
             if ~obj.enabled, return, end
-            
             obj.close();
         end
         
-        
-        
         function start(obj)
-        %%start Start the task
-        %
-        %   start() calls daq.ni.NIDAQmx.DAQmxStartTask
-        
+            % Start the task.
+
             if ~obj.enabled, return, end
             
             status = daq.ni.NIDAQmx.DAQmxStartTask(obj.task_handle);
@@ -102,11 +67,8 @@ classdef CounterOutputRaw < handle
         end
         
         
-        
         function stop(obj)
-        %%stop Stop the task
-        %
-        %   stop() calls daq.ni.NIDAQmx.DAQmxStopTask
+            % Stop the task.
         
             if ~obj.enabled, return, end
             
@@ -115,11 +77,8 @@ classdef CounterOutputRaw < handle
         end
         
         
-        
         function close(obj)
-        %%close Clear the task
-        %
-        %   close() calls daq.ni.NIDAQmx.DAQmxClearTask
+            % Clear the task.
         
             if ~obj.enabled, return, end
             
@@ -130,13 +89,11 @@ classdef CounterOutputRaw < handle
         end
         
         
-        
         function handle_fault(obj, status, loc)
-        %%handle_fault Handle faults
-        %
-        %   handle_fault(STATUS, SRC) prints an message if STATUS is not 0,
-        %   identifying the source of the error with the string SRC. The
-        %   task is cleared.
+            % Handle faults in the task and then clear the task. NOTE AE - This should be private inernal method.
+            %
+            % :param status: The task status, will print a message for status values that are not 0.
+            % :param loc: A string representing the source of the error.
         
             if ~obj.enabled, return, end
             

@@ -1,50 +1,26 @@
 classdef Reward < handle
-% Reward Class for controlling the behaviour of rewards
-%
-%   Reward Properties:
-%       randomize       - whether to randomize the time of reward
-%       min_time        - if using randomization the minimum time after
-%                         activation the reward should be given
-%       max_time        - if using randomization the maximum time after
-%                         activation the reward should be given
-%       duration        - the duration of the reward in milliseconds
-%
-%   Private:
-%       min_duration    - minimum allowable duration in milliseconds (default = 1ms)
-%       max_duration    - maximum allowable duration in milliseconds (default = 500ms)
-%       rand_timer      - timer object controlling random rewards
-%       pump            - object of Pump class sending the pump signal
-%       
-%   Reward Methods:
-%       start_reward       - activate the reward (either give or start timer)
-%       set_duration       - set the duration of the reward
-%       give_reward        - immediately give a reward
+    % Reward class for controlling the behaviour of rewards.
     
     properties
-        
-        randomize
-        min_time
-        max_time
+        randomize % Boolean indicating whether to randomize the time of reward.
+        min_time % If :attr:`randomize` is true, specifies the minimum time after activation that the reward should be given.
+        max_time % If :attr:`randomize` is true, specifies the maximum time after activation that the reward should be given.
     end
     
     properties (SetObservable = true, SetAccess = private)
-    
-        n_rewards_counter = 0;
-        duration
+        n_rewards_counter = 0; % Counter for the number of rewards delivered. 
+        duration % The duration of the reward in milliseconds.
     end
     
     properties (SetAccess = private)
-        
-        min_duration = 1;
-        max_duration = 500;
-        rand_timer
-        
-        total_duration_on = 0;
+        min_duration = 1; % Minimum allowable duration in milliseconds (default = 1ms).
+        max_duration = 500; % Maximum allowable duration in milliseconds (default = 500ms).
+        rand_timer % `timer <https://uk.mathworks.com/help/matlab/ref/timer.html>`_ object controlling random rewards.
+        total_duration_on = 0; % Total duration of all reward pulses in milliseconds.
     end
     
     properties (SetAccess = private, Hidden = true)
-        
-        pump
+        pump % Handle to :class:`rc.dev.Pump` object sending the pump signal.
     end
     
     
@@ -52,9 +28,10 @@ classdef Reward < handle
     methods
         
         function obj = Reward(pump, config)
-        %%obj = REWARD(pump, config)
-        %   Main class for controlling presentation of reward.
-        %       Acts on the pump class.
+            % Constructor for a :class:`rc.actions.Reward` action.
+            %
+            % :param pump: :class:`rc.dev.Pump` object.
+            % :param config: The main configuration file.
         
             obj.pump = pump;
             
@@ -78,11 +55,9 @@ classdef Reward < handle
         
         
         function start_reward(obj, wait_for_reward)
-        %%START_REWARD(obj, wait_for_reward)
-        %   Starts the timing of the reward, or just presents the reward.
-        %       This class should be used for all presentation of rewards.
-        %       If an immediate reward is required set wait_for_reward to
-        %       zero.
+            % Starts the timing of the reward, or just present the reward. This class should be used for all presentation of rewards.
+            %
+            % :param wait_for_reward: Delay in milliseconds before reward given. For immediate reward set to 0.
         
             % interval to wait before presentation of reward
             if ~obj.randomize
@@ -127,12 +102,10 @@ classdef Reward < handle
         
         
         function status = set_duration(obj, val)
-        %%status = SET_DURATION(obj, val)
-        %   Sets the duration of the reward (i.e. pump on)
-        %   Inputs:
-        %       val - value to use for the duration in milliseconds.
-        %   Outputs:
-        %       status - 0 on success, 1 on failure
+            % Sets the :attr:`duration` property.
+            %
+            % :param val: Value to use for the duration in milliseconds.
+            % :return: Status code: 0 for success, 1 for failure.
         
             % return status
             status = 0;
@@ -149,11 +122,9 @@ classdef Reward < handle
     
     
     methods (Access = private)
-        
         function give_reward(obj, ~, ~)
-        %%GIVE_REWARD(obj, ~, ~)
-        %   Set the pump to pulse for obj.duration milliseconds.
-            
+            % Set the pump to pulse for :attr:`duration`.
+        
             obj.pump.pulse(obj.duration);
             
             obj.n_rewards_counter = obj.n_rewards_counter + 1;

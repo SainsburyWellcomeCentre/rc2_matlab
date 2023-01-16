@@ -43,7 +43,7 @@ GainControl::loop() {
 		
 		if ( (gain_up.current_state == HIGH) & (gain_down.current_state == HIGH) ) {
 			this->_target = 1;
-			digitalWrite(GAIN_REPORT_PIN, HIGH);
+			digitalWrite(GAIN_REPORT_PIN, HIGH)
 		}
 		else if ( (gain_up.current_state == HIGH) & (gain_down.current_state == LOW) ) {
 			this->_target = GAIN_UP_VAL;
