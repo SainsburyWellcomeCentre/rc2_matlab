@@ -1,45 +1,28 @@
 classdef ZeroTeensy < handle
-% ZeroTeensy Class for handling digital output sent Teensy to zero position
-% variable.
-%
-%   ZeroTeensy Properties:
-%       enabled         - whether to use this module
-%       chan            - index of the channel in configuration
-%       ni              - handle to the NI object
-%
-%   ZeroTeensy Methods:
-%       zero           - send a trigger pulse to the Teensy
-%
-% On `start` a 500ms pulse is sent to the soloist.
+    % ZeroTeensy class for handling digital output sent Teensy to zero position variable.
 
     properties
-        
-        enabled
+        enabled % Boolean specifying whether the module is used.
     end
     
     properties (SetAccess = private)
-        
-        chan
+        chan % Index of the channel in the configuration structure.
     end
     
     properties (SetAccess = private, Hidden  = true)
-        
-        ni
+        ni % Handle to the :class:`rc.nidaq.NI` object.
     end
-    
     
     
     methods
         
         function obj = ZeroTeensy(ni, config)
-        %%obj = ZEROTEENSY(ni, config)
-        %   Main class for controlling the zeroing of the position as 
-        %   measured on the teensy. The teensy code listens to a digital
-        %   input, and resets its position to zero, when that digital input
-        %   goes high.
-        %       Inputs:
-        %           ni - object for controlling the NI hardware
-        %           config - configuration structure at startup
+            % Constructor for a :class:`rc.actions.ZeroTeensy` action. Controls zeroing
+            % of position as measure on the Teense. The Teensy code listens to a digital
+            % input and resets its position to zero, when that digital input goes high.
+            %
+            % :param ni: :class:`rc.nidaq.NI` object.
+            % :param config: The main configuration file.
             
             obj.enabled = config.zero_teensy.enable;
             if ~obj.enabled, return, end
@@ -55,8 +38,7 @@ classdef ZeroTeensy < handle
         
         
         function zero(obj)
-        %%ZERO(obj)
-        %   Send the signal.
+            % Send a 500ms pulse to tell the Teensy to zero its position.
         
             if ~obj.enabled, return, end
             

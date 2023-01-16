@@ -1,42 +1,24 @@
 classdef Multiplexer < handle
-% Multiplexer Class for handling the behaviour of the multiplexer
-%
-%   Multiplexer Properties:
-%       enabled         - whether to use this module
-%       chan            - index of the channel in digital output configuration
-%       vals            - structure with fields 'teensy' and 'ni'.
-%                         Indicates which input the multiplexer "listens
-%                         to" when the digital input to the mux is high or
-%                         low.
-%       ni              - handle to the NI object
-%
-%   Multiplexer Methods:
-%       listen_to       - whether to listen to the 'teensy' or 'ni' input
-%
-%   TODO: add state property?
+    % Multiplexer class for handling the behaviour of the multiplexer.
 
     properties (SetAccess = private)
-        
-        enabled
-        chan
-        vals
+        enabled % Boolean specifying whether the module is used.
+        chan % Index of the channel in the digital output configuration.
+        vals % Structure with fields ``teensy`` and ``ni``. Indicates which input the multiplexer interfaces which when the digitial input to the mux is high or low.
     end
-    
+
     properties (SetAccess = private, Hidden = true)
-        
-        ni
+        ni % Handle to the :class:`rc.nidaq.NI` object.
     end
     
     
     
     methods
-        
         function obj = Multiplexer(ni, config)
-        %%obj = MULTIPLEXER(ni, config)
-        %   Main class for controlling the multiplexer.
-        %       Inputs:
-        %           ni - object for controlling the NI hardware
-        %           config - configuration structure at startup
+            % Constructor for a :class:`rc.actions.Multiplexer` action.
+            %
+            % :param ni: :class:`rc.nidaq.NI` object.
+            % :param config: The main configuration file.
         
             obj.enabled = config.soloist_input_src.enable;
             if ~obj.enabled, return, end
@@ -63,13 +45,12 @@ classdef Multiplexer < handle
         end
         
         
-        
         function listen_to(obj, src)
-        %%LISTEN_TO(src)
-        %   Which input should we listen to?
-            % src = 'teensy' or 'ni'
+            % Sets the multiplexer interface source.
+            %
+            % :param src: Device to listen to: 'teensy' or 'ni'.
+
             if ~obj.enabled, return, end
-            
             obj.ni.do_toggle(obj.chan, obj.vals.(src));
         end
     end

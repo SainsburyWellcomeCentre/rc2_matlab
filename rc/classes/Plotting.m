@@ -1,70 +1,36 @@
 classdef Plotting < handle
-% Plotting Class for plotting the data being acquired
-%
-%   Plotting Properties:
-%         n_chans           - number of channels being acquired in total
-%         chan_names        - names of the channels being acquired
-%         chans_to_plot     - index of which of these channels to plot
-%         rate              - sampling rate of analog input
-%         fig               - handle to the figure
-%         ax                - handle to all the axes on the figure
-%         lines             - handle to the data plots on the axes
-%         dur               - amount of time to plot at one time, in seconds (size of x-axis)
-%         update_every      - how often to update the plot, in seconds
-%         downsample        - only plot every `downsample` sample points
-%         n_points_true     - if not downsampled, how many points would be plotted on axes
-%         true_t            - not used
-%         plot_t            - time base of downsampled plotted data
-%         n_points_plot     - number of points to plot
-%         current_t         - current time of the last data point
-%         plot_data         - data in the current plot
-%         n_nan_points      - number of points to make nan
-%         ylim              - limits on the y-axis
-%         units             - units of the y-axis
-%         ax_positions      - positions of the axes
-%
-%   Plotting Methods:
-%       delete              - destructor
-%       close_request       - hide the figure, don't close
-%       start_vals          - setup the starting values of the properties
-%       reset_vals          - reset the values of the properties between acquisitions
-%       ni_callback         - callback function which updates the plot during acquisition
+    % Plotting class for plotting the data being acquired.
 
     properties (SetAccess = private)
-        
-        n_chans
-        chan_names
-        chans_to_plot
-        rate
-        fig
-        ax
-        lines
-        
-        dur
-        update_every
-        downsample
-        n_points_true
-        true_t
-        plot_t
-        n_points_plot
-        current_t
-        plot_data
-        n_nan_points
-        ylim
-        units
-        ax_positions
+        n_chans % The total number of channels being acquired.
+        chan_names % Names of the channels being acquired.
+        chans_to_plot % Indices of the channels to plot.
+        rate % Sampling rate of the analog input.
+        fig % Handle to the figure.
+        ax % Handle to all the figure axes.
+        lines % Handle to the data plots on the axes.
+        dur % Time window to plot in a figure, in seconds (size of x-axis).
+        update_every % How often to update the plot, in seconds.
+        downsample % Downsampling factor, only plot every n points.
+        n_points_true % If not downsampled, how many points would be plotted on the axes.
+        true_t % Unused.
+        plot_t % Time base of the downsampled plotted data.
+        n_points_plot % Number of points to plot.
+        current_t % Current time of the last data point.
+        plot_data % Data in the current plot.
+        n_nan_points % Number of points to make NaN.
+        ylim % Y-axis limits.
+        units % Units of the y-axis.
+        ax_positions % Positions of the axes.
     end
     
     
     
     methods
-        
         function obj = Plotting(config)
-        % Plotting
-        %
-        %   Plotting(CONFIG) sets up the object responsible for plotting
-        %   the data during acquistion. CONFIG is the configuration
-        %   structure.
+            % Constructor for a :class:`rc.aux_.Plotting` class.
+            %
+            % :param config: The main configuration structure.
         
             obj.dur = config.plotting.time;
             obj.update_every = config.nidaq.log_every;
@@ -103,7 +69,7 @@ classdef Plotting < handle
         
         
         function delete(obj)
-        %%delete Destructor
+            % Destructor for :class:`rc.aux_.Plotting` class.
         
             close(obj.fig);
             delete(obj.fig);
@@ -112,7 +78,7 @@ classdef Plotting < handle
         
         
         function close_request(obj, ~, ~)
-        %%close_request Hide the figure, don't close
+            % Hide the figure, don't close.
         
             set(obj.fig, 'visible', 'off');
         end
@@ -120,7 +86,7 @@ classdef Plotting < handle
         
         
         function start_vals(obj)
-        %%start_vals Setup the starting values of the properties on object creation
+            % Setup the starting values of the properties on object creation.
         
             obj.n_points_true = obj.dur * obj.rate;
             obj.true_t = (0:obj.n_points_true)/obj.rate;
@@ -145,7 +111,7 @@ classdef Plotting < handle
         
         
         function reset_vals(obj)
-        %%reset_vals Reset the values of the properties between acquisitions
+            % Reset the values of the properties between acquisitions.
         
             set(obj.fig, 'visible', 'on');
             
@@ -160,11 +126,9 @@ classdef Plotting < handle
         
         
         function ni_callback(obj, data)
-        %%ni_callback Callback function which updates the plot during acquisition    
-        %
-        %   ni_callback(DATA) takes the (transformed) data matrix in DATA
-        %   Nx(total # channels) matrix, selects the channels to plot,
-        %   downsamples and adds the data to the plot.
+            % Callback function which updates the plot during acquisition. Selects channels to plot, downsamples and adds data to plot.
+            %
+            % :param data: N x :attr:`n_chan` matrix of data.
         
             current_plot_val = ceil(obj.current_t/obj.downsample);
             n_plot_points = obj.update_every/obj.downsample;

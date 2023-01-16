@@ -1,121 +1,48 @@
 classdef RC2Controller < handle
-% RC2Controller Main class for interfacing with the rollercoaster setup
-%
-%   RC2Controller Properties:
-%         ni                - object of class NI
-%         teensy            - object of class Teensy
-%         soloist           - object of class Soloist
-%         pump              - object of class Pump
-%         reward            - object of class Reward
-%         treadmill         - object of class Treadmill
-%         multiplexer       - object of class Multiplexer
-%         plotting          - object of class Plotting
-%         saver             - object of class Saver
-%         sound             - object of class Sound
-%         position          - object of class Position
-%         zero_teensy       - object of class ZeroTeensy
-%         disable_teensy    - object of class DisableTeensy
-%         trigger_input     - object of class TriggerInput
-%         data_transform    - object of class DataTransform
-%         vis_stim          - object of class VisStim
-%         start_soloist     - object of class StartSoloist
-%         offsets           - object of class Offsets
-%         teensy_gain       - object of class TeensyGain
-%         delayed_velocity  - object of class DelayedVelocity
-%         
-%         data              - data matrix with latest voltage data
-%         tdata             - data matrix with transformed data
-%
-%         acquiring         - true or false, whether we are currently acquiring data
-%         acquiring_preview - true or false, whether we are currently acquiring preview data
-%
-%   RC2Controller Methods:
-%       delete              - destructor
-%       start_preview       - start previewing and displaying analog input data
-%       stop_preview        - stop previewing and displaying analog input data
-%       h_preview_callback  - callback function for previewing data
-%       prepare_acq         - prepare for main acquisiton of data
-%       start_acq           - start acquiring and displaying data
-%       h_callback          - callback function for acquiring data
-%       stop_acq            - stop acquiring and displaying data
-%       play_sound          - play the sound
-%       stop_sound          - stop the sound
-%       give_reward         - give a reward
-%       block_treadmill     - block the treadmill
-%       unblock_treadmill   - unblock the treadmill
-%       pump_on             - turn the pump on
-%       pump_off            - turn the pump off
-%       move_to             - move the linear stage to a position
-%       home_soloist        - home the soloist
-%       ramp_velocity       - ramp the velocity on the soloist
-%       load_velocity_waveform - load a velocity waveform to the NIDAQ
-%       play_velocity_waveform - play the velocity waveform loaded on the NIDAQ
-%       set_save_save_to    - set the save to directory
-%       set_save_prefix     - set the save file prefix
-%       set_save_suffix     - set the save file suffix
-%       set_save_index      - set the save file index
-%       set_save_enable     - enable the saving of files
-%       start_logging_single_trial - save the velocity for a single trial
-%       save_single_trial_config - save config for a single trial
-%       stop_logging_single_trial - stop logging a single trial
-%       reset_pc_position   - set the internal PC position to zero
-%       reset_teensy_position - reset the internal Teensy position to zero
-%       get_position        - get the current position value
-%       set_ni_ao_idle      - set the NI AO to its "idle" voltage
-%       multiplexer_listen_to  - change the source the mux listens to
-%       get_config          - return a cell array with config information to save to a text file
+    % Main class for interfacing with the rollercoaster setup.
 
     properties
-        
-        ni
-        teensy
-        soloist
-        pump
-        reward
-        treadmill
-        multiplexer
-        plotting
-        saver
-        sound
-        position
-        zero_teensy
-        disable_teensy
-        trigger_input
-        data_transform
-        vis_stim
-        start_soloist
-        offsets
-        teensy_gain
-        delayed_velocity
+        ni % :class:`rc.nidaq.NI`
+        teensy % :class:`rc.dev.Teensy`
+        soloist % :class:`rc.dev.Soloist`
+        pump % :class:`rc.dev.Pump`
+        reward % :class:`rc.actions.Reward`
+        treadmill % :class:`rc.actions.Treadmill`
+        multiplexer % :class:`rc.actions.Multiplexer`
+        plotting % :class:`rc.aux_.Plotting`
+        saver % :class:`rc.saving.Saver`
+        sound % :class:`rc.dev.Sound`
+        position % :class:`rc.aux_.Position`
+        zero_teensy % :class:`rc.actions.ZeroTeensy`
+        disable_teensy % :class:`rc.actions.DisableTeensy`
+        trigger_input % :class:`rc.actions.TriggerInput`
+        data_transform % :class:`rc.aux_.DataTransform`
+        vis_stim % :class:`rc.actions.VisStim`
+        start_soloist % :class:`rc.actions.StartSoloist`
+        offsets % :class:`rc.aux_.Offsets`
+        teensy_gain % :class:`rc.actions.TeensyGain`
+        delayed_velocity % :class:`rc.actions.DelayedVelocity`
         lick_detector
     end
-    
+
     properties (SetAccess = private, Hidden = true)
-        
         tic
-        data
-        tdata
+        data % Data matrix with latest voltage data.
+        tdata % Data matrix with transformed data.
     end
     
     properties (SetObservable = true, SetAccess = private, Hidden = true)
-        
-        acquiring = false
-        acquiring_preview = false;
+        acquiring = false % Boolean specifying whether we are currently acquiring data.
+        acquiring_preview = false; % Boolean specifying whether we are currently acquiring preview data.
     end
-    
     
     
     methods
         
         function obj = RC2Controller(config)
-        %%RC2CONTROLLER(CONFIG)
-        %
-        %   RC2Controller(CONFIG)
-        %   Main class for interfacing with the rollercoaster setup.
-        %       CONFIG - configuration structure containing necessary
-        %           parameters for setup.
-        %
-        %   For information on each property see the related class.
+            % Constructor for a :class:`rc.main.RC2Controller` RC2 Controller.
+            %
+            % :param config: The main configuration structure.
         
             obj.tic = tic;
             
@@ -149,7 +76,7 @@ classdef RC2Controller < handle
         
         
         function delete(obj)
-        %%delete Destructor
+            % Destructor for :class:`rc.main.RC2Controller`.
         
             delete(obj.plotting);
             
@@ -161,11 +88,8 @@ classdef RC2Controller < handle
         end
         
         
-        
         function start_preview(obj)
-        %%start_preview Start previewing and displaying analog input data
-        %
-        %   start_preview() starts preview of analog input data
+            % Start previewing and displaying analog input data.
         
             % if we are already acquiring don't do anything.
             if obj.acquiring_preview || obj.acquiring; return; end
@@ -182,12 +106,8 @@ classdef RC2Controller < handle
         end
         
         
-        
         function stop_preview(obj)
-        %%stop_preview Stop previewing and displaying analog input data
-        %
-        %   stop_preview() stops the preview of analog input data if it is
-        %   previewing
+            % Stop previewing and displaying analog input data.
         
             % if we are not acquiring preview don't do anything.
             if ~obj.acquiring_preview; return; end
@@ -200,11 +120,8 @@ classdef RC2Controller < handle
         end
         
         
-        
         function h_preview_callback(obj, ~, evt)
-        %%h_preview_callback Callback function for previewing data
-        %
-        %   h_preview_callback() callback function during preview
+            % Callback function for previewing data.
         
             % store the current data
             obj.data = evt.Data;
@@ -217,18 +134,10 @@ classdef RC2Controller < handle
         end
         
         
-        
         function prepare_acq(obj)
-        %%prepare_acq Prepare for main acquisiton of data
-        %
-        %   prepare_acq() prepares for main acquisition of data including
-        %   setup of files in which to save data and config information,
-        %   preparation of the nidaq for acquisition and resetting of
-        %   display
-        %
-        %   TODO: this should be called by start_acq()
-        %
-        %   See also: Saver.setup_logging, NI.prepare_acq, Plotting
+            % Prepare for main acquisiton of data.
+            % Setup files in which to save data and config information, prepare nidaq for acquisition and reset display.
+            % TODO: this should be called by start_acq()
         
             if obj.acquiring || obj.acquiring_preview
                 error('already acquiring data')
@@ -242,13 +151,8 @@ classdef RC2Controller < handle
         end
         
         
-        
         function start_acq(obj)
-        %%start_acq Start acquiring and displaying data
-        %
-        %   start_acq() start main acquisition and saving of data
-        %
-        %   See also: NI
+            % Start acquiring and displaying data.
         
             % if already acquiring don't do anything
             if obj.acquiring || obj.acquiring_preview; return; end
@@ -259,20 +163,10 @@ classdef RC2Controller < handle
         end
         
         
-        
         function h_callback(obj, ~, evt)
-        %%h_callback Callback function for acquiring data
-        %
-        %   h_callback() callback for main acquisition. This saves the
-        %   data, transforms the data into sensible units, plots the data
-        %   and integrates a velocity trace to estimate the position of the
-        %   stage.
-        %
-        %   See also: Saver, DataTransform, 
-        %
-        %   TODO: currently passes the first column of the data matrix
-        %   to the Position class to estimate position. This will break if
-        %   the first column is not a velocity trace
+            % Callback function for acquiring data.
+            % Responsible for saving data, transforming into sensible units, plotting the data, integrating velocity trace to estimate position of the stage.
+            % TODO: Currently passes the first column of the data matrix to the Position class to estimate position. This will break if first column is not a velocity trace.
         
             % store the data so others can use it
             obj.data = evt.Data;
@@ -292,13 +186,8 @@ classdef RC2Controller < handle
         end
         
         
-        
         function stop_acq(obj)
-        %%stop_acq Stop acquiring and displaying data
-        %
-        %   stop_acq() stops the main acquisiton
-        %
-        %   See also: start_acq
+            % Stop acquiring and displaying data.
         
             if ~obj.acquiring; return; end
             if obj.acquiring_preview; return; end
@@ -309,50 +198,30 @@ classdef RC2Controller < handle
         end
         
         
-        
         function play_sound(obj)
-        %%play_sound Play the sound
-        %
-        %   play_sound()
-        %
-        %   See also: Sound
+            % Play the defined controller sound.
         
             obj.sound.play()
         end
         
         
-        
         function stop_sound(obj)
-        %%stop_sound Stop the sound
-        %
-        %   stop_sound()
-        %
-        %   See also: Sound
+            % Stop the controller defined sound.
         
             obj.sound.stop()
         end
         
         
-        
         function give_reward(obj)
-        %%give_reward Give a reward
-        %
-        %   give_reward()
-        %
-        %   See also: Reward
+            % Give a reward.
         
-%             obj.reward.give_reward();
+            % obj.reward.give_reward();
             obj.reward.start_reward(0)
         end
         
         
-        
         function block_treadmill(obj, gear_mode)
-        %%block_treadmill Block the treadmill
-        %
-        %   block_treadmill()
-        %
-        %   See also: Treadmill
+            % Block the treadmill.
         
             VariableDefault('gear_mode', 'off');
             
@@ -366,13 +235,8 @@ classdef RC2Controller < handle
         end
         
         
-        
         function unblock_treadmill(obj, gear_mode)
-        %%unblock_treadmill Unblock the treadmill
-        %
-        %   unblock_treadmill()
-        %
-        %   See also: Treadmill
+            % Unblock the treadmill.
         
             VariableDefault('gear_mode', 'off');
             
@@ -386,44 +250,26 @@ classdef RC2Controller < handle
         end
         
         
-        
         function pump_on(obj)
-        %%pump_on Turn the pump on
-        %
-        %   pump_on()
-        %
-        %   See also: Pump
+            % Turn the pump on.
         
             obj.pump.on()
         end
-        
-        
+         
         
         function pump_off(obj)
-        %%pump_off Turn the pump off
-        %
-        %   pump_off()
-        %
-        %   See also: Pump
+            % Turn the pump off.
         
             obj.pump.off()
         end
         
         
-        
         function move_to(obj, pos, speed, leave_enabled)
-        %%move_to Move the linear stage to a position
-        %
-        %   move_to(POSITION, SPEED, LEAVE_ENABLED) moves the linear stage to
-        %   the position POSITION (units are in Soloist controller units,
-        %   which for us has always been mm), at speed SPEED (also units in
-        %   controller units, for us this has been mm/s). LEAVE_ENABLED is
-        %   a logical, true or false, and determines whether to leave the
-        %   stage enabled after the move has been made (true) or disable
-        %   the stage after the move (false). See Soloist class for more
-        %   information.
-        %
-        %   See also: Soloist.move_to
+            % Move the linear stage to a position.
+            %
+            % :param pos: The position to move to (in Soloist controller units).
+            % :param speed: Movement speed (in Soloist controller units).
+            % :param leave_enabled: Boolean specifying whether to leave the stage enabled after the move has been made (true) or disable after the move (false).
         
             VariableDefault('speed', obj.soloist.default_speed);
             VariableDefault('leave_enabled', false);
@@ -432,30 +278,19 @@ classdef RC2Controller < handle
         end
         
         
-        
         function home_soloist(obj)
-        %%home_soloist Home the soloist
-        %
-        %   home_soloist() 
-        %
-        %   See also: Soloist.home
+            % Home the Soloist.
         
             obj.soloist.home();
         end
         
         
-        
         function ramp_velocity(obj)
-        %%ramp_velocity Ramp the velocity on the soloist
-        %
-        %   ramp_velocity() creates a 1s linear ramped waveform from idle_offset(1)
-        %   to (idle_offset(1) + soloist.v_per_cm_per_s) and loads and
-        %   plays this on the analog output. (See config for description of
-        %   `idle_offset` and `v_per_cm_per_s`).
-        %
-        %   The final voltage will remain on the analog output at the end
-        %   of the ramp, so the user should be careful to reset the analog
-        %   output if this is used.
+            % Ramp the velocity on the soloist.
+            %
+            % Creates a 1s linear ramped waveform from :meth:`rc.nidaq.AnalogOutput.idle_offset` to `rc.nidaq.AnalogOutput.idle_offset` + :attr:`rc.dev.Soloist.v_per_cm_per_s`
+            % and loads + plays this on the analog output. 
+            % The final voltage will remain on the analog output at the end of the ramp, so user should be careful to reset the analog output if this is used.
         
             % create a 1s ramp to 10mm/s
             rate = obj.ni.ao_rate;
@@ -471,19 +306,10 @@ classdef RC2Controller < handle
         end
         
         
-        
         function load_velocity_waveform(obj, waveform)
-        %%load_velocity_waveform Load a velocity waveform to the NIDAQ
-        %
-        %   load_velocity_waveform(WAVEFORM) writes a waveform to analog
-        %   output ready to be output. 
-        %
-        %   If there is a delayed copy to be output on the second analog
-        %   output, the waveform will be duplicated with the
-        %   DelayedVelocity class. Thus, in this case the waveform provided
-        %   here should be single dimensional. 
-        %
-        %   See also: play_velocity_waveform, NI.ao_write, DelayedVelocity
+            % Load a velocity waveform to the nidaq.
+            % If there is a delayed copy to be output on the second analog output, the waveform will be duplicated with the :class:`rc.actions.DelayedVelocity` class.
+            % In this case, the waveform provided here should be single dimensional. 
         
             if obj.delayed_velocity.enabled
                 waveform = obj.delayed_velocity.create_waveform(waveform);
@@ -492,63 +318,39 @@ classdef RC2Controller < handle
             % write a waveform (in V)
             obj.ni.ao_write(waveform);
         end
-        
-        
+    
         
         function play_velocity_waveform(obj)
-        %%play_velocity_waveform Play the velocity waveform loaded on the NIDAQ
-        %
-        %   play_velocity_waveform() plays any waveforms which have been
-        %   written to the analog outputs.
-        %
-        %   See also: load_velocity_waveform, NI
+            % Play the velocity waveform loaded on the nidaq.
         
             obj.ni.ao_start();
         end
         
         
-        
         function set_save_save_to(obj, str)
-        %%set_save_save_to Set the save to directory
-        %
-        %   set_save_save_to(STRING) sets the main directory in which to
-        %   save data. .bin files are saved in the form:
-        %
-        %       <save_to_dir>\<prefix>\<prefix_suffix_index>.bin
-        %
-        %   See also: set_save_prefix, set_save_suffix, set_save_index, Saver
+            % Set the save to directory.
+            %
+            % :param str: The main directory in which to save data. .bin files are saved in the form <save_to_dir>\<prefix>\<prefix_suffix_index>.bin.
         
             if obj.acquiring; return; end
             obj.saver.set_save_to(str)
         end
         
         
-        
         function set_save_prefix(obj, str)
-        %%set_save_prefix Set the save file prefix
-        %
-        %   set_save_prefix(STRING)  sets the prefix of the files to save
-        %   to. .bin files are saved in the form:
-        %
-        %       <save_to_dir>\<prefix>\<prefix_suffix_index>.bin
-        %
-        %   See also: set_save_save_to, set_save_suffix, set_save_index, Saver
+            % Set the save file prefix
+            %
+            % :param str: The save file prefix. .bin files are saved in the form <save_to_dir>\<prefix>\<prefix_suffix_index>.bin.
         
             if obj.acquiring; return; end
             obj.saver.set_prefix(str)
         end
         
         
-        
         function set_save_suffix(obj, str)
-        %%set_save_suffix Set the save file suffix
-        %
-        %   set_save_suffix(STRING) sets the suffix of the files to save
-        %   to. .bin files are saved in the form:
-        %
-        %       <save_to_dir>\<prefix>\<prefix_suffix_index>.bin
-        %
-        %   See also: set_save_save_to, set_save_prefix, set_save_index, Saver
+            % Set the save file suffix.
+            %
+            % :param str: The save file suffix. .bin files are saved in the form <save_to_dir>\<prefix>\<prefix_suffix_index>.bin.
         
             if obj.acquiring; return; end
             obj.saver.set_suffix(str)
@@ -557,14 +359,9 @@ classdef RC2Controller < handle
         
         
         function set_save_index(obj, val)
-        %%set_save_index Set the save file index
-        %
-        %   set_save_index(VALUE) sets the index of the files to save
-        %   to. .bin files are saved in the form:
-        %
-        %       <save_to_dir>\<prefix>\<prefix_suffix_index>.bin
-        %
-        %   See also: set_save_save_to, set_save_prefix, set_save_suffix, Saver
+            % Set the save file index.
+            %
+            % :param val: The save file index. .bin files are saved in the form <save_to_dir>\<prefix>\<prefix_suffix_index>.bin.
         
             if obj.acquiring; return; end
             obj.saver.set_index(val)
@@ -572,29 +369,20 @@ classdef RC2Controller < handle
         
         
         function set_save_enable(obj, val)
-        %%set_save_enable Enable the saving of files
-        %
-        %   set_save_enable(VALUE) sets whether to save data on main
-        %   acquisition of not. VALUE is a boolean, true to save, false
-        %   don't save.
-        %
-        %   See also: Saver
+            % Enable the saving of files.
+            %
+            % :param val: Boolean specifying whether to save (true) or not (false).
         
             if obj.acquiring; return; end
             obj.saver.set_enable(val)
         end
         
         
-        
         function fid = start_logging_single_trial(obj, fname)
-        %%start_logging_single_trial Save the velocity for a single trial
-        %
-        %   FID = start_logging_single_trial(FILENAME) sets up files for
-        %   simultaneous logging of single trials, or short segments of the
-        %   main acquisition. FILENAME is the full path to the file in
-        %   which to log the data.
-        %
-        %   See also: stop_logging_single_trial, Saver.start_logging_single_trial
+            % Save the velocity for a single trial.
+            %
+            % :param fname: Full path to the file in which to log the data.
+            % :return: Integer file identifier.
         
             % open file for saving
             fid = obj.saver.start_logging_single_trial(fname);
@@ -606,79 +394,50 @@ classdef RC2Controller < handle
         end
         
         
-        
         function save_single_trial_config(obj, cfg)
-        %%save_single_trial_config Save config for a single trial
-        %
-        %   save_single_trial_config(CONFIG_STRUCT) appends configuration
-        %   information to the *main* configuration file for the
-        %   acquisition. CONFIG_STRUCT is 
-        %
-        %   See also: Saver, Saver.append_config
+            % Save config for a single trial.
+            %
+            % :param cfg: Configuration information to the append to the main configuration file for acquisition.
         
             obj.saver.append_config(cfg);
         end
         
         
-        
         function stop_logging_single_trial(obj)
-        %%stop_logging_single_trial Stop logging a single trial
-        %
-        %   stop_logging_single_trial() closes the files to do with logging
-        %   single trial/short segments of the main acquisition.
-        %
-        %   See also: start_logging_single_trial,
-        %   Saver.stop_logging_single_trial
+            % Stop logging a single trial. Closes files associated with logging single trial / short segments of the main acquisition.
         
             obj.saver.stop_logging_single_trial()
         end
         
         
-        
         function reset_pc_position(obj)
-        %%reset_pc_position 
+            % Reset position. Not in use.
+
             %obj.position.reset();
         end
         
         
-        
         function reset_teensy_position(obj)
-        %%reset_teensy_position Reset the internal Teensy position to zero
-        %
-        %   reset_teensy_position() sends a trigger to the Teensy to reset
-        %   the internal position variable to zero.
-        %
-        %   See also: ZeroTeensy
+            % Reset the internal Teensy position to zero.
         
             obj.zero_teensy.zero();
         end
         
         
-        
         function pos = get_position(obj)
-        %%get_position Get the current position value
-        %
-        %   get_position() returns the current position value from the
-        %   Position class.
-        %
-        %   See also: Position
+            % Get the current position value from the :attr:`position` object.
+            %
+            % :return: Position value.
         
             pos = obj.position.position;
         end
         
         
-        
         function set_ni_ao_idle(obj, solenoid_state, gear_mode)
-        %%set_ni_ao_idle Set the NI AO to its "idle" voltage
-        %
-        %   set_ni_ao_idle(SOLENOID_STATE, GEAR_MODE) given the state of
-        %   the setup apply an `idle_offset` on the analog output.
-        %
-        %   SOLENOID_STATE gives the state of the solenoid
-        %   ('up' or 'down') and GEAR_MODE whether the Soloist is in gear
-        %   mode or not ('on' or 'off').
-        %
-        %   See also: Offsets
+            % Set the :attr:`ni` AO to its idle voltage.
+            %
+            % :param solenoid_state: The current state of the solenoid ('up' or 'down').
+            % :param gear_mode: The current Soloist gear mode ('on' or 'off').
         
             % Given the state of the setup, provided by arguments,
             % get the *EXPECTED* offset to apply on the NI AO, to prevent
@@ -695,36 +454,29 @@ classdef RC2Controller < handle
         
         
         function val = ni_ai_rate(obj)
+            % Get the sampling rate for the analog input channels.
+            %
+            % :return: The sampling rate for the analog input channels.
+            
             val = obj.ni.ai_rate();
         end
         
         
         
         function multiplexer_listen_to(obj, src)
-        %%multiplexer_listen_to Change the source the mux listens to
-        %
-        %   multiplexer_listen_to(SOURCE) changes the output of the
-        %   multiplexer from one input to the other. SOURCE is a string
-        %   which currently is either 'teensy' or 'ni'.
-        %
-        %   See also: Multiplexer
+            % Change the source the multiplexer listens to.
+            %
+            % :param src: The source that should be listened to ('teensy' or 'ni').
         
             % switch the digital output
             obj.multiplexer.listen_to(src);
         end
         
         
-        
         function cfg = get_config(obj)
-        %%get_config Return a cell array with config information to save to a text file
-        %
-        %   CONFIG = get_config() returns a Nx2 cell array in CONFIG
-        %   containing the configuration information of the setup. Each row
-        %   of the cell array is of the form {<key>, <value>} giving the
-        %   configuration of a parameter <key> in <value>. This is passed
-        %   to the Saver class for saving.
-        %
-        %   See also: Saver, Saver.save_config
+            % Get a cell array with config information to save to a text file
+            %
+            % :return: An Nx2 cell array containing the configuration information of the setup. Each row of the cells array is of the form {<key>, <value>} giving the configuration of a parameter. This is passed to the :attr:`saver` for saving.
         
             [~, git_version]        = system(sprintf('git --git-dir=%s rev-parse HEAD', ...
                                                             obj.saver.git_dir));

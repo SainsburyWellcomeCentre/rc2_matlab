@@ -1,34 +1,18 @@
 classdef TriggerInput < handle
-% TriggerInput Class for handling digital input sent from Teensy and
-% Soloists
-%
-%   TriggerInput Properties:
-%       enabled         - whether to use this module
-%       teensy_channel  - index of the teensy channel in digital input configuration
-%       soloist_channel - index of the soloist channel in digital input configuration
-%       current_channel - current channel to listen to
-%       ni              - handle to the NI object
-%
-%   TriggerInput Methods:
-%       listen_to       - set which channel to listen to
-%       read            - read the state of the channel currently listened to
+    % TriggerInput class for handling digital input sent from Teensy and Soloists.
 
-    
     properties
-        
-        enabled
+        enabled % Boolean specifying whether the module is used.
     end
     
     properties (SetAccess = private)
-        
-        teensy_channel
-        soloist_channel
-        current_channel
+        teensy_channel % Index of the Teensy channel in the digital input configuration.
+        soloist_channel % Index of the Soloist channel in the digital input configuration.
+        current_channel % Current channel to listen to.
     end
     
     properties (SetAccess = private, Hidden = true)
-        
-        ni
+        ni % Handle to the :class:`rc.nidaq.NI` object.
     end
     
     
@@ -36,10 +20,10 @@ classdef TriggerInput < handle
     methods
         
         function obj = TriggerInput(ni, config)
-        %%obj = TRIGGERINPUT(ni, config)
-        %   There is a single trigger input class which listens to either
-        %   of two digital inputs. We could potentially set up two separate
-        %   objects, but deal with both in the same object.
+            % Constructor for a :class:`rc.actions.TriggerInput` action.
+            %
+            % :param ni: :class:`rc.nidaq.NI` object.
+            % :param config: The main configuration file.
         
             obj.enabled = config.trigger_input.enable;
             if ~obj.enabled, return, end
@@ -58,10 +42,10 @@ classdef TriggerInput < handle
         
         
         function listen_to(obj, src)
-        %%LISTEN_TO(obj, src)
-        %   Set the current channel to listen to one of the two inputs.
-        %   This could be made more generic.
-        
+            % Set the current channel to listen to one of the two inputs.
+            %
+            % :param src: The channel to listen to: 'teensy' or 'soloist'.
+
             if ~obj.enabled, return, end
             
             if strcmp(src, 'teensy')
@@ -74,9 +58,9 @@ classdef TriggerInput < handle
         
         
         function data = read(obj)
-        %%data = READ(obj)
-        %   Read the state of the channel we are currently listening to.
-        %       data is a boolean value, true (high) or false (low)
+            % Read the state of the channel currently being listened to.
+            %
+            % :return: State of the channel as boolean value: true (high) or false (low).
         
             if ~obj.enabled, return, end
             data = obj.ni.di.read_channel(obj.current_channel);
