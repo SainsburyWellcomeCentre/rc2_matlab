@@ -2,7 +2,7 @@
 #define RC_SOLOIST_H
 
 #include "C:\Program Files (x86)\Aerotech\Soloist\CLibrary\Include\Soloist.h"
-#include options.h
+#include "options.h"
 
 // Common functions in rc_shared.c
 void cleanup(SoloistHandle *handles, DWORD handle_count);
