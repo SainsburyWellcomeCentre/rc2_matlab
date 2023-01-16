@@ -20,7 +20,7 @@ classdef Reward < handle
     end
     
     properties (SetAccess = private, Hidden = true)
-        pump % Handle to :class:`rc.dev.Pump` object sending the pump signal.
+        pump % Handle to :class:`rc.classes.Pump` object sending the pump signal.
     end
     
     
@@ -28,9 +28,9 @@ classdef Reward < handle
     methods
         
         function obj = Reward(pump, config)
-            % Constructor for a :class:`rc.actions.Reward` action.
+            % Constructor for a :class:`rc.classes.Reward` action.
             %
-            % :param pump: :class:`rc.dev.Pump` object.
+            % :param pump: :class:`rc.classes.Pump` object.
             % :param config: The main configuration file.
         
             obj.pump = pump;

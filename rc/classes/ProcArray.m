@@ -1,14 +1,14 @@
 classdef ProcArray < handle
-    % ProcArray class for storing a set of process objects :class:`rc.aux_.ProcHandler`.
+    % ProcArray class for storing a set of process objects :class:`rc.classes.ProcHandler`.
     
     properties (SetAccess = private)
-        processes = {} % Cell array of :class:`rc.aux_.ProcHandler` objects.
+        processes = {} % Cell array of :class:`rc.classes.ProcHandler` objects.
     end
     
     
     methods    
         function obj = ProcArray()
-            % Constructor for a :class:`rc.aux_.ProcArray` class.
+            % Constructor for a :class:`rc.classes.ProcArray` class.
             %
             % TODO - Along with ProcHandler, want to find a better solution.
         end
@@ -18,7 +18,7 @@ classdef ProcArray < handle
         function add_process(obj, proc)
             % Adds a process to the :attr:`processes` array.
             %
-            % :param proc: The :class:`rc.aux_.ProcHandler` to add.
+            % :param proc: The :class:`rc.classes.ProcHandler` to add.
         
             obj.processes{end+1} = proc;
         end

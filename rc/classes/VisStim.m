@@ -17,7 +17,7 @@ classdef VisStim < handle
     
     methods
         function obj = VisStim(ni, config)
-            % Constructor for a :class:`rc.actions.VisStim` action.
+            % Constructor for a :class:`rc.classes.VisStim` action.
             %
             % :param ni: :class:`rc.nidaq.NI` object.
             % :param config: The main configuration file.

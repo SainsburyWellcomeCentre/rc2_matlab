@@ -24,7 +24,7 @@ classdef Coupled < handle
     end
     
     properties (Hidden = true)
-        ctl % :class:`rc.main.Controller` object controller.
+        ctl % :class:`rc.main.RC2Controller` object controller.
     end
 
     
@@ -32,7 +32,7 @@ classdef Coupled < handle
         function obj = Coupled(ctl, config)
             % Constructor for a :class:`rc.prot.Coupled` protocol.
             %
-            % :param ctl: :class:`rc.main.Controller` object for interfacing with the stage.
+            % :param ctl: :class:`rc.main.RC2Controller` object for interfacing with the stage.
             % :param config: The main configuration file.
         
             obj.ctl = ctl;

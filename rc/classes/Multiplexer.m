@@ -15,7 +15,7 @@ classdef Multiplexer < handle
     
     methods
         function obj = Multiplexer(ni, config)
-            % Constructor for a :class:`rc.actions.Multiplexer` action.
+            % Constructor for a :class:`rc.classes.Multiplexer` action.
             %
             % :param ni: :class:`rc.nidaq.NI` object.
             % :param config: The main configuration file.

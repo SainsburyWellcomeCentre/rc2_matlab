@@ -32,7 +32,7 @@ classdef DelayedVelocity < handle
     
     methods
         function obj = DelayedVelocity(ni, config)
-            % Constructor for a :class:`rc.actions.DelayedVelocity` action.
+            % Constructor for a :class:`rc.classes.DelayedVelocity` action.
             %
             % :param ni: :class:`rc.nidaq.NI` object.
             % :param config: The main configuration structure.

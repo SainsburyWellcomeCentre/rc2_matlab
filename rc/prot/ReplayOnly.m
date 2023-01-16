@@ -30,7 +30,7 @@ classdef ReplayOnly < handle
     end
     
     properties (Hidden = true)
-        ctl % :class:`rc.main.Controller` object controller.
+        ctl % :class:`rc.main.RC2Controller` object controller.
     end
     
     
@@ -39,7 +39,7 @@ classdef ReplayOnly < handle
         function obj = ReplayOnly(ctl, config, fname)
             % Constructor for a :class:`rc.prot.StageOnly` protocol.
             %
-            % :param ctl: :class:`rc.main.Controller` object for interfacing with the stage.
+            % :param ctl: :class:`rc.main.RC2Controller` object for interfacing with the stage.
             % :param config: The main configuration file.
             % :param fname: Full path to the .bin file from which to read the waveform data to output on the analog outputs. 
             

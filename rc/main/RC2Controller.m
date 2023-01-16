@@ -3,25 +3,25 @@ classdef RC2Controller < handle
 
     properties
         ni % :class:`rc.nidaq.NI`
-        teensy % :class:`rc.dev.Teensy`
-        soloist % :class:`rc.dev.Soloist`
-        pump % :class:`rc.dev.Pump`
-        reward % :class:`rc.actions.Reward`
-        treadmill % :class:`rc.actions.Treadmill`
-        multiplexer % :class:`rc.actions.Multiplexer`
-        plotting % :class:`rc.aux_.Plotting`
-        saver % :class:`rc.saving.Saver`
-        sound % :class:`rc.dev.Sound`
-        position % :class:`rc.aux_.Position`
-        zero_teensy % :class:`rc.actions.ZeroTeensy`
-        disable_teensy % :class:`rc.actions.DisableTeensy`
-        trigger_input % :class:`rc.actions.TriggerInput`
-        data_transform % :class:`rc.aux_.DataTransform`
-        vis_stim % :class:`rc.actions.VisStim`
-        start_soloist % :class:`rc.actions.StartSoloist`
-        offsets % :class:`rc.aux_.Offsets`
-        teensy_gain % :class:`rc.actions.TeensyGain`
-        delayed_velocity % :class:`rc.actions.DelayedVelocity`
+        teensy % :class:`rc.classes.Teensy`
+        soloist % :class:`rc.classes.Soloist`
+        pump % :class:`rc.classes.Pump`
+        reward % :class:`rc.classes.Reward`
+        treadmill % :class:`rc.classes.Treadmill`
+        multiplexer % :class:`rc.classes.Multiplexer`
+        plotting % :class:`rc.classes.Plotting`
+        saver % :class:`rc.classes.Saver`
+        sound % :class:`rc.classes.Sound`
+        position % :class:`rc.classes.Position`
+        zero_teensy % :class:`rc.classes.ZeroTeensy`
+        disable_teensy % :class:`rc.classes.DisableTeensy`
+        trigger_input % :class:`rc.classes.TriggerInput`
+        data_transform % :class:`rc.classes.DataTransform`
+        vis_stim % :class:`rc.classes.VisStim`
+        start_soloist % :class:`rc.classes.StartSoloist`
+        offsets % :class:`rc.classes.Offsets`
+        teensy_gain % :class:`rc.classes.TeensyGain`
+        delayed_velocity % :class:`rc.classes.DelayedVelocity`
         lick_detector
     end
 
@@ -288,7 +288,7 @@ classdef RC2Controller < handle
         function ramp_velocity(obj)
             % Ramp the velocity on the soloist.
             %
-            % Creates a 1s linear ramped waveform from :meth:`rc.nidaq.AnalogOutput.idle_offset` to `rc.nidaq.AnalogOutput.idle_offset` + :attr:`rc.dev.Soloist.v_per_cm_per_s`
+            % Creates a 1s linear ramped waveform from :meth:`rc.nidaq.AnalogOutput.idle_offset` to `rc.nidaq.AnalogOutput.idle_offset` + :attr:`rc.classes.Soloist.v_per_cm_per_s`
             % and loads + plays this on the analog output. 
             % The final voltage will remain on the analog output at the end of the ramp, so user should be careful to reset the analog output if this is used.
         
@@ -308,7 +308,7 @@ classdef RC2Controller < handle
         
         function load_velocity_waveform(obj, waveform)
             % Load a velocity waveform to the nidaq.
-            % If there is a delayed copy to be output on the second analog output, the waveform will be duplicated with the :class:`rc.actions.DelayedVelocity` class.
+            % If there is a delayed copy to be output on the second analog output, the waveform will be duplicated with the :class:`rc.classes.DelayedVelocity` class.
             % In this case, the waveform provided here should be single dimensional. 
         
             if obj.delayed_velocity.enabled

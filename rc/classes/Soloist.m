@@ -19,7 +19,7 @@ classdef Soloist < handle
     
     properties (SetAccess = private, Hidden = true)
         dir % Directory containing the executable files carrying out the Soloist commands.
-        proc_array % :class:`rc.aux_.ProcArray`
+        proc_array % :class:`rc.classes.ProcArray`
         h_abort % Handle to the process controlling rapid aborting of the currently executing Soloist command.
         default_speed % Default speed to move the stage.
     end
@@ -27,7 +27,7 @@ classdef Soloist < handle
     
     methods
         function obj = Soloist(config)
-            % Constructor for a :class:`rc.dev.Soloist` device.
+            % Constructor for a :class:`rc.classes.Soloist` device.
             % Interfaces with the Soloist controller via separate, 
             % standalone executable programs stored in the directory `config.soloist.dir`.
             %
@@ -69,7 +69,7 @@ classdef Soloist < handle
         
         
         function delete(obj)
-            % Destructor for :class:`rc.dev.Soloist` device.
+            % Destructor for :class:`rc.classes.Soloist` device.
 
             obj.abort()
         end
@@ -127,7 +127,7 @@ classdef Soloist < handle
         function proc = communicate(obj)
             % Communicates and resets the connection with the Soloist controller.
             %
-            % :return: :class:`rc.aux_.ProcHandler` object, handle to the process.
+            % :return: :class:`rc.classes.ProcHandler` object, handle to the process.
         
             if ~obj.enabled, return, end
             
@@ -191,7 +191,7 @@ classdef Soloist < handle
             % :param pos: The position to move to in Soloist controller units (usually mm). Must be within the limits specified by the :attr:`max_limits` property.
             % :param speed: The speed to move in Soloist controller units (usually mm/s). Must be within 10 and 500 (hard-coded values).
             % :param end_enabled: Boolean specifying whether to leave the stage enabled (true) or disabled (false) after the move. 
-            % :return: :class:`rc.aux_.ProcHandler` object, handle to the process.
+            % :return: :class:`rc.classes.ProcHandler` object, handle to the process.
         
             % set defaults
             VariableDefault('speed', obj.default_speed);
@@ -346,7 +346,7 @@ classdef Soloist < handle
             % :param back_pos: Limit of the backward position. Should be in soloist controller units and within the bounds specified by :attr:`max_limits`.
             % :param forward_pos: Limit of the forward position. Should be in soloist controller units and within the bounds specified by :attr:`max_limits`.
             % :param wait_for_trigger: Optional boolean (default true) specifying whether Soloist should wait for trigger before going into gear mode and listening to the voltage input.
-            % :return: :class:`rc.aux_.ProcHandler` object, handle to the process.
+            % :return: :class:`rc.classes.ProcHandler` object, handle to the process.
             %
             % ``forward_pos`` must be < ``back_pos``
         
@@ -405,7 +405,7 @@ classdef Soloist < handle
             %
             % :param back_pos: Limit of the backward position. Should be in soloist controller units and within the bounds specified by :attr:`max_limits`.
             % :param forward_pos: Limit of the forward position. Should be in soloist controller units and within the bounds specified by :attr:`max_limits`.
-            % :return: :class:`rc.aux_.ProcHandler` object, handle to the process.
+            % :return: :class:`rc.classes.ProcHandler` object, handle to the process.
             %
             % ``forward_pos`` must be < ``back_pos``
         
@@ -464,7 +464,7 @@ classdef Soloist < handle
             %
             % :param back_pos: Limit of the backward position. Should be in soloist controller units and within the bounds specified by :attr:`max_limits`.
             % :param forward_pos: Limit of the forward position. Should be in soloist controller units and within the bounds specified by :attr:`max_limits`.
-            % :return: :class:`rc.aux_.ProcHandler` object, handle to the process.
+            % :return: :class:`rc.classes.ProcHandler` object, handle to the process.
             %
             % ``forward_pos`` must be < ``back_pos``
 

@@ -19,7 +19,7 @@ classdef DataTransform < handle
     methods
         
         function obj = DataTransform(config)
-            % Constructor for a :class:`rc.aux_.DataTransform` transformer.
+            % Constructor for a :class:`rc.classes.DataTransform` transformer.
             % Stores information for and performs a transformation of voltage
             % signals coming into the NIDAQ to useful scales (e.g. V to cm/s).
             %

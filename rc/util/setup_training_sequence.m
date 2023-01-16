@@ -1,7 +1,7 @@
 function seq = setup_training_sequence(ctl, closed_loop, reward_position, distance, back_distance, n_loops, forward_only)
     % Sets up a protocol sequence for training. This is a standard sequence so contained in the main program.
     %
-    % :param ctl: A :class:`rc.main.Controller` object.
+    % :param ctl: A :class:`rc.main.RC2Controller` object.
     % :param closed_loop: Boolean specifying whether to run as closed-loop (true) or open-loop (false).
     % :param reward_position: Position along the linear stage at which to stop trial and deliver reward.
     % :param distance: Distance to start from reward position.

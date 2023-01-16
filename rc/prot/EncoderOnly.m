@@ -14,7 +14,7 @@ classdef EncoderOnly < handle
         log_trial = false % Boolean specifying whether to log the velocity data for this trial.
         log_fname = '' % Name of the file in which to log the single trial data.
         
-        integrate_using = 'pc' % Indicates whether to use the position from the PC via a :class:`rc.aux_.Position` class or from the Teensy to determine position. If using 'teensy' the trial will wait for a trigger from the Teensy before stopping. Otherwise it listens to the `position` variable of the :class:`rc.aux_.Position` to determine trial end. 'teensy' or 'pc'.
+        integrate_using = 'pc' % Indicates whether to use the position from the PC via a :class:`rc.classes.Position` class or from the Teensy to determine position. If using 'teensy' the trial will wait for a trigger from the Teensy before stopping. Otherwise it listens to the `position` variable of the :class:`rc.classes.Position` to determine trial end. 'teensy' or 'pc'.
     end
     
     properties (SetAccess = private)
@@ -23,7 +23,7 @@ classdef EncoderOnly < handle
     end
     
     properties (Hidden = true)
-        ctl % :class:`rc.main.Controller` object controller.
+        ctl % :class:`rc.main.RC2Controller` object controller.
     end
     
     properties (Dependent = true)
@@ -37,7 +37,7 @@ classdef EncoderOnly < handle
         function obj = EncoderOnly(ctl, config)
             % Constructor for a :class:`rc.prot.EncoderOnly` protocol.
             %
-            % :param ctl: :class:`rc.main.Controller` object for interfacing with the stage.
+            % :param ctl: :class:`rc.main.RC2Controller` object for interfacing with the stage.
             % :param config: The main configuration file.
         
             obj.ctl = ctl;
@@ -89,7 +89,7 @@ classdef EncoderOnly < handle
             % 13. Send signal to the Teensy to enable velocity output
             % 14. Unblock the treadmill
             % 15. If :attr:`log_trial` is true, velocity data about this trial is saved
-            % 16. Now wait for end of trial. If :attr:`integrate_using` is 'teensy' it will wait for a trigger from the Teensy. If set to 'pc' it will wait for the position variable in the Position (`position` property in :class:`rc.main.Controller` object) to read the trial bounds.
+            % 16. Now wait for end of trial. If :attr:`integrate_using` is 'teensy' it will wait for a trigger from the Teensy. If set to 'pc' it will wait for the position variable in the Position (`position` property in :class:`rc.main.RC2Controller` object) to read the trial bounds.
             % 17. Block the treadmill
             % 18. Send signal to switch off visual stimulus
             % 19. If :attr:`log_trial` is true, stop logging the trial
