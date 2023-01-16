@@ -17,6 +17,11 @@ config.environment_dir                  = fileparts(fileparts(fileparts(filepart
 config.saving.main_dir                  = config.environment_dir;
 config.saving.git_dir                   = fullfile(config.saving.main_dir, '.git'); % git directory
 config.user                             = fileparts(fileparts(config.saving.config_file)); % which user folder to use for calibrations etc.
+cd(config.environment_dir);
+
+% ensure searches are relative to user's path
+rmpath(genpath(fileparts(config.user)));
+addpath(genpath(config.user));
 
 %%%%%%%%%%%%%%%%%
 % CALIBRATION %%%
@@ -215,8 +220,6 @@ config.sound.filename                   = '';
 
 % get plotting configuration from a separate file
 config.plotting                         = plotting_config_3p_soloist_setup();
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Checks on config structure %
