@@ -1,5 +1,5 @@
 HEADER
 DEFINE ramp_up_over_us 200000
 DEFINE ramp_down_over_us 500000
-DEFINE gear_scale -400000
+DEFINE gear_scale -400000.00
 END HEADER
