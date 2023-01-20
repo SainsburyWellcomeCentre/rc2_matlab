@@ -29,7 +29,16 @@ Different physical RC2 rigs will implement different hardware interactions and c
 
 ### Git configuration
 
-Individual users of RC2 should create their own branch or fork of the repo and implement any rig specific changes there.
+Individual users of RC2 should create their own branch or fork of the repo (rig-user) and implement any rig specific changes there.
+
+For example, to install RC2 on a new rig for a new user:
+1. Clone the main repo.
+2. Create a new branch named <rig-user> (e.g. 3p-aerskine).
+3. This branch should be used *only* for adding user and rig specific configs, protocols, calibrations in the rc/user folder.
+    - Use the configs in the rc\user\template folder as a guide as these include relative pathing. 
+    - Configs can also be copied from other users (although ensure that they use relative paths as well). Make sure that copied configs are renamed to reflect the new user / rig.
+4. If any changes to the main RC2 codebase are required (e.g. new Sensor module, GUI changes) they should be made in the main branch (or a development branch of the main branch that is then merged back into main).
+5. To implement those changes, users should rebase their rig-user branch onto the main branch.
 
 ### Configuration, Calibration and Protocols
 
