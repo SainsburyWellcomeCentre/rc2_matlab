@@ -5,6 +5,7 @@ classdef RC2Controller < handle
         ni % :class:`rc.nidaq.NI`
         teensy % :class:`rc.classes.Teensy`
         soloist % :class:`rc.classes.Soloist`
+        ensemble % :class:`rc.classes.Ensemble`
         pump % :class:`rc.classes.Pump`
         reward % :class:`rc.classes.Reward`
         treadmill % :class:`rc.classes.Treadmill`
@@ -49,6 +50,7 @@ classdef RC2Controller < handle
             obj.ni = NI(config);
             obj.teensy = Teensy(config);
             obj.soloist = Soloist(config);
+            obj.ensemble = Ensemble(config);
             
             obj.pump = Pump(obj.ni, config);
             obj.reward = Reward(obj.pump, config);

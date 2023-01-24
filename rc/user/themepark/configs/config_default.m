@@ -9,7 +9,7 @@ VariableDefault('use_calibration', true);
 
 % where to save data
 config.saving.enable                    = true;
-config.saving.save_to                   = 'D:\Data\SoloistSetup';
+config.saving.save_to                   = 'C:\Users\Margrie_Lab1\Documents\temp_data\';
 
 % automatically gets these file locations and directories
 config.saving.config_file               = mfilename('fullpath'); % current file path, mfilename guarantees our relative paths will be from where this file is
@@ -134,7 +134,7 @@ config.teensy.start_script      = 'forward_only';
 %%%%%%%%%%%%%%%%%%%%%%
 % SOLOIST parameters %
 %%%%%%%%%%%%%%%%%%%%%%
-config.soloist.enable           = true;
+config.soloist.enable           = false;
 config.soloist.dir              = fullfile(config.environment_dir, 'soloist_c\exe');
 config.soloist.default_speed    = 200;
 config.soloist.v_per_cm_per_s   = 2.5/100;
@@ -149,6 +149,7 @@ config.soloist.deadband         = 0.005;
 config.ensemble.enable          = true;
 config.ensemble.ai_offset       = -500.0;
 config.ensemble.gear_scale      = -400000;
+config.ensemble.default_speed   = 200;
 
 %%%%%%%%%%%%%%%%%%%%%%
 % Reward parameters %%
