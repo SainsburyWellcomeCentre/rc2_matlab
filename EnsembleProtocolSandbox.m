@@ -13,7 +13,7 @@ EnsembleMotionEnable(handle, axis);
 EnsembleMotionHome(handle, axis);
 
 % EnsembleAdvancedAnalogControlOn(handle, 0, 0, 0.01, 0);
-EnsembleAdvancedAnalogTrack(handle, 0, 0, 0, 0.01, 0);
+EnsembleAdvancedAnalogTrack(handle, 0, 0, 4, 0.00001, 0);
 
 %% load a waveform for playback
 disp('>>> Starting wave playback.')
