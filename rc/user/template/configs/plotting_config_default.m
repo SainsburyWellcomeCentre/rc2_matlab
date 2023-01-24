@@ -1,4 +1,4 @@
-function config = plotting_config_3p_soloist_setup()
+function config = plotting_config_default()
 %%config = PLOTTING_CONFIG()
 % Configuration settings for display of traces.
 
