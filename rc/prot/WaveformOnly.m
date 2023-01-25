@@ -1,6 +1,6 @@
 classdef WaveformOnly < handle
-    %WAVEFORMONLY Summary of this class goes here
-    %   Detailed explanation goes here
+    % Test protocol for debugging ensemble interface. Loads and plays a
+    % waveform on the analog out channel after homing the ensemble.
     
     properties
         handle_acquisition = true;
@@ -92,6 +92,19 @@ classdef WaveformOnly < handle
                     return
                 end
             end
+
+            % stop acquisition if handling
+            if obj.handle_acquisition
+                obj.ctl.stop_acq();
+                obj.ctl.stop_sound();
+            end
+
+            % the protocol is no longer running
+            obj.running = false;
+        end
+
+        function stop(obj)
+            obj.abort = true;
         end
 
         function cfg = get_config(obj)
