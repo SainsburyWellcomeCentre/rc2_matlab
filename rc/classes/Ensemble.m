@@ -60,6 +60,16 @@ classdef Ensemble < handle
             EnsembleDisconnect();
         end
 
+        function listen(obj, axes)
+            
+        end
+
+        function reset_pso(obj, axes)
+            handle = EnsembleConnect;
+            EnsemblePSOControl(handle, axes, EnsemblePsoMode.Reset);
+            EnsembleDisconnect();
+        end
+
         function stop(obj)
             if ~obj.enabled, return, end
 

@@ -150,6 +150,7 @@ config.ensemble.enable          = true;
 config.ensemble.ai_offset       = -500.0;
 config.ensemble.gear_scale      = -400000;
 config.ensemble.default_speed   = 200;
+config.ensemble.target_axes     = [0, 1];
 
 %%%%%%%%%%%%%%%%%%%%%%
 % Reward parameters %%

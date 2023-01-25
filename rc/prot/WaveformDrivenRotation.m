@@ -1,7 +1,4 @@
-classdef WaveformOnly < handle
-    % Test protocol for debugging ensemble interface. Loads and plays a
-    % waveform on the analog out channel after homing the ensemble.
-    
+classdef WaveformDrivenRotation < handle
     properties
         handle_acquisition = true;
         wave_fname;
@@ -11,37 +8,37 @@ classdef WaveformOnly < handle
     properties (SetAccess = private)
         running = false % Boolean specifying whether the trial is currently running.
         abort = false % Boolean specifying whether the trial is being aborted.
+        target_axes;
         ctl % :class:`rc.main.RC2Controller` object controller.
     end
-    
+
     methods
-        function obj = WaveformOnly(ctl, config, fname)
+        function obj = WaveformDrivenRotation(ctl, config, fname)
             obj.ctl = ctl;
             obj.wave_fname = fname;
+            obj.target_axes = config.ensemble.target_axes;
         end
-        
+
         function load_wave(obj)
             if isempty(obj.wave_fname); return; end
 
-            w = double(read_bin(obj.wave_fname, 1));
+            w = double(read_bin(obj.wave_fname, 1)); % file must be single channel
 
-            obj.waveform = -10 + 20*(w(:, 1) + 2^15)/2^16; % TODO ai_ao transform for offsets?
+            obj.waveform = -10 + 20*(w(:, 1) + 2^15)/2^16; % TODO - offset transformation
         end
 
         function final_position = run(obj)
             final_position = 1;
-            
-            % load waveform to play
+
+            % load the waveform to be played
             obj.load_wave();
-            
-            % if there is no waveform, don't do anything
+
             if isempty(obj.waveform)
                 final_position = 0;
-                warning('NO WAVEFORM LOADED, SKIPPING PROTOCOL\n')
+                fprintf('NO WAVEFORM LOADED, SKIPPING\n')
                 return
             end
-            
-            % we are now running
+
             obj.running = true;
 
             % setup code to handle premature stopping
@@ -70,15 +67,25 @@ classdef WaveformOnly < handle
             obj.ctl.load_velocity_waveform(obj.waveform);
 
             if obj.handle_acquisition
-                obj.ctl.play_sound();
                 obj.ctl.start_acq();
             end
 
             % home the ensemble
             disp('>>> Homing');
-            obj.ctl.ensemble.force_home([0, 1]);
+            obj.ctl.ensemble.force_home(obj.target_axes);
 
-            % start playing the waveform
+            % Reset PSO
+            disp('>>> Reset PSO');
+            obj.ctl.ensemble.reset_pso(obj.target_axes);
+
+            % Do 0 calibration - TODO
+
+            % Ensemble offset - TODO
+
+            % Set the ensemble to listen - TODO
+            obj.ctl.ensemble.listen();
+
+            % Start playing the waveform
             disp('>>> Start waveform');
             obj.ctl.play_velocity_waveform();
 
@@ -97,6 +104,9 @@ classdef WaveformOnly < handle
             if obj.handle_acquisition
                 obj.ctl.stop_acq();
             end
+
+            disp('>>> Reset PSO');
+            obj.ctl.ensemble.reset_pso(obj.target_axes);
 
             % the protocol is no longer running
             obj.running = false;
