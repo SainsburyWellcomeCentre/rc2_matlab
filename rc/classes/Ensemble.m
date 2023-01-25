@@ -86,6 +86,10 @@ classdef Ensemble < handle
             EnsembleDisconnect;
         end
 
+        function newFunction(obj)
+            % something.
+        end
+
         function result = calibrate_zero(obj, axes)
             % Measures the analog input voltage to the Ensemble controller.
             %
