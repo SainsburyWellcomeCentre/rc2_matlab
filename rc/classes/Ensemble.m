@@ -30,6 +30,15 @@ classdef Ensemble < handle
             EnsembleDisconnect();
         end
 
+        function force_home(obj, axes)
+            % performs naive homing on the Ensemble axes. Ignores current
+            % position and calls the standard Ensemble home.
+            handle = EnsembleConnect;
+            EnsembleMotionEnable(handle, axes);
+            EnsembleMotionHome(handle, axes);
+            EnsembleDisconnect;
+        end
+
         function move_to(obj, axes, pos, speed, end_enabled)
             % Moves rotation stage to a relative position with given speed
 
@@ -49,6 +58,12 @@ classdef Ensemble < handle
             end
 
             EnsembleDisconnect();
+        end
+
+        function stop(obj)
+            if ~obj.enabled, return, end
+
+            % TODO - disable, abort etc.
         end
     end
 end

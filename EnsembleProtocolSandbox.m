@@ -12,8 +12,22 @@ handle = EnsembleConnect;
 EnsembleMotionEnable(handle, axis);
 EnsembleMotionHome(handle, axis);
 
-% EnsembleAdvancedAnalogControlOn(handle, 0, 0, 0.01, 0);
-EnsembleAdvancedAnalogTrack(handle, 0, 0, 4, 0.00001, 0);
+% Sets the analog output from the Soloist servo
+EnsembleAdvancedAnalogTrack(handle, 0, 0, 4, 0.001, 0);
+
+% Setup pso output - TODO
+EnsemblePSOControl(handle, 0, EnsemblePSOMode.Reset);
+EnsemblePSOPulseCyclesAndDelay(handle, 0, 1000000, 500000, 1, 0);
+EnsemblePSOOutputPulse(handle, 0);
+
+% Set gearing for tracking analog input
+GEARCAM_SOURCE = 2; % Analog input 0
+EnsembleParameterSetValue(handle, EnsembleParameterId.GearCamSource, 1, GEARCAM_SOURCE);
+EnsembleParameterSetValue(handle, EnsembleParameterId.GearCamScaleFactor, 1, 0);
+EnsembleParameterSetValue(handle, EnsembleParameterId.GearCamAnalogDeadband, 1, 0.001);
+EnsembleParameterSetValue(handle, EnsembleParameterId.GainKpos, 1, 0);
+
+EnsembleDisconnect();
 
 %% load a waveform for playback
 disp('>>> Starting wave playback.')
