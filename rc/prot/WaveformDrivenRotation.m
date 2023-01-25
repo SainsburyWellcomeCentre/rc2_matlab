@@ -8,6 +8,7 @@ classdef WaveformDrivenRotation < handle
     properties (SetAccess = private)
         running = false % Boolean specifying whether the trial is currently running.
         abort = false % Boolean specifying whether the trial is being aborted.
+        all_axes;
         target_axes;
         ctl % :class:`rc.main.RC2Controller` object controller.
     end
@@ -16,6 +17,7 @@ classdef WaveformDrivenRotation < handle
         function obj = WaveformDrivenRotation(ctl, config, fname)
             obj.ctl = ctl;
             obj.wave_fname = fname;
+            obj.all_axes = config.ensemble.all_axes;
             obj.target_axes = config.ensemble.target_axes;
         end
 
@@ -72,18 +74,19 @@ classdef WaveformDrivenRotation < handle
 
             % home the ensemble
             disp('>>> Homing');
-            obj.ctl.ensemble.force_home(obj.target_axes);
+            obj.ctl.ensemble.force_home(obj.all_axes);
 
             % Reset PSO
             disp('>>> Reset PSO');
-            obj.ctl.ensemble.reset_pso(obj.target_axes);
+            obj.ctl.ensemble.reset_pso(obj.all_axes);
 
             % Do 0 calibration - TODO
 
             % Ensemble offset - TODO
 
             % Set the ensemble to listen - TODO
-            obj.ctl.ensemble.listen();
+            disp('>>> Setup Ensemble listen');
+            obj.ctl.ensemble.listen(obj.target_axes);
 
             % Start playing the waveform
             disp('>>> Start waveform');
@@ -106,7 +109,7 @@ classdef WaveformDrivenRotation < handle
             end
 
             disp('>>> Reset PSO');
-            obj.ctl.ensemble.reset_pso(obj.target_axes);
+            obj.ctl.ensemble.reset_pso(obj.all_axes);
 
             % the protocol is no longer running
             obj.running = false;

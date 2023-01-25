@@ -4,6 +4,12 @@ classdef Ensemble < handle
         default_speed % Default move speed
     end
 
+    properties (SetAccess = private)
+        ensemble_ao_channel;
+        ensemble_ao_servo_value;
+        ensemble_ao_scale_factor;
+    end
+
     properties (SetAccess = private, Hidden = true)
         
     end
@@ -13,8 +19,10 @@ classdef Ensemble < handle
             obj.enabled = config.ensemble.enable;
             if ~obj.enabled, return, end
 
-            % TODO set any config values
             obj.default_speed = config.ensemble.default_speed;
+            obj.ensemble_ao_channel = config.ensemble.ao_channel;
+            obj.ensemble_ao_servo_value = config.ensemble.ao_servo_value;
+            obj.ensemble_ao_scale_factor = config.ensemble.ao_scale_factor;
         end
 
         function delete(obj)
@@ -61,7 +69,16 @@ classdef Ensemble < handle
         end
 
         function listen(obj, axes)
-            
+            handle = EnsembleConnect;
+
+            % Setup analog output velocity tracking
+            EnsembleAdvancedAnalogTrack(handle, axes, obj.ensemble_ao_channel, ...
+                obj.ensemble_ao_servo_value, obj.ensemble_ao_scale_factor, 0);
+
+            % Setup PSO output
+            EnsemblePSOControl(handle, axes, EnsemblePsoMode.Reset);
+            EnsemblePSOPulseCyclesAndDelay(handle, axes, 1000000, 500000, 1, 0);
+            EnsemblePSOOutputPulse(handle, axes);
         end
 
         function reset_pso(obj, axes)

@@ -74,7 +74,7 @@ classdef WaveformOnly < handle
                 obj.ctl.start_acq();
             end
 
-            % home the ensemble
+            % home the ensemble - TODO hard coded axes
             disp('>>> Homing');
             obj.ctl.ensemble.force_home([0, 1]);
 

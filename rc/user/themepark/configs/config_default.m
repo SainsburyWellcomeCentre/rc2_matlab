@@ -150,7 +150,11 @@ config.ensemble.enable          = true;
 config.ensemble.ai_offset       = -500.0;
 config.ensemble.gear_scale      = -400000;
 config.ensemble.default_speed   = 200;
-config.ensemble.target_axes     = [0, 1];
+config.ensemble.all_axes        = [0, 1];
+config.ensemble.target_axes     = 0;
+config.ensemble.ao_channel      = 0;
+config.ensemble.ao_servo_value  = 4;
+config.ensemble.ao_scale_factor = 0.00001;
 
 %%%%%%%%%%%%%%%%%%%%%%
 % Reward parameters %%
