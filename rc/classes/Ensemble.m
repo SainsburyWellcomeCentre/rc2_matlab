@@ -8,6 +8,7 @@ classdef Ensemble < handle
 
     properties (SetAccess = private)
         gear_scale;
+        ensemble_ai_channel;
         ensemble_ao_channel;
         ensemble_ao_servo_value;
         ensemble_ao_scale_factor;
@@ -32,6 +33,7 @@ classdef Ensemble < handle
             obj.default_speed = config.ensemble.default_speed;
             obj.ai_offset = config.ensemble.ai_offset;
             obj.gear_scale = config.ensemble.gear_scale;
+            obj.ensemble_ai_channel = config.ensemble.ai_channel;
             obj.ensemble_ao_channel = config.ensemble.ao_channel;
             obj.ensemble_ao_servo_value = config.ensemble.ao_servo_value;
             obj.ensemble_ao_scale_factor = config.ensemble.ao_scale_factor;
@@ -69,7 +71,31 @@ classdef Ensemble < handle
         function result = calibrate_zero(obj, axes)
             handle = EnsembleConnect;
 
+            % Values
+            vals = nan(1,100);
+
             % Set gear params
+            EnsembleParameterSetValue(handle, EnsembleParameterId.GearCamSource, axes, obj.gearcam_source);
+            EnsembleParameterSetValue(handle, EnsembleParameterId.GearCamScaleFactor, axes, 0);
+            EnsembleParameterSetValue(handle, EnsembleParameterId.GearCamAnalogDeadband, axes, 0);
+            EnsembleParameterSetValue(handle, EnsembleParameterId.GainKpos, axes, 0);
+            
+            % Enable
+            EnsembleMotionEnable(handle, axes);
+
+            % Subtract offset on analog input
+            EnsembleParameterSetValue(handle, EnsembleParameterId.Analog0InputOffset, axes, obj.ai_offset);
+
+            % Set to gear mode
+            EnsembleCommandExecute(handle, 'GEAR @0, 1');
+
+            for i = 1:100
+                vals(1, i) = EnsembleIOAnalogInput(handle, axes, obj.ensemble_ai_channel);
+            end
+
+            result = mean(vals);
+
+            EnsembleDisconnect();
         end
 
         function move_to(obj, axes, pos, speed, end_enabled)
