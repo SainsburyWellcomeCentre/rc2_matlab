@@ -86,7 +86,7 @@ classdef WaveformDrivenRotation < handle
 
             % Set the ensemble to listen - TODO
             disp('>>> Setup Ensemble listen');
-            obj.ctl.ensemble.listen(obj.target_axes);
+            ensembleHandle = obj.ctl.ensemble.listen(obj.target_axes);
 
             % Start playing the waveform
             disp('>>> Start waveform');
@@ -102,6 +102,9 @@ classdef WaveformDrivenRotation < handle
                     return
                 end
             end
+
+            % Stop Ensemble listen
+            obj.ctl.ensemble.stop_listen(ensembleHandle, obj.target_axes);
 
             % stop acquisition if handling
             if obj.handle_acquisition

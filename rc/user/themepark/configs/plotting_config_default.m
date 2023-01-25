@@ -3,10 +3,10 @@ function config = plotting_config_default()
 % Configuration settings for display of traces.
 
 
-config.time = 5; %s
+config.time = 10; %s
 config.fig.position = [100, 0, 1333, 630];
 config.chans_to_plot = [1, 2, 5, 6, 7, 8 ,9, 10];
-config.ylim = {[-0.1, 5.1], [-0.1, 5.1], [-0.3, 5.5], [-20, 40] , [-20, 40],[-0.1, 5.1], [-20, 40], [-0.3, 5.5]};
+config.ylim = {[-10, 10], [-0.1, 5.1], [-0.3, 5.5], [-20, 40] , [-20, 40],[-0.1, 5.1], [-20, 40], [-0.3, 5.5]};
 config.units = {'V', 'V', 'V','cm/s', 'cm/s', 'V', 'cm/s','V'};
 config.ax_positions = {[0.03, 0.78, 0.45, 0.19],...
                     [0.03, 0.54, 0.45, 0.19], ...
