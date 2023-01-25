@@ -146,23 +146,23 @@ config.soloist.deadband         = 0.005;
 % ENSEMBLE parameters %
 %%%%%%%%%%%%%%%%%%%%%%%
 
-config.ensemble.enable          = true;
-config.ensemble.ai_offset       = -500.0;
-config.ensemble.gear_scale      = -400;
-config.ensemble.default_speed   = 200;
-config.ensemble.all_axes        = [0, 1];
-config.ensemble.target_axes     = 0;
-config.ensemble.ai_channel      = 0;
-config.ensemble.ao_channel      = 0;
-config.ensemble.ao_servo_value  = 4;
-config.ensemble.ao_scale_factor = 0.001;
-config.ensemble.gearcam_source  = 2;
-config.ensemble.deadband         = 0.005;
+config.ensemble.enable          = true; % Whether to enable the Ensemble driver in RC2
+config.ensemble.ai_offset       = -500.0; % The offset applied to the Ensemble analog input (mV).
+config.ensemble.gear_scale      = -800; % A scaling factor applied to the Ensemble analog input when being driven in gear mode.
+config.ensemble.default_speed   = 200; % The default speed that the Ensemble will use when using direct analog control.
+config.ensemble.all_axes        = [0, 1]; % The index of all controllable axes on the Ensemble.
+config.ensemble.target_axes     = 0; % The individual axis to be controlled by RC2.
+config.ensemble.ai_channel      = 0; % The analog input channel that Ensemble will listen for waveforms on.
+config.ensemble.ao_channel      = 0; % The analog output channel that Ensemble will replay servo feedback on.
+config.ensemble.ao_servo_value  = 4; % The servo loop to replay on the ao_channel.
+config.ensemble.ao_scale_factor = 0.1; % A scaling factor that scales the servo loop value replayed on ao_channel for display in RC2.
+config.ensemble.gearcam_source  = 2; % The input source for gearing and camming motion on the Ensemble (0 = OpenLoop, 1 = ExternalPosition, 2 = Analog Input 0, 3 = Analog Input 1)
+config.ensemble.deadband         = 0.005; % The value (in volts) of the deadband to send to the controller.
 
-config.ensemble.default_gearsource = 1;
-config.ensemble.default_gearscalefactor = 1;
-config.ensemble.analogdeadband = 0.05;
-config.default_gainkpos = 128.7;
+config.ensemble.default_gearsource = 1; % Default value for the gearcam_source.
+config.ensemble.default_gearscalefactor = 1; % Default value for the gear_scale.
+config.ensemble.analogdeadband = 0.05; % Default value for the deadband.
+config.default_gainkpos = 128.7; % Default gain Kpos for the Ensemble.
 
 %%%%%%%%%%%%%%%%%%%%%%
 % Reward parameters %%

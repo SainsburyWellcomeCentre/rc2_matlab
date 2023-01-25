@@ -81,16 +81,16 @@ classdef WaveformDrivenRotation < handle
             obj.ctl.ensemble.reset_pso(obj.all_axes);
 
             % Do 0 calibration - TODO
-            real_time_offset_error = obj.ctl.ensemble.calibrate_zero(obj.target_axes);
+%             real_time_offset_error = obj.ctl.ensemble.calibrate_zero(obj.target_axes);
 
             % Ensemble offset - TODO
-            obj.ctl.ensemble.ai_offset = -real_time_offset_error;
+%             obj.ctl.ensemble.ai_offset = -real_time_offset_error;
 
             % Set the ensemble to listen
             disp('>>> Setup Ensemble listen');
             ensembleHandle = obj.ctl.ensemble.listen(obj.target_axes);
 
-            % Start playing the waveform
+            % Start playing the waveform on the NIDAQ
             disp('>>> Start waveform');
             obj.ctl.play_velocity_waveform();
 

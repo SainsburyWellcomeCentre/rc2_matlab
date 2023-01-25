@@ -1,32 +1,38 @@
 classdef Ensemble < handle
+    % Ensemble class for handling commands to the Ensemble stage
+    % controller.
+
     properties
         enabled % Boolean specifying whether to use this module
         default_speed % Default move speed
-        deadband_scale = 0.2;
-        ai_offset;
+        deadband_scale = 0.2; % Scaling factor for the deadband.
+        ai_offset; % offset in mV to add to the controller when entering gear mode.
     end
 
     properties (SetAccess = private)
-        gear_scale;
-        ensemble_ai_channel;
-        ensemble_ao_channel;
-        ensemble_ao_servo_value;
-        ensemble_ao_scale_factor;
-        gearcam_source;
-        deadband;
+        gear_scale; % A scaling factor applied to the Ensemble analog input when being driven in gear mode.
+        ensemble_ai_channel; % The analog input channel that Ensemble will listen for waveforms on.
+        ensemble_ao_channel; % The analog output channel that Ensemble will replay servo feedback on.
+        ensemble_ao_servo_value; % The servo loop to replay on the ao_channel.
+        ensemble_ao_scale_factor; % A scaling factor that scales the servo loop value replayed on ao_channel for display in RC2.
+        gearcam_source; % The input source for gearing and camming motion on the Ensemble (0 = OpenLoop, 1 = ExternalPosition, 2 = Analog Input 0, 3 = Analog Input 1)
+        deadband; % The value (in volts) of the deadband to send to the controller.
 
-        default_gearsource;
-        default_gearscalefactor;
-        default_analogdeadband;
-        default_gainkpos;
-    end
-
-    properties (SetAccess = private, Hidden = true)
-        
+        default_gearsource; % Default value for the :attr:`gearcam_source`.
+        default_gearscalefactor; % Default value for the :attr:`gear_scale`.
+        default_analogdeadband; % Default value for the :attr:`deadband`.
+        default_gainkpos; % Default gain Kpos value.
+        all_axes; % All axes controlled by the Ensemble.
     end
 
     methods
         function obj = Ensemble(config)
+            % Constructor for a :class:`rc.classes.Ensemble` device.
+            % Interfaces with the Ensemble controller via separate using
+            % the Aerotech MATLAB library.
+            %
+            % :param config: The main configuration structure.
+
             obj.enabled = config.ensemble.enable;
             if ~obj.enabled, return, end
 
@@ -39,6 +45,7 @@ classdef Ensemble < handle
             obj.ensemble_ao_scale_factor = config.ensemble.ao_scale_factor;
             obj.gearcam_source = config.ensemble.gearcam_source;
             obj.deadband = obj.deadband_scale * config.ensemble.deadband;
+            obj.all_axes = config.ensemble.all_axes;
 
             obj.default_gearsource = config.ensemble.default_gearsource;
             obj.default_gearscalefactor = config.ensemble.default_gearscalefactor;
@@ -47,21 +54,32 @@ classdef Ensemble < handle
         end
 
         function delete(obj)
+            % Destructor for :class:`rc.classes.Ensemble` device.
+
             obj.abort();
         end
 
         function abort(obj)
-            % TODO abort
+            % Disables motion on all axes on the Ensemble.
+
+            handle = EnsembleConnect;
+            EnsembleMotionDisable(handle, obj.all_axes);
         end
 
         function communicate(obj)
+            % Opens a communication channel with the Ensemble. Used to test
+            % connection before starting a task.
+
             handle = EnsembleConnect;
             EnsembleDisconnect();
         end
 
         function force_home(obj, axes)
-            % performs naive homing on the Ensemble axes. Ignores current
+            % Performs naive homing on the Ensemble axes. Ignores current
             % position and calls the standard Ensemble home.
+            %
+            % :param axes: The axes on the Ensemble to home.
+
             handle = EnsembleConnect;
             EnsembleMotionEnable(handle, axes);
             EnsembleMotionHome(handle, axes);
@@ -69,6 +87,12 @@ classdef Ensemble < handle
         end
 
         function result = calibrate_zero(obj, axes)
+            % Measures the analog input voltage to the Ensemble controller.
+            %
+            % :param axes: The axes to monitor for the analog input
+            % voltage.
+            % :return: The average analog input over 100 samples.
+
             handle = EnsembleConnect;
 
             % Values
@@ -99,7 +123,14 @@ classdef Ensemble < handle
         end
 
         function move_to(obj, axes, pos, speed, end_enabled)
-            % Moves rotation stage to a relative position with given speed
+            % Moves rotation stage to a relative position with given speed.
+            %
+            % :param axes: The axes to move.
+            % :param pos: The position relative from current position to
+            % move.
+            % :param speed: The speed of the movement.
+            % :param end_enabled: Bool specifying whether axes should be
+            % left enabled at the end of movement.
 
             if ~obj.enabled, return, end
 
@@ -120,7 +151,13 @@ classdef Ensemble < handle
         end
 
         function handle = listen(obj, axes)
-            disp('LISTEN');
+            % Sets up the Ensemble axes to listen to an incoming voltage
+            % signal to drive the stage in gear mode.
+            %
+            % :param axes: The axes to drive with analog input.
+            % :return: A handle to the active Ensemble session listening to
+            % voltage input.
+
             handle = EnsembleConnect;
 
             % Setup analog output velocity tracking
@@ -149,7 +186,13 @@ classdef Ensemble < handle
         end
 
         function stop_listen(obj, sessionHandle, axes)
-            disp('STOP LISTEN');
+            % If Ensemble is listening for voltage input, stop it and
+            % reset.
+            %
+            % :param sessionHandle: Handle to the Ensemble session that is
+            % listening for voltage input.
+            % :param axes: The axes to halt listening on.
+
             EnsembleMotionDisable(sessionHandle, axes);
 
             % Pulse the digital output
@@ -164,15 +207,21 @@ classdef Ensemble < handle
         end
 
         function reset_pso(obj, axes)
+            % Resets the Ensemble PSO.
+            %
+            % :param axes: The axes on which to reset PSO.
+
             handle = EnsembleConnect;
             EnsemblePSOControl(handle, axes, EnsemblePsoMode.Reset);
             EnsembleDisconnect();
         end
 
         function stop(obj)
+            % Stops active tasks and disables motion on the Ensemble.
+
             if ~obj.enabled, return, end
 
-            % TODO - disable, abort etc.
+            obj.abort();
         end
     end
 end
