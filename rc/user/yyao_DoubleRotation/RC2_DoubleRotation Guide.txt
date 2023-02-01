@@ -1,0 +1,25 @@
+Use MATLAB 2021a or newer version
+
+user file path
+Vis stim PC -- 'C:\Users\yyao\Documents\MATLAB\Themepark-RC2 code\VisualStimuli\visual_stimuli\user\yyao_DoubleRotation'
+NIDAQ PC -- 'C:\Users\Margrie_Lab1\Documents\MATLAB\rc2_matlab\rc\user\yyao_DoubleRotation'
+data file path
+Vis stim PC -- 'C:\Users\Margrie_Lab1\Documents\raw_data'
+NIDAQ PC -- 'C:\Users\Margrie_Lab1\Documents\raw_data'
+
+1. On Vis stim PC
+	theme_park_vis_stim = ThemeParkVisualStimulusPC();   % connect the 2 PCs
+
+2. On NIDAQ PC
+	RC2_DoubleRotation_startup();   % start RC2 interface
+
+3. Select protocol file on the Experiment panel
+4. Input Animal ID# & Session#
+5. Click 'Start Experiment' button on the Experiment panel
+
+6. If there are connection issues try the following on vis stim PC.
+	theme_park_vis_stim.reset_tcp_servers()
+	theme_park_vis_stim.is_running = false;
+
+7. On NIDAQ PC
+	RC2_DoubleRotation_shutdown();
