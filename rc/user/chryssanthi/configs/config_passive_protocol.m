@@ -1,7 +1,7 @@
-function config = config_default()
+function config = config_passive_protocol()
 
 % by default do not use calibration file
-VariableDefault('use_calibration', true);
+VariableDefault('use_calibration', false);
 
 %%%%%%%%%%%%
 % SAVING %%%
@@ -219,7 +219,7 @@ config.sound.filename                   = '';
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % get plotting configuration from a separate file
-config.plotting                         = plotting_config_3p_soloist_setup();
+config.plotting                         = plotting_config_passive_protocol();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Checks on config structure %
