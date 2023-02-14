@@ -124,15 +124,6 @@ config.teensy_gain_down.do_name         = '';
 
 
 %%%%%%%%%%%%%%%%%%%%%%
-% TEENSY parameters %%
-%%%%%%%%%%%%%%%%%%%%%%
-config.teensy.enable                    = false;
-config.teensy.exe                       = 'C:\Program Files (x86)\Arduino\arduino_debug.exe';
-config.teensy.dir                       = '';
-config.teensy.start_script              = 'forward_only';
-
-
-%%%%%%%%%%%%%%%%%%%%%%
 % SOLOIST parameters %
 %%%%%%%%%%%%%%%%%%%%%%
 config.soloist.enable                   = false;
@@ -164,11 +155,11 @@ config.ensemble.max_limits              = [0.0001, 350];  % Max speed
 
 config.ensemble.ai_offset               = -500.0;   % The offset applied to the Ensemble analog input (mV).
 config.ensemble.gear_scale              = -800;     % A scaling factor applied to the Ensemble analog input when being driven in gear mode.  double型数值，应用于'GearCamScaleFactor'的值，该值决定了电压和stage速度之间的增益。负值代表反向。
-config.ensemble.all_axes                = [0, 1];   % The index of all controllable axes on the Ensemble.
+config.ensemble.all_axes                = [0, 1];   % The index of all controllable axes on the Ensemble. [central outer]
 config.ensemble.target_axes             = [NaN NaN];        % The individual axis to be controlled by RC2.
-config.ensemble.ai_channel              = 0;        % The analog input channel that Ensemble will listen for waveforms on.
-config.ensemble.ao_channel              = 0;        % The analog output channel that Ensemble will replay servo feedback on.
-config.ensemble.ao_servo_value          = 4;        % The servo loop to replay on the ao_channel.
+config.ensemble.ai_channel              = [0,1];        % The analog input channel that Ensemble will listen for waveforms on.
+config.ensemble.ao_channel              = [0,1];        % The analog output channel that Ensemble will replay servo feedback on.
+config.ensemble.ao_servo_value          = 4;        % The servo loop value to replay on the ao_channel. 0 = None (off). 1 = Position Command (Counts). 2 = Position Feedback (Counts). 3 = Velocity Command (Counts / servo interrupt). 4 = Velocity Feedback (Counts / servo interrupt). 5 = Current Command (Amps). 6 = Current Feedback (Amps). 7 = Acceleration Command (Counts / msec2). 8 = Position Error (Counts). 9 = Piezo Voltage Command (Volts).  
 config.ensemble.ao_scale_factor         = 0.1;      % A scaling factor that scales the servo loop value replayed on ao_channel for display in RC2.
 config.ensemble.gearcam_source          = 2;        % The input source for gearing and camming motion on the Ensemble (0 = OpenLoop, 1 = ExternalPosition, 2 = Analog Input 0, 3 = Analog Input 1)
 config.ensemble.deadband                = 0.005;    % The value (in volts) of the deadband to send to the controller.  死区。double型数值，以伏特为单位。应用于'GearCamAnalogDeadband'属性的值。低于该电压时，stage不会发生任何运动。

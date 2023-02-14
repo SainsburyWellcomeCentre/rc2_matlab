@@ -52,9 +52,7 @@ classdef ProtocolSequence_DoubleRotation < handle
             
             obj.ctl.play_sound(); 
             obj.ctl.ensemble.online = [true true];
-%             obj.ctl.ensemble.communicate(); % startup initial communication
-%             obj.ctl.ensemble.target_axes = obj.ctl.ensemble.all_axes;   % [0,1]
-%             obj.ctl.ensemble.move_to([5 5], [40 40], false);
+            obj.ctl.ensemble.communicate(); % startup initial communication
             obj.ctl.ensemble.target_axes = obj.ctl.ensemble.all_axes;   % [0,1]
             obj.ctl.ensemble.home();        % home both motors
             obj.ctl.prepare_acq();   % 实验开始前的准备：保存NIDAQ采样配置信息(.cfg)；侦听NIDAQ数据采集'数据可用'事件；重置实时绘图窗口变量；初始化舔检测器
@@ -68,7 +66,7 @@ classdef ProtocolSequence_DoubleRotation < handle
                 return_message = obj.ctl.communication.tcp_client.readline();
            
                 if ~strcmp(return_message, 'ready')
-                    fprintf('preperation failed\n')
+                    error('preperation failed')
                     obj.stop(); % abort and reset
                 end
             end
@@ -98,9 +96,9 @@ classdef ProtocolSequence_DoubleRotation < handle
                     obj.ctl.ensemble.target_axes = target_axes;
                     ensembleHandle = obj.ctl.ensemble.listen();      % Set the ensemble to listen
 
-%                     obj.ctl.communication.tcp_client_stimulus.writeline('motion_prepared');   % 向远程主机发送带终止符的信息'motion_prepared'
+                    obj.ctl.communication.tcp_client_stimulus.writeline('motion_prepared');   % 向远程主机发送带终止符的信息'motion_prepared'
                 else
-%                     obj.ctl.communication.tcp_client_stimulus.writeline('motion_disabled');   % 向远程主机发送带终止符的信息'motion_disabled'
+                    obj.ctl.communication.tcp_client_stimulus.writeline('motion_disabled');   % 向远程主机发送带终止符的信息'motion_disabled'
                 end
 %                 waveform_central = voltagewaveform_generator(obj.sequence{i}.stage, 10000);
 %                 if obj.sequence{i}.stage.central.distance < 0 
@@ -119,7 +117,7 @@ classdef ProtocolSequence_DoubleRotation < handle
                     fprintf('start_vis_stim_preparation\n'); 
 
                     % send current trial visual stimuli information to remote host
-                    cmd = sprintf('%i', obj.sequence{i}.vis.vis_stim_lable);   % sprintf函数，将数据格式化为字符串或字符向量，按特定格式返回
+                    cmd = sprintf('%i', obj.sequence{i}.vis.vis_stim_type);   % sprintf函数，将数据格式化为字符串或字符向量，按特定格式返回
                     fprintf('sending current trial to visual stimulus computer\n');
                     obj.ctl.communication.tcp_client_stimulus.writeline(cmd);  % 调用tcpclient类的writeline方法，将后跟终止符的ASCII数据写入远程主机(remote host)
                     
@@ -129,8 +127,7 @@ classdef ProtocolSequence_DoubleRotation < handle
                     return_message = obj.ctl.communication.tcp_client_stimulus.readline(); 
     
                     if ~strcmp(return_message, 'received')
-                        fprintf('trial type message failed\n')
-                        obj.stop();
+                        error('trial type message failed')
                     end
                 else
                     obj.ctl.communication.tcp_client_stimulus.writeline('vis_stim_disabled');   % 向远程主机发送带终止符的信息'vis_stim_disabled'
@@ -169,9 +166,6 @@ classdef ProtocolSequence_DoubleRotation < handle
                     end
                     obj.ctl.ensemble.target_axes = target_axes;
                     obj.ctl.ensemble.stop_listen(ensembleHandle);      % Stop Ensemble listen
-
-                    
-                    obj.ctl.communication.tcp_client_stimulus.writeline('motion_end');   % 向远程主机发送带终止符的信息'motion_end'
                     
                 end
                 
@@ -208,7 +202,7 @@ classdef ProtocolSequence_DoubleRotation < handle
                     end
                 end
                 
-                pause(5.0);     % wait for 5 seconds
+                pause(2.0);     % wait for 2 seconds
 
                 % reset stages
                 obj.ctl.ensemble.target_axes = obj.ctl.ensemble.all_axes;   % [0,1]

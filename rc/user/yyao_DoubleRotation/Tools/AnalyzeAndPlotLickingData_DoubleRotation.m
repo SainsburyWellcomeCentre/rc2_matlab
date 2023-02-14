@@ -1,4 +1,4 @@
-function analyze_and_plot_licking_data(bin_fname)
+function AnalyzeAndPlotLickingData_DoubleRotation(bin_fname)
 
 % padding around visual onset
 padding                     = [-3, 5];

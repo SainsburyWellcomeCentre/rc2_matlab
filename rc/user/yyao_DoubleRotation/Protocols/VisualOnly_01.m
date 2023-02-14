@@ -1,12 +1,10 @@
-function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
-    % Protocol type: passive rotation with visual stimuli
-    % central stage - enabled. 
-    %       S+ trial, high max speed. 
-    %       S- trial, low max speed.
+function [protocolconfig,seq] = VisualOnly_01(ctl,view)
+    % Protocol type: visual stimuli only
+    % central stage - disabled. 
     % outer stage   - disabled
-    % vis_stim      - enabled. 
+    % vis_stim      - enabled
 
-    protocol_id.name = 'PassiveRotation_01';                % 根据protocol_id配置lick_detect参数
+    protocol_id.name = 'VisualOnly_01';                % 根据protocol_id配置lick_detect参数
     
     % config parameters to pass to the protocols
     protocolconfig.lick_detect.enable                   = true;     % 使舔食检测模块可用
@@ -58,9 +56,9 @@ function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
             trial.trial.stimulus_type = 's_plusL';
             trial.trial.enable_reward = true;
             
-            trial.stage.enable_motion = true;
+            trial.stage.enable_motion = false;
             trial.stage.motion_time = 32.2;
-            trial.stage.central.enable = true;
+            trial.stage.central.enable = false;
             trial.stage.central.distance = -90;
             trial.stage.central.max_vel = 40; 
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
@@ -68,7 +66,7 @@ function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
             trial.stage.outer.distance = 0;
             trial.stage.outer.max_vel = 0; 
             trial.stage.outer.mean_vel = 0;
-
+            
             trial.vis.enable_vis_stim = true;
             trial.vis.vis_stim_lable = 1;
             
@@ -80,9 +78,9 @@ function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
             trial.trial.stimulus_type = 's_plusR';
             trial.trial.enable_reward = true;
             
-            trial.stage.enable_motion = true;
+            trial.stage.enable_motion = false;
             trial.stage.motion_time = 32.2;
-            trial.stage.central.enable = true;
+            trial.stage.central.enable = false;
             trial.stage.central.distance = 90;
             trial.stage.central.max_vel = 40; 
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
@@ -102,7 +100,7 @@ function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
             trial.trial.stimulus_type = 's_minusL';
             trial.trial.enable_reward = false;
             
-            trial.stage.enable_motion = true;
+            trial.stage.enable_motion = false;
             trial.stage.motion_time = 32.2;
             trial.stage.central.enable = true;
             trial.stage.central.distance = -90;
@@ -124,9 +122,9 @@ function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
             trial.trial.stimulus_type = 's_minusR';
             trial.trial.enable_reward = false;
             
-            trial.stage.enable_motion = true;
+            trial.stage.enable_motion = false;
             trial.stage.motion_time = 32.2;
-            trial.stage.central.enable = true;
+            trial.stage.central.enable = false;
             trial.stage.central.distance = 90;
             trial.stage.central.max_vel = 10; 
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;

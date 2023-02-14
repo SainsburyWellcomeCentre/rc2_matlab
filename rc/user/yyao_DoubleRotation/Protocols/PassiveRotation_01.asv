@@ -1,10 +1,10 @@
 function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
-    % Protocol type: passive rotation with visual stimuli
+    % Protocol type: passive rotation with visual s
     % central stage - enabled. 
     %       S+ trial, high max speed. 
     %       S- trial, low max speed.
     % outer stage   - disabled
-    % vis_stim      - enabled. 
+    % vis_stim      - disabled
 
     protocol_id.name = 'PassiveRotation_01';                % 根据protocol_id配置lick_detect参数
     

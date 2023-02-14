@@ -52,7 +52,7 @@ classdef RC2_DoubleRotation_GUIView < handle
                 obj.handles.PlaySoundButton.Enable = 'off';
             end
             
-            addlistener(obj.controller.setup.ensemble, 'in_motion', 'PostSet', @(src, evnt)obj.motor_in_motion(src, evnt));
+            addlistener(obj.controller.setup.ensemble, 'online', 'PostSet', @(src, evnt)obj.ensemble_online(src, evnt));
             addlistener(obj.controller.setup.saver, 'save_to', 'PostSet', @(src, evnt)obj.save_to_updated(src, evnt));          % 侦听obj.gui.view.controller.setup.saver对象的'save_to'事件，一旦侦听到则回调save_to_updated函数。
             addlistener(obj.controller.setup.saver, 'prefix', 'PostSet', @(src, evnt)obj.prefix_updated(src, evnt));
             addlistener(obj.controller.setup.saver, 'suffix', 'PostSet', @(src, evnt)obj.suffix_updated(src, evnt));
@@ -109,29 +109,26 @@ classdef RC2_DoubleRotation_GUIView < handle
         %}
         
         %% Stage面板
-        function motor_in_motion(obj, ~, ~)                 % Stage移动过程中禁用GUI界面相应axis的移动按钮（函数有效，但GUI并不能在stage移动过程中及时更新）
-            if obj.controller.setup.ensemble.in_motion
-                if ismember(1,obj.controller.setup.ensemble.target_axes)
+        function ensemble_online(obj, ~, ~)                 % Stage移动（或禁止移动）过程中禁用GUI界面相应axis的移动按钮（函数有效，但GUI并不能在stage移动过程中及时更新）
+            obj.handles.HOMEButton.Enable   = 'on';
+%             obj.handles.ResetButton.Enable  = 'on';
+            obj.handles.StopButton.Enable   = 'on';
+            obj.handles.MoveToButton.Enable = 'on';
+            obj.handles.HOMEButton_2.Enable   = 'on';
+%             obj.handles.ResetButton_2.Enable  = 'on';
+            obj.handles.StopButton_2.Enable   = 'on';
+            obj.handles.MoveToButton_2.Enable = 'on';
+            if obj.controller.setup.ensemble.online(1)
                     obj.handles.HOMEButton.Enable   = 'off';
                     obj.handles.ResetButton.Enable  = 'off';
                     obj.handles.StopButton.Enable   = 'off';
                     obj.handles.MoveToButton.Enable = 'off';
-                else if ismember(0,obj.controller.setup.ensemble.target_axes)
-                        obj.handles.HOMEButton_2.Enable   = 'off';
-                        obj.handles.ResetButton_2.Enable  = 'off';
-                        obj.handles.StopButton_2.Enable   = 'off';
-                        obj.handles.MoveToButton_2.Enable = 'off';
-                    end
-                end
-            else
-                obj.handles.HOMEButton.Enable   = 'on';
-                obj.handles.ResetButton.Enable  = 'on';
-                obj.handles.StopButton.Enable   = 'on';
-                obj.handles.MoveToButton.Enable = 'on';
-                obj.handles.HOMEButton_2.Enable   = 'on';
-                obj.handles.ResetButton_2.Enable  = 'on';
-                obj.handles.StopButton_2.Enable   = 'on';
-                obj.handles.MoveToButton_2.Enable = 'on';
+            end
+            if obj.controller.setup.ensemble.online(2)
+                obj.handles.HOMEButton_2.Enable   = 'off';
+                obj.handles.ResetButton_2.Enable  = 'off';
+                obj.handles.StopButton_2.Enable   = 'off';
+                obj.handles.MoveToButton_2.Enable = 'off';
             end
         end
 

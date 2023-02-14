@@ -343,36 +343,6 @@ classdef RC2_DoubleRotation_Controller < handle
         end
         
 
-
-        %% Treadmill
-        function block_treadmill(obj, gear_mode)
-            
-            VariableDefault('gear_mode', 'off');
-            
-            obj.treadmill.block()
-            
-            % change the offset on the NI
-            %   unless it is already running a waveform
-            if ~obj.ni.ao_task_is_running
-                obj.set_ni_ao_idle('up', gear_mode);
-            end
-        end
-        
-        
-        function unblock_treadmill(obj, gear_mode)
-            
-            VariableDefault('gear_mode', 'off');
-            
-            obj.treadmill.unblock()
-            
-            % change the offset on the NI
-            %   unless it is already running a waveform
-            if ~obj.ni.ao_task_is_running
-                obj.set_ni_ao_idle('down', gear_mode);
-            end
-        end
-
-
         %% Position
         function reset_pc_position(obj)
             %obj.position.reset();
@@ -386,14 +356,6 @@ classdef RC2_DoubleRotation_Controller < handle
         
         function pos = get_position(obj)
 %             pos = obj.position.position;
-        end
-        
-        
-        %% Multiplexer
-        function multiplexer_listen_to(obj, src)
-            
-            % switch the digital output
-            obj.multiplexer.listen_to(src);
         end
         
         

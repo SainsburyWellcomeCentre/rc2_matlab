@@ -126,7 +126,6 @@ classdef Ensemble_DoubleRotation < handle
             obj.online(~isnan(obj.target_axes)) = true;
 
             handle = EnsembleConnect;
-            EnsemblePSOControl(handle, obj.all_axes, EnsemblePsoMode.Reset);
             EnsembleMotionEnable(handle, obj.all_axes);
             % Set the HOMEing direction according to CurrentPosition
             CurrentPosition = [NaN NaN];
@@ -135,8 +134,7 @@ classdef Ensemble_DoubleRotation < handle
             CurrentPosition(1) = EnsembleStatusGetItem  (handle, obj.all_axes(1), 1);   % Get Program Position Feedback (ID = 1) of central axis.
             CurrentPosition(2) = EnsembleStatusGetItem  (handle, obj.all_axes(2), 1);   % Get Program Position Feedback (ID = 1) of outer axis.
             CurrentPosition = rad2deg(wrapToPi(deg2rad(CurrentPosition)));
-            obj.homed(find(abs(CurrentPosition)<0.1)) = true;
-            obj.homed(find(abs(CurrentPosition)>=0.1)) = false;
+            obj.homed(find(abs(CurrentPosition)>=1)) = false;
             if CurrentPosition(1)<0
                 EnsembleParameterSetValue(handle, 75 , obj.all_axes(1), 1);    % Set HomeSetup Parameter (ID = 75). 0 = CCW/Negative Direction, 1 = CW/Positive Direction
             end
@@ -221,6 +219,8 @@ classdef Ensemble_DoubleRotation < handle
             EnsembleDisconnect();
             obj.target_axes = [NaN NaN];
         end
+
+        function MotionLinear
 
         function move_to(obj, pos, speed, end_enabled)
             % Moves rotation stage to a relative position with given speed.

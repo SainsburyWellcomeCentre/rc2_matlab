@@ -1,12 +1,12 @@
-function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
-    % Protocol type: passive rotation with visual stimuli
+function [protocolconfig,seq] = PassiveRotation_02(ctl,view)
+    % Protocol type: passive rotation in darkness
     % central stage - enabled. 
     %       S+ trial, high max speed. 
     %       S- trial, low max speed.
     % outer stage   - disabled
-    % vis_stim      - enabled. 
+    % vis_stim      - disabled
 
-    protocol_id.name = 'PassiveRotation_01';                % 根据protocol_id配置lick_detect参数
+    protocol_id.name = 'PassiveRotation_02';                % 根据protocol_id配置lick_detect参数
     
     % config parameters to pass to the protocols
     protocolconfig.lick_detect.enable                   = true;     % 使舔食检测模块可用
@@ -16,7 +16,7 @@ function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
     protocolconfig.lick_detect.n_lick_windows           = 1;
     protocolconfig.lick_detect.n_consecutive_windows    = 4;        % modified by A on 23/8; was 4
     protocolconfig.lick_detect.detection_trigger_type   = 1;
-    protocolconfig.enable_vis_stim = true;
+    protocolconfig.enable_vis_stim = false;
     
     % create the protocol sequence
     seq = ProtocolSequence_DoubleRotation(ctl,view);
@@ -68,8 +68,8 @@ function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
             trial.stage.outer.distance = 0;
             trial.stage.outer.max_vel = 0; 
             trial.stage.outer.mean_vel = 0;
-
-            trial.vis.enable_vis_stim = true;
+            
+            trial.vis.enable_vis_stim = false;
             trial.vis.vis_stim_lable = 1;
             
             % add protocol to the sequence
@@ -91,7 +91,7 @@ function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
             trial.stage.outer.max_vel = 0; 
             trial.stage.outer.mean_vel = 0;
             
-            trial.vis.enable_vis_stim = true;
+            trial.vis.enable_vis_stim = false;
             trial.vis.vis_stim_lable = 2;
             
             % add protocol to the sequence
@@ -113,7 +113,7 @@ function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
             trial.stage.outer.max_vel = 0; 
             trial.stage.outer.mean_vel = 0;
             
-            trial.vis.enable_vis_stim = true;
+            trial.vis.enable_vis_stim = false;
             trial.vis.vis_stim_lable = 3;
             
             % add protocol to the sequence
@@ -135,7 +135,7 @@ function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
             trial.stage.outer.max_vel = 0; 
             trial.stage.outer.mean_vel = 0;
             
-            trial.vis.enable_vis_stim = true;
+            trial.vis.enable_vis_stim = false;
             trial.vis.vis_stim_lable = 4;
             
             % add protocol to the sequence

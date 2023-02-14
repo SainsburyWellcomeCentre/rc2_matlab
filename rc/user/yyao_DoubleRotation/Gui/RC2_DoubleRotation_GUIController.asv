@@ -325,13 +325,13 @@ classdef RC2_DoubleRotation_GUIController < handle
                 % generate protocol sequence
                 [~, fname] = fileparts(obj.current_script);
                 [protocolconfig, obj.experiment_seq] = feval(fname, obj.setup, obj.view);  % 使用obj.setup作为传入参数执行fname指定的protocol函数，创建实验序列。返回值obj.experiment_seq为ProtocolSequence_DoubleRotation类变量。 feval函数，计算函数。
-                obj.config.lick_detect.enable                   = protocolconfig.lick_detect.enable;
-                obj.config.lick_detect.lick_threshold           = protocolconfig.lick_detect.lick_threshold;
-                obj.config.lick_detect.n_windows                = protocolconfig.lick_detect.n_windows;
-                obj.config.lick_detect.window_size_ms           = protocolconfig.lick_detect.window_size_ms;
-                obj.config.lick_detect.n_lick_windows           = protocolconfig.lick_detect.n_lick_windows;
-                obj.config.lick_detect.n_consecutive_windows    = protocolconfig.lick_detect.n_consecutive_windows;
-                obj.config.lick_detect.detection_trigger_type   = protocolconfig.lick_detect.detection_trigger_type;
+                obj.config.lick_detect.enable = protocolconfig.lick_detect.enable;
+    protocolconfig.lick_detect.lick_threshold;
+    protocolconfig.lick_detect.n_windows                = 80;
+    protocolconfig.lick_detect.window_size_ms           = 50;
+    protocolconfig.lick_detect.n_lick_windows           = 1;
+    protocolconfig.lick_detect.n_consecutive_windows    = 4;        % modified by A on 23/8; was 4
+    protocolconfig.lick_detect.detection_trigger_type   = 1;
                 
                 
                 % reinitialize the lick detection module....
@@ -346,8 +346,7 @@ classdef RC2_DoubleRotation_GUIController < handle
 %                 addlistener(obj.experiment_seq, 'current_trial', 'PostSet', @(src, evnt)obj.experiment_trial_updated(src, evnt));
                 
                 % start experiment
-                fprintf('start experiment\n');
-                obj.experiment_seq.run(protocolconfig.enable_vis_stim);   % 执行ProtocolSequence_DoubleRotation类run函数开始实验
+                obj.experiment_seq.run();   % 执行ProtocolSequence_DoubleRotation类run函数开始实验
                 
                 obj.experiment_seq = [];
                 delete(obj.protocol_gui);

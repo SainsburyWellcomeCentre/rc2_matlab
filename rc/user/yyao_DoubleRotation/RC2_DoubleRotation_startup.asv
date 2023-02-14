@@ -15,7 +15,7 @@
 % add user folder
 [path,~] = fileparts(mfilename("fullpath"));
 addpath(genpath(path));
-clear path;
+clear
 
 % setup configuration
 config = config_yyao();

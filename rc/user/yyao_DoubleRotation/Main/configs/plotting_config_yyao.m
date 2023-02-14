@@ -1,11 +1,11 @@
-function config = plotting_config_sweiler()
+function config = plotting_config_yyao()
 %%config = PLOTTING_CONFIG_SWEILER()
 % Configuration settings for display of traces.
 
 config.time = 5; %s  GUI实时绘图横轴
 config.fig.position = [1100, 550, 800, 400];  % GUI实时绘图窗口位置和大小
 config.chans_to_plot = 1:8;   % GUI实时绘图通道index
-config.ylim = {[-0.1, 5.1] , [-0.1, 5.1], [-0.1, 5.1] ,[-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1]};
+config.ylim = {[-10.1, 10.1] , [-10.1, 10.1], [-0.1, 5.1] ,[-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1]};
 config.units = {'V', 'V', 'V', 'V', 'V', 'V', 'V', 'V'};
 config.ax_positions = {[0.03, 0.80, 0.45, 0.17], ...
                     [0.03, 0.56, 0.45, 0.17], ...
