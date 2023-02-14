@@ -44,7 +44,7 @@ classdef RC2_DoubleRotation_GUIController < handle
         end
         
       
-        %% stage callback
+        %% Stage callback
         
         function changed_move_to_pos(obj)            % Central Stage面板Position文本输入框回调函数
             val = obj.view.handles.PositionEditField.Value;
@@ -315,6 +315,7 @@ classdef RC2_DoubleRotation_GUIController < handle
 
                 if strcmp(return_message, 'abort')   % strcmp(s1,s2) 比较 s1 和 s2，如果二者相同，则返回 1 (true)，否则返回 0 (false)。如果文本的大小和内容相同，则它们将视为相等。
                     error('return signal from visual stimulus computer was to abort'); % 假如从远程主机返回'abort'则终止。表明1)protocol在运行中；或2)未知的protocol
+                    % TODO：添加终止后的reset
                 elseif ~strcmp(return_message, 'visual_stimulus_setup_complete')
                     error('unknown return signal from visual stimulus computer');   % 假如从远程主机返回'visual_stimulus_setup_complete'则继续，否则报错
                 end
@@ -347,12 +348,9 @@ classdef RC2_DoubleRotation_GUIController < handle
             end
         end
         
-        %{
-        function experiment_trial_updated(obj, ~, ~)                    % 更新RC2 GUI界面Experiment面板Trial#数文本显示
-            str = sprintf('%i', obj.experiment_seq.current_trial);
-            set(obj.view.handles.edit_experiment_trial, 'string', str);
-        end
-        %}
+        
+
+        
         
         %% Saving callback
         

@@ -284,7 +284,7 @@ classdef Ensemble_DoubleRotation < handle
 
             % Set to gear mode - TODO hard coded @0 for axis
             EnsembleCommandExecute(handle, 'GEAR @0, 1');
-            obj.target_axes = [NaN NaN];
+%             obj.target_axes = [NaN NaN];
         end
 
         function stop_listen(obj, sessionHandle)
@@ -307,7 +307,7 @@ classdef Ensemble_DoubleRotation < handle
             EnsembleParameterSetValue(sessionHandle, EnsembleParameterId.GearCamScaleFactor, axes, obj.default_gearscalefactor);
             EnsembleParameterSetValue(sessionHandle, EnsembleParameterId.GearCamAnalogDeadband, axes, obj.default_analogdeadband);
             EnsembleParameterSetValue(sessionHandle, EnsembleParameterId.GainKpos, axes, obj.default_gainkpos);
-            obj.target_axes = [NaN NaN];
+%             obj.target_axes = [NaN NaN];
         end
 
         function reset_pso(obj)
@@ -326,7 +326,7 @@ classdef Ensemble_DoubleRotation < handle
             % Stops active tasks and disables motion on the Ensemble.
 
             if ~obj.enabled, return, end
-
+            obj.target_axes = [NaN NaN];
             obj.abort_all();
         end
     end

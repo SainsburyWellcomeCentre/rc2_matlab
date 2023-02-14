@@ -1,8 +1,8 @@
-classdef RC2_DoubleRotation_Controller < handle
+classdef RC2_DoubleRotation_Controller2 < handle
     
     properties
         
-        communication
+%         communication
         tic
         ni
 %         teensy
@@ -26,9 +26,9 @@ classdef RC2_DoubleRotation_Controller < handle
 %         teensy_gain
 %         delayed_velocity
         lick_detector
-        
-        data
-        tdata
+%         
+%         data
+%         tdata
     end
     
     
@@ -44,32 +44,32 @@ classdef RC2_DoubleRotation_Controller < handle
     
     methods
         
-        function obj = RC2_DoubleRotation_Controller(config)
+        function obj = RC2_DoubleRotation_Controller2(config)
         %%obj = RC2_DoubleRotation_Controller(config)
-        %   Main class for interfacing with the rollercoaster setup.            ÓÃÓÚÓë¹ıÉ½³µÉèÖÃ½Ó¿ÚµÄÖ÷Àà
-        %       config - configuration structure containing necessary           config-°üº¬±ØÒªĞÅÏ¢µÄÅäÖÃ½á¹¹
-        %           parameters for setup - usually this is created with         ÉèÖÃ²ÎÊı¡ª¡ªÍ¨³£ÕâÊÇÓÃconfig_default´´½¨µÄ£¬µ«µ±È»Äã¿ÉÒÔ¶¨Òå×Ô¼ºµÄÅäÖÃ½á¹¹
+        %   Main class for interfacing with the rollercoaster setup.            ç”¨äºä¸è¿‡å±±è½¦è®¾ç½®æ¥å£çš„ä¸»ç±»
+        %       config - configuration structure containing necessary           config-åŒ…å«å¿…è¦ä¿¡æ¯çš„é…ç½®ç»“æ„
+        %           parameters for setup - usually this is created with         è®¾ç½®å‚æ•°â€”â€”é€šå¸¸è¿™æ˜¯ç”¨config_defaultåˆ›å»ºçš„ï¼Œä½†å½“ç„¶ä½ å¯ä»¥å®šä¹‰è‡ªå·±çš„é…ç½®ç»“æ„
         %           config_default, but of course you can define your own
         %           config structure
-        %   For information on each property see the related class.             ÓĞ¹ØÃ¿¸öÊôĞÔµÄĞÅÏ¢£¬Çë²Î¼ûÏà¹ØÀà¡£
+        %   For information on each property see the related class.             æœ‰å…³æ¯ä¸ªå±æ€§çš„ä¿¡æ¯ï¼Œè¯·å‚è§ç›¸å…³ç±»ã€‚
             
-            obj.communication = TCPIPcommunication_DoubleRotation (config);
-            obj.tic = tic;  % ticÓÃÀ´±£´æµ±Ç°Ê±¼ä£¬ËæºóÊ¹ÓÃtocÀ´²âÁ¿³ÌĞòÍê³ÉÊ±¼ä  
-            obj.ni = NI(config);   % ¼ì²éNIDAQ×´Ì¬£¬´´½¨ Ä£ÄâÊäÈëÊä³ö£¬Êı×ÖÊäÈëÊä³ö£¬ºÍ¼ÆÊıÆ÷Êä³ö Êı¾İ²É¼¯
-            obj.ensemble = Ensemble_DoubleRotation(config);   % ¿ØÖÆÆ½Ì¨µÄĞı×ª
-            obj.pump = Pump(obj.ni, config);   % ¸øË®±Ã
-            obj.reward = Reward(obj.pump, config);  % Ë®½±Àø
-            obj.plotting = Plotting_DoubleRotation(config);   % ÊµÊ±»æÍ¼Ä£¿é³õÊ¼ÅäÖÃ£¬²¢¿ªÆôÊµÊ±»æÍ¼´°¿Ú
+%             obj.communication = TCPIPcommunication_DoubleRotation (config);
+            obj.tic = tic;  % ticç”¨æ¥ä¿å­˜å½“å‰æ—¶é—´ï¼Œéšåä½¿ç”¨tocæ¥æµ‹é‡ç¨‹åºå®Œæˆæ—¶é—´  
+            obj.ni = NI(config);   % æ£€æŸ¥NIDAQçŠ¶æ€ï¼Œåˆ›å»º æ¨¡æ‹Ÿè¾“å…¥è¾“å‡ºï¼Œæ•°å­—è¾“å…¥è¾“å‡ºï¼Œå’Œè®¡æ•°å™¨è¾“å‡º æ•°æ®é‡‡é›†
+            obj.ensemble = Ensemble_DoubleRotation(config);   % æ§åˆ¶å¹³å°çš„æ—‹è½¬
+            obj.pump = Pump(obj.ni, config);   % ç»™æ°´æ³µ
+            obj.reward = Reward(obj.pump, config);  % æ°´å¥–åŠ±
+            obj.plotting = Plotting_DoubleRotation(config);   % å®æ—¶ç»˜å›¾æ¨¡å—åˆå§‹é…ç½®ï¼Œå¹¶å¼€å¯å®æ—¶ç»˜å›¾çª—å£
             obj.sound = Sound_DoubleRotation(config);         
-            obj.saver = Saver_DoubleRotation(obj, config);    % ±£´æ²ÉÑùÊı¾İµ½.binÎÄ¼ş£¬ÅäÖÃĞÅÏ¢µ½.cfgÎÄ¼ş
+            obj.saver = Saver_DoubleRotation(obj, config);    % ä¿å­˜é‡‡æ ·æ•°æ®åˆ°.binæ–‡ä»¶ï¼Œé…ç½®ä¿¡æ¯åˆ°.cfgæ–‡ä»¶
             obj.data_transform = DataTransform(config);
             obj.offsets = Offsets(obj, config);
             obj.lick_detector = LickDetect(obj, config);
             
 
-%             obj.teensy = Teensy(config);  % ¿ØÖÆÅÜ²½»úËÙ¶È
-%             obj.soloist = Soloist(config);   % ¿ØÖÆÆ½Ì¨µÄÆ½ÒÆ
-%             obj.treadmill = Treadmill(obj.ni, config);  % ÅÜ²½»ú
+%             obj.teensy = Teensy(config);  % æ§åˆ¶è·‘æ­¥æœºé€Ÿåº¦
+%             obj.soloist = Soloist(config);   % æ§åˆ¶å¹³å°çš„å¹³ç§»
+%             obj.treadmill = Treadmill(obj.ni, config);  % è·‘æ­¥æœº
 %             obj.multiplexer = Multiplexer(obj.ni, config);
 %             obj.position = Position(config);
 %             obj.delayed_velocity = DelayedVelocity(obj.ni, config);
@@ -162,46 +162,46 @@ classdef RC2_DoubleRotation_Controller < handle
         end
         
         
-        function prepare_acq(obj)   % ÊµÑé¿ªÊ¼Ç°µÄ×¼±¸
+        function prepare_acq(obj)   % å®éªŒå¼€å§‹å‰çš„å‡†å¤‡
             
             if obj.acquiring || obj.acquiring_preview
                 error('already acquiring data')
                 return %#ok<UNRCH>
             end
             
-            obj.saver.setup_logging();                        % ½«NIDAQ²ÉÑùÅäÖÃĞÅÏ¢config±£´æ³É.cfgÎÄ¼ş¡£ÅäÖÃĞÅÏ¢ÔÚconfig_sweiler.mÖĞĞŞ¸Ä
-            obj.ni.prepare_acq(@(x, y)obj.h_callback(x, y))   % ÕìÌıNIDAQÊı¾İ²É¼¯£¬Êı¾İ¿ÉÓÃÔò´¥·¢»Øµ÷º¯Êıh_callback
-            obj.plotting.reset_vals();                        % ³õÊ¼»¯ÊµÊ±»æÍ¼´°¿Ú±äÁ¿
-            obj.lick_detector.reset();                        % ³õÊ¼»¯Ìò¼ì²âÆ÷
+            obj.saver.setup_logging();                        % å°†NIDAQé‡‡æ ·é…ç½®ä¿¡æ¯configä¿å­˜æˆ.cfgæ–‡ä»¶ã€‚é…ç½®ä¿¡æ¯åœ¨config_sweiler.mä¸­ä¿®æ”¹
+            obj.ni.prepare_acq(@(x, y)obj.h_callback(x, y))   % ä¾¦å¬NIDAQæ•°æ®é‡‡é›†ï¼Œæ•°æ®å¯ç”¨åˆ™è§¦å‘å›è°ƒå‡½æ•°h_callback
+            obj.plotting.reset_vals();                        % åˆå§‹åŒ–å®æ—¶ç»˜å›¾çª—å£å˜é‡
+            obj.lick_detector.reset();                        % åˆå§‹åŒ–èˆ”æ£€æµ‹å™¨
         end
         
         
-        function start_acq(obj)    % ¿ªÊ¼ÊµÑé
+        function start_acq(obj)    % å¼€å§‹å®éªŒ
             
             % if already acquiring don't do anything
             if obj.acquiring || obj.acquiring_preview; return; end
             
             % start the NI-DAQ device and set acquiring flag to true
-            obj.ni.start_acq()      % ¿ªÆôCOºÍAI
+            obj.ni.start_acq()      % å¼€å¯COå’ŒAI
             obj.acquiring = true;
         end
         
         
-        function h_callback(obj, ~, evt)   % callbackfcn(src, evt)£¬ÆäÖĞsrcÊÇ·¢Æğ»Øµ÷µÄ¶ÔÏóµÄ¾ä±ú£¬¶øevtÊÇ¹ØÁªµÄ¡°ÊÂ¼şÊı¾İ¡±¡£evtÊı¾İÀàĞÍÓĞÊ±Îªevent.EventData»òstructÀà¡£
+        function h_callback(obj, ~, evt)   % callbackfcn(src, evt)ï¼Œå…¶ä¸­srcæ˜¯å‘èµ·å›è°ƒçš„å¯¹è±¡çš„å¥æŸ„ï¼Œè€Œevtæ˜¯å…³è”çš„â€œäº‹ä»¶æ•°æ®â€ã€‚evtæ•°æ®ç±»å‹æœ‰æ—¶ä¸ºevent.EventDataæˆ–structç±»ã€‚
             
             % store the data so others can use it
-            obj.data = evt.Data;   % ½«NIDAQ²É¼¯µÄµ¥Î»Êı¾İ(Êı¾İÁ¿Îª5000)¸³Öµ¸ødataÊôĞÔ
+            obj.data = evt.Data;   % å°†NIDAQé‡‡é›†çš„å•ä½æ•°æ®(æ•°æ®é‡ä¸º5000)èµ‹å€¼ç»™dataå±æ€§
             
             % log raw voltage
-            obj.saver.log(evt.Data);   % ½«NIDAQ²É¼¯µÄµ¥Î»Êı¾İ×ª»»Îªint16ÕûĞÍ£¬²¢Ğ´Èë.binÎÄ¼ş
+            obj.saver.log(evt.Data);   % å°†NIDAQé‡‡é›†çš„å•ä½æ•°æ®è½¬æ¢ä¸ºint16æ•´å‹ï¼Œå¹¶å†™å…¥.binæ–‡ä»¶
             
             % transform data
-            obj.tdata = obj.data_transform.transform(evt.Data);  % Êı¾İ±ä»»£¬¼õÈ¥ÏàÓ¦Æ«ÒÆÁ¿(offset)²¢³ËÒÔÏàÓ¦±ÈÀı(scale)¡£´Ë´¦offset=0, scale=1£¬Ïàµ±ÓÚÎ´×÷×ª»»¡£
+            obj.tdata = obj.data_transform.transform(evt.Data);  % æ•°æ®å˜æ¢ï¼Œå‡å»ç›¸åº”åç§»é‡(offset)å¹¶ä¹˜ä»¥ç›¸åº”æ¯”ä¾‹(scale)ã€‚æ­¤å¤„offset=0, scale=1ï¼Œç›¸å½“äºæœªä½œè½¬æ¢ã€‚
             
             % pass transformed data to callbacks
-            obj.plotting.ni_callback(obj.tdata);  % Ê¹ÓÃ±ä»»ºóµÄÊı¾İ¸üĞÂÊµÊ±»æÍ¼
+            obj.plotting.ni_callback(obj.tdata);  % ä½¿ç”¨å˜æ¢åçš„æ•°æ®æ›´æ–°å®æ—¶ç»˜å›¾
 %             obj.position.integrate(obj.tdata(:, 1));
-            obj.lick_detector.loop();    % °´Ö¸¶¨¹æÔò½øĞĞÌòÊ³¼ì²â£¬¼ì²âµ½·ûºÏÒªÇóµÄÌòÊ³ÊÂ¼şÔò»Øµ÷give_rewardº¯Êı
+            obj.lick_detector.loop();    % æŒ‰æŒ‡å®šè§„åˆ™è¿›è¡Œèˆ”é£Ÿæ£€æµ‹ï¼Œæ£€æµ‹åˆ°ç¬¦åˆè¦æ±‚çš„èˆ”é£Ÿäº‹ä»¶åˆ™å›è°ƒgive_rewardå‡½æ•°
         end
         
         
@@ -209,7 +209,7 @@ classdef RC2_DoubleRotation_Controller < handle
             if ~obj.acquiring; return; end
             if obj.acquiring_preview; return; end
             obj.acquiring = false;
-            obj.ni.stop_acq();             % Í£Ö¹NIDAQµÄAIºÍCounterOutput
+            obj.ni.stop_acq();             % åœæ­¢NIDAQçš„AIå’ŒCounterOutput
             obj.saver.stop_logging();
         end
         
