@@ -1,4 +1,4 @@
-# Rollercoaster V2 (RC2)
+# Rollercoaster V2 (RC2) - DoubleRotation v1.0
 
 This repository contains the software control code and documentation for the Rollercoaster V2 setup.
 
