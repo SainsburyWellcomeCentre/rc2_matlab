@@ -1,10 +1,14 @@
-classdef WaveformDrivenRotation2 < handle
+classdef WaveformDrivenRotation_EnsembleTest < handle
     properties
         handle_acquisition = true;
         wave_fname;
         waveform;
         ctl % :class:`rc.main.RC2Controller` object controller.
         target_axes;
+        real_time_offset_error
+        SpeedFeedback
+        PositionFeedback
+        ensembleHandle
     end
 
     properties (SetAccess = private)
@@ -15,27 +19,36 @@ classdef WaveformDrivenRotation2 < handle
         
     end
 
+
     methods
-        function obj = WaveformDrivenRotation2(ctl, config, fname)
+
+        function obj = WaveformDrivenRotation_EnsembleTest(ctl, config, wform)
             obj.ctl = ctl;
-            obj.wave_fname = fname;
+            obj.waveform = wform;
             obj.all_axes = config.ensemble.all_axes;
-            obj.target_axes = 0;
+            obj.target_axes = config.ensemble.target_axes;
         end
+
 
         function load_wave(obj)
             if isempty(obj.wave_fname); return; end
 
-            w = double(read_bin(obj.wave_fname, 1)); % file must be single channel
+            w(:,1) = double(read_bin(obj.wave_fname, 1)); % file must be single channel
+            w(:,2) = w(:,1);
 
-            obj.waveform = -10 + 20*(w(:, 1) + 2^15)/2^16; % TODO - offset transformation
+            obj.waveform = -10 + 20*(w + 2^15)/2^16; % TODO - offset transformation
+%             obj.waveform(:,isnan(obj.target_axes))=0;
+%             obj.waveform(:,1)=0; obj.waveform(:,2)=0;
+            obj.waveform(:,1)=-0;
+            obj.waveform(:,2)=-obj.waveform(:,1);
         end
+
 
         function final_position = run(obj)
             final_position = 1;
 
             % load the waveform to be played
-            obj.load_wave();
+%             obj.load_wave();
 
             if isempty(obj.waveform)
                 final_position = 0;
@@ -61,12 +74,6 @@ classdef WaveformDrivenRotation2 < handle
             cfg = obj.get_config();
             obj.ctl.save_single_trial_config(cfg);
 
-%             % listen to correct source
-%             obj.ctl.multiplexer.listen_to('ni');
-% 
-%             % start PC listening to the correct trigger input
-%             obj.ctl.trigger_input.listen_to('soloist');
-
             % load the velocity waveform to NIDAQ
             obj.ctl.load_velocity_waveform(obj.waveform);
 
@@ -74,32 +81,50 @@ classdef WaveformDrivenRotation2 < handle
                 obj.ctl.start_acq();
             end
 
+            obj.ctl.ensemble.set_targetaxes([0 NaN]);
+            obj.ctl.ensemble.move_to(30, 40, true);
+            obj.ctl.ensemble.set_targetaxes([NaN 1]);
+            obj.ctl.ensemble.move_to(30, 40, true);
+% %{
             % home the ensemble
             disp('>>> Homing');
-%             obj.ctl.ensemble.force_home(obj.all_axes);
-            ctl.ensemble.target_axes = target_axes;
-            obj.ctl.ensemble.force_home();
+            obj.ctl.ensemble.set_targetaxes(obj.all_axes);
+            obj.ctl.ensemble.home(true);
             % Reset PSO
             disp('>>> Reset PSO');
-            obj.ctl.ensemble.reset_pso(obj.all_axes);
+            obj.ctl.ensemble.set_targetaxes(obj.all_axes);
+            obj.ctl.ensemble.reset_pso();
 
             % Do 0 calibration - TODO
-%             real_time_offset_error = obj.ctl.ensemble.calibrate_zero(obj.target_axes);
-
+%             obj.ctl.ensemble.set_targetaxes(obj.target_axes);
+%             obj.real_time_offset_error = obj.ctl.ensemble.calibrate_zero();
+%             disp('real_time_offset_error');
+%             obj.real_time_offset_error
+% %{
             % Ensemble offset - TODO
 %             obj.ctl.ensemble.ai_offset = -real_time_offset_error;
-%{
+
+
+
             % Set the ensemble to listen
             disp('>>> Setup Ensemble listen');
-            ensembleHandle = obj.ctl.ensemble.listen(obj.target_axes);
+%             ensembleHandle = obj.ctl.ensemble.listen(obj.target_axes);
+            obj.ctl.ensemble.set_targetaxes(obj.target_axes);
+            obj.ensembleHandle = obj.ctl.ensemble.listen();
 
             % Start playing the waveform on the NIDAQ
             disp('>>> Start waveform');
             obj.ctl.play_velocity_waveform();
 
             % check to see AO is still running
+            disp('>>> AO task running');
+            i = 1;
             while obj.ctl.ni.ao.task.IsRunning
-                disp('>>> AO task running');
+                obj.SpeedFeedback(i,1) = EnsembleStatusGetItem  (obj.ensembleHandle, obj.all_axes(1), EnsembleStatusItem.VelocityFeedback);
+                obj.PositionFeedback(i,1) = EnsembleStatusGetItem  (obj.ensembleHandle, obj.all_axes(1), EnsembleStatusItem.PositionFeedback);
+                obj.SpeedFeedback(i,2) = EnsembleStatusGetItem  (obj.ensembleHandle, obj.all_axes(2), EnsembleStatusItem.VelocityFeedback);
+                obj.PositionFeedback(i,2) = EnsembleStatusGetItem  (obj.ensembleHandle, obj.all_axes(2), EnsembleStatusItem.PositionFeedback);
+                i=i+1;
                 pause(0.005);
                 if obj.abort
                     obj.running = false;
@@ -107,26 +132,37 @@ classdef WaveformDrivenRotation2 < handle
                     return
                 end
             end
+            disp('>>> AO task finished');
 
+            
             % Stop Ensemble listen
-            obj.ctl.ensemble.stop_listen(ensembleHandle, obj.target_axes);
+            disp('>>> Stop Ensemble listen');
+            obj.ctl.ensemble.stop_listen(obj.ensembleHandle,true);
+            
+            obj.ctl.ensemble.set_targetaxes(obj.all_axes);
+            obj.ctl.ensemble.home(true);
 
             % stop acquisition if handling
             if obj.handle_acquisition
                 obj.ctl.stop_acq();
             end
 
+            obj.ctl.ensemble.abort_all();
+%}
             disp('>>> Reset PSO');
-            obj.ctl.ensemble.reset_pso(obj.all_axes);
+            obj.ctl.ensemble.set_targetaxes(obj.all_axes);
+            obj.ctl.ensemble.reset_pso();
 
             % the protocol is no longer running
             obj.running = false;
-            %}
+            
         end
+
 
         function stop(obj)
             obj.abort = true;
         end
+
 
         function cfg = get_config(obj)
             % TODO - other info
@@ -144,6 +180,7 @@ classdef WaveformDrivenRotation2 < handle
                 obj.ctl.stop_acq();
             end
         end
+
     end
 end
 

@@ -1,15 +1,15 @@
 function seq = Agatha_02(ctl)
 
-    protocol_id.name = 'Agatha_02';                         % 根据protocol_id配置lick_detect参数
+    protocol_id.name = 'Agatha_02';                        
     
     % config parameters to pass to the protocols
-    config.lick_detect.enable           = true;   % 使舔食检测模块可用
+    config.lick_detect.enable           = true;   
     config.lick_detect.lick_threshold       = 1;
-    config.lick_detect.n_windows        = 16;       % window数
-    config.lick_detect.window_size_ms   = 250;      % 单个window时长
-    config.lick_detect.n_lick_windows   = 2;        % 单个window内要求的舔食次数
-    config.lick_detect.n_consecutive_windows = 2;   % 要求的连续舔食window数
-    config.lick_detect.detection_trigger_type = 1;  % 触发奖励种类：1=检测到触发器电压超过阈值后，在连续若干个window中均检测到舔食则给予奖励；2=触发器电压高于阈值期间发生舔食则给予奖励
+    config.lick_detect.n_windows        = 16;       
+    config.lick_detect.window_size_ms   = 250;      
+    config.lick_detect.n_lick_windows   = 2;        
+    config.lick_detect.n_consecutive_windows = 2;   
+    config.lick_detect.detection_trigger_type = 1;  
     
     % create the protocol sequence
     seq = ProtocolSequence_DoubleRotation(ctl);

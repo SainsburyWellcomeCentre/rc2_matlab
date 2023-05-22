@@ -1,22 +1,22 @@
-function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
-    % Protocol type: passive rotation with visual s
+function [protocolconfig,seq] = PassiveRotationInDarkness_test_01(ctl,view)
+    % Protocol type: passive rotation in darkness
     % central stage - enabled. 
     %       S+ trial, high max speed. 
     %       S- trial, low max speed.
     % outer stage   - disabled
     % vis_stim      - disabled
 
-    protocol_id.name = 'PassiveRotation_01';                % 根据protocol_id配置lick_detect参数
+    protocol_id.name = 'PassiveRotationInDarkness_test_01';                
     
     % config parameters to pass to the protocols
-    protocolconfig.lick_detect.enable                   = true;     % 使舔食检测模块可用
+    protocolconfig.lick_detect.enable                   = true;     
     protocolconfig.lick_detect.lick_threshold           = 1;
     protocolconfig.lick_detect.n_windows                = 80;
     protocolconfig.lick_detect.window_size_ms           = 50;
     protocolconfig.lick_detect.n_lick_windows           = 1;
     protocolconfig.lick_detect.n_consecutive_windows    = 4;        % modified by A on 23/8; was 4
     protocolconfig.lick_detect.detection_trigger_type   = 1;
-    protocolconfig.enable_vis_stim = true;
+    protocolconfig.enable_vis_stim = false;
     
     % create the protocol sequence
     seq = ProtocolSequence_DoubleRotation(ctl,view);
@@ -59,7 +59,7 @@ function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
             trial.trial.enable_reward = true;
             
             trial.stage.enable_motion = true;
-            trial.stage.motion_time = 32.2;
+            trial.stage.motion_time = 15;
             trial.stage.central.enable = true;
             trial.stage.central.distance = -90;
             trial.stage.central.max_vel = 40; 
@@ -67,10 +67,12 @@ function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
             trial.stage.outer.enable = false;
             trial.stage.outer.distance = 0;
             trial.stage.outer.max_vel = 0; 
-            trial.stage.outer.mean_vel = 0;
-
-            trial.vis.enable_vis_stim = true;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = false;
             trial.vis.vis_stim_lable = 1;
+
+            trial.waveform = voltagewaveform_generator(trial.stage, 10000);
             
             % add protocol to the sequence
             seq.add(trial);
@@ -81,7 +83,7 @@ function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
             trial.trial.enable_reward = true;
             
             trial.stage.enable_motion = true;
-            trial.stage.motion_time = 32.2;
+            trial.stage.motion_time = 15;
             trial.stage.central.enable = true;
             trial.stage.central.distance = 90;
             trial.stage.central.max_vel = 40; 
@@ -89,10 +91,12 @@ function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
             trial.stage.outer.enable = false;
             trial.stage.outer.distance = 0;
             trial.stage.outer.max_vel = 0; 
-            trial.stage.outer.mean_vel = 0;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
             
-            trial.vis.enable_vis_stim = true;
+            trial.vis.enable_vis_stim = false;
             trial.vis.vis_stim_lable = 2;
+
+            trial.waveform = voltagewaveform_generator(trial.stage, 10000);
             
             % add protocol to the sequence
             seq.add(trial);
@@ -103,7 +107,7 @@ function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
             trial.trial.enable_reward = false;
             
             trial.stage.enable_motion = true;
-            trial.stage.motion_time = 32.2;
+            trial.stage.motion_time = 15;
             trial.stage.central.enable = true;
             trial.stage.central.distance = -90;
             trial.stage.central.max_vel = 10; 
@@ -111,10 +115,12 @@ function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
             trial.stage.outer.enable = false;
             trial.stage.outer.distance = 0;
             trial.stage.outer.max_vel = 0; 
-            trial.stage.outer.mean_vel = 0;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
             
-            trial.vis.enable_vis_stim = true;
+            trial.vis.enable_vis_stim = false;
             trial.vis.vis_stim_lable = 3;
+
+            trial.waveform = voltagewaveform_generator(trial.stage, 10000);
             
             % add protocol to the sequence
             seq.add(trial);
@@ -125,7 +131,7 @@ function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
             trial.trial.enable_reward = false;
             
             trial.stage.enable_motion = true;
-            trial.stage.motion_time = 32.2;
+            trial.stage.motion_time = 15;
             trial.stage.central.enable = true;
             trial.stage.central.distance = 90;
             trial.stage.central.max_vel = 10; 
@@ -133,10 +139,12 @@ function [protocolconfig,seq] = PassiveRotation_01(ctl,view)
             trial.stage.outer.enable = false;
             trial.stage.outer.distance = 0;
             trial.stage.outer.max_vel = 0; 
-            trial.stage.outer.mean_vel = 0;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
             
-            trial.vis.enable_vis_stim = true;
+            trial.vis.enable_vis_stim = false;
             trial.vis.vis_stim_lable = 4;
+
+            trial.waveform = voltagewaveform_generator(trial.stage, 10000);
             
             % add protocol to the sequence
             seq.add(trial);

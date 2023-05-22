@@ -1,27 +1,30 @@
-function [protocolconfig,seq] = VisualOnly_01(ctl,view)
+function [protocolconfig,seq] = VisualOnly_test_02(ctl,view)
     % Protocol type: visual stimuli only
     % central stage - disabled. 
     % outer stage   - disabled
     % vis_stim      - enabled
 
-    protocol_id.name = 'VisualOnly_01';                % 根据protocol_id配置lick_detect参数
-    
+    protocol_id.name = 'VisualOnly_test_02';                
+    enableRotation = false;
+    enableVisStim = true;
     % config parameters to pass to the protocols
-    protocolconfig.lick_detect.enable                   = true;     % 使舔食检测模块可用
+    % Here LickDetect trigger appears at rotation velosity peak time, lasts till rotation ends
+    protocolconfig.lick_detect.enable                   = true;     
     protocolconfig.lick_detect.lick_threshold           = 1;
-    protocolconfig.lick_detect.n_windows                = 80;
-    protocolconfig.lick_detect.window_size_ms           = 50;
+    protocolconfig.lick_detect.n_windows                = 60;      
+    protocolconfig.lick_detect.window_size_ms           = 250;
     protocolconfig.lick_detect.n_lick_windows           = 1;
-    protocolconfig.lick_detect.n_consecutive_windows    = 4;        % modified by A on 23/8; was 4
+    protocolconfig.lick_detect.n_consecutive_windows    = 2;        
     protocolconfig.lick_detect.detection_trigger_type   = 1;
-    protocolconfig.enable_vis_stim = true;
+    protocolconfig.lick_detect.delay                    = 15;       % delay of LickDetect trigger from TrialStart (in sec)
+    protocolconfig.enable_vis_stim = enableVisStim;
     
     % create the protocol sequence
     seq = ProtocolSequence_DoubleRotation(ctl,view);
     
     %%
     % restart random number generator
-    rng(1)
+    rng('shuffle');
 
     % list of protocols
     protocol_id.s_plusL         = 1;    % high max speed
@@ -56,18 +59,18 @@ function [protocolconfig,seq] = VisualOnly_01(ctl,view)
             trial.trial.stimulus_type = 's_plusL';
             trial.trial.enable_reward = true;
             
-            trial.stage.enable_motion = false;
-            trial.stage.motion_time = 32.2;
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = [];
             trial.stage.central.enable = false;
-            trial.stage.central.distance = -90;
-            trial.stage.central.max_vel = 40; 
-            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.central.distance = [];
+            trial.stage.central.max_vel = []; 
+            trial.stage.central.mean_vel = [];
             trial.stage.outer.enable = false;
-            trial.stage.outer.distance = 0;
-            trial.stage.outer.max_vel = 0; 
-            trial.stage.outer.mean_vel = 0;
+            trial.stage.outer.distance = [];
+            trial.stage.outer.max_vel = []; 
+            trial.stage.outer.mean_vel = [];
             
-            trial.vis.enable_vis_stim = true;
+            trial.vis.enable_vis_stim = enableVisStim;
             trial.vis.vis_stim_lable = 1;
             
             % add protocol to the sequence
@@ -78,18 +81,18 @@ function [protocolconfig,seq] = VisualOnly_01(ctl,view)
             trial.trial.stimulus_type = 's_plusR';
             trial.trial.enable_reward = true;
             
-            trial.stage.enable_motion = false;
-            trial.stage.motion_time = 32.2;
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = [];
             trial.stage.central.enable = false;
-            trial.stage.central.distance = 90;
-            trial.stage.central.max_vel = 40; 
-            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.central.distance = [];
+            trial.stage.central.max_vel = []; 
+            trial.stage.central.mean_vel = [];
             trial.stage.outer.enable = false;
-            trial.stage.outer.distance = 0;
-            trial.stage.outer.max_vel = 0; 
-            trial.stage.outer.mean_vel = 0;
+            trial.stage.outer.distance = [];
+            trial.stage.outer.max_vel = []; 
+            trial.stage.outer.mean_vel = [];
             
-            trial.vis.enable_vis_stim = true;
+            trial.vis.enable_vis_stim = enableVisStim;
             trial.vis.vis_stim_lable = 2;
             
             % add protocol to the sequence
@@ -100,18 +103,18 @@ function [protocolconfig,seq] = VisualOnly_01(ctl,view)
             trial.trial.stimulus_type = 's_minusL';
             trial.trial.enable_reward = false;
             
-            trial.stage.enable_motion = false;
-            trial.stage.motion_time = 32.2;
-            trial.stage.central.enable = true;
-            trial.stage.central.distance = -90;
-            trial.stage.central.max_vel = 10; 
-            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = [];
+            trial.stage.central.enable = false;
+            trial.stage.central.distance = [];
+            trial.stage.central.max_vel = []; 
+            trial.stage.central.mean_vel = [];
             trial.stage.outer.enable = false;
-            trial.stage.outer.distance = 0;
-            trial.stage.outer.max_vel = 0; 
-            trial.stage.outer.mean_vel = 0;
+            trial.stage.outer.distance = [];
+            trial.stage.outer.max_vel = []; 
+            trial.stage.outer.mean_vel = [];
             
-            trial.vis.enable_vis_stim = true;
+            trial.vis.enable_vis_stim = enableVisStim;
             trial.vis.vis_stim_lable = 3;
             
             % add protocol to the sequence
@@ -122,18 +125,18 @@ function [protocolconfig,seq] = VisualOnly_01(ctl,view)
             trial.trial.stimulus_type = 's_minusR';
             trial.trial.enable_reward = false;
             
-            trial.stage.enable_motion = false;
-            trial.stage.motion_time = 32.2;
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = [];
             trial.stage.central.enable = false;
-            trial.stage.central.distance = 90;
-            trial.stage.central.max_vel = 10; 
-            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.central.distance = [];
+            trial.stage.central.max_vel = []; 
+            trial.stage.central.mean_vel = [];
             trial.stage.outer.enable = false;
-            trial.stage.outer.distance = 0;
-            trial.stage.outer.max_vel = 0; 
-            trial.stage.outer.mean_vel = 0;
+            trial.stage.outer.distance = [];
+            trial.stage.outer.max_vel = []; 
+            trial.stage.outer.mean_vel = [];
             
-            trial.vis.enable_vis_stim = true;
+            trial.vis.enable_vis_stim = enableVisStim;
             trial.vis.vis_stim_lable = 4;
             
             % add protocol to the sequence

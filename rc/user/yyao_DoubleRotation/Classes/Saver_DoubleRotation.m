@@ -88,16 +88,7 @@ classdef Saver_DoubleRotation < handle
             if obj.is_logging; return; end
             obj.index = str;
         end
-        %{
-        function set_index(obj, val)
-            if ~isnumeric(val) || isinf(val) || isnan(val) || val < 1
-                fprintf('%s: %s ''val'' must be numeric and >= 1', class(obj), 'set_index');
-                return
-            end
-            if obj.is_logging; return; end
-            obj.index = round(val);
-        end
-        %}
+
         
         function set_filename(obj, str)
             if obj.is_logging; return; end
@@ -127,17 +118,6 @@ classdef Saver_DoubleRotation < handle
         end
         
         
-%         function fname = logging_fname_single_trial(obj)
-%             fname_ = sprintf('%s_%s_%03i_single_trial_%03i.bin', obj.prefix, obj.suffix, obj.index, obj.index_single_trial);
-%             fname = fullfile(obj.save_to, obj.prefix, fname_);
-%         end
-        
-        
-%         function fname = cfg_fname_single_trial(obj)
-%             fname_ = sprintf('%s_%s_%03i_single_trial_%03i.cfg', obj.prefix, obj.suffix, obj.index, obj.index_single_trial);
-%             fname = fullfile(obj.save_to, obj.prefix, fname_);
-%         end
-        
         
         function create_directory(obj)
             if obj.is_logging; return; end
@@ -161,14 +141,14 @@ classdef Saver_DoubleRotation < handle
                 end
             end
             
-            % create the right directory  创建正确的目录
+            % create the right directory
             obj.create_directory();
             
             % open the file for writing
-            obj.fid = fopen(obj.logging_fname(), 'w');   % 打开文件filename以便以二进制读取形式进行访问，并返回等于或大于3的整数文件标识符
+            obj.fid = fopen(obj.logging_fname(), 'w');   
             
             % save the config file
-            obj.save_config()           % 将NIDAQ采样配置信息config保存到.cfg文件
+            obj.save_config()           
             
             % set the is_logging flag to true
             obj.is_logging = true;
@@ -200,12 +180,12 @@ classdef Saver_DoubleRotation < handle
         end
         
         
-        function log(obj, data)                % 将NIDAQ采集的单位数据转换为int16整型，并写入.bin文件
+        function log(obj, data)                % transfer data collected via NIDAQ into int16 format, and save to .bin file
             if ~obj.enable; return; end
             if ~obj.is_logging; return; end
             
-            data = int16(-2^15 + ((data' - obj.ai_min_voltage)/obj.voltage_range)*2^16);  % 将电压数据转化为int16整型
-            fwrite(obj.fid, data(:), 'int16');  % 按照'int16'格式将data中的值写入.bin文件。obj.fid为文件标识符
+            data = int16(-2^15 + ((data' - obj.ai_min_voltage)/obj.voltage_range)*2^16);  
+            fwrite(obj.fid, data(:), 'int16');  
             
             obj.log_single_trial(data(1, :)); %TODO:  channel to save for trial
         end

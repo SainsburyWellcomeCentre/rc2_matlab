@@ -1,34 +1,17 @@
-classdef RC2_DoubleRotation_Controller2 < handle
+classdef Controller_EnsembleTest < handle
     
     properties
         
-%         communication
         tic
         ni
-%         teensy
-%         soloist
         ensemble
-        pump
-        reward
-%         treadmill
-%         multiplexer
         plotting
         saver
-        sound
-%         position
-%         zero_teensy
-%         disable_teensy
-%         trigger_input
         data_transform
-%         vis_stim
-%         start_soloist
         offsets
-%         teensy_gain
-%         delayed_velocity
-        lick_detector
-%         
-%         data
-%         tdata
+        
+        data
+        tdata
     end
     
     
@@ -44,44 +27,24 @@ classdef RC2_DoubleRotation_Controller2 < handle
     
     methods
         
-        function obj = RC2_DoubleRotation_Controller2(config)
+        function obj = Controller_EnsembleTest(config)
         %%obj = RC2_DoubleRotation_Controller(config)
-        %   Main class for interfacing with the rollercoaster setup.            用于与过山车设置接口的主类
-        %       config - configuration structure containing necessary           config-包含必要信息的配置结构
-        %           parameters for setup - usually this is created with         设置参数——通常这是用config_default创建的，但当然你可以定义自己的配置结构
+        %   Main class for interfacing with the rollercoaster setup.            
+        %       config - configuration structure containing necessary           
+        %           parameters for setup - usually this is created with         
         %           config_default, but of course you can define your own
         %           config structure
-        %   For information on each property see the related class.             有关每个属性的信息，请参见相关类。
+        %   For information on each property see the related class.             
             
-%             obj.communication = TCPIPcommunication_DoubleRotation (config);
-            obj.tic = tic;  % tic用来保存当前时间，随后使用toc来测量程序完成时间  
-            obj.ni = NI(config);   % 检查NIDAQ状态，创建 模拟输入输出，数字输入输出，和计数器输出 数据采集
-            obj.ensemble = Ensemble_DoubleRotation(config);   % 控制平台的旋转
-            obj.pump = Pump(obj.ni, config);   % 给水泵
-            obj.reward = Reward(obj.pump, config);  % 水奖励
-            obj.plotting = Plotting_DoubleRotation(config);   % 实时绘图模块初始配置，并开启实时绘图窗口
-            obj.sound = Sound_DoubleRotation(config);         
-            obj.saver = Saver_DoubleRotation(obj, config);    % 保存采样数据到.bin文件，配置信息到.cfg文件
+
+            obj.tic = tic;  
+            obj.ni = NI(config);   
+            obj.ensemble = Ensemble_DoubleRotation(config);   
+            obj.plotting = Plotting_DoubleRotation(config);   
+            obj.saver = Saver_DoubleRotation(obj, config);    
             obj.data_transform = DataTransform(config);
             obj.offsets = Offsets(obj, config);
-            obj.lick_detector = LickDetect(obj, config);
             
-
-%             obj.teensy = Teensy(config);  % 控制跑步机速度
-%             obj.soloist = Soloist(config);   % 控制平台的平移
-%             obj.treadmill = Treadmill(obj.ni, config);  % 跑步机
-%             obj.multiplexer = Multiplexer(obj.ni, config);
-%             obj.position = Position(config);
-%             obj.delayed_velocity = DelayedVelocity(obj.ni, config);
-            
-            % Triggers
-%             obj.vis_stim = VisStim(obj.ni, config);
-
-%             obj.zero_teensy = ZeroTeensy(obj.ni, config);
-%             obj.disable_teensy = DisableTeensy(obj.ni, config);
-%             obj.trigger_input = TriggerInput(obj.ni, config);
-%             obj.start_soloist = StartSoloist(obj.ni, config);
-%             obj.teensy_gain = TeensyGain(obj.ni, config);
         end
         
         
@@ -89,8 +52,7 @@ classdef RC2_DoubleRotation_Controller2 < handle
             delete(obj.plotting);
             
             % make sure that all devices are stopped properly
-%             obj.soloist.abort()
-            obj.sound.stop()
+            obj.ensemble.abort()
             obj.stop_acq()
             obj.ni.close()
         end
@@ -162,46 +124,45 @@ classdef RC2_DoubleRotation_Controller2 < handle
         end
         
         
-        function prepare_acq(obj)   % 实验开始前的准备
+        function prepare_acq(obj)   
             
             if obj.acquiring || obj.acquiring_preview
                 error('already acquiring data')
                 return %#ok<UNRCH>
             end
             
-            obj.saver.setup_logging();                        % 将NIDAQ采样配置信息config保存成.cfg文件。配置信息在config_sweiler.m中修改
-            obj.ni.prepare_acq(@(x, y)obj.h_callback(x, y))   % 侦听NIDAQ数据采集，数据可用则触发回调函数h_callback
-            obj.plotting.reset_vals();                        % 初始化实时绘图窗口变量
-            obj.lick_detector.reset();                        % 初始化舔检测器
+            obj.saver.setup_logging();                        
+            obj.ni.prepare_acq(@(x, y)obj.h_callback(x, y))   
+            obj.plotting.reset_vals();                       
         end
         
         
-        function start_acq(obj)    % 开始实验
+        function start_acq(obj)    
             
             % if already acquiring don't do anything
             if obj.acquiring || obj.acquiring_preview; return; end
             
             % start the NI-DAQ device and set acquiring flag to true
-            obj.ni.start_acq()      % 开启CO和AI
+            obj.ni.start_acq()      
             obj.acquiring = true;
         end
         
         
-        function h_callback(obj, ~, evt)   % callbackfcn(src, evt)，其中src是发起回调的对象的句柄，而evt是关联的“事件数据”。evt数据类型有时为event.EventData或struct类。
+        function h_callback(obj, ~, evt)   
             
             % store the data so others can use it
-            obj.data = evt.Data;   % 将NIDAQ采集的单位数据(数据量为5000)赋值给data属性
+            obj.data = evt.Data;   
             
             % log raw voltage
-            obj.saver.log(evt.Data);   % 将NIDAQ采集的单位数据转换为int16整型，并写入.bin文件
+            obj.saver.log(evt.Data);   
             
             % transform data
-            obj.tdata = obj.data_transform.transform(evt.Data);  % 数据变换，减去相应偏移量(offset)并乘以相应比例(scale)。此处offset=0, scale=1，相当于未作转换。
+            obj.tdata = obj.data_transform.transform(evt.Data);  
             
             % pass transformed data to callbacks
-            obj.plotting.ni_callback(obj.tdata);  % 使用变换后的数据更新实时绘图
+            obj.plotting.ni_callback(obj.tdata);  
 %             obj.position.integrate(obj.tdata(:, 1));
-            obj.lick_detector.loop();    % 按指定规则进行舔食检测，检测到符合要求的舔食事件则回调give_reward函数
+%             obj.lick_detector.loop();    
         end
         
         
@@ -209,35 +170,9 @@ classdef RC2_DoubleRotation_Controller2 < handle
             if ~obj.acquiring; return; end
             if obj.acquiring_preview; return; end
             obj.acquiring = false;
-            obj.ni.stop_acq();             % 停止NIDAQ的AI和CounterOutput
+            obj.ni.stop_acq();             
             obj.saver.stop_logging();
         end
-        
-        %% Sound
-        function play_sound(obj)
-            obj.sound.play()
-        end
-        
-        
-        function stop_sound(obj)
-            obj.sound.stop()
-        end
-        
-        %% Pump
-        function give_reward(obj)
-%             obj.reward.give_reward();
-            obj.reward.start_reward(0)
-        end
-        
-        function pump_on(obj)
-            obj.pump.on()
-        end
-        
-        
-        function pump_off(obj)
-            obj.pump.off()
-        end
-
         
         
         %% Stage (Ensemble)
@@ -256,21 +191,24 @@ classdef RC2_DoubleRotation_Controller2 < handle
             obj.ensemble.home();
         end
         
-        
-        function ramp_velocity(obj)
-            
-            % create a 1s ramp to 10mm/s
-            rate = obj.ni.ao_rate;
-            ramp = obj.soloist.v_per_cm_per_s * (0:rate-1) / rate;
-            
-            % use the first idle_offset value. we are assuming the ONLY use
-            % case for other analog channels is for a delayed copy of the
-            % velocity waveform...
-            waveform = obj.ni.ao_idle_offset(1) + ramp';
-            obj.load_velocity_waveform(waveform);
-            pause(0.1);
-            obj.play_velocity_waveform();
+        function set_target_axes(obj,axes)
+            obj.ensemble.target_axes = axes;
         end
+
+%         function ramp_velocity(obj)
+%             
+%             % create a 1s ramp to 10mm/s
+%             rate = obj.ni.ao_rate;
+%             ramp = obj.soloist.v_per_cm_per_s * (0:rate-1) / rate;
+%             
+%             % use the first idle_offset value. we are assuming the ONLY use
+%             % case for other analog channels is for a delayed copy of the
+%             % velocity waveform...
+%             waveform = obj.ni.ao_idle_offset(1) + ramp';
+%             obj.load_velocity_waveform(waveform);
+%             pause(0.1);
+%             obj.play_velocity_waveform();
+%         end
         
         
         function load_velocity_waveform(obj, waveform)
@@ -371,30 +309,6 @@ classdef RC2_DoubleRotation_Controller2 < handle
                 obj.set_ni_ao_idle('down', gear_mode);
             end
         end
-
-
-        %% Position
-        function reset_pc_position(obj)
-            %obj.position.reset();
-        end
-        
-        
-        function reset_teensy_position(obj)
-            obj.zero_teensy.zero();
-        end
-        
-        
-        function pos = get_position(obj)
-%             pos = obj.position.position;
-        end
-        
-        
-        %% Multiplexer
-        function multiplexer_listen_to(obj, src)
-            
-            % switch the digital output
-            obj.multiplexer.listen_to(src);
-        end
         
         
         %% Config
@@ -422,7 +336,8 @@ classdef RC2_DoubleRotation_Controller2 < handle
                     'nidaq.ao.rate',            sprintf('%.1f', obj.ni.ao.task.Rate);
                     'nidaq.ao.channel_names',   strjoin(obj.ni.ao.channel_names, ',');
                     'nidaq.ao.channel_ids',     strjoin(obj.ni.ao.channel_ids, ',');
-                    'nidaq.ao.idle_offset',     sprintf('%.10f', obj.ni.ao.idle_offset);
+                    'nidaq.ao.idle_offset',     strjoin(arrayfun(@(x)(sprintf('%.10f', x)), ...
+                                                    obj.ni.ao.idle_offset, 'uniformoutput', false), ',')
                     
                     'nidaq.co.channel_names',   strjoin(obj.ni.co.channel_names, ',');
                     'nidaq.co.channel_ids',     strjoin(obj.ni.co.channel_ids, ',');

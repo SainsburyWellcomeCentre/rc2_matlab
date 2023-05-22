@@ -8,48 +8,64 @@ pump_threshold              = 2.5;
 lick_threshold              = 2;
 
 % load the raw data and online data (if it exists)
-mat_fname                   = strrep(bin_fname, '.bin', '_themepark.mat');  % 将bin_fname中所有的'.bin'替换成'_themepark.mat'。strrep函数，查找并替换子字符串
+mat_fname                   = strrep(bin_fname, '.bin', '_themepark.mat');  
 
-[data, dt, channel_names, ~] = read_rc2_bin(bin_fname);   % data，读取的bin文件数据。dt，时间bin长度。channel_names，data每列数据的题名。
+[data, dt, channel_names, ~] = read_rc2_bin(bin_fname);   
 online_data_exists          = isfile(mat_fname);
 
 if online_data_exists
-    online_data                 = load(mat_fname);   % 假如.mat文件存在，则读取.mat文件
+    online_data                 = load(mat_fname);   
 end
 
 % channel id of various signals
-vis_stim_chan_idx           = strcmp(channel_names, 'visual_stimulus_computer_minidaq');   
+stage_central_idx           = strcmp(channel_names, 'stage_central');   
+stage_outer_idx           = strcmp(channel_names, 'stage_outer');  
+LickDetect_trigger_chan_idx           = strcmp(channel_names, 'LickDetect_trigger');   
 lick_chan_idx               = strcmp(channel_names, 'lick');                               
-pump_chan_idx               = strcmp(channel_names, 'pump');                               
-photodiodeL_idx              = strcmp(channel_names, 'photodiode_left'); 
-photodiodeR_idx              = strcmp(channel_names, 'photodiode_right');  
+pump_chan_idx               = strcmp(channel_names, 'pump');  
+visstim_chan_idx               = strcmp(channel_names, 'VisualStim_trigger');
+photodiodeL_idx             = strcmp(channel_names, 'photodiode_left'); 
+photodiodemid_idx           = strcmp(channel_names, 'photodiode_mid');
+photodiodeR_idx             = strcmp(channel_names, 'photodiode_right');  
 
 % time base of data
 timebase                    = (0:size(data, 1)-1)*dt;
 
 % signals
-vis_stim_signal             = data(:, vis_stim_chan_idx);
-photodiodeL_signal           = data(:, photodiodeL_idx);
-photodiodeR_signal           = data(:, photodiodeR_idx);
+stage_central_signal        = data(:, stage_central_idx)*10;
+stage_outer_signal          = data(:, stage_outer_idx)*10;
+LickDetect_trigger_signal   = data(:, LickDetect_trigger_chan_idx);
+photodiodeL_signal          = data(:, photodiodeL_idx);
+photodiodeMid_signal        = data(:, photodiodemid_idx);
+photodiodeR_signal          = data(:, photodiodeR_idx);
 lick_signal                 = data(:, lick_chan_idx);
 pump_signal                 = data(:, pump_chan_idx);
+visstim_signal              = data(:, visstim_chan_idx);
 % photodiode_signal           = data(:, photodiode_idx);
 
 figure()
-plot(timebase, vis_stim_signal);
+plot(timebase, stage_central_signal);
 hold on;
-plot(timebase, photodiodeL_signal);
+plot(timebase, stage_outer_signal);
 hold on;
-plot(timebase, photodiodeR_signal);
+plot(timebase, LickDetect_trigger_signal);
 hold on;
 plot(timebase, pump_signal);
 hold on;
 plot(timebase, lick_signal);
+hold on;
+plot(timebase, visstim_signal);
+hold on;
+plot(timebase, photodiodeL_signal);
+hold on;
+plot(timebase, photodiodeMid_signal);
+hold on;
+plot(timebase, photodiodeR_signal);
 hold off;
-legend('Vis Stim','Photodiode Left','Photodiode Right','Pump','Lick');
+legend('Central stage speed (deg/sec)','Outer stage speed (deg/sec)','LickDetect trigger','Pump','Lick','VisStim','Photodiode Left','Photodiode Mid','Photodiode Right');
 
 % look for stimulus on
-vis_stim_onset_flag         = diff(vis_stim_signal > vis_stim_threshold) == 1;
+vis_stim_onset_flag         = diff(LickDetect_trigger_signal > vis_stim_threshold) == 1;
 vis_stim_onset_time         = timebase(vis_stim_onset_flag);
 n_trials                    = length(vis_stim_onset_time);
 

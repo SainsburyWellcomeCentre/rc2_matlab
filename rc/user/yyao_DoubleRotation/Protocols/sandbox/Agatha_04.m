@@ -1,9 +1,9 @@
 function seq = Agatha_04(ctl)
 
-    protocol_id.name = 'Agatha_04';                         % 根据protocol_id配置lick_detect参数
+    protocol_id.name = 'Agatha_04';                         
     
     % config parameters to pass to the protocols
-    config.lick_detect.enable           = true;   % 使舔食检测模块可用
+    config.lick_detect.enable           = true;   
     config.lick_detect.lick_threshold       = 1;
     config.lick_detect.n_windows        = 80;
     config.lick_detect.window_size_ms   = 50;

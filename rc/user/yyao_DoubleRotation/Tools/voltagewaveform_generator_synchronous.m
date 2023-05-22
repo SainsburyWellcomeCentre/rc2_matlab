@@ -1,4 +1,4 @@
-function waveform = voltagewaveform_generator(stageparameters, samplingrate)
+function waveform = voltagewaveform_generator_synchronous(stageparameters, samplingrate)
 
     rate_speed_to_voltage = 0.05;
 
@@ -24,12 +24,7 @@ function waveform = voltagewaveform_generator(stageparameters, samplingrate)
         speed(:,1) = interp1(1:N:N*length(speed_array) , speed_array , 1:1:N*length(speed_array) , 'spline');
     end
     if outer_enable
-        speed_array = speed_generator (outer_vmax, outer_vmean);
-        if outer_distance<0
-            speed_array = speed_array*-1;
-        end
-        N = waveformlength/1000;
-        speed(:,2) = interp1(1:N:N*length(speed_array) , speed_array , 1:1:N*length(speed_array) , 'spline');
+        speed(:,2) = speed(:,1);
     end
 
     waveform = speed * rate_speed_to_voltage;
