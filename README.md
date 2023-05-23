@@ -1,7 +1,7 @@
 # Rollercoaster V2 (RC2) - DoubleRotation v1.0
 
 This is a branch of Rollercoaster V2 repository that contains the software control code and documentation for the RC2DoubleRotation 
-setup in user folder 'yyao_DoubleRotation'. 
+setup in user folder 'yyao_DoubleRotation'. The code cooperates with visual stimuli code on another computer to drive the setup. 
 
 ## Hardware
 
@@ -10,6 +10,7 @@ The software was written to control the following hardware:
 1. An NI DAQ USB-6343
 2. Two Aerotech rotatory stages (ADRT150-135 and ADRT260-160) with two Ensemble HLe controllers
 3. A pump for reward
+4. A visual stimuli computer with Ethernet connection
 
 ## Installation
 
