@@ -1,27 +1,24 @@
 # Rollercoaster V2 (RC2) - DoubleRotation v1.0
 
-This repository contains the software control code and documentation for the Rollercoaster V2 setup.
+This is a branch of Rollercoaster V2 repository that contains the software control code and documentation for the RC2DoubleRotation 
+setup in user folder 'yyao_DoubleRotation'. 
 
 ## Hardware
 
 The software was written to control the following hardware:
 
-1. An NI USB-6229 DAQ
-2. A Teensy 3.2
-3. An Aerotech linear stage (ACT115) with Soloist HLe controller 
-4. A multiplexer
-5. A pump for reward
-6. A solenoid for blocking the treadmill
+1. An NI DAQ USB-6343
+2. Two Aerotech rotatory stages (ADRT150-135 and ADRT260-160) with two Ensemble HLe controllers
+3. A pump for reward
 
 ## Installation
 
-This code has been developed on Windows 7 with MATLAB 2018b.
+This code has been developed on Windows 10 with MATLAB 2022b.
 
 In order to use all hardware the following should be installed on the system:
 
-1. Aerotech drivers for controlling the linear stage (software comes with stage)
-2. Arduino software for controlling the Teensy's (https://www.pjrc.com/teensy/td_download.html)
-3. NI-DAQmx drivers
+1. Aerotech drivers for controlling the rotatory stages (Aerotech Ensemble v5.06.001, comes with controllers)
+2. NI-DAQmx drivers
 
 ## Usage best practices
 
