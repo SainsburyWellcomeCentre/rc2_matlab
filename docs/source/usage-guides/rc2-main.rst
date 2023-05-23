@@ -8,7 +8,7 @@ Rollercoaster Description
 -------------------------
 
 The code is for controlling the "rollercoaster" setup with two independent rotatory stages (referred to as
-RC2DoubleRotation). This is a branch of RC2 software. Modifications are made in a newly created user folder
+**RC2DoubleRotation**). This is a branch of RC2 software. All changes are made in a newly created user folder
 ``<top_directory>\rc\user\yyao_DoubleRotation``. The code cooperates with visual stimuli code on another computer via 
 Ethernet connection to drive the setup.
 
