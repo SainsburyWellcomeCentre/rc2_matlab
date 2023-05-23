@@ -2,44 +2,43 @@ Rollercoaster Usage Overview
 ============================
 
 .. note::
-    WARNING: this repository contains code for moving a linear stage carrying large loads, which can move rapidly and unexpectedly. This may present a health hazard. You use this software at your own risk. The authors accept absolutely no responsibility for damage, injury or loss of life resulting from use of this software.
+    WARNING: this repository contains code for moving two rotatory stages carrying large loads, which can move rapidly and unexpectedly. This may present a health hazard. You use this software at your own risk. The authors accept absolutely no responsibility for damage, injury or loss of life resulting from use of this software.
 
 Rollercoaster Description
 -------------------------
 
-Code for controlling the "rollercoaster" setup.
-The main feature of the setup is a treadmill coupled to a linear stage.
+The code is for controlling the "rollercoaster" setup with two independent rotatory stages (referred to as
+RC2DoubleRotation). This is a branch of RC2 software. Modifications are made in a newly created user folder
+``<top_directory>\rc\user\yyao_DoubleRotation``. The code cooperates with visual stimuli code on another computer via 
+Ethernet connection to drive the setup.
 
 Hardware
 --------
 
 The software was written to control the following hardware:
 
-1. An NI USB-6229 DAQ
-2. A Teensy 3.2
-3. An Aerotech linear stage (ACT115) with Soloist HLe controller 
-4. A multiplexer
-5. A pump for reward
-6. A solenoid for blocking the treadmill
+1. An NI DAQ USB-6343
+2. Two Aerotech rotatory stages (ADRT150-135 and ADRT260-160) with two Ensemble HLe controllers
+3. A pump for reward 
+4. A visual stimuli computer with Ethernet connection
 
 These hardware features can be enabled or disabled in the config file (see `Configuration Files`_).
 
 Installation
 ------------
 
-This code has been developed on Windows 7 with MATLAB 2018b.
+This code has been developed on Windows 10 with MATLAB 2022b.
 
 In order to use all hardware the following should be installed on the system:
 
-1. Aerotech drivers for controlling the linear stage (software comes with stage)
-2. Arduino software for controlling the Teensy's (https://www.pjrc.com/teensy/td_download.html)
-3. NI-DAQmx drivers
+1. Aerotech drivers for controlling the rotatory stages (Aerotech Ensemble v5.06.001, comes with controllers)
+2. NI-DAQmx drivers
 
 Configuration Files
 -------------------
 
 A template configuration file is in: 
-- ``<top_directory>\rc\main\configs\config_template.m``
+- ``<top_directory>\rc\user\yyao_DoubleRotation\Main\configs\config_yyao.m``
 
 where `<top_directory>` is the location on the system of this repository.  
 This file should be copied and modified for the current setup.
