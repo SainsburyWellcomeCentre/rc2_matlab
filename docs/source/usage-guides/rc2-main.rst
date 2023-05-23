@@ -7,10 +7,10 @@ Rollercoaster Usage Overview
 Rollercoaster Description
 -------------------------
 
-The code is for controlling the "rollercoaster" setup with two independent rotatory stages (referred to as
-**RC2DoubleRotation**). This is a branch of RC2 software. All changes are made in a newly created user folder
-``<top_directory>\rc\user\yyao_DoubleRotation``. The code cooperates with visual stimuli code on another computer via 
-Ethernet connection to drive the setup.
+This is a branch of RC2 software. The code is for controlling the "rollercoaster" setup with two independent rotatory 
+stages and a visual stimuli system (referred to as **RC2DoubleRotation**). The code in folder ``<top_directory>\rc`` in 
+conjunction with that in folder ``<top_directory>\visual_stimuli`` to control the stages and visual stimuli respectively. 
+To drive the setup, run RC2 as user 'yyao_DoubleRotation'. 
 
 Hardware
 --------
