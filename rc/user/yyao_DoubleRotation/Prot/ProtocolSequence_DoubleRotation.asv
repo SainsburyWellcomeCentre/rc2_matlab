@@ -2,7 +2,7 @@ classdef ProtocolSequence_DoubleRotation < handle
     
     properties
         ctl
-        
+        config
         sequence = {}
         running = false;
         abort = false;
@@ -148,6 +148,7 @@ classdef ProtocolSequence_DoubleRotation < handle
                 
                 %%% trial protocol start %%%
 %                 obj.ctl.trial_start_trigger();  % at the beginning of the trial, send TTL pulse to trigger the start of lick detection. lick_detect trigger from DO 'port0/line2' to AI5
+                lickdetect_trigger = 0;
                 t_trigger = timer;  % at the beginning of the trial, build a timer to trigger lick_detection
                 t_trigger.TimerFcn = @(~,~)obj.ctl.waveform_peak_trigger();
                 t_trigger.StartDelay = obj.ctl.lick_detector.delay;       
@@ -157,6 +158,8 @@ classdef ProtocolSequence_DoubleRotation < handle
                     obj.ctl.play_velocity_waveform();   % Start playing the waveform on the NIDAQ, meanwhile NIDAQ AO is detected by visstim_trigger and start to send TTL to switch on VisStim on the VisStim PC
                     start(t_trigger);                   % start timer. when time is out send TTL pulse to trigger the start of lick detection. lick_detect trigger from DO 'port0/line2' to AI5
                     while obj.ctl.ni.ao.task.IsRunning  % check to see AO is still running
+                        if ~lickdetect_trigger
+                            if obj.ctl.ni.ao.task.ScansOutputByHardware >= obj.ctl.lick_detector.delay*
                         pause(0.005);
                         if obj.abort
                             obj.running = false;

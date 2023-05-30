@@ -58,10 +58,6 @@ classdef ProtocolSequence_DoubleRotation < handle
             obj.ctl.ensemble_online(true);
             all_axes = obj.ctl.ensemble.all_axes;   % [0,1]
 
-%             handle = EnsembleConnect;               % tuning with Clive
-%             cmd = 'WAIT MODE INPOS';
-%             EnsembleCommandExecute(handle, cmd);
-
             obj.ctl.set_target_axes(all_axes);
             obj.ctl.home_ensemble(true);        % home both motors
             pause(1);
@@ -134,7 +130,6 @@ classdef ProtocolSequence_DoubleRotation < handle
                 obj.ctl.lick_detector.start_trial();    % reset the lick detector
                 
                 % store stimulus type
-%                 fprintf('trial finished, updating response variables...');
                 obj.stimulus_type_list{obj.current_trial} = obj.sequence{i}.trial.stimulus_type;   % save trial type of current trial to sequence
                 
                 fprintf('Trial %i: preperation done\n',i);
@@ -147,16 +142,18 @@ classdef ProtocolSequence_DoubleRotation < handle
                 obj.ctl.communication.tcp_client_stimulus.writeline('start_trial');   % send 'start_trial' to remote host
                 
                 %%% trial protocol start %%%
-%                 obj.ctl.trial_start_trigger();  % at the beginning of the trial, send TTL pulse to trigger the start of lick detection. lick_detect trigger from DO 'port0/line2' to AI5
-                t_trigger = timer;  % at the beginning of the trial, build a timer to trigger lick_detection
-                t_trigger.TimerFcn = @(~,~)obj.ctl.waveform_peak_trigger();
-                t_trigger.StartDelay = obj.ctl.lick_detector.delay;       
+                lickdetect_trigger = 0;       
                 
                 if obj.sequence{i}.stage.enable_motion      % if enable stage rotation
                     % moving the stages
                     obj.ctl.play_velocity_waveform();   % Start playing the waveform on the NIDAQ, meanwhile NIDAQ AO is detected by visstim_trigger and start to send TTL to switch on VisStim on the VisStim PC
-                    start(t_trigger);                   % start timer. when time is out send TTL pulse to trigger the start of lick detection. lick_detect trigger from DO 'port0/line2' to AI5
                     while obj.ctl.ni.ao.task.IsRunning  % check to see AO is still running
+                        if ~lickdetect_trigger
+                            if obj.ctl.ni.ao.task.ScansOutputByHardware >= obj.ctl.lick_detector.delay*obj.config.nidaq.rate  % when rotation velocity peak appears, send lick_detector trigger to start lick detection
+                                obj.ctl.waveform_peak_trigger();
+                                lickdetect_trigger = 1;
+                            end
+                        end
                         pause(0.005);
                         if obj.abort
                             obj.running = false;
@@ -165,12 +162,8 @@ classdef ProtocolSequence_DoubleRotation < handle
                         end
                     end                                 % when NIDAQ AO stops, stages stop moving and VisStim TTL is back to low to switch off VisStim on the VisStim PC
 
-%                     pause(0.5);     % tuning with Clive
-
                     obj.ctl.set_target_axes(target_axes);
-%                     obj.ctl.ensemble.stop_listen(ensembleHandle,true);      % Stop Ensemble listen
                     if ~obj.sequence{i}.vis.enable_vis_stim     % if enable stage but disable VisStim (Rotation in Darkness task)
-%                         fprintf('sending trial ending message to vis stim computer\n');
                         obj.ctl.communication.tcp_client_stimulus.writeline('end_trial');   % send 'end_trial' to remote host at trial end
                     end
                 elseif obj.sequence{i}.vis.enable_vis_stim  % if disable stage but enable VisStim (Visual Only task) 
