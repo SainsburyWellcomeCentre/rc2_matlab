@@ -328,7 +328,7 @@ classdef RC2_DoubleRotation_GUIController < handle
                 
                 % generate protocol sequence
                 [~, fname] = fileparts(obj.current_script);
-                [protocolconfig, obj.experiment_seq] = feval(fname, obj.setup, obj.view);  
+                [protocolconfig, obj.experiment_seq] = feval(fname, obj.setup, obj.config, obj.view);  
                 obj.config.lick_detect.enable                   = protocolconfig.lick_detect.enable;
                 obj.config.lick_detect.lick_threshold           = protocolconfig.lick_detect.lick_threshold;
                 obj.config.lick_detect.n_windows                = protocolconfig.lick_detect.n_windows;

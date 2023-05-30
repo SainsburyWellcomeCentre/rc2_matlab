@@ -2,7 +2,7 @@ classdef ProtocolSequence_DoubleRotation < handle
     
     properties
         ctl
-        config
+        
         sequence = {}
         running = false;
         abort = false;

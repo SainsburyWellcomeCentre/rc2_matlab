@@ -1,4 +1,4 @@
-function [protocolconfig,seq] = VisualOnly_test_02(ctl,view)
+function [protocolconfig,seq] = VisualOnly_test_02(ctl,config,view)
     % Protocol type: visual stimuli only
     % central stage - disabled. 
     % outer stage   - disabled
@@ -14,13 +14,13 @@ function [protocolconfig,seq] = VisualOnly_test_02(ctl,view)
     protocolconfig.lick_detect.n_windows                = 60;      
     protocolconfig.lick_detect.window_size_ms           = 250;
     protocolconfig.lick_detect.n_consecutive_windows    = 2;
-    protocolconfig.lick_detect.n_lick_windows           = n_consecutive_windows;        
+    protocolconfig.lick_detect.n_lick_windows           = protocolconfig.lick_detect.n_consecutive_windows;        
     protocolconfig.lick_detect.detection_trigger_type   = 1;
     protocolconfig.lick_detect.delay                    = 15;       % delay of LickDetect trigger from TrialStart (in sec)
     protocolconfig.enable_vis_stim = enableVisStim;
     
     % create the protocol sequence
-    seq = ProtocolSequence_DoubleRotation(ctl,view);
+    seq = ProtocolSequence_DoubleRotation(ctl,config,view);
     
     %%
     % restart random number generator
