@@ -14,6 +14,7 @@ The code controls the following hardware on the RC computer:
 And the following hardware on the Visual Stimuli computer: 
 4. A Basler acA640-750um camera
 
+
 ## Installation
 
 This code has been developed on Windows 10 with MATLAB 2022b.
