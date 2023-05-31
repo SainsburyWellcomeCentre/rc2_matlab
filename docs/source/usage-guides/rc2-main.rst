@@ -7,56 +7,54 @@ Rollercoaster Usage Overview
 Rollercoaster Description
 -------------------------
 
-This is a branch of RC2 software. The code is for controlling the "rollercoaster" setup with two independent rotatory 
-stages and a visual stimuli system (referred to as **RC2DoubleRotation**). The code in folder ``<top_directory>\rc`` in 
-conjunction with that in folder ``<top_directory>\visual_stimuli`` to control the stages and visual stimuli respectively. 
-To drive the setup, run RC2 as user 'yyao_DoubleRotation'. 
+This is a branch of RC2 software. The code is for controlling the "rollercoaster" setup with two independent rotatory stages and a visual stimuli system (referred to as **RC2DoubleRotation**). The code controlling stage rotation in folder ``<top_directory>\rc`` cooperates with code controlling visual stimuli in folder ``<top_directory>\visual_stimuli`` to drive the setup.
+To run this **RC2DoubleRotation** setup, start RC2 with files in user folder 'yyao_DoubleRotation' on both computers.
 
 Hardware
 --------
 
-The software was written to control the following hardware:
+The software was written to control the setup on the RC computer and the VisualStimuli computer. Both computers should be connected via Ethernet.
 
+The code controls the following hardware on the RC computer:
+1. An NI DAQ USB-6343
+2. Two Aerotech rotatory stages (ADRT150-135 and ADRT260-160) with two Ensemble HLe controllers
+3. A pump for reward
+These hardware features can be enabled or disabled in the config file (see `Configuration Files`_).
+
+And the following hardware on the Visual Stimuli computer:
+1. A Basler acA640-750um camera
+
+Installation
+------------
+
+This code has been developed on Windows 10 with MATLAB 2022b. Folder 'visual_stimuli' should be installed on the Visual Stimuli computer. All other folders should be installed on the RC computer.
+
+In order to use all hardware the following should be installed on the RC computer:
 1. An NI DAQ USB-6343
 2. Two Aerotech rotatory stages (ADRT150-135 and ADRT260-160) with two Ensemble HLe controllers
 3. A pump for reward 
 4. A visual stimuli computer with Ethernet connection
 
-These hardware features can be enabled or disabled in the config file (see `Configuration Files`_).
-
-Installation
-------------
-
-This code has been developed on Windows 10 with MATLAB 2022b.
-
-In order to use all hardware the following should be installed on the system:
-
-1. Aerotech drivers for controlling the rotatory stages (Aerotech Ensemble v5.06.001, comes with controllers)
-2. NI-DAQmx drivers
+The following should be installed on the Visual Stimuli computer:
+1. Psychtoolbox for Matlab
+2. Basler drivers (Pylon Runtime v6.2.0.21487)
+3. Python 3 with imageio, imageio-ffmpeg, pypylon packages
 
 Configuration Files
 -------------------
 
-A template configuration file is in: 
+The configuration file specific for this **RC2DoubleRotation** setup is in: 
 - ``<top_directory>\rc\user\yyao_DoubleRotation\Main\configs\config_yyao.m``
 
 where `<top_directory>` is the location on the system of this repository.  
-This file should be copied and modified for the current setup.
 
 Other configuration variables are contained in:
 
-- ``<top_directory>\soloist_c\src\rc_soloist.h``
-- ``<top_directory>\teensy_ino\libraries\options\options.h``
+- ``<top_directory>\rc\user\yyao_DoubleRotation\RC2_DoubleRotation_startup.m``
+- ``<top_directory>\rc\user\yyao_DoubleRotation\Main\configs\plotting_config_yyao.m``
+- ``<top_directory>\visual_stimuli\user\yyao_DoubleRotation\ThemeParkVisualStimulusComputer.m``
 
-These files contain variables that are less often modified, but changing them requires extra steps to implement. 
-
-If a variable in the `rc_soloist.h` file is changed, then some or all of the executables will need to be rebuilt and placed in ``<top_directory>\soloist_c\exe\``. 
-To do that you can use the `build.bat` file in that directory.
-If g++ is present on the Windows path then this will automatically put the 
-
-If a variable in the Teensy `options.h` file is changed, then the `options.h` will have to be copied to the Arduino libraries directory.
-
-Read the README files in the `soloist_c` and `teensy_ino` directories for further information.
+These files contain variables that are less often modified. 
 
 Configuration
 -------------
