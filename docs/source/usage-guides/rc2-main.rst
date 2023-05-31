@@ -16,12 +16,15 @@ Hardware
 The software was written to control the setup on the RC computer and the VisualStimuli computer. Both computers should be connected via Ethernet.
 
 The code controls the following hardware on the RC computer:
+
 1. An NI DAQ USB-6343
 2. Two Aerotech rotatory stages (ADRT150-135 and ADRT260-160) with two Ensemble HLe controllers
 3. A pump for reward
+
 These hardware features can be enabled or disabled in the config file (see `Configuration Files`_).
 
 And the following hardware on the Visual Stimuli computer:
+
 1. A Basler acA640-750um camera
 
 Installation
@@ -30,12 +33,14 @@ Installation
 This code has been developed on Windows 10 with MATLAB 2022b. Folder 'visual_stimuli' should be installed on the Visual Stimuli computer. All other folders should be installed on the RC computer.
 
 In order to use all hardware the following should be installed on the RC computer:
+
 1. An NI DAQ USB-6343
 2. Two Aerotech rotatory stages (ADRT150-135 and ADRT260-160) with two Ensemble HLe controllers
 3. A pump for reward 
 4. A visual stimuli computer with Ethernet connection
 
 The following should be installed on the Visual Stimuli computer:
+
 1. Psychtoolbox for Matlab
 2. Basler drivers (Pylon Runtime v6.2.0.21487)
 3. Python 3 with imageio, imageio-ffmpeg, pypylon packages
