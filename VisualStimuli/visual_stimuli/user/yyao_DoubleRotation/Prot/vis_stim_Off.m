@@ -3,27 +3,24 @@ classdef vis_stim_Off < handle
     % to present grating visual stimuli via Psychtoolbox
 
     properties
+
         tp_main
         save_fname
         visstim_data
         original_gamma_table_1
         original_gamma_table_2
 
-
     end
 
     properties (SetAccess = private)
+
         screen1_resolution
         screen234_resolution
         screen_number
         screen_size_px
         screen_size_mm
-        
-        
-        photodiode_1_position
-        photodiode_2_position
-        photodiode_3_position
         distance_from_screen
+        
     end
 
 
@@ -31,25 +28,21 @@ classdef vis_stim_Off < handle
 
     methods
 
-        function obj = vis_stim_Off()
+        function obj = vis_stim_Off(config)
 
-            obj.screen1_resolution      = [2560,1440];
-            obj.screen234_resolution    = [1280,720];  % 
-            obj.screen_number           = 1;                % index of combined screen
-            obj.screen_size_px          = [3840,720];
-            obj.screen_size_mm          = [345, 195];
-            
-            photodiode_zone = 200;
-            obj.photodiode_1_position   = [0, 0, photodiode_zone, photodiode_zone];
-            obj.photodiode_2_position   = [obj.screen234_resolution(1), 0, obj.screen234_resolution(1)+photodiode_zone, photodiode_zone];
-            obj.photodiode_3_position   = [3*obj.screen234_resolution(1)-photodiode_zone 0, 3*obj.screen234_resolution(1), photodiode_zone];
-            obj.distance_from_screen    = 100;
+            obj.screen1_resolution      = config.screen.screen1_resolution;
+            obj.screen234_resolution    = config.screen.screen234_resolution;
+            obj.screen_number           = config.screen.screen_number;          % index of combined screen
+            obj.screen_size_px          = config.screen.screen_size_px;
+            obj.screen_size_mm          = config.screen.screen_size_mm;
+            obj.distance_from_screen    = config.screen.distance_from_screen;
             
         end
 
         function run(obj,tp_main,save_fname)
 
             h = onCleanup(@obj.cleanup);
+
             obj.tp_main = tp_main;
             obj.save_fname = save_fname;
             obj.visstim_data.git_version             = tp_main.current_git_version();
@@ -136,24 +129,16 @@ classdef vis_stim_Off < handle
             apply_gamma_correction = obj.visstim_data.apply_gamma_correction;
             gamma_correction_file = obj.visstim_data.gamma_correction_file;
             distance_from_screen = obj.distance_from_screen;
-            prestim_wait_s = obj.visstim_data.prestim_wait_s;
-            stim_duration_s = obj.visstim_data.stim_duration_s;
-            poststim_wait_s = obj.visstim_data.poststim_wait_s;
             white_val = obj.visstim_data.white_val;
             black_val = obj.visstim_data.black_val;
             grey_val = obj.visstim_data.grey_val;
             col_range = obj.visstim_data.col_range;
-            solidfill_color = obj.visstim_data.solidfill_color;  
             n_s_plus_trials = obj.visstim_data.n_s_plus_trials;
             n_s_minus_trials = obj.visstim_data.n_s_minus_trials;
             n_trials = obj.visstim_data.n_trials;
             original_gamma_table_1 = obj.original_gamma_table_1;
             gamma_table = obj.visstim_data.gamma_table;
             original_gamma_table_2 = obj.original_gamma_table_2;
-            s_per_frame = obj.visstim_data.s_per_frame;
-            n_stim_frames = obj.visstim_data.n_stim_frames;
-            n_prestim_frames = obj.visstim_data.n_prestim_frames;
-            n_poststim_frames = obj.visstim_data.n_poststim_frames;
 
             vars_to_save = {'git_version'
 %                 's_plus'
@@ -170,18 +155,13 @@ classdef vis_stim_Off < handle
                 'white_val'             
                 'black_val'
                 'grey_val'              
-                'col_range' 
-                'solidfill_color'              
+                'col_range'
                 'n_s_plus_trials'       
                 'n_s_minus_trials'      
                 'n_trials'                         
                 'original_gamma_table_1'
                 'gamma_table'           
-                'original_gamma_table_2'
-                's_per_frame'           
-                'n_stim_frames'        
-                'n_prestim_frames'      
-                'n_poststim_frames'};
+                'original_gamma_table_2'};
             
             save(obj.save_fname, vars_to_save{:});
         end

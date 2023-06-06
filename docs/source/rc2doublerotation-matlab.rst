@@ -1,7 +1,7 @@
-RC2 MATLAB Interface
+RC2DoubleRotation MATLAB Interface
 ====================
 
-Documentation for the primary MATLAB modules controlling RC2.
+Documentation for the primary MATLAB modules controlling RC2DoubleRotation.
 
 .. toctree::
    :maxdepth: 4

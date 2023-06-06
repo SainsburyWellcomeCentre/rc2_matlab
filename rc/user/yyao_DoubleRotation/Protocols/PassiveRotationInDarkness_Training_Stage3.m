@@ -7,7 +7,8 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Training_Stage3(ctl,co
     % outer stage   - disabled
     % vis_stim      - disabled. 
 
-    protocol_id.name = 'PassiveRotationInDarkness_Training_Stage3';                
+    fullpath = mfilename('fullpath');
+    [~,protocol_id.name] = fileparts(fullpath);
     enableRotation = true;
     enableVisStim = false;
     % config parameters to pass to the protocols

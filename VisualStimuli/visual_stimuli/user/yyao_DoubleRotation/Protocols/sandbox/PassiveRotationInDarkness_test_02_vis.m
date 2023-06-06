@@ -1,11 +1,11 @@
-classdef VisualOnly_test_02_vis < handle
+classdef PassiveRotationInDarkness_test_02_vis < handle
 
     properties
 
-        enable = true;
+        enable = false;
 
-        vis_stim_type = 'solid';
-        
+        vis_stim_type = 'off';
+
         n_s_plus_trials
         n_s_minus_trials
         n_trials
@@ -16,19 +16,21 @@ classdef VisualOnly_test_02_vis < handle
 %         cycles_per_s_all        = [1.5, 2, 3, 4, 6];  %% which TFs do we need?
 
         experiment
-        enable_motion = false;
+        enable_motion = true;
         
     end
     
     methods
     
-        function obj = VisualOnly_test_02_vis()
+        function obj = PassiveRotationInDarkness_test_02_vis(config)
             obj.n_s_plus_trials         = 2;
             obj.n_s_minus_trials        = 2;
             obj.n_trials                = obj.n_s_plus_trials + obj.n_s_minus_trials;
-            obj.experiment              = vis_stim_Solid();
+            obj.experiment              = vis_stim_Off(config);
         end
-    
+        
+
+        
         function obj = vis_stim_lable(obj, lable_id)
             if strcmp(lable_id,'1')
                 obj.s_plus = true;

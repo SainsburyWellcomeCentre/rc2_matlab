@@ -48,11 +48,11 @@ classdef Plotting_DoubleRotation < handle
             set(obj.fig, 'closerequestfcn', @(x, y)obj.close_request(x, y));     
             set(obj.fig, 'color', [0, 0, 0]);
             
-            for i = 1 : obj.n_chans
+            for i = 1 : obj.n_chans                                             % x axis
                 obj.ax(i) = axes;                                                
                 set(obj.ax(i), 'color', [0, 0, 0]);
                 set(obj.ax(i), 'position', obj.ax_positions{i})
-                if ~ismember(i, [5, obj.n_chans])                                
+                if ~ismember(i, config.plotting.xtick_chans)                                
                     set(obj.ax(i), 'xtick', []);
                 else
                     xlabel('Time (s)', 'color', 'w');

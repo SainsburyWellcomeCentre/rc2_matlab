@@ -1,11 +1,11 @@
 classdef ThemeParkVisualStimulusComputer < handle
     
     properties
-        
-        local_ip_address = '172.24.242.158' % ip of visualsti PC
-        local_port_prepare = 43056
-        local_port_stimulus = 43057
-        
+        config
+
+        local_ip_address    % ip of visualsti PC
+        local_port_prepare
+        local_port_stimulus
         tcp_server
         tcp_server_stimulus
 
@@ -16,9 +16,10 @@ classdef ThemeParkVisualStimulusComputer < handle
         vis_protocol
 
         start_camera = true;
-        git_dir = 'C:\Users\Margrie_lab1\Documents\Code\visual_stimuli\.git'
-        camera_py = 'C:\Users\Margrie_lab1\Documents\Code\camera\rc_camera.py'
-        save_dir = 'C:\Users\Margrie_lab1\Documents\raw_data'
+        
+        camera_py
+        save_dir
+        git_dir
 
     end
     
@@ -31,8 +32,11 @@ classdef ThemeParkVisualStimulusComputer < handle
     
     methods
         
-        function obj = ThemeParkVisualStimulusComputer()
-            % setup tcp/ip communication
+        function obj = ThemeParkVisualStimulusComputer(config)% setup tcp/ip communication
+            obj.config = config;
+            obj.local_ip_address = config.connection.local_ip_address;
+            obj.local_port_prepare = config.connection.local_port_prepare;
+            obj.local_port_stimulus = config.connection.local_port_stimulus;
             obj.tcp_server = tcpserver(obj.local_ip_address, obj.local_port_prepare);
             obj.tcp_server_stimulus = tcpserver(obj.local_ip_address, obj.local_port_stimulus);
 
@@ -41,18 +45,13 @@ classdef ThemeParkVisualStimulusComputer < handle
 
             % miniDAQ
             obj.ni.d = daq('ni');
-            obj.ni.nidaq_dev = 'Dev2';
-            obj.ni.di.channel_id = 'port0/line0';
+            obj.ni.nidaq_dev = config.nidaq.dev; %= 'Dev2';
+            obj.ni.di.channel_id = config.nidaq.di.channel_id; %= 'port0/line0';
             obj.ni.di.chan = addinput(obj.ni.d , obj.ni.nidaq_dev , obj.ni.di.channel_id , 'Digital');
+
+            obj.camera_py = config.camera.camera_py;
+            obj.save_dir = config.saving.save_dir;
         end
-        
-        
-        function delete(obj)
-            
-            delete(obj.tcp_server);
-            delete(obj.tcp_server_stimulus);
-        end
-        
         
         
         function start_experiment(obj, ~, ~)
@@ -74,7 +73,7 @@ classdef ThemeParkVisualStimulusComputer < handle
             rec_name = message{2};
             
             % switch off the screen if vis_stim is disabled
-            obj.vis_protocol = feval(protocol_name);
+            obj.vis_protocol = feval(protocol_name,obj.config);
             if obj.vis_protocol.enable
                 system('C:\Users\Margrie_Lab1\Documents\tools\nircmd.exe monitor async_on');    % provides a blink on the screens if the screens are switched off (This command can switch on the screens but not input signal. The screens will return to NO INPUT logo mode.)
                 pause(5);      % if the screens are off please switch them on manually while pausing
@@ -123,7 +122,8 @@ classdef ThemeParkVisualStimulusComputer < handle
                 catch
                     fprintf('protocol error, sending signal to abort...\n\n');
                     obj.tcp_server.writeline('abort');
-                    obj.vis_protocol.experiment.abort();
+%                     obj.vis_protocol.experiment.abort();
+                    fprintf('Abort!\n')
                 end
 %             else
 %             end
@@ -172,7 +172,10 @@ classdef ThemeParkVisualStimulusComputer < handle
             obj.tcp_server.configureCallback('terminator', @obj.start_experiment);
         end
         
-        
+        function delete(obj)
+            delete(obj.tcp_server);
+            delete(obj.tcp_server_stimulus);
+        end
         
         function git_version = current_git_version(obj)
             [~, git_version] = system(sprintf('git --git-dir=%s rev-parse HEAD', obj.git_dir));

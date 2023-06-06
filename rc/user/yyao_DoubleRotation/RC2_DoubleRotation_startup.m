@@ -19,10 +19,11 @@ clear path;
 
 % setup configuration
 config = config_yyao();
+if isempty(config), return, end
 config.connection.remote_ip = '172.24.242.158';
 config.connection.remote_port_prepare = 43056;
 config.connection.remote_port_stimulus = 43057;
-if isempty(config), return, end
+
 
 % main controller object
 ctl = RC2_DoubleRotation_Controller(config);    

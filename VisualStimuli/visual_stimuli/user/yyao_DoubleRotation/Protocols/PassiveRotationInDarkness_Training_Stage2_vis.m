@@ -1,10 +1,10 @@
-classdef DoubleRotation_test_03_vis < handle
+classdef PassiveRotationInDarkness_Training_Stage2_vis < handle
 
     properties
 
-        enable = true;
+        enable = false;     % enable visual stimuli
 
-        vis_stim_type = 'solid';
+        vis_stim_type = 'off';
         
         n_s_plus_trials
         n_s_minus_trials
@@ -22,11 +22,11 @@ classdef DoubleRotation_test_03_vis < handle
     
     methods
     
-        function obj = DoubleRotation_test_03_vis()
-            obj.n_s_plus_trials         = 10;
-            obj.n_s_minus_trials        = 10;
+        function obj = PassiveRotationInDarkness_Training_Stage2_vis(config)
+            obj.n_s_plus_trials         = 10;       % total number of S+ trials
+            obj.n_s_minus_trials        = 10;       % total number of S- trials
             obj.n_trials                = obj.n_s_plus_trials + obj.n_s_minus_trials;
-            obj.experiment              = vis_stim_Solid();
+            obj.experiment              = vis_stim_Off(config);
         end
     
         function obj = vis_stim_lable(obj, lable_id)

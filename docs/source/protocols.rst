@@ -5,4 +5,4 @@ Protocols Usage Overview
     :maxdepth: 3
     :caption: Contents:
 
-    usage-guides/rc2-protocols
+    usage-guides/rc2doublerotation-protocols

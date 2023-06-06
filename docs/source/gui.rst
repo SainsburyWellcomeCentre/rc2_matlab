@@ -1,8 +1,8 @@
-RC2 GUI Overview
+RC2DoubleRotation GUI Overview
 ================
 
 .. toctree::
     :maxdepth: 3
     :caption: Contents:
 
-    usage-guides/rc2-gui
+    usage-guides/rc2doublerotation-gui

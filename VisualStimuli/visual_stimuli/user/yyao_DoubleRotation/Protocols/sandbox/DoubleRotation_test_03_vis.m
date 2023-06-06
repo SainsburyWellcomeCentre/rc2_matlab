@@ -1,10 +1,10 @@
-classdef DoubleRotation_test_02_vis < handle
+classdef DoubleRotation_test_03_vis < handle
 
     properties
 
         enable = true;
 
-        vis_stim_type = 'texture';
+        vis_stim_type = 'solid';
         
         n_s_plus_trials
         n_s_minus_trials
@@ -22,11 +22,11 @@ classdef DoubleRotation_test_02_vis < handle
     
     methods
     
-        function obj = DoubleRotation_test_02_vis()
-            obj.n_s_plus_trials         = 2;
-            obj.n_s_minus_trials        = 2;
+        function obj = DoubleRotation_test_03_vis(config)
+            obj.n_s_plus_trials         = 10;
+            obj.n_s_minus_trials        = 10;
             obj.n_trials                = obj.n_s_plus_trials + obj.n_s_minus_trials;
-            obj.experiment              = vis_stim_Texture();
+            obj.experiment              = vis_stim_Solid(config);
         end
     
         function obj = vis_stim_lable(obj, lable_id)

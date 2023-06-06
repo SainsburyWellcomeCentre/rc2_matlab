@@ -6,8 +6,8 @@ function config = config_yyao()
 config.saving.enable                    = true;
 config.saving.save_to                   = 'C:\Users\Margrie_Lab1\Documents\raw_data';  % where to save data
 config.saving.config_file               = mfilename('fullpath');  % current file path
-config.saving.main_dir                  = 'C:\Users\Margrie_Lab1\Documents\MATLAB\rc2_matlab'; 
-config.saving.git_dir                   = 'C:\Users\Margrie_Lab1\Documents\MATLAB\rc2_matlab\.git';  % git directory
+config.saving.main_dir                  = 'C:\Users\Margrie_Lab1\Documents\repos\swc\rc2_matlab'; 
+config.saving.git_dir                   = 'C:\Users\Margrie_Lab1\Documents\repos\swc\rc2_matlab\.git';  % git directory
 
 
 
@@ -24,10 +24,13 @@ config.nidaq.log_every                  = 1000;  % log data every number of samp
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 config.nidaq.ai.enable                  = true;
 config.nidaq.ai.dev                     = 'Dev1';  % device name
-config.nidaq.ai.channel_names           = {'stage_central', 'stage_outer', 'photodiode_left', 'photodiode_mid', 'photodiode_right', 'LickDetect_trigger', 'pump',  'lick',  'VisualStim_trigger'};  % nominal channel names (for reference)
-config.nidaq.ai.channel_id              = [0:7 20]; 
-config.nidaq.ai.offset                  = [0.004, 0.005, -0.014, -0.008, -0.102, 0.0077, -0.0004, 0, 0];
-config.nidaq.ai.scale                   = [1, 1, 1, 1, 1, 1, 1, 1, 1];
+% config.nidaq.ai.channel_names           = {'stage_central', 'stage_outer', 'photodiode_left', 'photodiode_mid', 'photodiode_right', 'LickDetect_trigger', 'pump',  'lick',  'VisualStim_trigger'};  % nominal channel names (for reference)
+config.nidaq.ai.channel_names           = {'stage_central', 'stage_outer', 'photodiode_left', 'LickDetect_trigger', 'pump',  'lick',  'VisualStim_trigger'};  % nominal channel names (for reference)
+% config.nidaq.ai.channel_id              = [0:7 20]; 
+config.nidaq.ai.channel_id              = [0:2 5:7 20];
+% config.nidaq.ai.offset                  = [0.004, 0.005, -0.014, -0.008, -0.102, 0.0077, -0.0004, 0, 0];
+config.nidaq.ai.offset                  = [0.004, 0.005, -0.014, 0.0077, -0.0004, 0, 0];
+config.nidaq.ai.scale                   = [1, 1, 1, 1, 1, 1, 1];
 
 config.offsets.enable                   = false;
 config.offsets.error_mtx                = [];

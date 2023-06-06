@@ -1,4 +1,4 @@
-classdef PassiveRotationInDarkness_Training_Stage1_vis < handle
+classdef PassiveRotationInDarkness_Training_Stage3_vis < handle
 
     properties
 
@@ -22,11 +22,11 @@ classdef PassiveRotationInDarkness_Training_Stage1_vis < handle
     
     methods
     
-        function obj = PassiveRotationInDarkness_Training_Stage1_vis()
-            obj.n_s_plus_trials         = 20;       % total number of S+ trials
-            obj.n_s_minus_trials        = 0;       % total number of S- trials
+        function obj = PassiveRotationInDarkness_Training_Stage3_vis(config)
+            obj.n_s_plus_trials         = 10;       % total number of S+ trials
+            obj.n_s_minus_trials        = 10;       % total number of S- trials
             obj.n_trials                = obj.n_s_plus_trials + obj.n_s_minus_trials;
-            obj.experiment              = vis_stim_Off();
+            obj.experiment              = vis_stim_Off(config);
         end
     
         function obj = vis_stim_lable(obj, lable_id)

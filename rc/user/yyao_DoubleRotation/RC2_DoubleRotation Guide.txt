@@ -1,8 +1,8 @@
 Use MATLAB 2021a or newer version
 
 User file path
-Vis stim PC -- 'C:\Users\yyao\Documents\MATLAB\Themepark-RC2 code\VisualStimuli\visual_stimuli\user\yyao_DoubleRotation'
-NIDAQ PC -- 'C:\Users\Margrie_Lab1\Documents\repos\swc\rc2_matlab\rc\user\yyao_DoubleRotation'
+Vis stim PC -- '<top_directory>\VisualStimuli\visual_stimuli\user\yyao_DoubleRotation'
+NIDAQ PC -- '<top_directory>\rc\user\yyao_DoubleRotation'
 
 Data file path
 Vis stim PC -- 'C:\Users\Margrie_Lab1\Documents\raw_data'
@@ -11,7 +11,7 @@ NIDAQ PC -- 'C:\Users\Margrie_Lab1\Documents\raw_data'
 
 1. To start-up, 
    on Vis stim PC, run
-	>> theme_park_vis_stim = ThemeParkVisualStimulusPC();   % connect the 2 PCs
+	>> VisualStimuli_startup();   % configure visual stimuli
    on NIDAQ PC, run
 	>> RC2_DoubleRotation_startup();   % start RC2 interface
 
@@ -22,8 +22,8 @@ NIDAQ PC -- 'C:\Users\Margrie_Lab1\Documents\raw_data'
 	click 'Start Experiment' button on the Experiment panel
 
 3. If there are connection issues try the following on vis stim PC.
-	>> theme_park_vis_stim.reset_tcp_servers();
-	>> theme_park_vis_stim.is_running = false;
+	>> visstim.reset_tcp_servers();
+	>> visstim.is_running = false;
 
 4. To exit, 
    on NIDAQ PC, run
@@ -31,5 +31,5 @@ NIDAQ PC -- 'C:\Users\Margrie_Lab1\Documents\raw_data'
    on Vis stim PC, run
 	>> clear;
 
-If IP errors occur, modify the IP address in the RC2_DoubleRotation_startup.m file
+If IP errors occur, modify the IP address in both start-up files.
 

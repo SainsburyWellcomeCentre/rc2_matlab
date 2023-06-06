@@ -1,8 +1,9 @@
-classdef vis_stim_Texture < handle
+classdef vis_stim_Solid < handle
 
     % to present grating visual stimuli via Psychtoolbox
 
     properties
+
         tp_main
         save_fname
         visstim_data
@@ -12,17 +13,19 @@ classdef vis_stim_Texture < handle
     end
 
     properties (SetAccess = private)
+
         screen1_resolution
         screen234_resolution
         screen_number
         screen_size_px
         screen_size_mm
-        
-        
-        photodiode_1_position
-        photodiode_2_position
-        photodiode_3_position
         distance_from_screen
+
+        solidfill_color
+        
+        photodiode_index
+        photodiode_position
+
     end
 
 
@@ -30,21 +33,19 @@ classdef vis_stim_Texture < handle
 
     methods
 
-        function obj = vis_stim_Texture()
+        function obj = vis_stim_Solid(config)
 
-            
+            obj.screen1_resolution      = config.screen.screen1_resolution;
+            obj.screen234_resolution    = config.screen.screen234_resolution;
+            obj.screen_number           = config.screen.screen_number;          % index of combined screen
+            obj.screen_size_px          = config.screen.screen_size_px;
+            obj.screen_size_mm          = config.screen.screen_size_mm;
+            obj.distance_from_screen    = config.screen.distance_from_screen;
 
-            obj.screen1_resolution      = [2560,1440];
-            obj.screen234_resolution    = [1280,720];  % 
-            obj.screen_number           = 1;                % index of combined screen
-            obj.screen_size_px          = [3840,720];
-            obj.screen_size_mm          = [345, 195];
+            obj.solidfill_color         = [0,1,0]; 
             
-            photodiode_zone = 200;
-            obj.photodiode_1_position   = [0, 0, photodiode_zone, photodiode_zone];
-            obj.photodiode_2_position   = [obj.screen234_resolution(1), 0, obj.screen234_resolution(1)+photodiode_zone, photodiode_zone];
-            obj.photodiode_3_position   = [3*obj.screen234_resolution(1)-photodiode_zone 0, 3*obj.screen234_resolution(1), photodiode_zone];
-            obj.distance_from_screen    = 100;
+            obj.photodiode_index = config.photodiode.index;
+            obj.photodiode_position = config.photodiode.position;
             
         end
 
@@ -84,23 +85,7 @@ classdef vis_stim_Texture < handle
             obj.visstim_data.black_val               = 0;
             obj.visstim_data.grey_val                = (obj.visstim_data.white_val+obj.visstim_data.black_val)/2;
             obj.visstim_data.col_range               = abs(obj.visstim_data.white_val - obj.visstim_data.black_val)/2;
-            
-            obj.visstim_data.imagepath = 'C:\Users\Margrie_Lab1\Documents\tools\zebra texture.bmp';
-            theImage = imread(obj.visstim_data.imagepath); 
-            
-            Nx = ceil(screen_size_px(1)/size(theImage,1));
-            Ny = ceil(screen_size_px(2)/size(theImage,2));
-            row = 1;
-            for i = 1: Nx
-                for j = 1: Ny
-                    ImageXY(row,1) = (i-1)*size(theImage,1);
-                    ImageXY(row,2) = (j-1)*size(theImage,2);
-                    ImageXY(row,3) = i*size(theImage,1);
-                    ImageXY(row,4) = j*size(theImage,2);
-                    row = row +1;
-                end
-            end
-            
+
             fprintf('settings done\n');
 
             %% Psychtoolbox
@@ -110,16 +95,15 @@ classdef vis_stim_Texture < handle
             if obj.visstim_data.apply_gamma_correction
                 load(obj.visstim_data.gamma_correction_file, 'gamma_table');
                 obj.visstim_data.gamma_table = gamma_table;
-                obj.original_gamma_table_1 = Screen('LoadNormalizedGammaTable', 1, obj.visstim_data.gamma_table, 0);
-                obj.original_gamma_table_2 = Screen('LoadNormalizedGammaTable', 2, obj.visstim_data.gamma_table, 0);
+                obj.original_gamma_table_1 = Screen('LoadNormalizedGammaTable', 1, gamma_table, 0);
+                obj.original_gamma_table_2 = Screen('LoadNormalizedGammaTable', 2, gamma_table, 0);
             end
             original_gamma_table_1 = obj.original_gamma_table_1;
             original_gamma_table_2 = obj.original_gamma_table_2;
             
-            window = PsychImaging('OpenWindow', obj.screen_number, obj.visstim_data.grey_val, [obj.screen1_resolution(1) , 0 , 3*obj.screen234_resolution(1)+obj.screen1_resolution(1) , obj.screen234_resolution(2)]);  % modified by Yanting Yao on 25/2/2022
+            window = PsychImaging('OpenWindow', obj.screen_number, obj.visstim_data.grey_val, [obj.screen1_resolution(1)+1 , 0 , 3*obj.screen234_resolution(1)+obj.screen1_resolution(1) , obj.screen234_resolution(2)]);  % modified by Yanting Yao on 25/2/2022
             Screen('BlendFunction', window, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             obj.visstim_data.s_per_frame = Screen('GetFlipInterval', window);    % ifi
-            imageTexture = Screen('MakeTexture', window, theImage);
             
             if ~obj.tp_main.vis_protocol.enable_motion
                 % number of frames for each part of stimulus
@@ -177,22 +161,20 @@ classdef vis_stim_Texture < handle
                     while ~trial_running        % wait till trial protocol(rotation) start on RC2 ( DI0'port0/line0' is on)
                         trial_running = read(obj.tp_main.ni.d, 'Outputformat', 'Matrix');
                     end
-
+    
                     %%% trial protocol start %%%
-
+                    
                     tocs = nan(obj.visstim_data.n_trials, 1);
                     tic();
 
-                    while trial_running         % keep presenting visual_stim till trial protocol(rotation) end on RC2 ( DI0'port0/line0' is off)
-
+                    while trial_running         % while DI0'port0/line0' is on, keep presenting visual_stim, till trial protocol(rotation) end on RC2 ( DI0'port0/line0' is off)
+                        
                         trial_running = read(obj.tp_main.ni.d, 'Outputformat', 'Matrix');
 
-                        for i = 1: size(ImageXY,1)
-                            Screen('DrawTexture', window, imageTexture, [ ], ImageXY(i,:), 0);
+                        Screen('FillRect', window, obj.solidfill_color);
+                        for pd_i = 1:length(obj.photodiode_index)
+                            Screen('FillRect', window, obj.visstim_data.white_val, obj.photodiode_position(obj.photodiode_index(pd_i)).position);
                         end
-                        Screen('FillRect', window, obj.visstim_data.white_val, obj.photodiode_1_position);
-                        Screen('FillRect', window, obj.visstim_data.white_val, obj.photodiode_2_position);
-                        Screen('FillRect', window, obj.visstim_data.white_val, obj.photodiode_3_position);
                         vbl = Screen('Flip', window, vbl + 0.5*obj.visstim_data.s_per_frame);
                         
                         [~, ~, keyCode] = KbCheck;
@@ -200,7 +182,6 @@ classdef vis_stim_Texture < handle
                         %   if KbCheck; error('escape_during_drift'); end
 
                     end
-
                     %%% trial protocol end %%%
                     tocs(stim_i) = toc();
                     fprintf('trial time: %.10f\n', tocs(stim_i));
@@ -221,26 +202,23 @@ classdef vis_stim_Texture < handle
                     end
 
                     %%% trial protocol start %%%
-                    tocs = nan(obj.visstim_data.n_stim_frames, 1);
+                    tocs = nan(obj.visstim_data.n_trials, 1);
                     tic();
 
                     for frame_i = 1 : obj.visstim_data.n_stim_frames
-                        for i = 1: size(ImageXY,1)
-                            Screen('DrawTexture', window, imageTexture, [ ], ImageXY(i,:), 0);
+                        Screen('FillRect', window, obj.solidfill_color);
+                        for pd_i = 1:length(obj.photodiode_index)
+                            Screen('FillRect', window, obj.visstim_data.white_val, obj.photodiode_position(obj.photodiode_index(pd_i)).position);
                         end
-                        Screen('FillRect', window, obj.visstim_data.white_val, obj.photodiode_1_position);
-                        Screen('FillRect', window, obj.visstim_data.white_val, obj.photodiode_2_position);
-                        Screen('FillRect', window, obj.visstim_data.white_val, obj.photodiode_3_position);
                         vbl = Screen('Flip', window, vbl + 0.5*obj.visstim_data.s_per_frame);
-                        tocs(frame_i) = toc();
                         
                         [~, ~, keyCode] = KbCheck;
                         if keyCode(KbName('escape')), error('escape_during_drift'), end
                         %   if KbCheck; error('escape_during_drift'); end
                     end
                     %%% trial protocol end %%%
-
-                    fprintf('average loop time: %.10f (n=%i)\n', mean(diff(tocs),'omitnan'), sum((~isnan(tocs))) );
+                    tocs(stim_i) = toc();
+                    fprintf('trial time: %.10f\n', tocs(stim_i));
 
                     % poststim
                     for frame_i = 1 : obj.visstim_data.n_poststim_frames
@@ -302,12 +280,12 @@ classdef vis_stim_Texture < handle
             black_val = obj.visstim_data.black_val;
             grey_val = obj.visstim_data.grey_val;
             col_range = obj.visstim_data.col_range;
-            imagepath = obj.visstim_data.imagepath;  
+            solidfill_color = obj.solidfill_color;  
             n_s_plus_trials = obj.visstim_data.n_s_plus_trials;
             n_s_minus_trials = obj.visstim_data.n_s_minus_trials;
             n_trials = obj.visstim_data.n_trials;
-            gamma_table = obj.visstim_data.gamma_table;
             original_gamma_table_1 = obj.original_gamma_table_1;
+            gamma_table = obj.visstim_data.gamma_table;
             original_gamma_table_2 = obj.original_gamma_table_2;
             s_per_frame = obj.visstim_data.s_per_frame;
             n_stim_frames = obj.visstim_data.n_stim_frames;
@@ -330,12 +308,12 @@ classdef vis_stim_Texture < handle
                 'black_val'
                 'grey_val'              
                 'col_range' 
-                'imagepath'              
+                'solidfill_color'              
                 'n_s_plus_trials'       
                 'n_s_minus_trials'      
-                'n_trials' 
-                'gamma_table'   
+                'n_trials'                         
                 'original_gamma_table_1'
+                'gamma_table'           
                 'original_gamma_table_2'
                 's_per_frame'           
                 'n_stim_frames'        
@@ -352,8 +330,7 @@ classdef vis_stim_Texture < handle
 %             obj.tp_main.reset_tcp_servers();
         end
 
-
-
+        
         function cleanup(obj)
             obj.save_visstim_data();
             if ~isempty(obj.original_gamma_table_1)
@@ -364,7 +341,7 @@ classdef vis_stim_Texture < handle
             obj.original_gamma_table_2 = [];
             obj.tp_main.vis_protocol = [];
             obj.tp_main.is_running = false;
-            
+
             sca;
         end
 

@@ -1,9 +1,9 @@
-.. rc2_matlab documentation master file, created by
+.. RC2DoubleRotation documentation master file, created by
    sphinx-quickstart on Mon Oct 10 14:17:19 2022.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to rc2_matlab's documentation!
+Welcome to RC2DoubleRotation's documentation!
 ======================================
 
 .. toctree::
@@ -12,8 +12,8 @@ Welcome to rc2_matlab's documentation!
    :caption: Navigation:
 
    overview
-   rc2-matlab
-   rc2-teensy
+   rc2doublerotation-matlab
+   rc2doublerotation-teensy
    protocols
    gui
 

@@ -1,18 +1,21 @@
 function config = plotting_config_yyao()
-%%config = PLOTTING_CONFIG_SWEILER()
 % Configuration settings for display of traces.
 
-config.time = 5; %s  GUI实时绘图横轴
-config.fig.position = [1100, 550, 850, 400];  % GUI实时绘图窗口位置和大小
-config.chans_to_plot = [1,2,6,7,8, 3,4,5,9];   % GUI实时绘图通道index
-config.ylim = {[-5.1, 5.1] , [-5.1, 5.1], [-0.1, 5.1] ,[-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1]};
-config.units = {'V', 'V', 'V', 'V', 'V', 'V', 'V', 'V', 'V'};
+config.time = 5; %s  GUI x tick
+config.fig.position = [1100, 550, 850, 400];  % GUI window size
+% config.chans_to_plot = [1,2,6,7,8, 3,4,5,9];   % GUI AI channel index to plot
+config.chans_to_plot = [1,2,4,5,6, 3,7];   % GUI AI channel index to plot
+config.xtick_chans = [5  length(config.chans_to_plot)];
+% config.ylim = {[-5.1, 5.1] , [-5.1, 5.1], [-0.1, 5.1] ,[-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1]};
+config.ylim = {[-5.1, 5.1] , [-5.1, 5.1], [-0.1, 5.1] ,[-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1]};
+config.units = {'V', 'V', 'V', 'V', 'V', 'V', 'V'};
 config.ax_positions = {[0.04, 0.84, 0.44, 0.13], ...
                     [0.04, 0.65, 0.44, 0.13], ...
                     [0.04, 0.46, 0.44, 0.13], ...
                     [0.04, 0.27, 0.44, 0.13], ...
                     [0.04, 0.08, 0.44, 0.13], ...
                     [0.54, 0.84, 0.44, 0.13], ...
-                    [0.54, 0.65, 0.44, 0.13], ...
-                    [0.54, 0.46, 0.44, 0.13], ...
-                    [0.54, 0.27, 0.44, 0.13]};
+                    [0.54, 0.65, 0.44, 0.13]};
+%                     [0.54, 0.46, 0.44, 0.13], ...
+%                     [0.54, 0.27, 0.44, 0.13]};
+
