@@ -52,6 +52,7 @@ The configuration file specific for this **RC2DoubleRotation** setup on the RC c
 - ``<top_directory>\rc\user\yyao_DoubleRotation\Main\configs\config_yyao.m``
 and on the Visual Stimuli computer is in: 
 - ``<top_directory>\VisualStimuli\visual_stimuli\user\yyao_DoubleRotation\Main\config_visstim.m``
+
 where `<top_directory>` is the location on the system of this repository, similarly hereinafter.  
 
 Configuration variables for TCP/IP communication are contained in:
@@ -61,14 +62,17 @@ Configuration variables for TCP/IP communication are contained in:
 Configuration variables for data real-time plotting are contained in:
 - ``<top_directory>\rc\user\yyao_DoubleRotation\Main\configs\plotting_config_yyao.m``
 
+
 Configuration
 -------------
 
 The configuration structure describes the setup.
 
-A template file with the configuration options is in `config_template.m` in the ``main/configs`` directory.
+Configuration options in `config_yyao.m` includes the following entries:
 
-The entries in this structure are:
+`saving.enable`
+
+`true` or `false` - whether to enable data saving.
 
 `saving.save_to`
 
@@ -89,23 +93,6 @@ If saving data for a single trial, which analog input should be saved.
 `saving.git_dir`
 
 String with the full path to git directory tracking the rollercoaster directory
-
-`stage.start_pos`
-
-Passed to the trial classes, this defines the trial's default start position on the stage.
-
-`stage.back_limit`
-
-Passed to the trial classes, this defines the back-most position on the stage which terminates a trial if it is reached.
-
-`stage.forward_limit`
-
-Passed to the trial classes, this defines the front-most position on the stage which terminates a trial if it is reached.
-
-`stage.max_limits`
-
-2x1 vector describing the position of the [back, front] limits on the stage. 
-Specifying a movement to a position beyond either of these positions is not allowed.
 
 `nidaq.rate`
 
@@ -252,25 +239,6 @@ Port/line number of each digital output channel.
 (e.g. `'port1/line0'`)
 Note that digital inputs and digital outputs must be on different ports.
 (i.e. once a port has a digital output/input all other lines on that port must be the same type)
-
-`teensy.enable`
-
-`true` or `false` - whether to enable the Teensy module.
-If not enabled, no scripts will be loaded to the Teensy.
-
-`teensy.exe`
-
-String, full path to the Arduino executable file 
-(e.g. `'C:\Program Files (x86)\Arduino\arduino_debug.exe'`)
-
-`teensy.dir`
-
-String, full path to the directory containing the folders with the .ino scripts and .c libraries.
-(e.g. `''C:\Users\treadmill\Code\rc2_matlab\teensy_ino'`)
-
-`teensy.start_script`
-
-String, name of the `.ino` script to load onto the Teensy.
 
 `soloist.enable`
 
