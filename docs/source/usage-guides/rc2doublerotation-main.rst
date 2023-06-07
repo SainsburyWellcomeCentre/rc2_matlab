@@ -48,19 +48,18 @@ The following should be installed on the Visual Stimuli computer:
 Configuration Files
 -------------------
 
-The configuration file specific for this **RC2DoubleRotation** setup is in: 
+The configuration file specific for this **RC2DoubleRotation** setup on the RC computer is in: 
 - ``<top_directory>\rc\user\yyao_DoubleRotation\Main\configs\config_yyao.m``
-
-where `<top_directory>` is the location on the system of this repository.  
-
-Other configuration variables are contained in:
-
-- ``<top_directory>\rc\user\yyao_DoubleRotation\RC2_DoubleRotation_startup.m``
-- ``<top_directory>\rc\user\yyao_DoubleRotation\Main\configs\plotting_config_yyao.m``
-- ``<top_directory>\VisualStimuli\visual_stimuli\user\yyao_DoubleRotation\VisualStimuli_startup.m``
+and on the Visual Stimuli computer is in: 
 - ``<top_directory>\VisualStimuli\visual_stimuli\user\yyao_DoubleRotation\Main\config_visstim.m``
+where `<top_directory>` is the location on the system of this repository, similarly hereinafter.  
 
-These files contain variables that are less often modified. 
+Configuration variables for TCP/IP communication are contained in:
+- ``<top_directory>\rc\user\yyao_DoubleRotation\RC2_DoubleRotation_startup.m``
+- ``<top_directory>\VisualStimuli\visual_stimuli\user\yyao_DoubleRotation\VisualStimuli_startup.m``
+
+Configuration variables for data real-time plotting are contained in:
+- ``<top_directory>\rc\user\yyao_DoubleRotation\Main\configs\plotting_config_yyao.m``
 
 Configuration
 -------------
