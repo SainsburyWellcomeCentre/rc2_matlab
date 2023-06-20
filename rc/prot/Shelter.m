@@ -79,7 +79,11 @@ classdef Shelter < handle
                 obj.ctl.unblock_treadmill();
                 
                 % MOVEMENT STUFF - TODO
-                pause(2)
+                % Set AdvancedAnalogTrack to listen to position feedback
+                % (ServoValue = 2)
+                % Set treadmill --> velocity control and apply the gain for
+                % this trial
+                pause(5)
                 
                 obj.ctl.unblock_treadmill();
                 
