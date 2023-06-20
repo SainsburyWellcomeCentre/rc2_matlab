@@ -1,4 +1,4 @@
-classdef (Abstract) Protocol
+classdef Shelter < handle
     
     properties
         

@@ -1,4 +1,4 @@
-function config = config_mismatch_darkness_jan2022(use_calibration)
+function config = config_ae_test(use_calibration)
 
 % by default load a calibration file
 VariableDefault('use_calibration', true);
