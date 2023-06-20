@@ -231,7 +231,7 @@ config.teensy_gain_down.do_name         = 'teensy_gain_down';
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % get plotting configuration from a separate file
-config.plotting                         = plotting_config();
+config.plotting                         = plotting_config_ae();
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
