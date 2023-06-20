@@ -149,7 +149,7 @@ config.nidaq.di.channel_id      = {'port1/line0'};
 %%%%%%%%%%%%%%%%%%%%%%
 
 config.teensy.exe               = 'C:\Program Files (x86)\Arduino\arduino_debug.exe';
-config.teensy.dir               = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\teensy_ino';
+config.teensy.dir               = 'C:\Users\Mateo\Documents\repos\rc2_matlab\teensy_ino';
 config.teensy.start_script      = 'forward_only';
 
 
@@ -157,7 +157,7 @@ config.teensy.start_script      = 'forward_only';
 % SOLOIST parameters %
 %%%%%%%%%%%%%%%%%%%%%%
 
-config.soloist.dir              = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\soloist_c\exe';
+config.soloist.dir              = 'C:\Users\Mateo\Documents\repos\rc2_matlab\soloist_c\exe';
 config.soloist.default_speed    = 200;
 config.soloist.v_per_cm_per_s   = 25/100;
 if config.use_calibration_file
