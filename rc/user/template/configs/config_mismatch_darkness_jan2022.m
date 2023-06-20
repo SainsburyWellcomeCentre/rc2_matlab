@@ -13,6 +13,7 @@ config.calibration_file                 = 'C:\Users\Mateo\Documents\rc_version2_
 % SAVING %%%
 %%%%%%%%%%%%
 
+config.saving.enable                    = true;
 % where to save data
 config.saving.save_to                   = 'C:\Users\Mateo\Desktop\DefaultData';
 
@@ -26,6 +27,8 @@ config.saving.single_trial_log_channel_name = 'filtered_teensy_2';
 %%%%%%%%%%%%%%%%%%%%%%
 % STAGE parameters %%%
 %%%%%%%%%%%%%%%%%%%%%%
+
+config.offsets.enable                   = true;
 
 % default stage positions
 config.stage.start_pos                  = 1450;
@@ -60,6 +63,7 @@ config.nidaq.log_every                  = 1000;
 % ANALOG INPUT parameters %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+config.nidaq.ai.enable                  = true;
 % device name
 config.nidaq.ai.dev                     = 'Dev2';
 % nominal channel names (for reference)
@@ -91,6 +95,7 @@ end
 % ANALOG OUTPUT parameters %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+config.nidaq.ao.enable          = true;
 config.nidaq.ao.dev             = 'Dev2';
 config.nidaq.ao.channel_names   = {'velocity'};
 config.nidaq.ao.channel_id      = 0;
@@ -116,6 +121,7 @@ end
 % COUNTER OUTPUT parameters %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+config.nidaq.co.enable          = true;
 config.nidaq.co.dev             = 'Dev2';
 config.nidaq.co.channel_names   = {'camera'};
 config.nidaq.co.channel_id      = 0;
@@ -129,6 +135,7 @@ config.nidaq.co.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.
 % DIGITAL OUTPUT parameters %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+config.nidaq.do.enable          = true;
 config.nidaq.do.dev             = 'Dev2';
 config.nidaq.do.channel_names   = {'pump', 'multiplexer', 'solenoid', 'teensy_gain_up', 'visual_stimulus', 'soloist', 'disable_teensy', 'teensy_gain_down'};
 config.nidaq.do.channel_id      = {'port0/line0', 'port0/line1', 'port0/line2', 'port0/line3', 'port0/line4', 'port0/line5', 'port0/line6', 'port0/line7'};
@@ -139,6 +146,7 @@ config.nidaq.do.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.
 % DIGITAL INPUT parameters %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+config.nidaq.di.enable          = true;
 config.nidaq.di.dev             = 'Dev2';
 config.nidaq.di.channel_names   = {'from_soloist'};
 config.nidaq.di.channel_id      = {'port1/line0'};
@@ -148,6 +156,7 @@ config.nidaq.di.channel_id      = {'port1/line0'};
 % TEENSY parameters %%
 %%%%%%%%%%%%%%%%%%%%%%
 
+config.teensy.enable            = true;
 config.teensy.exe               = 'C:\Program Files (x86)\Arduino\arduino_debug.exe';
 config.teensy.dir               = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\teensy_ino';
 config.teensy.start_script      = 'forward_only';
@@ -157,6 +166,7 @@ config.teensy.start_script      = 'forward_only';
 % SOLOIST parameters %
 %%%%%%%%%%%%%%%%%%%%%%
 
+config.soloist.enable           = true;
 config.soloist.dir              = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\soloist_c\exe';
 config.soloist.default_speed    = 200;
 config.soloist.v_per_cm_per_s   = 25/100;
@@ -192,11 +202,13 @@ config.pump.do_name                     = 'pump';
 % initial state of the pump (0=off, 1=on)
 config.pump.init_state                  = 0;
 
+config.treadmill.enable                 = true;
 % name of digital output channel to use
 config.treadmill.do_name                = 'solenoid';
 % initial state of the solenoid (0=off, 1=on)
 config.treadmill.init_state             = 1;
 
+config.soloist_input_src.enable         = true;
 % name of digital output channel to use
 config.soloist_input_src.do_name        = 'multiplexer';
 % initial source to listen to
@@ -205,26 +217,41 @@ config.soloist_input_src.init_source    = 'teensy';
 config.soloist_input_src.teensy         = 1;
 
 % name of digital output channel to use
+config.zero_teensy.enable               = true;
 config.zero_teensy.do_name              = 'zero_teensy';
 
 % 
+config.disable_teensy.enable            = true;
 config.disable_teensy.do_name           = 'disable_teensy';
 config.disable_teensy.init_state        = 0;
 
 % name of digital output channel to use
+config.start_soloist.enable             = true;
 config.start_soloist.do_name            = 'soloist';
 
 % name of digital output channel to use
+config.visual_stimulus.enable           = false;
 config.visual_stimulus.do_name          = 'visual_stimulus';
 config.visual_stimulus.init_state       = 1;
 
 % name of digital input channel to use
+config.trigger_input.enable             = true;
 config.trigger_input.init_source        = 'from_soloist'; % 'from_soloist' or 'from_teensy'
 
 % for triggers to the teensy gain
+config.teensy_gain_up.enable            = true;
+config.teensy_gain_down.enable          = true;
 config.teensy_gain_up.do_name           = 'teensy_gain_up';
 config.teensy_gain_down.do_name         = 'teensy_gain_down';
 
+% Lick detection
+config.lick_detect.enable               = false;
+
+%%%%%%%%%
+% SOUND %
+%%%%%%%%%
+config.sound.enable                     = false;
+config.sound.filename                   = '';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plotting configuration %
