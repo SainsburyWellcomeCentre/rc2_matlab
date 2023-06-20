@@ -106,7 +106,7 @@ classdef Soloist < handle
         
         function reset_pso(obj)
             % Reset the PSO on the Soloist controller.
-            % Sends 'rest_pso' signal to the abort.exe program.
+            % Sends 'reset_pso' signal to the abort.exe program.
         
             % run the abort command (this is in SoloistAbortProc)
             obj.h_abort.run('reset_pso');

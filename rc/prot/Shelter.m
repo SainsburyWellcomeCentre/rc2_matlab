@@ -55,6 +55,36 @@ classdef Shelter < handle
                 if obj.handle_acquisition
                     obj.ctl.prepare_acq();
                 end
+                
+                % make sure the treadmill is blocked
+                obj.ctl.block_treadmill();
+                
+                % make sure vis stim is off
+                obj.ctl.vis_stim.off();
+                
+                % load teensy
+                obj.ctl.teensy.load(obj.direction);
+                
+                % get and save config - TODO
+                
+                % listen to correct source
+                obj.ctl.multiplexer_listen_to('teensy');
+                
+                % start the move to operation and wait for the process to
+                % terminate.
+                proc = obj.ctl.soloist.move_to(obj.start_pos, obj.ctl.soloist.default_speed, true);
+                proc.wait_for(2);
+                
+                % release block on the treadmill
+                obj.ctl.unblock_treadmill();
+                
+                % MOVEMENT STUFF - TODO
+                pause(2)
+                
+                obj.ctl.unblock_treadmill();
+                
+                % Reset PSO
+                obj.ctl.soloist.reset_pso();
 
                 % end of the protocol, no longer running
                 obj.running = false;
