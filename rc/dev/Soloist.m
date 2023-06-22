@@ -319,6 +319,7 @@ classdef Soloist < handle
             average_offset_mV = str2double(str)*1e3;
         end
         
+        function proc = listen_position(obj, back_pos
         
         function proc = listen_until(obj, back_pos, forward_pos, wait_for_trigger)
             % Couples the voltage input to the Soloist controller. Uses the listen_until.exe program.

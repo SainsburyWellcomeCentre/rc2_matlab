@@ -28,7 +28,7 @@ config.saving.single_trial_log_channel_name = 'filtered_teensy_2';
 %%%%%%%%%%%%%%%%%%%%%%
 
 % default stage positions
-config.stage.start_pos                  = 260;
+config.stage.start_pos                  = 500;
 config.stage.back_limit                 = 1470;
 config.stage.forward_limit              = 250;
 config.stage.max_limits                 = [1470, 15];

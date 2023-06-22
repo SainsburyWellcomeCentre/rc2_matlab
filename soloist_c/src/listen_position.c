@@ -91,24 +91,11 @@ main(int argc, char **argv)
     
     // If the motion did not reach the end successfully
     if (success == 0) {
-        
         // Disable the axis.
         if(!SoloistMotionDisable(handles[0])) { cleanup(handles, handle_count); }
-        
     } else {
-        
-        // Start the aerobasic script to ramp down gain smoothly
-        if(!SoloistProgramStart(handles[0], TASKID_01)) { cleanup(handles, handle_count); }
-    
-        // Wait for the program on the task to finish
-        SoloistProgramGetTaskState(handles[0], TASKID_01, &task_state);
-        while (task_state!=TASKSTATE_ProgramComplete) {
-            SoloistProgramGetTaskState(handles[0], TASKID_01, &task_state);
-        }
-        
         // Disable the axis.
         if(!SoloistMotionDisable(handles[0])) { cleanup(handles, handle_count); }
-        
     }
     
     // Pulse the digital output first
