@@ -4,6 +4,8 @@ classdef Shelter < handle
         direction % Direction of travel (name of Teensy script, e.g. 'forward_only' or 'forward_and_backward').
         handle_acquisition = true % Boolean specifying whether we are running this as a single trial (true) or as part of a :class:`rc.prot.ProtocolSequence` (false).
         wait_for_reward = true % Boolean specifying whether to wait for the reward to be given before ending the trial (true) or end the trial immediately (false).
+        back_limit % Backward position beyond which the trial is stopped.
+        forward_limit % Forward position beyond which the trial is stopped and reward given.
         
         log_trial = false % Boolean specifying whether to log the velocity data for this trial.
         log_fname = '' % Name of the file in which to log the single trial data.
@@ -29,6 +31,8 @@ classdef Shelter < handle
         
             obj.ctl = ctl;
             obj.start_pos = config.stage.start_pos;
+            obj.back_limit = config.stage.back_limit;
+            obj.forward_limit = config.stage.forward_limit;
             obj.direction = 'forward_and_backward';
         end
         
@@ -52,11 +56,12 @@ classdef Shelter < handle
                 proc.wait_for(0.5);
                 
                 % prepare to acquire data
+                disp("prepare acquisition");
                 if obj.handle_acquisition
                     obj.ctl.prepare_acq();
                 end
                 
-                % make sure the treadmill is blocked
+                % make sure the treadmill is blocke
                 obj.ctl.block_treadmill();
                 
                 % make sure vis stim is off
@@ -70,25 +75,52 @@ classdef Shelter < handle
                 % listen to correct source
                 obj.ctl.multiplexer_listen_to('teensy');
                 
+                % start PC listening to the correct trigger input
+                obj.ctl.trigger_input.listen_to('soloist');
+                
                 % start the move to operation and wait for the process to
                 % terminate.
                 proc = obj.ctl.soloist.move_to(obj.start_pos, obj.ctl.soloist.default_speed, true);
                 proc.wait_for(2);
                 
+                % MOVEMENT STUFF
+                disp("listen position");
+                obj.ctl.soloist.listen_position(obj.back_limit, obj.forward_limit, false);
+                
                 % release block on the treadmill
-                obj.ctl.unblock_treadmill();
+                obj.ctl.unblock_treadmill();            
                 
-                % MOVEMENT STUFF - TODO
-                % Set AdvancedAnalogTrack to listen to position feedback
-                % (ServoValue = 2)
-                % Set treadmill --> velocity control and apply the gain for
-                % this trial
-                pause(5)
+                % wait for stage to reach the position
+                while ~obj.ctl.trigger_input.read()  
+                    pause(0.005);
+                    if obj.abort
+                        obj.running = false;
+                        obj.abort = false;
+                        %obj.cleanup();
+                        return
+                    end
+                end
                 
-                obj.ctl.unblock_treadmill();
+                disp("end listen");
+                
+                % block the treadmill
+                obj.ctl.block_treadmill()
+                
+                obj.ctl.disable_teensy.off();
+                
+%                 % stop logging the single trial.
+%                 if obj.log_trial
+%                     obj.ctl.stop_logging_single_trial();
+%                 end
                 
                 % Reset PSO
                 obj.ctl.soloist.reset_pso();
+                
+                % if handling the acquisition stop 
+                if obj.handle_acquisition
+                    obj.ctl.stop_acq();
+                    obj.ctl.stop_sound();
+                end
 
                 % end of the protocol, no longer running
                 obj.running = false;

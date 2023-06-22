@@ -319,7 +319,17 @@ classdef Soloist < handle
             average_offset_mV = str2double(str)*1e3;
         end
         
-        function proc = listen_position(obj, back_pos
+        function proc = listen_position(obj, back_pos, forward_pos, wait_for_trigger)
+            fname = obj.full_command('listen_position');
+            cmd = sprintf('%s %i %i %.8f %.8f %.8f %i', fname, back_pos, forward_pos, obj.ai_offset, obj.gear_scale, obj.deadband, wait_for_trigger);
+            disp(cmd)
+            
+            % start running the process
+            runtime = java.lang.Runtime.getRuntime();
+            p_java = runtime.exec(cmd);
+            proc = ProcHandler(p_java);
+            obj.proc_array.add_process(proc);
+        end
         
         function proc = listen_until(obj, back_pos, forward_pos, wait_for_trigger)
             % Couples the voltage input to the Soloist controller. Uses the listen_until.exe program.

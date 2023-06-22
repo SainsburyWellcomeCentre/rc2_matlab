@@ -6,8 +6,7 @@ VariableDefault('use_calibration', true);
 
 % whether to use calibration file and its location
 config.use_calibration_file             = use_calibration;
-config.calibration_file                 = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\rc\main\calibration\calibration_20201029.mat';
-
+config.calibration_file                 = 'C:\Users\Mateo\Documents\repos\rc2_matlab\rc\main\calibration\calibration_ae_shelter.mat';
 
 %%%%%%%%%%%%
 % SAVING %%%
@@ -83,7 +82,7 @@ if config.use_calibration_file
 else
     % default to use if no calibration file
     config.nidaq.ai.offset                  = [0.5, 0, 0, 0, 0, 0, 0, 0, 0.5, 0]; % 
-    config.nidaq.ai.scale                   = [40, 40, -40, 1, 1, 1, 1, 1, 40, 1];
+    config.nidaq.ai.scale                   = [40, 40, 1, 1, 1, 1, 1, 1, 40, 1];
 end
 
 
@@ -102,7 +101,7 @@ else
 end
 % offset to apply to analog output
 
-% 
+
 % if config.use_calibration_file
 %     config.nidaq.ao.offset_error_solenoid_on = calibration.ni_ao_error_solenoid_on;
 %     config.nidaq.ao.offset_error_solenoid_off = calibration.ni_ao_error_solenoid_off;

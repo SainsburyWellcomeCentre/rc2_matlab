@@ -31,7 +31,7 @@ main(int argc, char **argv)
     if(!SoloistConnect(&handles, &handle_count)) { cleanup(handles, handle_count); }
     
     // Setup analog output velocity tracking
-    if(!SoloistAdvancedAnalogTrack(handles[0], AO_CHANNEL, 2, AO_SCALE_FACTOR, 0.0)){ cleanup(handles, handle_count); }
+    if(!SoloistAdvancedAnalogTrack(handles[0], AO_CHANNEL, POS_AO_SERVO_VALUE, POS_AO_SCALE_FACTOR, 0.0)){ cleanup(handles, handle_count); }
     
     // Setup pso output
     if(!SoloistPSOControl(handles[0], PSOMODE_Reset)) { cleanup(handles, handle_count); }
@@ -39,7 +39,7 @@ main(int argc, char **argv)
     if(!SoloistPSOOutputPulse(handles[0])) { cleanup(handles, handle_count); }
     
     // Set the gearing parameters...
-    gear_set = set_gear_params(handles, GEARCAM_SOURCE, 0, deadband, 0);
+    gear_set = set_gear_params(handles, GEARCAM_SOURCE, gear_scale, deadband, 0);
     if (gear_set != 0) { cleanup(handles, handle_count); }
     
     // Enable
