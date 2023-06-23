@@ -1,5 +1,6 @@
 classdef Shelter < handle
     properties
+        start_dwell_time = 5 % Time in seconds to wait at the beginning of the trial.
         start_pos % Position (in Soloist units) at the start of the trial.
         direction % Direction of travel (name of Teensy script, e.g. 'forward_only' or 'forward_and_backward').
         handle_acquisition = true % Boolean specifying whether we are running this as a single trial (true) or as part of a :class:`rc.prot.ProtocolSequence` (false).
@@ -78,20 +79,54 @@ classdef Shelter < handle
                 % start PC listening to the correct trigger input
                 obj.ctl.trigger_input.listen_to('soloist');
                 
+                % if this protocol is handling itself start the sound and
+                % prepare the acquisition
+                if obj.handle_acquisition
+                    obj.ctl.play_sound();
+                    obj.ctl.start_acq();
+                end
+                
                 % start the move to operation and wait for the process to
                 % terminate.
                 proc = obj.ctl.soloist.move_to(obj.start_pos, obj.ctl.soloist.default_speed, true);
                 proc.wait_for(2);
                 
-                % MOVEMENT STUFF
-                disp("listen position");
-                obj.ctl.soloist.listen_position(obj.back_limit, obj.forward_limit, false);
+                % Get the *CURRENT* error on the soloist when that expected
+                % voltage is applied.
+                % This line applies the *EXPECTED* offset on the soloist and returns 
+                % the residual error
+                obj.ctl.disable_teensy.on();
+                obj.ctl.soloist.reset_pso();
+                real_time_offset_error = ...
+                    obj.ctl.soloist.calibrate_zero(obj.back_limit, obj.forward_limit, 0, [], true); % obj.ctl.soloist.ai_offset
+                obj.ctl.soloist.ai_offset = -real_time_offset_error + obj.solenoid_correction;
                 
+                % MOVEMENT LOOP
+                disp("listen position");
+                obj.ctl.soloist.listen_position(obj.back_limit, obj.forward_limit, true);
+                
+                % wait a bit
+                disp("start dwell time")
+                tic;
+                while toc < obj.start_dwell_time
+                    pause(0.005);
+                    if obj.abort
+                        obj.running = false;
+                        obj.abort = false;
+                        return
+                    end
+                end
+                
+                obj.ctl.disable_teensy.off();
+                
+                disp("treadmill free")
                 % release block on the treadmill
                 obj.ctl.unblock_treadmill();            
                 
-                % wait for stage to reach the position
-                while ~obj.ctl.trigger_input.read()  
+                % wait for stage to reach the position or for the timeout
+                % to be reached
+                tic;
+                while ~obj.ctl.trigger_input.read() && toc < obj.ctl.timeout_seconds  
                     pause(0.005);
                     if obj.abort
                         obj.running = false;
@@ -106,12 +141,10 @@ classdef Shelter < handle
                 % block the treadmill
                 obj.ctl.block_treadmill()
                 
-                obj.ctl.disable_teensy.off();
-                
-%                 % stop logging the single trial.
-%                 if obj.log_trial
-%                     obj.ctl.stop_logging_single_trial();
-%                 end
+                % stop logging the single trial.
+                if obj.log_trial
+                    obj.ctl.stop_logging_single_trial();
+                end
                 
                 % Reset PSO
                 obj.ctl.soloist.reset_pso();

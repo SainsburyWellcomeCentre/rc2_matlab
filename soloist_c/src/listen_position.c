@@ -48,7 +48,6 @@ main(int argc, char **argv)
     // Subtract offset on analog input
     if(!SoloistParameterSetValue(handles[0], PARAMETERID_Analog0InputOffset, 1, ai_offset)) { cleanup(handles, handle_count); }
     
-    
     // Wait for a trigger to go low.
     if (wait_for_trigger == 1) {
         while (ready_to_go == 1) {
@@ -87,16 +86,17 @@ main(int argc, char **argv)
             looping = 0;
             success = 0;
         }
+        
+        // Exit loop if the trigger resets
+        if(!SoloistIODigitalInput(handles[0], DI_PORT, &ready_to_go)) { cleanup(handles, handle_count); }
+        if (ready_to_go == 1) {
+            looping = 0;
+            success = 1;
+        }
     }
     
-    // If the motion did not reach the end successfully
-    if (success == 0) {
-        // Disable the axis.
-        if(!SoloistMotionDisable(handles[0])) { cleanup(handles, handle_count); }
-    } else {
-        // Disable the axis.
-        if(!SoloistMotionDisable(handles[0])) { cleanup(handles, handle_count); }
-    }
+    // Disable the axis.
+    if(!SoloistMotionDisable(handles[0])) { cleanup(handles, handle_count); }
     
     // Pulse the digital output first
     if(!SoloistPSOControl(handles[0], PSOMODE_Fire)) { cleanup(handles, handle_count); }

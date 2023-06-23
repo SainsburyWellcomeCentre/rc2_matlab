@@ -24,6 +24,7 @@ classdef Controller < handle
         delayed_velocity % :class:`rc.actions.DelayedVelocity`
         data % Data matrix with latest voltage data.
         tdata % Data matrix with transformed data.
+        timeout_seconds; % Trial timeout length in seconds.
     end
     
     
@@ -63,6 +64,8 @@ classdef Controller < handle
             obj.start_soloist = StartSoloist(obj.ni, config);
             obj.teensy_gain = TeensyGain(obj.ni, config);
             
+            % Timeouts
+            obj.timeout_seconds = config.timeout.timeout_seconds;
         end
         
         

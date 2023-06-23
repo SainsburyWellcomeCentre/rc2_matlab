@@ -21,7 +21,6 @@ config.saving.main_dir                  = fileparts(fileparts(fileparts(config.s
 config.saving.git_dir                   = fullfile(config.saving.main_dir, '.git');  % git directory
 config.saving.single_trial_log_channel_name = 'filtered_teensy_2';
 
-
 %%%%%%%%%%%%%%%%%%%%%%
 % STAGE parameters %%%
 %%%%%%%%%%%%%%%%%%%%%%
@@ -31,6 +30,8 @@ config.stage.start_pos                  = 500;
 config.stage.back_limit                 = 1470;
 config.stage.forward_limit              = 250;
 config.stage.max_limits                 = [1470, 15];
+
+config.timeout.timeout_seconds          = 30; % How long an animal must be still for before the trial is reset
 
 if config.use_calibration_file
     % load the calibration file

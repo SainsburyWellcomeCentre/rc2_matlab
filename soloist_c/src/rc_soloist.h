@@ -17,7 +17,7 @@
 #define GEAR_SCALE 						-4000
 #define DEADBAND                        0.005
 #define POS_AO_SERVO_VALUE              2
-#define POS_AO_SCALE_FACTOR             0.000001f
+#define POS_AO_SCALE_FACTOR             0.0000005f
 
 #define AI_OFFSET 						-508.0
 #define DEFAULT_GEARSOURCE              1
