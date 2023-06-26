@@ -7,9 +7,9 @@ classdef Shelter < handle
         wait_for_reward = true % Boolean specifying whether to wait for the reward to be given before ending the trial (true) or end the trial immediately (false).
         back_limit % Backward position beyond which the trial is stopped.
         forward_limit % Forward position beyond which the trial is stopped and reward given.
+        gain % Gain applied for treadmill --> motion (on top of Soloist gear scale).
         
-        
-        log_trial = false % Boolean specifying whether to log the velocity data for this trial.
+        log_trial = true % Boolean specifying whether to log the velocity data for this trial.
         log_fname = '' % Name of the file in which to log the single trial data.
         
         solenoid_correction = 1.55 % How much to correct for voltage differences when solenoid is up or down (mV).
@@ -36,6 +36,7 @@ classdef Shelter < handle
             obj.back_limit = config.stage.back_limit;
             obj.forward_limit = config.stage.forward_limit;
             obj.direction = 'forward_and_backward';
+            obj.gain = 1; % default gain
         end
         
         function final_position = run(obj)
@@ -104,7 +105,7 @@ classdef Shelter < handle
                 
                 % MOVEMENT LOOP
                 disp("listen position");
-                obj.ctl.soloist.listen_position(obj.back_limit, obj.forward_limit, true, 1);
+                obj.ctl.soloist.listen_position(obj.back_limit, obj.forward_limit, true, obj.gain);
                 
                 % wait a bit
                 disp("start dwell time")
@@ -183,6 +184,31 @@ classdef Shelter < handle
             % abort properly.
         
             obj.abort = true;
+        end
+        
+        function cfg = get_config(obj)
+            cfg = { 
+                    'prot.time_started',        datestr(now, 'yyyymmdd_HH_MM_SS')
+                    'prot.type',                class(obj);
+                    'prot.start_pos',           sprintf('%.3f', obj.start_pos);
+                    'prot.stage_pos',           '---';
+                    'prot.back_limit',          sprintf('%.3f', obj.back_limit);
+                    'prot.forward_limit',       sprintf('%.3f', obj.forward_limit);
+                    'prot.direction',           obj.direction;
+                    'prot.start_dwell_time',    sprintf('%.3f', obj.start_dwell_time);
+                    'prot.handle_acquisition',  sprintf('%i', obj.handle_acquisition);
+                    'prot.wait_for_reward',     sprintf('%i', obj.wait_for_reward);
+                    'prot.log_trial',           sprintf('%i', obj.log_trial);
+                    'prot.log_fname',           sprintf('%s', obj.log_fname);
+                    'prot.integrate_using',     '---';
+                    'prot.wave_fname',          '---';
+                    'prot.initiate_trial',      '---';
+                    'prot.initiation_speed',    '---';
+                    'prot.reward.randomize',    sprintf('%i', obj.ctl.reward.randomize);
+                    'prot.reward.min_time',     sprintf('%i', obj.ctl.reward.min_time);
+                    'prot.reward.max_time',     sprintf('%i', obj.ctl.reward.max_time);
+                    'prot.reward.duration',     sprintf('%i', obj.ctl.reward.duration)
+                    'prot.gain',                sprintf('%.3f', obj.gain)};
         end
         
         function cleanup(obj)

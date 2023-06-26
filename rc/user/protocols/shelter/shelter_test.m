@@ -6,7 +6,9 @@ function seq = shelter_test(ctl)
     seq = ProtocolSequence(ctl);
     
     for i = 1 : 20
-       seq.add(Shelter(ctl, config)) 
+       trial = Shelter(ctl, config);
+       trial.gain = config.stage.gain_seq(i);
+       seq.add(trial); 
     end
 end
 

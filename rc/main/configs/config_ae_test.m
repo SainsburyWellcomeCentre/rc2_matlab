@@ -36,6 +36,7 @@ config.stage.start_pos                  = 500;
 config.stage.back_limit                 = 1470;
 config.stage.forward_limit              = 250;
 config.stage.max_limits                 = [1470, 15];
+config.stage.gain_seq                   = (1:20) * 0.1;
 
 config.timeout.timeout_seconds          = 30; % How long an animal must be still for before the trial is reset
 

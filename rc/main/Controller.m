@@ -506,7 +506,8 @@ classdef Controller < handle
                     'nidaq.do.clock_src',       obj.ni.do.clock_src;
                 
                     'nidaq.di.channel_names',   strjoin(obj.ni.di.channel_names, ',');
-                    'nidaq.di.channel_ids',     strjoin(obj.ni.di.channel_ids, ',')};
+                    'nidaq.di.channel_ids',     strjoin(obj.ni.di.channel_ids, ',');
+                    'timeout_seconds',          sprintf('%.1f', obj.timeout_seconds)};
                 
             % add information about delay
             if obj.delayed_velocity.enabled
