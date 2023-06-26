@@ -564,6 +564,9 @@ classdef rc2guiController < handle
             obj.view.show_ui_after_home();
         end
         
+        function play_threat(obj)
+            disp("play threat");
+        end
         
         
         function reset_soloist(obj)
