@@ -1,13 +1,50 @@
 
+# Rollercoaster V2 (RC2)
 
-Configuration files
--------------------
+This repository contains the software control code and documentation for the Rollercoaster V2 setup.
 
-The main configuration file is in %TOP_DIR%\rc\main\configs\config_default.m, where TOP_DIR is the location on the system of the rc2_matlab directory. This file should contain most of the configuration variables for a day to day basis.
+## Hardware
 
-Other configuration variables are contained in:
+The software was written to control the following hardware:
 
-%TOP_DIR%\soloist_c\src\rc_soloist.h
-%TOP_DIR%\teensy_ino\libraries\options\options.h
+1. An NI USB-6229 DAQ
+2. A Teensy 3.2
+3. An Aerotech linear stage (ACT115) with Soloist HLe controller 
+4. A multiplexer
+5. A pump for reward
+6. A solenoid for blocking the treadmill
 
-These files contain variables that are less often modified, but changing them requires extra steps to implement. If a variable in the rc_soloist.h file is changed, then some or all of the executables will need to be rebuilt and placed in %TOP_DIR%\soloist_c\exe\.  If a variable in the Teensy options.h file is changed, then the options.h will have to be copied to the Arduino libraries directory.
+## Installation
+
+This code has been developed on Windows 7 with MATLAB 2018b.
+
+In order to use all hardware the following should be installed on the system:
+
+1. Aerotech drivers for controlling the linear stage (software comes with stage)
+2. Arduino software for controlling the Teensy's (https://www.pjrc.com/teensy/td_download.html)
+3. NI-DAQmx drivers
+
+## Usage best practices
+
+Different physical RC2 rigs will implement different hardware interactions and configurations. Therefore, some parts of the code base will not be transferable across rigs and should be configured locally for a particular setup. In particular, configuration descriptions and Soloist communication executables will vary between rigs, and should therefore be tailored for each rig. 
+
+### Git configuration
+
+Individual users of RC2 should create their own branch or fork of the repo (rig-user) and implement any rig specific changes there.
+
+For example, to install RC2 on a new rig for a new user:
+1. Clone the main repo.
+2. Create a new branch named <rig-user> (e.g. 3p-aerskine).
+3. This branch should be used *only* for adding user and rig specific configs, protocols, calibrations in the rc/user folder.
+    - Use the configs in the rc\user\template folder as a guide as these include relative pathing. 
+    - Configs can also be copied from other users (although ensure that they use relative paths as well). Make sure that copied configs are renamed to reflect the new user / rig.
+4. If any changes to the main RC2 codebase are required (e.g. new Sensor module, GUI changes) they should be made in the main branch (or a development branch of the main branch that is then merged back into main).
+5. To implement those changes, users should rebase their rig-user branch onto the main branch.
+
+### Soloist Executables
+
+The .exe files for communication with the Soloist are not tracked by the git repo as they are rig specific. These executables should be built from source for a fresh install of the software of if the source files are modified (use rc/soloist_c/src/build.bat)
+
+## Documentation
+
+See the README in the docs folder for instructions on how to build the documentation.
