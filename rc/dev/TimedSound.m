@@ -5,6 +5,7 @@ classdef TimedSound < handle
         audio % `audioplayer <https://uk.mathworks.com/help/matlab/ref/audioplayer.html>`_ object.
         reset % Helper `audioplayer <https://uk.mathworks.com/help/matlab/ref/audioplayer.html>`_ object.
         state = false; % Current state of the audio.
+        sound_timer % Timer for timing sound play.
     end
     
     properties (SetAccess = private, SetObservable = true)
@@ -13,36 +14,23 @@ classdef TimedSound < handle
     
     methods
         function obj = TimedSound(sound_file) 
-            % Constructor for a :class:`rc.dev.Sound` device.
+            % Constructor for a :class:`rc.dev.TimedSound` device.
             
             try
                 % load a hard-coded audio file
                 [y, rate] = audioread(sound_file, 'native');
                 
+                % create the main audio play object
                 obj.audio = audioplayer(y, rate);
                 
+                % upon stopping we need to reset the voltage on the jack to
+                % zero
                 obj.reset = audioplayer([0, 0, 0], rate);
                 
-%                 % load a hard-coded audio file
-%                 %   this could become an option, but it is unlikely to change
-%                 %   if it doesn't exist, this will fail and the sound will
-%                 %   be disabled
-%                 [y, rate] = audioread('white_noise.wav', 'native');
-%                 
-%                 % create the main audio play object
-%                 obj.audio = audioplayer(y, rate);
-%                 
-%                 % upon stopping we need to reset the voltage on the jack to
-%                 % zero... apparently without this, a voltage remains on
-%                 % it?
-%                 obj.reset = audioplayer([0, 0, 0], rate);
-%                 
-%                 % When the sound stops, run the repeat function to start
-%                 % it.
-%                 set(obj.audio, 'StopFcn', @(x, y)obj.repeat(x, y))
-%                 
-%                 % by default the sound is on, and it loops
-%                 obj.enabled = true;
+                % set the audio to loop until stopped
+                set(obj.audio, 'StopFcn', @(o, e)obj.repeat_callback(o, e))
+                
+                obj.enabled = true;
                 
             catch ME
                 
@@ -71,6 +59,11 @@ classdef TimedSound < handle
            
            if ~obj.enabled; return; end
            if obj.state; return; end
+           
+           % set up a timer to stop the sound
+%            obj.sound_timer = timer('StartDelay', for_s, 'TimerFcn', @(o, e)obj.stop_callback(o, e));
+           obj.sound_timer = timer('StartDelay', for_s, 'TimerFcn', @(o, e)obj.stop_callback(o, e));
+           start(obj.sound_timer);
             
            % start playing the sound and set state to true
            play(obj.audio)
@@ -94,6 +87,20 @@ classdef TimedSound < handle
             % we need to play a short burst of 0's to reset the output to
             % zero...
             play(obj.reset);
+        end
+        
+        function stop_callback(obj, ~, ~)
+            obj.stop();
+        end
+        
+        function repeat_callback(obj, ~, ~)
+            % Callback for repeating the sound.
+        
+            % if state is false, don't start again.
+            if ~obj.state; return; end
+            
+            % just start playing again
+            play(obj.audio)
         end
     end
 end
