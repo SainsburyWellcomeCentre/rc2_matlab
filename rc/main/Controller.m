@@ -26,7 +26,6 @@ classdef Controller < handle
         delayed_velocity % :class:`rc.actions.DelayedVelocity`
         data % Data matrix with latest voltage data.
         tdata % Data matrix with transformed data.
-        timeout_seconds; % Trial timeout length in seconds.
     end
     
     
@@ -67,9 +66,6 @@ classdef Controller < handle
             obj.vis_stim = VisStim(obj.ni, config);
             obj.start_soloist = StartSoloist(obj.ni, config);
             obj.teensy_gain = TeensyGain(obj.ni, config);
-            
-            % Timeouts
-            obj.timeout_seconds = config.timeout.timeout_seconds;
         end
         
         
@@ -506,9 +502,8 @@ classdef Controller < handle
                     'nidaq.do.clock_src',       obj.ni.do.clock_src;
                 
                     'nidaq.di.channel_names',   strjoin(obj.ni.di.channel_names, ',');
-                    'nidaq.di.channel_ids',     strjoin(obj.ni.di.channel_ids, ',');
-                    'timeout_seconds',          sprintf('%.1f', obj.timeout_seconds)};
-                
+                    'nidaq.di.channel_ids',     strjoin(obj.ni.di.channel_ids, ',')};
+              
             % add information about delay
             if obj.delayed_velocity.enabled
                 cfg{end+1, 1} = 'delay_ms';
