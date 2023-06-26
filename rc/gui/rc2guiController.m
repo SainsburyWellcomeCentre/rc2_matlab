@@ -564,8 +564,16 @@ classdef rc2guiController < handle
             obj.view.show_ui_after_home();
         end
         
+        
         function play_threat(obj)
-            disp("play threat");
+            % Starts the timed threat sound
+            obj.setup.play_threat();
+        end
+        
+        
+        function stop_threat(obj)
+            % Stops the timed threat sound
+            obj.setup.stop_threat();
         end
         
         

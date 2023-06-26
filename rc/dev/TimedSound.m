@@ -13,12 +13,12 @@ classdef TimedSound < handle
     end
     
     methods
-        function obj = TimedSound(sound_file) 
+        function obj = TimedSound(config) 
             % Constructor for a :class:`rc.dev.TimedSound` device.
             
             try
                 % load a hard-coded audio file
-                [y, rate] = audioread(sound_file, 'native');
+                [y, rate] = audioread(config.sound.threat_sound, 'native');
                 
                 % create the main audio play object
                 obj.audio = audioplayer(y, rate);

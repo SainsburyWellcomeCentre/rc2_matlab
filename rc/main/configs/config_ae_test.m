@@ -21,6 +21,12 @@ config.saving.main_dir                  = fileparts(fileparts(fileparts(config.s
 config.saving.git_dir                   = fullfile(config.saving.main_dir, '.git');  % git directory
 config.saving.single_trial_log_channel_name = 'filtered_teensy_2';
 
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Sound file parameters %
+%%%%%%%%%%%%%%%%%%%%%%%%%
+config.sound.threat_sound               = '1point5sec_cracks.wav';
+config.sound.threat_sound_play_time     = 5;
+
 %%%%%%%%%%%%%%%%%%%%%%
 % STAGE parameters %%%
 %%%%%%%%%%%%%%%%%%%%%%

@@ -221,6 +221,12 @@ function pushbutton_threat_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 handles.controller.play_threat();
 
+% --- Executes on button press in pushbutton_stop_threat.
+function pushbutton_stop_threat_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_stop_threat (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.controller.stop_threat();
 
 % --- Executes on button press in pushbutton25.
 function pushbutton25_Callback(hObject, eventdata, handles)

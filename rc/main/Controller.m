@@ -12,6 +12,8 @@ classdef Controller < handle
         plotting % :class:`rc.aux_.Plotting`
         saver % :class:`rc.saving.Saver`
         sound % :class:`rc.dev.Sound`
+        threat_sound % :class:`rc.dev.TimedSound`
+        threat_sound_play_time % Time in seconds to play the threat sound when triggered
         position % :class:`rc.aux_.Position`
         zero_teensy % :class:`rc.actions.ZeroTeensy`
         disable_teensy % :class:`rc.actions.DisableTeensy`
@@ -50,6 +52,8 @@ classdef Controller < handle
             obj.multiplexer = Multiplexer(obj.ni, config);
             obj.plotting = Plotting(config);
             obj.sound = Sound();
+            obj.threat_sound = TimedSound(config);
+            obj.threat_sound_play_time = config.sound.threat_sound_play_time;
             obj.position = Position(config);
             obj.saver = Saver(obj, config);
             obj.data_transform = DataTransform(config);
@@ -194,13 +198,22 @@ classdef Controller < handle
             obj.sound.play()
         end
         
-        
         function stop_sound(obj)
             % Stop the controller defined sound.
         
             obj.sound.stop()
         end
         
+        function play_threat(obj)
+            % Starts the thread sound looping for config defined length of
+            % time
+           obj.threat_sound.play_for(obj.threat_sound_play_time); 
+        end
+        
+        function stop_threat(obj)
+            % Force stops the threat sound
+            obj.threat_sound.stop();
+        end
         
         function give_reward(obj)
             % Give a reward.
