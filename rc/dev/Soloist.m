@@ -319,9 +319,38 @@ classdef Soloist < handle
             average_offset_mV = str2double(str)*1e3;
         end
         
-        function proc = listen_position(obj, back_pos, forward_pos, wait_for_trigger)
+        function proc = listen_position(obj, back_pos, forward_pos, wait_for_trigger, gain)
+            % check 'back_pos'
+            if ~isnumeric(back_pos) || isinf(back_pos) || isnan(back_pos)
+                fprintf('%s: %s ''back_pos'' must be numeric\n', class(obj), 'listen_until');
+                return
+            end
+            if back_pos > obj.max_limits(1) || back_pos < obj.max_limits(2)
+                fprintf('%s: %s ''back_pos'' must be between %.1f and %.1f\n', ...
+                    class(obj), 'listen_until', obj.max_limits(2), obj.max_limits(1));
+                return
+            end
+            
+            % check 'forward_pos'
+            if ~isnumeric(forward_pos) || isinf(forward_pos) || isnan(forward_pos)
+                fprintf('%s: %s ''forward_pos'' must be numeric\n', class(obj), 'listen_until');
+                return
+            end
+            if forward_pos > obj.max_limits(1) || forward_pos < obj.max_limits(2)
+                fprintf('%s: %s ''forward_pos'' must be between %.1f and %.1f\n', ...
+                    class(obj), 'listen_until', obj.max_limits(2), obj.max_limits(1));
+                return
+            end
+            
+            % make sure forward and backwards are sensible way round
+            if forward_pos > back_pos
+                fprintf('%s: %s ''forward_pos'' must be > ''back_pos''\n', ...
+                    class(obj), 'listen_until');
+                return
+            end
+            
             fname = obj.full_command('listen_position');
-            cmd = sprintf('%s %i %i %.8f %.8f %.8f %i', fname, back_pos, forward_pos, obj.ai_offset, obj.gear_scale, obj.deadband, wait_for_trigger);
+            cmd = sprintf('%s %i %i %.8f %.8f %.8f %i', fname, back_pos, forward_pos, obj.ai_offset, obj.gear_scale * gain, obj.deadband, wait_for_trigger);
             disp(cmd)
             
             % start running the process

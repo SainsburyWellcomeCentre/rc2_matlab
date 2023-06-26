@@ -228,29 +228,29 @@ function pushbutton_stop_threat_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 handles.controller.stop_threat();
 
-% --- Executes on button press in pushbutton25.
+% --- Executes on button press in pushbutton_toggle_sound.
 function pushbutton25_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton25 (see GCBO)
+% hObject    handle to pushbutton_toggle_sound (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 
-% --- Executes on button press in radiobutton9.
+% --- Executes on button press in button_enable_sound.
 function radiobutton9_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton9 (see GCBO)
+% hObject    handle to button_enable_sound (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of radiobutton9
+% Hint: get(hObject,'Value') returns toggle state of button_enable_sound
 
 
-% --- Executes on button press in radiobutton10.
+% --- Executes on button press in button_disable_sound.
 function radiobutton10_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton10 (see GCBO)
+% hObject    handle to button_disable_sound (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of radiobutton10
+% Hint: get(hObject,'Value') returns toggle state of button_disable_sound
 
 
 % --- Executes on button press in pushbutton24.

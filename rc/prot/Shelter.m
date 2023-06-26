@@ -8,6 +8,7 @@ classdef Shelter < handle
         back_limit % Backward position beyond which the trial is stopped.
         forward_limit % Forward position beyond which the trial is stopped and reward given.
         
+        
         log_trial = false % Boolean specifying whether to log the velocity data for this trial.
         log_fname = '' % Name of the file in which to log the single trial data.
         
@@ -103,7 +104,7 @@ classdef Shelter < handle
                 
                 % MOVEMENT LOOP
                 disp("listen position");
-                obj.ctl.soloist.listen_position(obj.back_limit, obj.forward_limit, true);
+                obj.ctl.soloist.listen_position(obj.back_limit, obj.forward_limit, true, 1);
                 
                 % wait a bit
                 disp("start dwell time")
