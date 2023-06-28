@@ -108,18 +108,14 @@ classdef Shelter < handle
                 disp("apply gain triggers");
                 if obj.gain_triggers(1)
                    obj.ctl.teensy_gain.gain_up_on(); 
-                   disp("GAIN HIGH ON");
                 else
                     obj.ctl.teensy_gain.gain_up_off(); 
-                    disp("GAIN HIGH OFF");
                 end
                 
                 if obj.gain_triggers(2)
                    obj.ctl.teensy_gain.gain_down_on(); 
-                   disp("GAIN LOW ON");
                 else
                     obj.ctl.teensy_gain.gain_down_off(); 
-                    disp("GAIN LOW OFF");
                 end
                 
                 disp("listen position");

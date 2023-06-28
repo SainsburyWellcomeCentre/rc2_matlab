@@ -20,7 +20,7 @@ GainControlLevels::setup() {
 	gain_down.setup(GAIN_DOWN_PIN);
 	pinMode(GAIN_REPORT_PIN, OUTPUT);
 	
-	this->_target = 1;
+	this->_target = 0;
 	this->value = this->_target;
 	this->_time_started = 0;
 	this->_initial_value = this->value;
