@@ -156,7 +156,7 @@ config.nidaq.di.channel_id      = {'port1/line0'};
 
 config.teensy.exe               = 'C:\Program Files (x86)\Arduino\arduino_debug.exe';
 config.teensy.dir               = 'C:\Users\Mateo\Documents\repos\rc2_matlab\teensy_ino';
-config.teensy.start_script      = 'forward_only';
+config.teensy.start_script      = 'forward_and_backward_variable_gain';
 
 
 %%%%%%%%%%%%%%%%%%%%%%

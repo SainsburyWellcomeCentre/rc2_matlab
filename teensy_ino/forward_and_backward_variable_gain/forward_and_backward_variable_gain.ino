@@ -14,13 +14,13 @@
 #include "encoder.h"
 #include "velocity.h"
 #include "ao.h"
-#include "gain_control.h"
+#include "gain_control_levels.h"
 
 
 class Encoder;
 Velocity vel = Velocity();
 AnalogOut ao = AnalogOut();
-GainControl gain = GainControl();
+GainControlLevels gain = GainControlLevels();
 int protocol = FORWARD_AND_BACKWARD;
 float dac_offset_volts = 0.5;
 float min_volts = 0;
