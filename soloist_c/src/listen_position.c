@@ -27,8 +27,15 @@ main(int argc, char **argv)
     int gear_set;
     DWORD ready_to_go = 1; // digital input starts high
     
+    // Path to the aerobasic script which will control ramping up of the gain
+    LPCSTR ab_script_up = "C:\\Users\\Mateo\\Documents\\repos\\rc2_matlab\\soloist_c\\ab\\ramp_up_gain_nowait.ab";
+    LPCSTR ab_script_down = "C:\\Users\\Mateo\\Documents\\repos\\rc2_matlab\\soloist_c\\ab\\ramp_down_gain_nowait.ab";
+    
     // Connect to soloist.
     if(!SoloistConnect(&handles, &handle_count)) { cleanup(handles, handle_count); }
+    
+    // Load the ramp up aerobasic script into task 1
+    if(!SoloistProgramLoad(handles[0], TASKID_01, ab_script_up)) { cleanup(handles, handle_count); }
     
     // Setup analog output velocity tracking
     if(!SoloistAdvancedAnalogTrack(handles[0], AO_CHANNEL, POS_AO_SERVO_VALUE, POS_AO_SCALE_FACTOR, 0.0)){ cleanup(handles, handle_count); }
@@ -57,6 +64,18 @@ main(int argc, char **argv)
     
     // Set to gear mode... no turning back now.
     if(!SoloistCommandExecute(handles[0], "GEAR 1", NULL)) { cleanup(handles, handle_count); }    
+    
+    // Start the aerobasic script
+    if(!SoloistProgramStart(handles[0], TASKID_01)) { cleanup(handles, handle_count); }
+    
+    // Wait for the program on the task to finish
+    SoloistProgramGetTaskState(handles[0], TASKID_01, &task_state);
+    while (task_state!=TASKSTATE_ProgramComplete) {
+        SoloistProgramGetTaskState(handles[0], TASKID_01, &task_state);
+    }
+    
+    // Load the ramp down aerobasic script into task 1 (... other tasks?)
+    if(!SoloistProgramLoad(handles[0], TASKID_01, ab_script_down)) { cleanup(handles, handle_count); }
     
     // Stay in gear mode until one of the following conditions is satisfied
     int looping = 1;
@@ -93,6 +112,15 @@ main(int argc, char **argv)
             looping = 0;
             success = 1;
         }
+    }
+    
+    // Start the aerobasic script to ramp down gain smoothly
+    if(!SoloistProgramStart(handles[0], TASKID_01)) { cleanup(handles, handle_count); }
+
+    // Wait for the program on the task to finish
+    SoloistProgramGetTaskState(handles[0], TASKID_01, &task_state);
+    while (task_state!=TASKSTATE_ProgramComplete) {
+        SoloistProgramGetTaskState(handles[0], TASKID_01, &task_state);
     }
     
     // Disable the axis.
