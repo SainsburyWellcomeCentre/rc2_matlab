@@ -7,7 +7,6 @@ classdef Shelter < handle
         wait_for_reward = true % Boolean specifying whether to wait for the reward to be given before ending the trial (true) or end the trial immediately (false).
         back_limit % Backward position beyond which the trial is stopped.
         forward_limit % Forward position beyond which the trial is stopped and reward given.
-        gain % Gain applied for treadmill --> motion (on top of Soloist gear scale).
         
         log_trial = true % Boolean specifying whether to log the velocity data for this trial.
         log_fname = '' % Name of the file in which to log the single trial data.
@@ -36,8 +35,7 @@ classdef Shelter < handle
             obj.start_pos = config.stage.start_pos;
             obj.back_limit = config.stage.back_limit;
             obj.forward_limit = config.stage.forward_limit;
-            obj.direction = 'forward_and_backward';
-            obj.gain = 1; % default gain
+            obj.direction = 'forward_and_backward_variable_gain';
         end
         
         function final_position = run(obj)
