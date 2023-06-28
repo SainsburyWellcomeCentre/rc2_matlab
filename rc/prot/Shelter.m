@@ -13,6 +13,8 @@ classdef Shelter < handle
         
         solenoid_correction = 1.55 % How much to correct for voltage differences when solenoid is up or down (mV).
         timeout_seconds = 60 % How long in seconds until the trial automatically resets.
+        
+        gain_triggers = [1, 1] % GAIN_HIGH, GAIN_LOW triggers to apply, default is [1, 1] no gain change.
     end
     
     properties (SetAccess = private)
@@ -103,6 +105,11 @@ classdef Shelter < handle
                 obj.ctl.soloist.ai_offset = -real_time_offset_error + obj.solenoid_correction;
                 
                 % MOVEMENT LOOP
+                disp("apply gain triggers");
+                if obj.gain_triggers(1)
+                   obj.ctl.teensy_gain.gain_up_on(); 
+                end
+                
                 disp("listen position");
                 obj.ctl.soloist.listen_position(obj.back_limit, obj.forward_limit, true);
                 
@@ -141,6 +148,11 @@ classdef Shelter < handle
                 
                 % block the treadmill
                 obj.ctl.block_treadmill()
+                
+                disp("disable gain triggers");
+                if obj.gain_triggers(1)
+                   obj.ctl.teensy_gain.gain_up_off(); 
+                end
                 
                 % stop logging the single trial.
                 if obj.log_trial
