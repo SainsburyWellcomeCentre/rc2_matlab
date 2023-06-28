@@ -13,6 +13,7 @@ classdef Shelter < handle
         log_fname = '' % Name of the file in which to log the single trial data.
         
         solenoid_correction = 1.55 % How much to correct for voltage differences when solenoid is up or down (mV).
+        timeout_seconds = 60 % How long in seconds until the trial automatically resets.
     end
     
     properties (SetAccess = private)
@@ -128,7 +129,7 @@ classdef Shelter < handle
                 % wait for stage to reach the position or for the timeout
                 % to be reached
                 tic;
-                while ~obj.ctl.trigger_input.read() && toc < obj.ctl.timeout_seconds  
+                while ~obj.ctl.trigger_input.read() && toc < obj.timeout_seconds  
                     pause(0.005);
                     if obj.abort
                         obj.running = false;

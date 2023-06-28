@@ -11,6 +11,7 @@ function seq = shelter_test(ctl)
     for i = 1 : nTrials
        trial = Shelter(ctl, config);
        trial.gain = config.stage.gain_seq(i);
+       trial.timeout_seconds = config.timeout.timeout_seconds;
        seq.add(trial); 
     end
 end
