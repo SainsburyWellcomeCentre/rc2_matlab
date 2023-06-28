@@ -25,7 +25,7 @@ config.saving.single_trial_log_channel_name = 'filtered_teensy_2';
 % Sound file parameters %
 %%%%%%%%%%%%%%%%%%%%%%%%%
 config.sound.threat_sound               = '1point5sec_cracks.wav';
-config.sound.threat_sound_play_time     = 5;
+config.sound.threat_sound_play_time     = 5; % looped play time in seconds
 
 %%%%%%%%%%%%%%%%%%%%%%
 % STAGE parameters %%%
