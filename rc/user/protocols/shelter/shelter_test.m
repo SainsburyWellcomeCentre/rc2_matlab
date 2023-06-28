@@ -4,8 +4,8 @@ function seq = shelter_test(ctl)
 
     % setup the protocol sequence
     seq = ProtocolSequence(ctl);
-    nTrials = 4;
-    gain_seq = {[0, 0], [0, 1], [1, 1], [1, 0]}; % Defines the gain pins high or low. e.g. [1, 1] is both pins high = default gain. [0, 0] is both bins low = zero gain
+    nTrials = 5;
+    gain_seq = {[1, 1], [0, 1], [1, 1], [1, 0], [0, 0]}; % Defines the gain pins high or low. e.g. [1, 1] is both pins high = default gain. [0, 0] is both bins low = zero gain
     
     assert(nTrials == length(gain_seq), 'Warning: number of trials does not match the number of gain factors');
     

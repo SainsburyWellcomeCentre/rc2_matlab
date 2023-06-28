@@ -23,7 +23,7 @@ AnalogOut ao = AnalogOut();
 GainControlLevels gain = GainControlLevels();
 int protocol = FORWARD_AND_BACKWARD;
 float dac_offset_volts = 0.5;
-float min_volts = 0;
+float min_volts = -0.5;
 
 void
 setup() {
