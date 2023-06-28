@@ -37,7 +37,7 @@ classdef Shelter < handle
             obj.start_pos = config.stage.start_pos;
             obj.back_limit = config.stage.back_limit;
             obj.forward_limit = config.stage.forward_limit;
-            obj.direction = 'forward_and_backward';
+            obj.direction = 'forward_and_backward_variable_gain';
         end
         
         function final_position = run(obj)
