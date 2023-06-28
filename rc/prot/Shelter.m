@@ -106,7 +106,7 @@ classdef Shelter < handle
                 
                 % MOVEMENT LOOP
                 disp("listen position");
-                obj.ctl.soloist.listen_position(obj.back_limit, obj.forward_limit, true, obj.gain);
+                obj.ctl.soloist.listen_position(obj.back_limit, obj.forward_limit, true);
                 
                 % wait a bit
                 disp("start dwell time")
