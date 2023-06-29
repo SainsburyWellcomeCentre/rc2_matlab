@@ -25,7 +25,7 @@ config.saving.single_trial_log_channel_name = 'filtered_teensy_2';
 % Sound file parameters %
 %%%%%%%%%%%%%%%%%%%%%%%%%
 config.sound.threat_sound               = '1point5sec_cracks.wav';
-config.sound.threat_sound_play_time     = 5; % looped play time in seconds
+config.sound.threat_sound_play_time     = 4.5; % looped play time in seconds
 
 %%%%%%%%%%%%%%%%%%%%%%
 % STAGE parameters %%%
@@ -37,7 +37,7 @@ config.stage.back_limit                 = 1470;
 config.stage.forward_limit              = 250;
 config.stage.max_limits                 = [1470, 15];
 
-config.timeout.timeout_seconds          = 30; % How long an animal must be still for before the trial is reset
+config.timeout.timeout_seconds          = 60; % How long an animal must be still for before the trial is reset
 
 if config.use_calibration_file
     % load the calibration file
@@ -69,7 +69,7 @@ config.nidaq.log_every                  = 1000;
 % device name
 config.nidaq.ai.dev                     = 'Dev2';
 % nominal channel names (for reference)
-config.nidaq.ai.channel_names           = {'gain_teensy', 'filtered_teensy_2', 'stage', 'lick', 'pump', 'solenoid', 'photodiode', 'minidaq_ao0', 'multiplexer_output', 'teensy_gain'};
+config.nidaq.ai.channel_names           = {'gain_teensy', 'filtered_teensy_2', 'stage', 'lick', 'pump', 'solenoid', 'photodiode or speaker', 'minidaq_ao0', 'multiplexer_output', 'teensy_gain'};
 % 
 config.nidaq.ai.channel_id              = [0:7, 16:17];
 

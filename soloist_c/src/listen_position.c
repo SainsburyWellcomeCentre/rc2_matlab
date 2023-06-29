@@ -28,7 +28,7 @@ main(int argc, char **argv)
     DWORD ready_to_go = 1; // digital input starts high
     
     // Path to the aerobasic script which will control ramping up of the gain
-    LPCSTR ab_script_up = "C:\\Users\\Mateo\\Documents\\repos\\rc2_matlab\\soloist_c\\ab\\ramp_up_gain.ab";
+    LPCSTR ab_script_up = "C:\\Users\\Mateo\\Documents\\repos\\rc2_matlab\\soloist_c\\ab\\ramp_up_gain_on_release.ab";
     LPCSTR ab_script_down = "C:\\Users\\Mateo\\Documents\\repos\\rc2_matlab\\soloist_c\\ab\\ramp_down_gain.ab";
     
     // Connect to soloist.

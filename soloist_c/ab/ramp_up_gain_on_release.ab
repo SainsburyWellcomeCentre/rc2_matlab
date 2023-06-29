@@ -23,7 +23,7 @@ PROGRAM
 	ramping_up = 1
 	ramp_up_over_us = 200000
 	gear_scale = -4000
-	ready_to_go = 0
+	ready_to_go = 1
 	
 	' Make sure gain is at 0
 	SETPARM GearCamScaleFactor, 0
@@ -32,9 +32,9 @@ PROGRAM
 	STARTSYNC -2
 	
 	' Poll the digital input fast
-	WHILE (ready_to_go < 0.01)
+	WHILE (ready_to_go > 0.01)
 		SYNC
-		ready_to_go = DIN(0, 1)
+		ready_to_go = DIN(0, 0)
 	WEND
 	
 	' Not sure if we need this again
