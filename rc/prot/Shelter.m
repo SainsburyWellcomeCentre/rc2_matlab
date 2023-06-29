@@ -7,13 +7,14 @@ classdef Shelter < handle
         wait_for_reward = true % Boolean specifying whether to wait for the reward to be given before ending the trial (true) or end the trial immediately (false).
         back_limit % Backward position beyond which the trial is stopped.
         forward_limit % Forward position beyond which the trial is stopped and reward given.
-        gain % Gain applied for treadmill --> motion (on top of Soloist gear scale).
         
         log_trial = true % Boolean specifying whether to log the velocity data for this trial.
         log_fname = '' % Name of the file in which to log the single trial data.
         
         solenoid_correction = 1.55 % How much to correct for voltage differences when solenoid is up or down (mV).
         timeout_seconds = 60 % How long in seconds until the trial automatically resets.
+        
+        gain_triggers = [1, 1] % GAIN_HIGH, GAIN_LOW triggers to apply, default is [1, 1] no gain change.
     end
     
     properties (SetAccess = private)
@@ -36,8 +37,7 @@ classdef Shelter < handle
             obj.start_pos = config.stage.start_pos;
             obj.back_limit = config.stage.back_limit;
             obj.forward_limit = config.stage.forward_limit;
-            obj.direction = 'forward_and_backward';
-            obj.gain = 1; % default gain
+            obj.direction = 'forward_and_backward_variable_gain';
         end
         
         function final_position = run(obj)
@@ -105,8 +105,21 @@ classdef Shelter < handle
                 obj.ctl.soloist.ai_offset = -real_time_offset_error + obj.solenoid_correction;
                 
                 % MOVEMENT LOOP
+                disp("apply gain triggers");
+                if obj.gain_triggers(1)
+                   obj.ctl.teensy_gain.gain_up_on(); 
+                else
+                    obj.ctl.teensy_gain.gain_up_off(); 
+                end
+                
+                if obj.gain_triggers(2)
+                   obj.ctl.teensy_gain.gain_down_on(); 
+                else
+                    obj.ctl.teensy_gain.gain_down_off(); 
+                end
+                
                 disp("listen position");
-                obj.ctl.soloist.listen_position(obj.back_limit, obj.forward_limit, true, obj.gain);
+                obj.ctl.soloist.listen_position(obj.back_limit, obj.forward_limit, true);
                 
                 % wait a bit
                 disp("start dwell time")
@@ -143,6 +156,10 @@ classdef Shelter < handle
                 
                 % block the treadmill
                 obj.ctl.block_treadmill()
+                
+                disp("disable gain triggers");
+                obj.ctl.teensy_gain.gain_up_on();
+                obj.ctl.teensy_gain.gain_down_on();
                 
                 % stop logging the single trial.
                 if obj.log_trial

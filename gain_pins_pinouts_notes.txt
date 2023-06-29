@@ -1,0 +1,17 @@
+for GAIN_HIGH, GAIN_LOW pins
+
+GAIN_HIGH 0 GAIN_LOW 0 --> 0 gain
+GAIN_HIGH 0 GAIN_LOW 1 --> low gain
+GAIN_HIGH 1 GAIN_LOW 0 --> high gain
+GAIN_HIGH 1 GAIN_LOW 1 --> default gain (cancels out)
+
+AI0 --> AO Teensy 1 ('gain_teensy') this one is connected
+AI1 --> AO Teensy 2 ('filtered_teensy')
+AI2 --> AO Soloist ('stage')
+AI3 --> AO Lick sensor ('lick')
+AI4 --> TTL0 ('pump')
+AI5 --> TTLSolenoid ('solenoid')
+AI6 --> Photodiode ('photodiode or speaker')
+AI7 --> AO0 MiniDAQ vis stim ('minidaq_ao0')
+AI8 --> AI0 MiniDAQ, Ted off to AO0 (Multiplexer)
+AI9 --> TTL3 of Teensy 1
