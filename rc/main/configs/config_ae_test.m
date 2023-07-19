@@ -25,14 +25,14 @@ config.saving.single_trial_log_channel_name = 'filtered_teensy_2';
 % Sound file parameters %
 %%%%%%%%%%%%%%%%%%%%%%%%%
 config.sound.threat_sound               = '1point5sec_cracks.wav';
-config.sound.threat_sound_play_time     = 4.5; % looped play time in seconds
+config.sound.threat_sound_play_time     = 11; % looped play time in seconds
 
 %%%%%%%%%%%%%%%%%%%%%%
 % STAGE parameters %%%
 %%%%%%%%%%%%%%%%%%%%%%
 
 % default stage positions
-config.stage.start_pos                  = 500;
+config.stage.start_pos                  = 1450;
 config.stage.back_limit                 = 1470;
 config.stage.forward_limit              = 250;
 config.stage.max_limits                 = [1470, 15];

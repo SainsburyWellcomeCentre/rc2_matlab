@@ -46,11 +46,11 @@ GainControlLevels::loop() {
 			digitalWrite(GAIN_REPORT_PIN, HIGH);
 		}
 		else if ( (gain_up.current_state == HIGH) & (gain_down.current_state == LOW) ) {
-			this->_target = GAIN_HIGH_VAL;
+			this->_target = GAIN_UP_VAL;
 			digitalWrite(GAIN_REPORT_PIN, HIGH);
 		}
 		else if ( (gain_up.current_state == LOW) & (gain_down.current_state == HIGH) ) {
-			this->_target = GAIN_LOW_VAL;
+			this->_target = GAIN_DOWN_VAL;
 			digitalWrite(GAIN_REPORT_PIN, HIGH);
 		}
 		else if ( (gain_up.current_state == LOW) & (gain_down.current_state == LOW) ) {	

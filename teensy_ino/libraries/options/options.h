@@ -44,11 +44,8 @@
 #define GAIN_REPORT_PIN			2		// Digital output pin to report when gain (either up or down) is changed
 #define GAIN_UP_VAL 			2		// Gain to apply on gain up
 #define GAIN_DOWN_VAL 			0		// Gain to apply on gain down
+#define GAIN_ZERO_VAL           0       // Gain to apply when zero gain requested     
+#define GAIN_DEFAULT_VAL        1       // The default gain to apply (no change up or down)
 #define MS_PER_UNIT_GAIN 		50		// Duration of gain ramp PER UNIT GAIN CHANGE (applied at start and end)
-
-#define GAIN_ZERO_VAL           0       // Where gain levels are set by GAIN_UP / GAIN_DOWN combos use these values
-#define GAIN_DEFAULT_VAL        1
-#define GAIN_HIGH_VAL           1.5
-#define GAIN_LOW_VAL            0.5
 
 #endif /* OPTIONS_H */
