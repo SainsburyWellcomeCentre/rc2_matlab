@@ -50,7 +50,10 @@ jobs:
       - name: Deploy documentation
         uses: actions/upload-pages-artifact@v2
         with: 
-          path: './docs/build' 
+          path: './docs/build'
+
+      - name: Deploy to pages
+        uses: actions/deploy-pages@v2 
 
 
       # # Deploy documentation
