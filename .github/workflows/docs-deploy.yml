@@ -44,12 +44,13 @@ jobs:
         run: |
           cd docs
           make html
+          cd build
 
       # Deploy documentation
       - name: Deploy documentation
         uses: actions/upload-pages-artifact@v2
         with: 
-          path: './build/' 
+          path: '.' 
 
 
       # # Deploy documentation
