@@ -7,8 +7,6 @@ on:
   # Triggers the workflow on push or pull request or dispatch events but only for the "stable-docs" branch
   push:
     branches: [ "stable-docs" ]
-  pull_request:
-    branches: [ "stable-docs" ]
   workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
@@ -56,7 +54,7 @@ jobs:
       - name: Deploy documentation
         uses: actions/upload-pages-artifact@v2
         with: 
-          path: './docs/build'
+          path: './docs/build/html'
 
       - name: Deploy to pages
         uses: actions/deploy-pages@v2 
