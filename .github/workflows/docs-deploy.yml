@@ -39,17 +39,18 @@ jobs:
           cd doxygen-1.9.7
           sudo make install
 
+      # Build documentation
       - name: Build documentation
         run: |
           cd docs
           make html
-          cd build/html
-          dir
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+      # Deploy documentation
+      - name: Deploy documentation
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          publish_branch: proto-docs-deployment
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: build/
+          force_orphan: true
 
-      # Runs a single command using the runners shell
-      - name: Run another one-line script
-        run: echo Goodbye, world!
