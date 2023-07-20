@@ -47,10 +47,17 @@ jobs:
 
       # Deploy documentation
       - name: Deploy documentation
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          publish_branch: gh-pages
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: build/
-          force_orphan: true
+        uses: actions/upload-pages-artifact@v2
+        with: 
+          path: build/ 
+
+
+      # # Deploy documentation
+      # - name: Deploy documentation
+      #   uses: peaceiris/actions-gh-pages@v3
+      #   with:
+      #     publish_branch: gh-pages
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     publish_dir: build/
+      #     force_orphan: true
 
