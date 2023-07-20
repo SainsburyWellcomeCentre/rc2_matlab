@@ -39,9 +39,12 @@ jobs:
           cd doxygen-1.9.7
           sudo make install
 
-      # - name: Test download
-      #   run: |
-      #     echo dir
+      - name: Build documentation
+        run: |
+          cd docs
+          make html
+          cd build/html
+          dir
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
