@@ -46,7 +46,9 @@ jobs:
       # Build documentation
       - name: Build documentation
         run: |
-          cd docs
+          cd docs/doxygen
+          doxygen
+          cd ..
           make html
           dir
 
