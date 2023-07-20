@@ -37,7 +37,7 @@ jobs:
           gunzip doxygen-1.9.7.linux.bin.tar.gz
           tar xf doxygen-1.9.7.linux.bin.tar
           cd doxygen-1.9.7
-          make install
+          sudo make install
 
       # - name: Test download
       #   run: |
