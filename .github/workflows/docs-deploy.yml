@@ -22,6 +22,12 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          pip install sphinx sphinxcontrib-matlabdomain renku-sphinx-theme
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
