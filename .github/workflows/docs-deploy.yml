@@ -1,4 +1,4 @@
-# This is a basic workflow to help you get started with Actions
+# A workflow to build and deploy the docs site for MATLAB and C++ code in the repository.
 
 name: docs-deployment
 
