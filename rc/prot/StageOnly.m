@@ -176,7 +176,7 @@ classdef StageOnly < handle
                 obj.ctl.vis_stim.off();
                 
                 % vis stim gain off as default
-                obj.ctl.vis_stim_gain.off();
+                obj.ctl.vis_stim_gain.on();
                 
                 % get and save config
                 cfg = obj.get_config();
