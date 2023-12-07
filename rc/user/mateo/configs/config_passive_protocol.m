@@ -6,7 +6,7 @@ VariableDefault('use_calibration', true);
 
 % whether to use calibration file and its location
 config.use_calibration_file             = use_calibration;
-config.calibration_file                 = 'C:\Users\Mateo\Documents\repos\rc2_matlab\rc\user\mateo\calibration_20200707_b.mat';
+config.calibration_file                 = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\rc\main\calibration\calibration_20200707_b.mat';
 
 
 %%%%%%%%%%%%
@@ -19,7 +19,7 @@ config.saving.save_to                   = 'C:\Users\Mateo\Desktop\DefaultData';
 % automatically gets these file locations and directories
 config.saving.config_file               = mfilename('fullpath');        % current file path
 config.saving.main_dir                  = fileparts(fileparts(fileparts(config.saving.config_file))); % assume three levels deep
-config.saving.git_dir                   = 'C:\Users\Mateo\Documents\repos\rc2_matlab\.git';  % git directory
+config.saving.git_dir                   = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\.git';  % git directory
 
 
 %%%%%%%%%%%%%%%%%%%%%%
@@ -90,12 +90,12 @@ end
 config.nidaq.ao.dev             = 'Dev2';
 config.nidaq.ao.channel_names   = {'velocity', 'delayed_velocity'};
 config.nidaq.ao.channel_id      = [0, 1];
-if config.use_calibration_file
-    config.nidaq.ao.idle_offset     = calibration.nominal_stationary_offset - ...
-        calibration.offset_error_mtx(3, 5) + calibration.offset_error_mtx(3, 4);
-else
+ if config.use_calibration_file
+     config.nidaq.ao.idle_offset     = calibration.nominal_stationary_offset - ...
+         calibration.offset_error_mtx(3, 5) + calibration.offset_error_mtx(3, 4);
+ else
     config.nidaq.ao.idle_offset     = 0.5;
-end
+ end
 config.nidaq.ao.idle_offset = config.nidaq.ao.idle_offset([1, 1]);
 
 config.include_delayed_copy = true;
@@ -150,7 +150,7 @@ config.nidaq.di.channel_id      = {'port1/line0', 'port1/line1'};
 %%%%%%%%%%%%%%%%%%%%%%
 
 config.teensy.exe               = 'C:\Program Files (x86)\Arduino\arduino_debug.exe';
-config.teensy.dir               = 'C:\Users\Mateo\Documents\repos\rc2_matlab\teensy_ino';
+config.teensy.dir               = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\teensy_ino';
 config.teensy.start_script      = 'forward_only';
 
 
@@ -158,7 +158,7 @@ config.teensy.start_script      = 'forward_only';
 % SOLOIST parameters %
 %%%%%%%%%%%%%%%%%%%%%%
 
-config.soloist.dir              = 'C:\Users\Mateo\Documents\repos\rc2_matlab\soloist_c\exe';
+config.soloist.dir              = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\soloist_c\exe';
 config.soloist.default_speed    = 200;
 config.soloist.v_per_cm_per_s   = 25/100;
 if config.use_calibration_file
