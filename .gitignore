@@ -16,3 +16,5 @@ docs/doxygen/html/
 docs/doxygen/latex/
 
 docs/doxygen/xml/
+
+*.exe
