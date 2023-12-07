@@ -175,7 +175,7 @@ classdef StageOnly < handle
                 % switch vis stim off
                 obj.ctl.vis_stim.off();
                 
-                % vis stim gain off as default
+                % vis stim gain on as default
                 obj.ctl.vis_stim_gain.on();
                 
                 % get and save config
@@ -363,6 +363,9 @@ classdef StageOnly < handle
                 if obj.enable_vis_stim
                     obj.ctl.vis_stim.off();
                 end
+                
+                % vis stim gain on as default
+                obj.ctl.vis_stim_gain.on();
                 
                 % stop integrating position
                 obj.ctl.position.stop();
