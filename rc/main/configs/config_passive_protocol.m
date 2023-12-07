@@ -131,8 +131,8 @@ config.nidaq.co.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 config.nidaq.do.dev             = 'Dev2';
-config.nidaq.do.channel_names   = {'pump', 'multiplexer', 'solenoid', 'zero_teensy', 'visual_stimulus', 'soloist', 'disable_teensy'};
-config.nidaq.do.channel_id      = {'port0/line0', 'port0/line1', 'port0/line2', 'port0/line3', 'port0/line4', 'port0/line5', 'port0/line6'};
+config.nidaq.do.channel_names   = {'pump', 'multiplexer', 'solenoid', 'zero_teensy', 'visual_stimulus', 'soloist', 'disable_teensy', 'vis_stim_gain'};
+config.nidaq.do.channel_id      = {'port0/line0', 'port0/line1', 'port0/line2', 'port0/line3', 'port0/line4', 'port0/line5', 'port0/line6', 'port0/line23'};
 config.nidaq.do.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
 
 
@@ -218,6 +218,10 @@ config.start_soloist.do_name            = 'soloist';
 % name of digital output channel to use
 config.visual_stimulus.do_name          = 'visual_stimulus';
 config.visual_stimulus.init_state       = 1;
+
+% name of digital output channel to use
+config.vis_stim_gain.do_name            = 'vis_stim_gain';
+config.vis_stim_gain.init_state         = 0;
 
 % name of digital input channel to use
 config.trigger_input.init_source        = 'from_soloist'; % 'from_soloist' or 'from_teensy'
