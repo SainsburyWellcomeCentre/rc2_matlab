@@ -6,7 +6,7 @@ VariableDefault('use_calibration', true);
 
 % whether to use calibration file and its location
 config.use_calibration_file             = use_calibration;
-config.calibration_file                 = 'C:\Users\Mateo\Documents\repos\rc2_matlab\rc\user\mateo\calibration\calibration_20200707_c.mat';
+config.calibration_file                 = 'C:\Users\Mateo\Documents\repos\rc2_matlab\rc\user\mateo\calibration\calibration_20200707_b.mat';
 
 
 %%%%%%%%%%%%
