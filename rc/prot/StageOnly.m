@@ -33,6 +33,7 @@ classdef StageOnly < handle
         handle_acquisition = true % Boolean specifying whether we are running this as a single trial (true) or as part of a :class:`rc.prot.ProtocolSequence` (false).
         wait_for_reward = true % Boolean specifying whether to wait for the reward to be given before ending the trial (true) or end the trial immediately (false).
         enable_vis_stim = true % Boolean specifying whether to sent a digital output to the visual stimulus computer to enable the display.
+        enable_vis_stim_gain = true % Boolean specifying whether to sent a digital output to the visual stimulus computer to enable closed loop with motion.
         
         initiate_trial = false; % Boolean specifying whether to let the treadmill velocity initiate the start of the trial.
         initiation_speed = 5; % Speed of the treadmill which initiates the trial (in cm/s).
@@ -174,6 +175,9 @@ classdef StageOnly < handle
                 % switch vis stim off
                 obj.ctl.vis_stim.off();
                 
+                % vis stim gain on as default
+                obj.ctl.vis_stim_gain.on();
+                
                 % get and save config
                 cfg = obj.get_config();
                 obj.ctl.save_single_trial_config(cfg);
@@ -236,6 +240,14 @@ classdef StageOnly < handle
                 else
                     obj.ctl.vis_stim.off();
                 end
+                
+                % toggle vis stim gain on
+                if obj.enable_vis_stim_gain
+                    obj.ctl.vis_stim_gain.on();
+                else
+                    obj.ctl.vis_stim_gain.off();
+                end
+
                 
                 % let animal initiate the trial
                 if obj.initiate_trial
@@ -351,6 +363,9 @@ classdef StageOnly < handle
                 if obj.enable_vis_stim
                     obj.ctl.vis_stim.off();
                 end
+                
+                % vis stim gain on as default
+                obj.ctl.vis_stim_gain.on();
                 
                 % stop integrating position
                 obj.ctl.position.stop();

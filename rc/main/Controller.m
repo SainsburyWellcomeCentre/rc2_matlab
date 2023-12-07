@@ -18,6 +18,7 @@ classdef Controller < handle
         trigger_input % :class:`rc.actions.TriggerInput`
         data_transform % :class:`rc.aux_.DataTransform`
         vis_stim % :class:`rc.actions.VisStim`
+        vis_stim_gain % :class:`rc.actions.VisStimGain`
         start_soloist % :class:`rc.actions.StartSoloist`
         offsets % :class:`rc.aux_.Offsets`
         teensy_gain % :class:`rc.actions.TeensyGain`
@@ -60,6 +61,7 @@ classdef Controller < handle
             obj.disable_teensy = DisableTeensy(obj.ni, config);
             obj.trigger_input = TriggerInput(obj.ni, config);
             obj.vis_stim = VisStim(obj.ni, config);
+            obj.vis_stim_gain = VisStimGain(obj.ni, config);
             obj.start_soloist = StartSoloist(obj.ni, config);
             obj.teensy_gain = TeensyGain(obj.ni, config);
             

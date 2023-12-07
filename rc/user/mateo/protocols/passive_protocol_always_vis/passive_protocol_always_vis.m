@@ -1,4 +1,4 @@
-function seq = passive_protocol(ctl)
+function seq = passive_protocol_always_vis(ctl)
 
 load('passive_protocol_sequence.mat', 'trial_order', 'protocol_id', 'fnames');
 % "trial_order" is a 3xN matrix of protocol indices. Each column is a batch
@@ -46,11 +46,12 @@ for i = 1 : length(trial_order)
         
         % enable vis stim
         vest.enable_vis_stim = true;
+        vest.enable_vis_stim_gain = true;
         
         % add protocol to the sequence
         seq.add(vest);
         
-    elseif trial_order(i) == protocol_id.vest_darkness
+    elseif trial_order(i) == protocol_id.vest_darkness % TODO change name to appropriate protocol ID
         
         % setup the locovest replay protocol
         vest = StageOnly(ctl, config);
@@ -64,7 +65,8 @@ for i = 1 : length(trial_order)
         vest.wave_fname = fnames{i};
         
         % enable vis stim
-        vest.enable_vis_stim = false;
+        vest.enable_vis_stim = true;
+        vest.enable_vis_stim_gain = false;
         
         % add protocol to the sequence
         seq.add(vest);
