@@ -6,7 +6,7 @@ VariableDefault('use_calibration', true);
 
 % whether to use calibration file and its location
 config.use_calibration_file             = use_calibration;
-config.calibration_file                 = 'C:\Users\Mateo\Documents\repos\rc2_matlab\rc\user\mateo\calibration\calibration_20200707_b.mat';
+config.calibration_file                 = 'C:\Users\Mateo\Documents\repos\rc2_matlab\rc\user\mateo\calibration\calibration_20200707_c.mat';
 
 
 %%%%%%%%%%%%
@@ -99,7 +99,7 @@ end
 config.nidaq.ao.idle_offset = config.nidaq.ao.idle_offset([1, 1]);
 
 config.include_delayed_copy = true;
-config.delay_ms = 80;
+config.delay_ms = 8;                                                        % delay with new 300Hz screens
 
 % offset to apply to analog output
 

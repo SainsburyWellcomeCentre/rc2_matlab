@@ -6,7 +6,7 @@ VariableDefault('use_calibration', true);
 
 % whether to use calibration file and its location
 config.use_calibration_file             = use_calibration;
-config.calibration_file                 = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\rc\main\calibration\calibration_20200707_b.mat';
+config.calibration_file                 = 'C:\Users\Mateo\Documents\repos\rc2_matlab\rc\user\mateo\calibration\calibration_20200707_b.mat';
 
 
 %%%%%%%%%%%%
@@ -19,7 +19,7 @@ config.saving.save_to                   = 'C:\Users\Mateo\Desktop\DefaultData';
 % automatically gets these file locations and directories
 config.saving.config_file               = mfilename('fullpath');        % current file path
 config.saving.main_dir                  = fileparts(fileparts(fileparts(config.saving.config_file))); % assume three levels deep
-config.saving.git_dir                   = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\.git';  % git directory
+config.saving.git_dir                   = 'C:\Users\Mateo\Documents\repos\rc2_matlab\.git';  % git directory
 
 
 %%%%%%%%%%%%%%%%%%%%%%
@@ -126,8 +126,8 @@ config.nidaq.co.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 config.nidaq.do.dev             = 'Dev2';
-config.nidaq.do.channel_names   = {'pump', 'multiplexer', 'solenoid', 'zero_teensy', 'visual_stimulus', 'soloist', 'disable_teensy'};
-config.nidaq.do.channel_id      = {'port0/line0', 'port0/line1', 'port0/line2', 'port0/line3', 'port0/line4', 'port0/line5', 'port0/line6'};
+config.nidaq.do.channel_names   = {'pump', 'multiplexer', 'solenoid', 'zero_teensy', 'visual_stimulus', 'soloist', 'disable_teensy', 'vis_stim_gain'};
+config.nidaq.do.channel_id      = {'port0/line0', 'port0/line1', 'port0/line2', 'port0/line3', 'port0/line4', 'port0/line5', 'port0/line6', 'port0/line23'};
 config.nidaq.do.clock_src       = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
 
 
@@ -145,7 +145,7 @@ config.nidaq.di.channel_id      = {'port1/line0', 'port1/line1'};
 %%%%%%%%%%%%%%%%%%%%%%
 
 config.teensy.exe               = 'C:\Program Files (x86)\Arduino\arduino_debug.exe';
-config.teensy.dir               = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\teensy_ino';
+config.teensy.dir               = 'C:\Users\Mateo\Documents\repos\rc2_matlab\teensy_ino';
 config.teensy.start_script      = 'forward_only';
 
 
@@ -153,7 +153,7 @@ config.teensy.start_script      = 'forward_only';
 % SOLOIST parameters %
 %%%%%%%%%%%%%%%%%%%%%%
 
-config.soloist.dir              = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\soloist_c\exe';
+config.soloist.dir              = 'C:\Users\Mateo\Documents\repos\rc2_matlab\soloist_c\exe';
 config.soloist.default_speed    = 200;
 config.soloist.v_per_cm_per_s   = 25/100;
 if config.use_calibration_file
@@ -213,6 +213,10 @@ config.start_soloist.do_name            = 'soloist';
 % name of digital output channel to use
 config.visual_stimulus.do_name          = 'visual_stimulus';
 config.visual_stimulus.init_state       = 1;
+
+% name of digital output channel to use
+config.vis_stim_gain.do_name            = 'vis_stim_gain';
+config.vis_stim_gain.init_state         = 1;
 
 % name of digital input channel to use
 config.trigger_input.init_source        = 'from_soloist'; % 'from_soloist' or 'from_teensy'

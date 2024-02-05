@@ -76,7 +76,8 @@ input('Press Enter when done');
 
 % Index of the filtered teensy input
 filtered_idx = strcmp(ctl.ni.ai.channel_names, 'filtered_teensy');
-raw_idx = strcmp(ctl.ni.ai.channel_names, 'raw_teensy');
+%raw_idx = strcmp(ctl.ni.ai.channel_names, 'raw_teensy');                    % !!! For some reason, this is not called 'raw_teensy', but 'filtered_teensy_2'
+raw_idx = strcmp(ctl.ni.ai.channel_names, 'filtered_teensy_2');
 stage_idx = strcmp(ctl.ni.ai.channel_names, 'stage');
 
 % Get the filtered teensy trace
