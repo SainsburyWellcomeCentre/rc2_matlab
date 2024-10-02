@@ -1,27 +1,30 @@
-function [protocolconfig,seq] = PassiveRotationInDarkness_Training_Stage3(ctl,view)
-    % Protocol type: passive rotation in darkness, S+ & S- trials accelerate at the same distance
+function [protocolconfig,seq] = PassiveRotationInDarkness_Stage2_e80(ctl,config,view)
+    % Protocol type: passive rotation in darkness
     % central stage - enabled. 
     %       S+ trial, high max speed. 
     %       S- trial, low max speed.
+    %       S+ & S- trials are of same speed peakwidth
     % outer stage   - disabled
-    % vis_stim      - enabled. 
+    % vis_stim      - disabled. 
 
-    protocol_id.name = 'PassiveRotationInDarkness_Training_Stage3';                % 根据protocol_id配置lick_detect参数
-    
+    fullpath = mfilename('fullpath');
+    [~,protocol_id.name] = fileparts(fullpath);
+    enableRotation = true;
+    enableVisStim = false;
     % config parameters to pass to the protocols
     % Here LickDetect trigger appears at rotation velosity peak time, lasts till rotation ends
-    protocolconfig.lick_detect.enable                   = true;     % 使舔食检测模块可用
-    protocolconfig.lick_detect.lick_threshold           = 1;
-    protocolconfig.lick_detect.n_windows                = 60;      
-    protocolconfig.lick_detect.window_size_ms           = 250;
-    protocolconfig.lick_detect.n_lick_windows           = 1;
-    protocolconfig.lick_detect.n_consecutive_windows    = 2;        
+    protocolconfig.lick_detect.enable                   = true;     
+    protocolconfig.lick_detect.lick_threshold           = 2.0;
+    protocolconfig.lick_detect.n_windows                = 25;      
+    protocolconfig.lick_detect.window_size_ms           = 200;
+    protocolconfig.lick_detect.n_consecutive_windows    = 1;
+    protocolconfig.lick_detect.n_lick_windows           = protocolconfig.lick_detect.n_consecutive_windows;
     protocolconfig.lick_detect.detection_trigger_type   = 1;
     protocolconfig.lick_detect.delay                    = 15;       % delay of LickDetect trigger from TrialStart (in sec)
-    protocolconfig.enable_vis_stim = true;
+    protocolconfig.enable_vis_stim = enableVisStim;
     
     % create the protocol sequence
-    seq = ProtocolSequence_DoubleRotation(ctl,view);
+    seq = ProtocolSequence_DoubleRotation(ctl,config,view);
     
     %%
     % restart random number generator
@@ -49,26 +52,15 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Training_Stage3(ctl,vi
     end
     trial_order = trial_order(:);
 
-    % velocity array generator
+
+    %% velocity array generator
     distance = 90;
     duration = 30;
-    vmean_splus = distance/duration;
-    vmean_sminus = distance/duration;
-    vmax_splus = 40;
+    vmax_splus = 80;
     vmax_sminus = 10;
-    peakwidth_sminus = 2.5;
-    vac_sminus = (2*vmean_sminus*duration - vmax_sminus*peakwidth_sminus) / duration;
-    % calculate peakwidth of S+ trials
-    tsplus1 = ((2*vmean_splus+vmax_splus)+sqrt((2*vmean_splus+vmax_splus)^2-4*vmax_splus/t*(vac_sminus*peakwidth_sminus+vmax1*peakwidth_sminus)))/(2*vmax_splus/duration);
-    tsplus2 = ((2*vmean_splus+vmax_splus)-sqrt((2*vmean_splus+vmax_splus)^2-4*vmax_splus/t*(vac_sminus*peakwidth_sminus+vmax1*peakwidth_sminus)))/(2*vmax_splus/duration);
-    if tsplus1>0 && tsplus1<duration
-        peakwidth_splus = tsplus1;
-    elseif tsplus2>0 && tsplus2<duration
-        peakwidth_splus = tsplus2;
-    end
-
+    peakwidth_splus = 2;
+    peakwidth_sminus = 2;
     
-    %%
     for i = 1 : length(trial_order)
     
         if trial_order(i) == protocol_id.s_plusL
@@ -76,7 +68,7 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Training_Stage3(ctl,vi
             trial.trial.stimulus_type = 's_plusL';
             trial.trial.enable_reward = true;
             
-            trial.stage.enable_motion = true;
+            trial.stage.enable_motion = enableRotation;
             trial.stage.motion_time = duration;
             trial.stage.central.enable = true;
             trial.stage.central.distance = -distance;
@@ -89,10 +81,10 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Training_Stage3(ctl,vi
             trial.stage.outer.peakwidth = peakwidth_splus;
             trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
 
-            trial.vis.enable_vis_stim = false;
+            trial.vis.enable_vis_stim = enableVisStim;
             trial.vis.vis_stim_lable = 1;
 
-            trial.waveform = voltagewaveform_generator_linear(trial.stage, 10000);
+            trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
             
             % add protocol to the sequence
             seq.add(trial);
@@ -102,23 +94,23 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Training_Stage3(ctl,vi
             trial.trial.stimulus_type = 's_plusR';
             trial.trial.enable_reward = true;
             
-            trial.stage.enable_motion = true;
-            trial.stage.motion_time = 30;
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
             trial.stage.central.enable = true;
             trial.stage.central.distance = distance;
-            trial.stage.central.max_vel = 40; 
-            trial.stage.central.peakwidth = 2.5;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
             trial.stage.outer.enable = false;
             trial.stage.outer.distance = distance;
-            trial.stage.outer.max_vel = 40; 
-            trial.stage.outer.peakwidth = 2.5;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
             trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
             
-            trial.vis.enable_vis_stim = false;
+            trial.vis.enable_vis_stim = enableVisStim;
             trial.vis.vis_stim_lable = 2;
 
-            trial.waveform = voltagewaveform_generator_linear(trial.stage, 10000);
+            trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
             
             % add protocol to the sequence
             seq.add(trial);
@@ -128,23 +120,23 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Training_Stage3(ctl,vi
             trial.trial.stimulus_type = 's_minusL';
             trial.trial.enable_reward = false;
             
-            trial.stage.enable_motion = true;
-            trial.stage.motion_time = 30;
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
             trial.stage.central.enable = true;
-            trial.stage.central.distance = -90;
-            trial.stage.central.max_vel = 10; 
-            trial.stage.central.peakwidth = 2.5;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_sminus; 
+            trial.stage.central.peakwidth = peakwidth_sminus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
             trial.stage.outer.enable = false;
-            trial.stage.outer.distance = -90;
-            trial.stage.outer.max_vel = 10; 
-            trial.stage.outer.peakwidth = 2.5;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_sminus; 
+            trial.stage.outer.peakwidth = peakwidth_sminus;
             trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
             
-            trial.vis.enable_vis_stim = false;
+            trial.vis.enable_vis_stim = enableVisStim;
             trial.vis.vis_stim_lable = 3;
 
-            trial.waveform = voltagewaveform_generator_linear(trial.stage, 10000);
+            trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
             
             % add protocol to the sequence
             seq.add(trial);
@@ -154,23 +146,23 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Training_Stage3(ctl,vi
             trial.trial.stimulus_type = 's_minusR';
             trial.trial.enable_reward = false;
             
-            trial.stage.enable_motion = true;
-            trial.stage.motion_time = 30;
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
             trial.stage.central.enable = true;
-            trial.stage.central.distance = 90;
-            trial.stage.central.max_vel = 10; 
-            trial.stage.central.peakwidth = 2.5;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_sminus; 
+            trial.stage.central.peakwidth = peakwidth_sminus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
             trial.stage.outer.enable = false;
-            trial.stage.outer.distance = 90;
-            trial.stage.outer.max_vel = 10; 
-            trial.stage.outer.peakwidth = 2.5;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_sminus; 
+            trial.stage.outer.peakwidth = peakwidth_sminus;
             trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
             
-            trial.vis.enable_vis_stim = false;
+            trial.vis.enable_vis_stim = enableVisStim;
             trial.vis.vis_stim_lable = 4;
 
-            trial.waveform = voltagewaveform_generator_linear(trial.stage, 10000);
+            trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
             
             % add protocol to the sequence
             seq.add(trial);

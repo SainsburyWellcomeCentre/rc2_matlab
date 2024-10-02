@@ -2,10 +2,10 @@ function AnalyzeAndPlotLickingData_DoubleRotation(bin_fname)
 
 % padding around visual onset
 padding                     = [-3, 5];
-vis_stim_duration           = 4;
+vis_stim_duration           = 15;
 vis_stim_threshold          = 2.5;
 pump_threshold              = 2.5;
-lick_threshold              = 2;
+lick_threshold              = 1;
 
 % load the raw data and online data (if it exists)
 mat_fname                   = strrep(bin_fname, '.bin', '_themepark.mat');  

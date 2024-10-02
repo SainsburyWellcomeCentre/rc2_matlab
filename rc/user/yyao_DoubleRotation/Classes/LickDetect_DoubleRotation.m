@@ -143,13 +143,13 @@ classdef LickDetect_DoubleRotation < handle
         
         function [trigger_detected, idx] = detect_trigger(obj)
             
-            trigger_data = [obj.last_trigger_sample_value;  obj.ctl.data(:, obj.trigger_channel) > obj.trigger_channel_threshold];
+            trigger_data = [obj.last_trigger_sample_value;  obj.ctl.tdata(:, obj.trigger_channel) > obj.trigger_channel_threshold]; % obj.ctl.data
             idx = find(diff(trigger_data) == 1, 1);
             trigger_detected = ~isempty(idx);
             
             % store last value in the rare case trigger goes up between
             % logging batches
-            obj.last_trigger_sample_value = obj.ctl.data(end, obj.trigger_channel);
+            obj.last_trigger_sample_value = obj.ctl.tdata(end, obj.trigger_channel); % obj.ctl.data
         end
         
         
@@ -210,13 +210,13 @@ classdef LickDetect_DoubleRotation < handle
                     
                     if trigger_detected
                         obj.running = true;
-                        lick_data = obj.ctl.data(idx:end, obj.lick_channel);
+                        lick_data = obj.ctl.tdata(idx:end, obj.lick_channel);   % obj.ctl.data
                         lick_detected_internal = obj.detect_lick(lick_data);
                     end
                     
                 else  % detection is running
                     
-                    lick_data = obj.ctl.data(:, obj.lick_channel);
+                    lick_data = obj.ctl.tdata(:, obj.lick_channel);     % obj.ctl.data
                     lick_detected_internal = obj.detect_lick(lick_data);
                 end
                 
@@ -224,6 +224,8 @@ classdef LickDetect_DoubleRotation < handle
                     obj.lick_detected = true;
                     if obj.enable_reward
                         obj.ctl.give_reward();
+%                     else
+%                         system('C:\Users\Margrie_Lab1\Documents\MATLAB\tools\nircmd.exe setsysvolume 4000');
                     end
                     obj.reset_window();
                 end
@@ -235,7 +237,7 @@ classdef LickDetect_DoubleRotation < handle
             elseif obj.detection_trigger_type == 2
                 
                 % trigger channel data
-                trigger_data = obj.ctl.data(:, obj.trigger_channel);
+                trigger_data = obj.ctl.tdata(:, obj.trigger_channel);       % obj.ctl.data
                 % append last trigger value
                 trigger_data = [obj.last_trigger_sample_value; trigger_data];
                 % take lick data where trigger high
@@ -246,12 +248,12 @@ classdef LickDetect_DoubleRotation < handle
                 
                 % no trigger detected.. do nothing
                 if sum(trigger_high) == 0
-                    obj.last_lick_sample_value = obj.ctl.data(end, obj.lick_channel);
+                    obj.last_lick_sample_value = obj.ctl.tdata(end, obj.lick_channel);      % obj.ctl.data
                     return
                 end
                 
                 % get lick data - append last lick value
-                lick_data = [obj.last_lick_sample_value; obj.ctl.data(:, obj.lick_channel)];
+                lick_data = [obj.last_lick_sample_value; obj.ctl.tdata(:, obj.lick_channel)];   % lick_data = [obj.last_lick_sample_value; obj.ctl.data(:, obj.lick_channel)];
                 obj.last_lick_sample_value = lick_data(end);
                 
                 % find points where lick data crosses threshold

@@ -1,15 +1,16 @@
-function [protocolconfig,seq] = PassiveRotation_Training_Stage2(ctl,config,view)
-    % Protocol type: passive rotation with visual stimuli 10 S+ 10 S- in psudorandom order
+function [protocolconfig,seq] = PassiveRotationInDarkness_Stage2_e50(ctl,config,view)
+    % Protocol type: passive rotation in darkness
     % central stage - enabled. 
     %       S+ trial, high max speed. 
     %       S- trial, low max speed.
+    %       S+ & S- trials are of same speed peakwidth
     % outer stage   - disabled
-    % vis_stim      - enabled. 
+    % vis_stim      - disabled. 
 
     fullpath = mfilename('fullpath');
     [~,protocol_id.name] = fileparts(fullpath);
     enableRotation = true;
-    enableVisStim = true;
+    enableVisStim = false;
     % config parameters to pass to the protocols
     % Here LickDetect trigger appears at rotation velosity peak time, lasts till rotation ends
     protocolconfig.lick_detect.enable                   = true;     
@@ -51,10 +52,11 @@ function [protocolconfig,seq] = PassiveRotation_Training_Stage2(ctl,config,view)
     end
     trial_order = trial_order(:);
 
+
     %% velocity array generator
     distance = 90;
     duration = 30;
-    vmax_splus = 80;
+    vmax_splus = 50;
     vmax_sminus = 10;
     peakwidth_splus = 2;
     peakwidth_sminus = 2;

@@ -83,26 +83,20 @@ classdef GoNogo_DoubleRotation_GUIController < handle
             obj.plot.s_plus_response = obj.protocol.is_correct(obj.plot.s_plus_idx);
             obj.plot.s_minus_response = obj.protocol.is_correct(obj.plot.s_minus_idx);
             
-            obj.plot.s_plus_col = zeros(obj.plot.n_s_plus+obj.plot.n_s_minus, 3);
-            obj.plot.s_plus_col(:,1) = 1;
+            obj.plot.s_plus_col = zeros(obj.plot.n_s_plus, 3);
 %             obj.plot.s_plus_col(obj.plot.s_plus_response == 0, 1) = 1;
 %             obj.plot.s_plus_col(obj.plot.s_plus_response == 1, 3) = 1;
-            obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'80'),1) = 255/255;obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'80'),2) = 0/255;  obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'80'),3) = 0/255;
-            obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'70'),1) = 255/255;obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'70'),2) = 127/255;obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'70'),3) = 0/255;
-            obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'60'),1) = 255/255;obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'60'),2) = 255/255;obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'60'),3) = 0/255;
-            obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'50'),1) = 0/255;  obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'50'),2) = 255/255;obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'50'),3) = 0/255;
-            obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'40'),1) = 0/255;  obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'40'),2) = 0/255;  obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'40'),3) = 255/255;
-            obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'30'),1) = 75/255; obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'30'),2) = 0/255;  obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'30'),3) = 130/255;
-            obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'20'),1) = 148/255;obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'20'),2) = 0/255;  obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'20'),3) = 211/255;
-            obj.plot.s_plus_col(~obj.plot.s_plus_idx,:)=[];
-%             obj.plot.s_plus_fill = zeros(obj.plot.n_s_plus);
-%             obj.plot.s_plus_fill(obj.plot.s_plus_response == 0) = true;
+            obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'80'), 1) = [255 0 0]/255;
+            obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'70'), 1) = [255 127 0]/255;
+            obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'60'), 1) = [255 255 0]/255;
+            obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'50'), 1) = [0 255 0]/255;
+            obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'40'), 1) = [0 0 255]/255;
+            obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'30'), 1) = [75 0 130]/255;
+            obj.plot.s_plus_col(contains(obj.protocol.stimulus_type_list,'20'), 1) = [148 0 211]/255;
             
-            obj.plot.s_minus_col = ones(obj.plot.n_s_minus, 3)*0.6;
-%             obj.plot.s_minus_col(obj.plot.s_minus_response == 0, 1) = 1;
-%             obj.plot.s_minus_col(obj.plot.s_minus_response == 1, 3) = 1;
-%             obj.plot.s_minus_fill = zeros(obj.plot.n_s_plus);
-%             obj.plot.s_minus_fill(obj.plot.s_minus_response == 0) = true;
+            obj.plot.s_minus_col = zeros(obj.plot.n_s_minus, 3);
+            obj.plot.s_minus_col(obj.plot.s_minus_response == 0, 1) = 1;
+            obj.plot.s_minus_col(obj.plot.s_minus_response == 1, 3) = 1;
             
             scatter(obj.view.gui.s_plus_axes, 1:obj.plot.n_s_plus, obj.plot.s_plus_response, [], obj.plot.s_plus_col, 'fill');       
             scatter(obj.view.gui.s_minus_axes, 1:obj.plot.n_s_minus, obj.plot.s_minus_response, [], obj.plot.s_minus_col, 'fill');   

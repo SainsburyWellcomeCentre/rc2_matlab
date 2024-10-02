@@ -1,8 +1,9 @@
-function [protocolconfig,seq] = PassiveRotation_Training_Stage2(ctl,config,view)
-    % Protocol type: passive rotation with visual stimuli 10 S+ 10 S- in psudorandom order
+function [protocolconfig,seq] = LickTraining_Stage2(ctl,config,view)
+    % Protocol type: passive rotation with visual stimuli
     % central stage - enabled. 
     %       S+ trial, high max speed. 
     %       S- trial, low max speed.
+    %       S+ trials only
     % outer stage   - disabled
     % vis_stim      - enabled. 
 
@@ -14,8 +15,8 @@ function [protocolconfig,seq] = PassiveRotation_Training_Stage2(ctl,config,view)
     % Here LickDetect trigger appears at rotation velosity peak time, lasts till rotation ends
     protocolconfig.lick_detect.enable                   = true;     
     protocolconfig.lick_detect.lick_threshold           = 2.0;
-    protocolconfig.lick_detect.n_windows                = 25;      
-    protocolconfig.lick_detect.window_size_ms           = 200;
+    protocolconfig.lick_detect.n_windows                = 4*60;      
+    protocolconfig.lick_detect.window_size_ms           = 250;
     protocolconfig.lick_detect.n_consecutive_windows    = 1;
     protocolconfig.lick_detect.n_lick_windows           = protocolconfig.lick_detect.n_consecutive_windows;
     protocolconfig.lick_detect.detection_trigger_type   = 1;
@@ -23,7 +24,7 @@ function [protocolconfig,seq] = PassiveRotation_Training_Stage2(ctl,config,view)
     protocolconfig.enable_vis_stim = enableVisStim;
     
     % create the protocol sequence
-    seq = ProtocolSequence_DoubleRotation(ctl,config,view);
+    seq = RotationHabituation(ctl,config,view);
     
     %%
     % restart random number generator
@@ -31,18 +32,18 @@ function [protocolconfig,seq] = PassiveRotation_Training_Stage2(ctl,config,view)
 
     % list of protocols
     protocol_id.s_plusL         = 1;    % high max speed
-    protocol_id.s_plusR         = 2;
-    protocol_id.s_minusL        = 3;    % low max speed
-    protocol_id.s_minusR        = 4;
+%     protocol_id.s_plusR         = 2;
+%     protocol_id.s_minusL        = 3;    % low max speed
+%     protocol_id.s_minusR        = 4;
     
     % number of blocks
-    n_blocks = 5;
+    n_blocks = 1;
     
     % number of trials in each block
-    n_s_plusL_trials    = 1;
-    n_s_plusR_trials    = 1;
-    n_s_minusL_trials   = 1;
-    n_s_minusR_trials   = 1;
+    n_s_plusL_trials    = 15;
+    n_s_plusR_trials    = 0;
+    n_s_minusL_trials   = 0;
+    n_s_minusR_trials   = 0;
     
     trial_order = [ones(n_s_plusL_trials, n_blocks); 2*ones(n_s_plusR_trials, n_blocks); 3*ones(n_s_minusL_trials, n_blocks); 4*ones(n_s_minusR_trials, n_blocks)];
     for i = 1 : n_blocks
@@ -56,8 +57,8 @@ function [protocolconfig,seq] = PassiveRotation_Training_Stage2(ctl,config,view)
     duration = 30;
     vmax_splus = 80;
     vmax_sminus = 10;
-    peakwidth_splus = 2;
-    peakwidth_sminus = 2;
+    peakwidth_splus = 2.5;
+    peakwidth_sminus = 2.5;
     
     for i = 1 : length(trial_order)
     

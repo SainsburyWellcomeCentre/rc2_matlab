@@ -455,9 +455,11 @@ classdef RC2_DoubleRotation_GUIController < handle
             if obj.setup.pump.state
                 obj.setup.pump_off();                          
                 obj.view.handles.PumpONButton.Text = 'ON';
+                obj.view.handles.PumpONButton.Value = 0;
             else
                 obj.setup.pump_on();                            
-                obj.view.handles.PumpONButton.Text = 'OFF';     
+                obj.view.handles.PumpONButton.Text = 'OFF';
+                obj.view.handles.PumpONButton.Value = 1;
             end
         end
         
@@ -470,9 +472,11 @@ classdef RC2_DoubleRotation_GUIController < handle
             if obj.setup.sound.state               
                 obj.setup.stop_sound();
                 obj.view.handles.PlaySoundButton.Text = 'PLAY';
+                obj.view.handles.PlaySoundButton.Value = 0;
             else                                  
                 obj.setup.play_sound();              
                 obj.view.handles.PlaySoundButton.Text = 'STOP';
+                obj.view.handles.PlaySoundButton.Value = 1;
             end
         end
         
@@ -497,10 +501,12 @@ classdef RC2_DoubleRotation_GUIController < handle
             if obj.setup.acquiring_preview              
                 obj.setup.stop_preview()
                 obj.view.handles.PreviewButton.Text = 'PREVIEW';
+                obj.view.handles.PreviewButton.Value = 0;
                 obj.preview_on = false;
             else                                        
                 obj.setup.start_preview()
                 obj.view.handles.PreviewButton.Text = 'STOP';
+                obj.view.handles.PreviewButton.Value = 1;
                 obj.preview_on = true;
             end
         end

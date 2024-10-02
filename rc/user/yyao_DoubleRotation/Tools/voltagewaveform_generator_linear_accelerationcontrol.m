@@ -1,4 +1,4 @@
-function waveform = voltagewaveform_generator_linear(stageparameters, samplingrate)
+function waveform = voltagewaveform_generator_linear_accelerationcontrol(stageparameters, samplingrate)
 
     rate_speed_to_voltage = 0.05/1.75;
 
@@ -13,12 +13,13 @@ function waveform = voltagewaveform_generator_linear(stageparameters, samplingra
     outer_vmax = stageparameters.outer.max_vel; 
     outer_vmean = stageparameters.outer.mean_vel;
     outer_peakwidth = stageparameters.outer.peakwidth;
+    controlled_max = stageparameters.controlled_max;
 
     waveformlength = motion_time*samplingrate;
     speed = zeros(waveformlength,2);
 
     if central_enable
-        speed_array = speed_generator_linear (central_vmax, central_vmean, central_peakwidth, motion_time);
+        speed_array = speed_generator_linear_accelerationcontrol (central_vmax, central_vmean, central_peakwidth, motion_time, controlled_max);
         if central_distance<0
             speed_array = speed_array*-1;
         end
@@ -26,7 +27,7 @@ function waveform = voltagewaveform_generator_linear(stageparameters, samplingra
         speed(:,1) = interp1(1:N:N*length(speed_array) , speed_array , 1:1:N*length(speed_array) , 'spline');
     end
     if outer_enable
-        speed_array = speed_generator_linear (outer_vmax, outer_vmean, outer_peakwidth, motion_time);
+        speed_array = speed_generator_linear_accelerationcontrol (outer_vmax, outer_vmean, outer_peakwidth, motion_time, controlled_max);
         if outer_distance<0
             speed_array = speed_array*-1;
         end
@@ -38,14 +39,14 @@ function waveform = voltagewaveform_generator_linear(stageparameters, samplingra
 end
 
 
-function speed = speed_generator_linear (expected_max, expected_mean, peakwidth, duration)
+function speed = speed_generator_linear_accelerationcontrol (expected_max, expected_mean, peakwidth, duration, controlled_max)
     % generate an unimodal linear speed array with expected mean/max, peakwidth and duration
     vmax = expected_max;
     vmean = expected_mean;
     tx = peakwidth;
     t = duration;
 
-    v = (2*vmean*t - vmax*tx) / t;
+    v = (2*vmean*t - controlled_max*tx) / t;
     a1 = 2*v/(t-tx);
     a2 = 2*(vmax-v)/tx;
     t1 = floor(1000*(t-tx)/t/2);

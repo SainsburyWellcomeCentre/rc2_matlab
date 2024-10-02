@@ -1,5 +1,5 @@
-function [protocolconfig,seq] = PassiveRotation_Training_Stage2(ctl,config,view)
-    % Protocol type: passive rotation with visual stimuli 10 S+ 10 S- in psudorandom order
+function [protocolconfig,seq] = PassiveRotation_Training_Stage2_10SplusSminus(ctl,config,view)
+    % Protocol type: passive rotation with visual stimuli 10 S+ followed by 10 S-
     % central stage - enabled. 
     %       S+ trial, high max speed. 
     %       S- trial, low max speed.
@@ -13,7 +13,7 @@ function [protocolconfig,seq] = PassiveRotation_Training_Stage2(ctl,config,view)
     % config parameters to pass to the protocols
     % Here LickDetect trigger appears at rotation velosity peak time, lasts till rotation ends
     protocolconfig.lick_detect.enable                   = true;     
-    protocolconfig.lick_detect.lick_threshold           = 2.0;
+    protocolconfig.lick_detect.lick_threshold           = -8.0;
     protocolconfig.lick_detect.n_windows                = 25;      
     protocolconfig.lick_detect.window_size_ms           = 200;
     protocolconfig.lick_detect.n_consecutive_windows    = 1;
@@ -36,17 +36,17 @@ function [protocolconfig,seq] = PassiveRotation_Training_Stage2(ctl,config,view)
     protocol_id.s_minusR        = 4;
     
     % number of blocks
-    n_blocks = 5;
+    n_blocks = 1;
     
     % number of trials in each block
-    n_s_plusL_trials    = 1;
-    n_s_plusR_trials    = 1;
-    n_s_minusL_trials   = 1;
-    n_s_minusR_trials   = 1;
+    n_s_plusL_trials    = 5;
+    n_s_plusR_trials    = 5;
+    n_s_minusL_trials   = 5;
+    n_s_minusR_trials   = 5;
     
     trial_order = [ones(n_s_plusL_trials, n_blocks); 2*ones(n_s_plusR_trials, n_blocks); 3*ones(n_s_minusL_trials, n_blocks); 4*ones(n_s_minusR_trials, n_blocks)];
     for i = 1 : n_blocks
-        I = randperm(sum([n_s_plusL_trials,n_s_plusR_trials,n_s_minusL_trials,n_s_minusR_trials]));
+        I = [randperm(sum([n_s_plusL_trials,n_s_plusR_trials])) randperm(sum([n_s_minusL_trials,n_s_minusR_trials]))+n_s_plusL_trials+n_s_plusR_trials ];
         trial_order(:, i) = trial_order(I, i);
     end
     trial_order = trial_order(:);

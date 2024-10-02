@@ -14,11 +14,11 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Training_Stage2(ctl,co
     % config parameters to pass to the protocols
     % Here LickDetect trigger appears at rotation velosity peak time, lasts till rotation ends
     protocolconfig.lick_detect.enable                   = true;     
-    protocolconfig.lick_detect.lick_threshold           = 1;
-    protocolconfig.lick_detect.n_windows                = 60;      
-    protocolconfig.lick_detect.window_size_ms           = 250;
-    protocolconfig.lick_detect.n_consecutive_windows    = 2;
-    protocolconfig.lick_detect.n_lick_windows           = protocolconfig.lick_detect.n_consecutive_windows;         
+    protocolconfig.lick_detect.lick_threshold           = 2.0;
+    protocolconfig.lick_detect.n_windows                = 25;      
+    protocolconfig.lick_detect.window_size_ms           = 200;
+    protocolconfig.lick_detect.n_consecutive_windows    = 1;
+    protocolconfig.lick_detect.n_lick_windows           = protocolconfig.lick_detect.n_consecutive_windows;
     protocolconfig.lick_detect.detection_trigger_type   = 1;
     protocolconfig.lick_detect.delay                    = 15;       % delay of LickDetect trigger from TrialStart (in sec)
     protocolconfig.enable_vis_stim = enableVisStim;
@@ -56,10 +56,10 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Training_Stage2(ctl,co
     %% velocity array generator
     distance = 90;
     duration = 30;
-    vmax_splus = 40;
+    vmax_splus = 80;
     vmax_sminus = 10;
-    peakwidth_splus = 2.5;
-    peakwidth_sminus = 2.5;
+    peakwidth_splus = 2;
+    peakwidth_sminus = 2;
     
     for i = 1 : length(trial_order)
     

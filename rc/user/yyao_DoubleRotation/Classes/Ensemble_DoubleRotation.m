@@ -138,8 +138,8 @@ classdef Ensemble_DoubleRotation < handle
             CurrentPosition(1) = EnsembleStatusGetItem  (obj.handle, obj.all_axes(1), EnsembleStatusItem.PositionFeedback);   % Get Program Position Feedback (ID = 1) of central axis.
             CurrentPosition(2) = EnsembleStatusGetItem  (obj.handle, obj.all_axes(2), EnsembleStatusItem.PositionFeedback);   % Get Program Position Feedback (ID = 1) of outer axis.
             CurrentPosition = rad2deg(wrapToPi(deg2rad(CurrentPosition)));
-            obj.homed(find(abs(CurrentPosition)<0.1)) = true;
-            obj.homed(find(abs(CurrentPosition)>=0.1)) = false;
+            obj.homed(find(abs(CurrentPosition)<0.5)) = true;
+            obj.homed(find(abs(CurrentPosition)>=0.5)) = false;
             if CurrentPosition(1)<0
                 EnsembleParameterSetValue(obj.handle, EnsembleParameterId.HomeSetup , obj.all_axes(1), 1);    % Set HomeSetup Parameter (ID = 75). 0 = CCW/Negative Direction, 1 = CW/Positive Direction
             end

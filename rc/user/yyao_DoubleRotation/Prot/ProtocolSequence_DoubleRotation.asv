@@ -13,7 +13,6 @@ classdef ProtocolSequence_DoubleRotation < handle
         h_listener_reward
         h_listener_ao
         
-        
     end
     
     properties (SetObservable = true)
@@ -54,8 +53,7 @@ classdef ProtocolSequence_DoubleRotation < handle
             obj.h_listener_ao = addlistener(obj.ctl.ni.ao.task, 'IsRunning', 'PostSet', @(src, evnt)obj.visual_stimuli(src, evnt, enable_vis_stim));     
 
             obj.ctl.reward.reset_n_rewards_counter();   
-
-            system('C:\Users\Margrie_Lab1\Documents\MATLAB\tools\nircmd.exe setsysvolume 5000');
+            
             obj.ctl.play_sound(); 
             obj.ctl.ensemble_online(true);
             all_axes = obj.ctl.ensemble.all_axes;   % [0,1]
@@ -79,8 +77,6 @@ classdef ProtocolSequence_DoubleRotation < handle
                     obj.stop(); % abort and reset
                 end
             end
-
-            
 
             for i = 1 : length(obj.sequence)    % trial start
                 
@@ -177,37 +173,33 @@ classdef ProtocolSequence_DoubleRotation < handle
                     if abort_trial; return; end
                 end
                 
-%                 system('C:\Users\Margrie_Lab1\Documents\MATLAB\tools\nircmd.exe setsysvolume 5000');
+                
                 %%% trial protocol end %%%
                 
                 %% inter trial interval
                 % if the protocol is S+, then lick is correct response
-                if contains(obj.sequence{i}.trial.stimulus_type, 'plus')
+                if strcmp(obj.sequence{i}.trial.stimulus_type, 's_plusL')||strcmp(obj.sequence{i}.trial.stimulus_type, 's_plusR')
+
                     if obj.ctl.lick_detector.lick_detected   
                         % correct S+ trial
                         obj.is_correct(obj.current_trial) = true;  
                         obj.n_correct_s_plus_trials = obj.n_correct_s_plus_trials + 1;
-                        interval = 0.5;
                     else
                         % incorrect S+ trial
                         obj.is_correct(obj.current_trial) = false;
                         obj.n_incorrect_s_plus_trials = obj.n_incorrect_s_plus_trials + 1;
-                        interval = 0.5;
                     end
-                elseif contains(obj.sequence{i}.trial.stimulus_type, 'minus')
+
+                elseif strcmp(obj.sequence{i}.trial.stimulus_type, 's_minusL')||strcmp(obj.sequence{i}.trial.stimulus_type, 's_minusR')
 
                     if obj.ctl.lick_detector.lick_detected
                         % incorrect S- trial
                         obj.is_correct(obj.current_trial) = false;
                         obj.n_incorrect_s_minus_trials = obj.n_incorrect_s_minus_trials + 1;
-%                         interval = 10;
-                        interval = 0.5;
-%                         system('C:\Users\Margrie_Lab1\Documents\MATLAB\tools\nircmd.exe setsysvolume 4000');
                     else
                         % correct S- trial
                         obj.is_correct(obj.current_trial) = true;
                         obj.n_correct_s_minus_trials = obj.n_correct_s_minus_trials + 1;
-                        interval = 0.5;
                     end
                 end
 
@@ -216,9 +208,7 @@ classdef ProtocolSequence_DoubleRotation < handle
 %                     obj.ctl.pump.pulse(300)
 %                 end
                 
-                
-                pause(interval);     % wait before reset stages
-                system('C:\Users\Margrie_Lab1\Documents\MATLAB\tools\nircmd.exe setsysvolume 5000');
+                pause(2);     % wait for 2 seconds before reset stages
                 if obj.sequence{i}.stage.enable_motion      
                     obj.ctl.ensemble.stop_listen(ensembleHandle,true);      % Stop Ensemble listen
                 end
@@ -226,7 +216,7 @@ classdef ProtocolSequence_DoubleRotation < handle
                 obj.ctl.set_target_axes(all_axes);
                 obj.ctl.home_ensemble(true);        % reset both stages to Homed position
 
-                pause(0.5);     % wait after reset stages before next trial start
+                pause(2);     % wait for 2 seconds after reset stages
                 
                 fprintf('trial done\n');
             end     % trial end
@@ -330,7 +320,7 @@ classdef ProtocolSequence_DoubleRotation < handle
             n_incorrect_s_plus_trials = obj.n_incorrect_s_plus_trials;
             n_correct_s_minus_trials = obj.n_correct_s_minus_trials;
             n_incorrect_s_minus_trials = obj.n_incorrect_s_minus_trials;
-            lick_threshold = obj.ctl.lick_detector.lick_threshold;
+            lick_threshold = obj.ctl.lick_detect.lick_threshold
 
             vars_to_save = {'protocol_name'
                 'n_trials'
@@ -340,8 +330,7 @@ classdef ProtocolSequence_DoubleRotation < handle
                 'n_correct_s_plus_trials'
                 'n_incorrect_s_plus_trials'
                 'n_correct_s_minus_trials'
-                'n_incorrect_s_minus_trials'
-                'lick_threshold'};
+                'n_incorrect_s_minus_trials'};
             
             save(fname, vars_to_save{:});  % save variables to .mat file
             

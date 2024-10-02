@@ -33,3 +33,7 @@ NIDAQ PC -- 'C:\Users\Margrie_Lab1\Documents\raw_data'
 
 If IP errors occur, modify the IP address in both start-up files.
 
+If erros occur during experiment, run
+	>> gui.experiment_seq.cleanup()
+   to terminate experiment.
+
