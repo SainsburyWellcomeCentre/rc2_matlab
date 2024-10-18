@@ -12,7 +12,8 @@ The code controls the following hardware on the RC computer:
 3. A pump for reward
 
 And the following hardware on the Visual Stimuli computer: 
-1. A Basler acA640-750um camera
+1. An NI DAQ USB-6002
+2. A Basler acA640-750um camera
 
 ## Installation
 
@@ -24,9 +25,10 @@ In order to use all hardware the following should be installed on the RC compute
 2. NI-DAQmx drivers
 
 And the following should be installed on the Visual Stimuli computer: 
-1. Psychtoolbox for Matlab
-2. Basler drivers (Pylon Runtime v6.2.0.21487)
-3. Python 3 with imageio, imageio-ffmpeg, pypylon packages
+1. NI-DAQmx drivers
+2. Psychtoolbox for Matlab
+3. Basler drivers (Pylon Runtime v6.2.0.21487)
+4. Python 3 with imageio, imageio-ffmpeg, pypylon packages
 
 ## Usage best practices
 
