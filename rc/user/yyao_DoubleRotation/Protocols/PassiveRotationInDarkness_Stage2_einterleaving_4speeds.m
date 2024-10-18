@@ -66,8 +66,8 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Stage2_einterleaving_4
     n_s_plusR30_trials    = 0;
     n_s_plusL20_trials    = 1;
     n_s_plusR20_trials    = 1;
-    n_s_minusL_trials   = 4;
-    n_s_minusR_trials   = 4;
+    n_s_minusL_trials   = 1;
+    n_s_minusR_trials   = 1;
     
     trial_order = [protocol_id.s_plusL80*ones(n_s_plusL80_trials, n_blocks); protocol_id.s_plusR80*ones(n_s_plusR80_trials, n_blocks); ...
         protocol_id.s_plusL70*ones(n_s_plusL70_trials, n_blocks); protocol_id.s_plusR70*ones(n_s_plusR70_trials, n_blocks); ...

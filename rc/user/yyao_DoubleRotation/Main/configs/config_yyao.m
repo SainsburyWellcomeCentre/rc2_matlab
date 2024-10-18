@@ -29,8 +29,8 @@ config.nidaq.ai.channel_names           = {'stage_central', 'stage_outer', 'phot
 % config.nidaq.ai.channel_id              = [0:7 20]; 
 config.nidaq.ai.channel_id              = [0 1 2 5 6 21 20];
 % config.nidaq.ai.offset                  = [0.004, 0.005, -0.014, -0.008, -0.102, 0.0077, -0.0004, 0, 0];
-config.nidaq.ai.offset                  = [0.004, 0.005, -0.014, 0.0077, -0.0004, 10, 0];
-config.nidaq.ai.scale                   = [1, 1, 1, 1, 1, -1, 1];
+config.nidaq.ai.offset                  = [0.004, 0.005, -0.014, 0.0077, -0.0004, -10, 0];
+config.nidaq.ai.scale                   = [1, 1, 1, 1, 1, 0.15, 1];
 
 config.offsets.enable                   = false;
 config.offsets.error_mtx                = [];
