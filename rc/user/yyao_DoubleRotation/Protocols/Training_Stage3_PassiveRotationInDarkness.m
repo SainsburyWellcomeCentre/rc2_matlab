@@ -1,4 +1,4 @@
-function [protocolconfig,seq] = PassiveRotationInDarkness_Training_Stage2_accelerationcontrol(ctl,config,view)
+function [protocolconfig,seq] = Training_Stage3_PassiveRotationInDarkness(ctl,config,view)
     % Protocol type: passive rotation in darkness
     % central stage - enabled. 
     %       S+ trial, high max speed. 
@@ -14,7 +14,7 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Training_Stage2_accele
     % config parameters to pass to the protocols
     % Here LickDetect trigger appears at rotation velosity peak time, lasts till rotation ends
     protocolconfig.lick_detect.enable                   = true;     
-    protocolconfig.lick_detect.lick_threshold           = 2.0;
+    protocolconfig.lick_detect.lick_threshold           = [2.0 4.0];
     protocolconfig.lick_detect.n_windows                = 25;      
     protocolconfig.lick_detect.window_size_ms           = 200;
     protocolconfig.lick_detect.n_consecutive_windows    = 1;
@@ -80,12 +80,11 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Training_Stage2_accele
             trial.stage.outer.max_vel = vmax_splus; 
             trial.stage.outer.peakwidth = peakwidth_splus;
             trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
-            trial.stage.controlled_max = vmax_splus;
 
             trial.vis.enable_vis_stim = enableVisStim;
             trial.vis.vis_stim_lable = 1;
 
-            trial.waveform = voltagewaveform_generator_linear_accelerationcontrol(trial.stage, config.nidaq.rate);
+            trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
             
             % add protocol to the sequence
             seq.add(trial);
@@ -107,12 +106,11 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Training_Stage2_accele
             trial.stage.outer.max_vel = vmax_splus; 
             trial.stage.outer.peakwidth = peakwidth_splus;
             trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
-            trial.stage.controlled_max = vmax_splus;
             
             trial.vis.enable_vis_stim = enableVisStim;
             trial.vis.vis_stim_lable = 2;
 
-            trial.waveform = voltagewaveform_generator_linear_accelerationcontrol(trial.stage, config.nidaq.rate);
+            trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
             
             % add protocol to the sequence
             seq.add(trial);
@@ -134,12 +132,11 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Training_Stage2_accele
             trial.stage.outer.max_vel = vmax_sminus; 
             trial.stage.outer.peakwidth = peakwidth_sminus;
             trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
-            trial.stage.controlled_max = vmax_splus;
             
             trial.vis.enable_vis_stim = enableVisStim;
             trial.vis.vis_stim_lable = 3;
 
-            trial.waveform = voltagewaveform_generator_linear_accelerationcontrol(trial.stage, config.nidaq.rate);
+            trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
             
             % add protocol to the sequence
             seq.add(trial);
@@ -161,12 +158,11 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Training_Stage2_accele
             trial.stage.outer.max_vel = vmax_sminus; 
             trial.stage.outer.peakwidth = peakwidth_sminus;
             trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
-            trial.stage.controlled_max = vmax_splus;
             
             trial.vis.enable_vis_stim = enableVisStim;
             trial.vis.vis_stim_lable = 4;
 
-            trial.waveform = voltagewaveform_generator_linear_accelerationcontrol(trial.stage, config.nidaq.rate);
+            trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
             
             % add protocol to the sequence
             seq.add(trial);

@@ -25,8 +25,14 @@ analysis.idx.lick = zeros(1,length(analysis.timebase));
 analysis.idx.pump = zeros(1,length(analysis.timebase));
 analysis.idx.trigger = zeros(1,length(analysis.timebase));
 for i=2:length(analysis.timebase)
-    if analysis.signal.lick_signal(i-1)<analysis.lick_threshold & analysis.signal.lick_signal(i)>=analysis.lick_threshold
-        analysis.idx.lick(i)=1;
+    if length(analysis.lick_threshold)==1
+        if analysis.signal.lick_signal(i-1)<analysis.lick_threshold & analysis.signal.lick_signal(i)>=analysis.lick_threshold
+            analysis.idx.lick(i)=1;
+        end
+    elseif length(analysis.lick_threshold)==2
+        if analysis.signal.lick_signal(i-1)<analysis.lick_threshold(1) & analysis.signal.lick_signal(i)>=analysis.lick_threshold(1) & analysis.signal.lick_signal(i)<=analysis.lick_threshold(2)
+            analysis.idx.lick(i)=1;
+        end
     end
     if analysis.signal.pump_signal(i-1)<analysis.reward_threshold & analysis.signal.pump_signal(i)>=analysis.reward_threshold
         analysis.idx.pump(i)=1;

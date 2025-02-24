@@ -68,8 +68,13 @@ classdef Ensemble_DoubleRotation < handle
 
             obj.default_homeSetup = config.ensemble.default_homeSetup;
             obj.handle = EnsembleConnect;
-            EnsembleParameterSetValue(obj.handle, EnsembleParameterId.HomeSetup , obj.all_axes(1), obj.default_homeSetup);    % Set HomeSetup Parameter (ID = 75). 0 = CCW/Negative Direction, 1 = CW/Positive Direction
-            EnsembleParameterSetValue(obj.handle, EnsembleParameterId.HomeSetup , obj.all_axes(2), obj.default_homeSetup);
+            for i = 1:length(obj.all_axes)
+                if ~isnan(obj.all_axes(i))
+                    EnsembleParameterSetValue(obj.handle, EnsembleParameterId.HomeSetup , obj.all_axes(i), obj.default_homeSetup);    % Set HomeSetup Parameter (ID = 75). 0 = CCW/Negative Direction, 1 = CW/Positive Direction
+                end
+            end
+%             EnsembleParameterSetValue(obj.handle, EnsembleParameterId.HomeSetup , obj.all_axes(1), obj.default_homeSetup);    % Set HomeSetup Parameter (ID = 75). 0 = CCW/Negative Direction, 1 = CW/Positive Direction
+%             EnsembleParameterSetValue(obj.handle, EnsembleParameterId.HomeSetup , obj.all_axes(2), obj.default_homeSetup);
             EnsembleDisconnect();
         end
 
@@ -133,19 +138,32 @@ classdef Ensemble_DoubleRotation < handle
             EnsemblePSOControl(obj.handle, obj.all_axes, EnsemblePsoMode.Reset);
             % Set the HOMEing direction according to CurrentPosition
             CurrentPosition = NaN([1,length(obj.all_axes)]);
-            EnsembleParameterSetValue(obj.handle, EnsembleParameterId.HomeSetup , obj.all_axes(1), obj.default_homeSetup);    % Set HomeSetup Parameter (ID = 75). 0 = CCW/Negative Direction, 1 = CW/Positive Direction
-            EnsembleParameterSetValue(obj.handle, EnsembleParameterId.HomeSetup , obj.all_axes(2), obj.default_homeSetup);
-            CurrentPosition(1) = EnsembleStatusGetItem  (obj.handle, obj.all_axes(1), EnsembleStatusItem.PositionFeedback);   % Get Program Position Feedback (ID = 1) of central axis.
-            CurrentPosition(2) = EnsembleStatusGetItem  (obj.handle, obj.all_axes(2), EnsembleStatusItem.PositionFeedback);   % Get Program Position Feedback (ID = 1) of outer axis.
+            for i = 1:length(obj.all_axes)
+                if ~isnan(obj.all_axes(i))
+                    EnsembleParameterSetValue(obj.handle, EnsembleParameterId.HomeSetup , obj.all_axes(i), obj.default_homeSetup);
+                    CurrentPosition(i) = EnsembleStatusGetItem  (obj.handle, obj.all_axes(i), EnsembleStatusItem.PositionFeedback);
+                end
+            end
+%             EnsembleParameterSetValue(obj.handle, EnsembleParameterId.HomeSetup , obj.all_axes(1), obj.default_homeSetup);    % Set HomeSetup Parameter (ID = 75). 0 = CCW/Negative Direction, 1 = CW/Positive Direction
+%             EnsembleParameterSetValue(obj.handle, EnsembleParameterId.HomeSetup , obj.all_axes(2), obj.default_homeSetup);
+%             CurrentPosition(1) = EnsembleStatusGetItem  (obj.handle, obj.all_axes(1), EnsembleStatusItem.PositionFeedback);   % Get Program Position Feedback (ID = 1) of central axis.
+%             CurrentPosition(2) = EnsembleStatusGetItem  (obj.handle, obj.all_axes(2), EnsembleStatusItem.PositionFeedback);   % Get Program Position Feedback (ID = 1) of outer axis.
             CurrentPosition = rad2deg(wrapToPi(deg2rad(CurrentPosition)));
             obj.homed(find(abs(CurrentPosition)<0.5)) = true;
             obj.homed(find(abs(CurrentPosition)>=0.5)) = false;
-            if CurrentPosition(1)<0
-                EnsembleParameterSetValue(obj.handle, EnsembleParameterId.HomeSetup , obj.all_axes(1), 1);    % Set HomeSetup Parameter (ID = 75). 0 = CCW/Negative Direction, 1 = CW/Positive Direction
+            for i = 1:length(obj.all_axes)
+                if ~isnan(obj.all_axes(i))
+                    if CurrentPosition(i)<0
+                        EnsembleParameterSetValue(obj.handle, EnsembleParameterId.HomeSetup , obj.all_axes(i), 1);    % Set HomeSetup Parameter (ID = 75). 0 = CCW/Negative Direction, 1 = CW/Positive Direction
+                    end
+                end
             end
-            if CurrentPosition(2)<0
-                EnsembleParameterSetValue(obj.handle, EnsembleParameterId.HomeSetup , obj.all_axes(2), 1);    % Set HomeSetup Parameter (ID = 75). 0 = CCW/Negative Direction, 1 = CW/Positive Direction
-            end
+%             if CurrentPosition(1)<0
+%                 EnsembleParameterSetValue(obj.handle, EnsembleParameterId.HomeSetup , obj.all_axes(1), 1);    % Set HomeSetup Parameter (ID = 75). 0 = CCW/Negative Direction, 1 = CW/Positive Direction
+%             end
+%             if CurrentPosition(2)<0
+%                 EnsembleParameterSetValue(obj.handle, EnsembleParameterId.HomeSetup , obj.all_axes(2), 1);    % Set HomeSetup Parameter (ID = 75). 0 = CCW/Negative Direction, 1 = CW/Positive Direction
+%             end
             
 
             % if already Homed, not to Home again
@@ -170,8 +188,13 @@ classdef Ensemble_DoubleRotation < handle
             EnsembleMotionEnable(obj.handle, axes);
             EnsembleMotionHome(obj.handle, axes);
             EnsembleMotionWaitForMotionDone(obj.handle, axes, EnsembleWaitOption.MoveDone, 50000);   % Wait For Motion Done. timeout = 50000
-            EnsembleParameterSetValue(obj.handle, EnsembleParameterId.HomeSetup , obj.all_axes(1), obj.default_homeSetup);    % Set HomeSetup Parameter (ID = 75). 0 = CCW/Negative Direction, 1 = CW/Positive Direction
-            EnsembleParameterSetValue(obj.handle, EnsembleParameterId.HomeSetup , obj.all_axes(2), obj.default_homeSetup);
+            for i = 1:length(obj.all_axes)
+                if ~isnan(obj.all_axes(i))
+                    EnsembleParameterSetValue(obj.handle, EnsembleParameterId.HomeSetup , obj.all_axes(i), obj.default_homeSetup);
+                end
+            end
+%             EnsembleParameterSetValue(obj.handle, EnsembleParameterId.HomeSetup , obj.all_axes(1), obj.default_homeSetup);    % Set HomeSetup Parameter (ID = 75). 0 = CCW/Negative Direction, 1 = CW/Positive Direction
+%             EnsembleParameterSetValue(obj.handle, EnsembleParameterId.HomeSetup , obj.all_axes(2), obj.default_homeSetup);
             if ~end_enabled
                 EnsembleMotionDisable(obj.handle, obj.all_axes);
             end
@@ -235,13 +258,15 @@ classdef Ensemble_DoubleRotation < handle
             
             gearmode = 0; % Specify 0 for OFF, 1 for ON without filter, and 2 for ON with filter.
             for i=1:length(obj.all_axes)
-                % Reset gear parameters to their defaults
-                cmd = sprintf('GEAR @%i, %i', obj.all_axes(i), gearmode);
-                EnsembleCommandExecute(obj.handle, cmd); % Take stage out of gear mode
-                EnsembleParameterSetValue(obj.handle, EnsembleParameterId.GearCamSource, obj.all_axes(i), obj.default_gearsource);
-                EnsembleParameterSetValue(obj.handle, EnsembleParameterId.GearCamScaleFactor, obj.all_axes(i), obj.default_gearscalefactor);
-                EnsembleParameterSetValue(obj.handle, EnsembleParameterId.GearCamAnalogDeadband, obj.all_axes(i), obj.default_analogdeadband);
-                EnsembleParameterSetValue(obj.handle, EnsembleParameterId.GainKpos, obj.all_axes(i), obj.default_gainkpos(i));
+                if ~isnan(obj.all_axes(i))
+                    % Reset gear parameters to their defaults
+                    cmd = sprintf('GEAR @%i, %i', obj.all_axes(i), gearmode);
+                    EnsembleCommandExecute(obj.handle, cmd); % Take stage out of gear mode
+                    EnsembleParameterSetValue(obj.handle, EnsembleParameterId.GearCamSource, obj.all_axes(i), obj.default_gearsource);
+                    EnsembleParameterSetValue(obj.handle, EnsembleParameterId.GearCamScaleFactor, obj.all_axes(i), obj.default_gearscalefactor);
+                    EnsembleParameterSetValue(obj.handle, EnsembleParameterId.GearCamAnalogDeadband, obj.all_axes(i), obj.default_analogdeadband);
+                    EnsembleParameterSetValue(obj.handle, EnsembleParameterId.GainKpos, obj.all_axes(i), obj.default_gainkpos(i));
+                end
             end
 
             EnsembleDisconnect();
@@ -343,21 +368,23 @@ classdef Ensemble_DoubleRotation < handle
             gearmode = 0; % Specify 0 for OFF, 1 for ON without filter, and 2 for ON with filter.
 
             for i=1:length(obj.all_axes)
-                % Stay enabled if requested
-                if ~end_enabled
-                    EnsembleMotionDisable(sessionHandle, obj.all_axes(i));
+                if ~isnan(obj.all_axes(i))
+                    % Stay enabled if requested
+                    if ~end_enabled
+                        EnsembleMotionDisable(sessionHandle, obj.all_axes(i));
+                    end
+        
+                    % Pulse the digital output
+                    EnsemblePSOControl(sessionHandle, obj.all_axes(i), EnsemblePsoMode.Fire);
+        
+                    % Reset gear parameters to their defaults
+                    cmd = sprintf('GEAR @%i, %i', obj.all_axes(i), gearmode);
+                    EnsembleCommandExecute(sessionHandle, cmd); % Take stage out of gear mode
+                    EnsembleParameterSetValue(sessionHandle, EnsembleParameterId.GearCamSource, obj.all_axes(i), obj.default_gearsource);
+                    EnsembleParameterSetValue(sessionHandle, EnsembleParameterId.GearCamScaleFactor, obj.all_axes(i), obj.default_gearscalefactor);
+                    EnsembleParameterSetValue(sessionHandle, EnsembleParameterId.GearCamAnalogDeadband, obj.all_axes(i), obj.default_analogdeadband);
+                    EnsembleParameterSetValue(sessionHandle, EnsembleParameterId.GainKpos, obj.all_axes(i), obj.default_gainkpos(i));
                 end
-    
-                % Pulse the digital output
-                EnsemblePSOControl(sessionHandle, obj.all_axes(i), EnsemblePsoMode.Fire);
-    
-                % Reset gear parameters to their defaults
-                cmd = sprintf('GEAR @%i, %i', obj.all_axes(i), gearmode);
-                EnsembleCommandExecute(sessionHandle, cmd); % Take stage out of gear mode
-                EnsembleParameterSetValue(sessionHandle, EnsembleParameterId.GearCamSource, obj.all_axes(i), obj.default_gearsource);
-                EnsembleParameterSetValue(sessionHandle, EnsembleParameterId.GearCamScaleFactor, obj.all_axes(i), obj.default_gearscalefactor);
-                EnsembleParameterSetValue(sessionHandle, EnsembleParameterId.GearCamAnalogDeadband, obj.all_axes(i), obj.default_analogdeadband);
-                EnsembleParameterSetValue(sessionHandle, EnsembleParameterId.GainKpos, obj.all_axes(i), obj.default_gainkpos(i));
             end
             obj.set_targetaxes(NaN([1,length(obj.all_axes)]));
             EnsembleDisconnect();

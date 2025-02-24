@@ -111,7 +111,11 @@ classdef LickingHabituation < handle
                     end
                     pause(7.5);
                 end
-
+                
+                % wait for vis_stim to end
+                abort_trial = obj.wait_for_trial_end();   % receive 'trial_end' from remote host to continue
+                if abort_trial; return; end
+                
                 %%% trial protocol end %%%
                 
                 %% inter trial interval

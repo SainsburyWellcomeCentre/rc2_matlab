@@ -1,19 +1,20 @@
-function [protocolconfig,seq] = PassiveRotation_Training_Stage2(ctl,config,view)
-    % Protocol type: passive rotation with visual stimuli 10 S+ 10 S- in psudorandom order
+function [protocolconfig,seq] = Training_Stage3control_PassiveRotationInDarkness(ctl,config,view)
+    % Protocol type: passive rotation in darkness
     % central stage - enabled. 
     %       S+ trial, high max speed. 
     %       S- trial, low max speed.
+    %       S+ & S- trials are of same speed peakwidth
     % outer stage   - disabled
-    % vis_stim      - enabled. 
+    % vis_stim      - disabled. 
 
     fullpath = mfilename('fullpath');
     [~,protocol_id.name] = fileparts(fullpath);
     enableRotation = true;
-    enableVisStim = true;
+    enableVisStim = false;
     % config parameters to pass to the protocols
     % Here LickDetect trigger appears at rotation velosity peak time, lasts till rotation ends
     protocolconfig.lick_detect.enable                   = true;     
-    protocolconfig.lick_detect.lick_threshold           = 2.0;
+    protocolconfig.lick_detect.lick_threshold           = [2.0 4.0];
     protocolconfig.lick_detect.n_windows                = 25;      
     protocolconfig.lick_detect.window_size_ms           = 200;
     protocolconfig.lick_detect.n_consecutive_windows    = 1;
@@ -51,6 +52,7 @@ function [protocolconfig,seq] = PassiveRotation_Training_Stage2(ctl,config,view)
     end
     trial_order = trial_order(:);
 
+
     %% velocity array generator
     distance = 90;
     duration = 30;
@@ -78,11 +80,12 @@ function [protocolconfig,seq] = PassiveRotation_Training_Stage2(ctl,config,view)
             trial.stage.outer.max_vel = vmax_splus; 
             trial.stage.outer.peakwidth = peakwidth_splus;
             trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            trial.stage.controlled_max = vmax_splus;
 
             trial.vis.enable_vis_stim = enableVisStim;
             trial.vis.vis_stim_lable = 1;
 
-            trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = voltagewaveform_generator_linear_accelerationcontrol(trial.stage, config.nidaq.rate);
             
             % add protocol to the sequence
             seq.add(trial);
@@ -104,11 +107,12 @@ function [protocolconfig,seq] = PassiveRotation_Training_Stage2(ctl,config,view)
             trial.stage.outer.max_vel = vmax_splus; 
             trial.stage.outer.peakwidth = peakwidth_splus;
             trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            trial.stage.controlled_max = vmax_splus;
             
             trial.vis.enable_vis_stim = enableVisStim;
             trial.vis.vis_stim_lable = 2;
 
-            trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = voltagewaveform_generator_linear_accelerationcontrol(trial.stage, config.nidaq.rate);
             
             % add protocol to the sequence
             seq.add(trial);
@@ -130,11 +134,12 @@ function [protocolconfig,seq] = PassiveRotation_Training_Stage2(ctl,config,view)
             trial.stage.outer.max_vel = vmax_sminus; 
             trial.stage.outer.peakwidth = peakwidth_sminus;
             trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            trial.stage.controlled_max = vmax_splus;
             
             trial.vis.enable_vis_stim = enableVisStim;
             trial.vis.vis_stim_lable = 3;
 
-            trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = voltagewaveform_generator_linear_accelerationcontrol(trial.stage, config.nidaq.rate);
             
             % add protocol to the sequence
             seq.add(trial);
@@ -156,11 +161,12 @@ function [protocolconfig,seq] = PassiveRotation_Training_Stage2(ctl,config,view)
             trial.stage.outer.max_vel = vmax_sminus; 
             trial.stage.outer.peakwidth = peakwidth_sminus;
             trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            trial.stage.controlled_max = vmax_splus;
             
             trial.vis.enable_vis_stim = enableVisStim;
             trial.vis.vis_stim_lable = 4;
 
-            trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = voltagewaveform_generator_linear_accelerationcontrol(trial.stage, config.nidaq.rate);
             
             % add protocol to the sequence
             seq.add(trial);

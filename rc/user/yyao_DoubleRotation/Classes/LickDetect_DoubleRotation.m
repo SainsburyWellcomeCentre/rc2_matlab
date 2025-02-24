@@ -8,7 +8,8 @@ classdef LickDetect_DoubleRotation < handle
         trigger_channel
         trigger_channel_threshold = 2.5  % expect TTL by default
         lick_channel
-        
+        lickpower_channel
+
         lick_times = nan(100000, 1);
     end
     
@@ -36,6 +37,9 @@ classdef LickDetect_DoubleRotation < handle
         last_lick_sample_value = 0
         running = false
         current_window_sample_idx
+
+        ni % Handle to the :class:`rc.nidaq.NI` object.
+        state % Current state of the digital output (1 or 0).
     end
     
     
@@ -88,9 +92,14 @@ classdef LickDetect_DoubleRotation < handle
             obj.n_consecutive_windows = config.lick_detect.n_consecutive_windows;
             obj.trigger_channel = config.lick_detect.trigger_channel;
             obj.lick_channel = config.lick_detect.lick_channel;
+            obj.lickpower_channel = config.lick_detect.lickpower_channel;
             obj.detection_trigger_type = config.lick_detect.detection_trigger_type;
             obj.delay = config.lick_detect.delay;
             
+            obj.ni = obj.ctl.ni;
+
+           
+
             % optional fields
             if isfield(config.lick_detect, 'trigger_channel_threshold')
                 obj.trigger_channel_threshold = config.lick_detect.trigger_channel_threshold;
@@ -175,7 +184,7 @@ classdef LickDetect_DoubleRotation < handle
             % sample point of window
             % find sample points above the lick threshold and take the
             % difference along columnes (i.e. in each window)
-            diff_mtx = diff([[nan, obj.window_data(end, 1:end-1)]; obj.window_data] > obj.lick_threshold, [], 1);
+            diff_mtx = diff([[nan, obj.window_data(end, 1:end-1)]; obj.window_data] > obj.lick_threshold(1) & [[nan, obj.window_data(end, 1:end-1)]; obj.window_data] < obj.lick_threshold(2), [], 1);
             
             % has lick occurred in the window
             lick_in_window = max(diff_mtx > 0, [], 1);
@@ -261,7 +270,7 @@ classdef LickDetect_DoubleRotation < handle
                 %    data went high on that last sample, it should have
                 %    been picked up in the previous window, and also the
                 %    lick data will already be above threshold
-                lick_crossed_threshold = [false; diff(lick_data > obj.lick_threshold, [], 1) == 1];
+                lick_crossed_threshold = [false; diff(lick_data > obj.lick_threshold(1) & lick_data < obj.lick_threshold(2), [], 1) == 1];
                 
                 % if lick crossed threshold whilst trigger was high, reward
                 if any(trigger_high(lick_crossed_threshold))
@@ -273,5 +282,18 @@ classdef LickDetect_DoubleRotation < handle
                 end
             end
         end
+
+        function power_on(obj)
+            if ~obj.enabled, return, end
+            obj.ni.do_toggle(obj.lickpower_channel, true);
+            obj.state = true;
+        end
+
+        function power_off(obj)
+            if ~obj.enabled, return, end
+            obj.ni.do_toggle(obj.lickpower_channel, false);
+            obj.state = false;
+        end
+
     end
 end

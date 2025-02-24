@@ -11,7 +11,7 @@ classdef RotationHabituation < handle
 %         stimulus_type_list = {}
 %         is_correct = []
         h_listener_reward
-%         h_listener_ao
+        h_listener_ao
         
     end
     
@@ -50,7 +50,7 @@ classdef RotationHabituation < handle
             
             h = onCleanup(@obj.cleanup);  
 
-%             obj.h_listener_ao = addlistener(obj.ctl.ni.ao.task, 'IsRunning', 'PostSet', @(src, evnt)obj.visual_stimuli(src, evnt, enable_vis_stim));     
+            obj.h_listener_ao = addlistener(obj.ctl.ni.ao.task, 'IsRunning', 'PostSet', @(src, evnt)obj.visual_stimuli(src, evnt, enable_vis_stim));     
 
             obj.ctl.reward.reset_n_rewards_counter();   
             
@@ -129,7 +129,7 @@ classdef RotationHabituation < handle
                 obj.ctl.play_velocity_waveform();
                 % refresh lick detector every 7.5 sec
                 for i= 1:8
-                    obj.ctl.vis_stim.on();
+%                     obj.ctl.vis_stim.on();
                     obj.ctl.waveform_peak_trigger();
                     if obj.ctl.lick_detector.lick_detected == true
                         obj.ctl.lick_detector.start_trial();    % reset the lick detector
@@ -250,7 +250,7 @@ classdef RotationHabituation < handle
             end
             
             delete(obj.h_listener_reward);
-%             delete(obj.h_listener_ao);
+            delete(obj.h_listener_ao);
             
         end
     end

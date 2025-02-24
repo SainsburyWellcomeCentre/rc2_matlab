@@ -27,10 +27,10 @@ config.nidaq.ai.dev                     = 'Dev1';  % device name
 % config.nidaq.ai.channel_names           = {'stage_central', 'stage_outer', 'photodiode_left', 'photodiode_mid', 'photodiode_right', 'LickDetect_trigger', 'pump',  'lick',  'VisualStim_trigger'};  % nominal channel names (for reference)
 config.nidaq.ai.channel_names           = {'stage_central', 'stage_outer', 'photodiode_left', 'LickDetect_trigger', 'pump',  'lick',  'VisualStim_trigger'};  % nominal channel names (for reference)
 % config.nidaq.ai.channel_id              = [0:7 20]; 
-config.nidaq.ai.channel_id              = [0 1 2 5 6 21 20];
+config.nidaq.ai.channel_id              = [0 1 2 4 5 3 20];
 % config.nidaq.ai.offset                  = [0.004, 0.005, -0.014, -0.008, -0.102, 0.0077, -0.0004, 0, 0];
-config.nidaq.ai.offset                  = [0.004, 0.005, -0.014, 0.0077, -0.0004, -10, 0];
-config.nidaq.ai.scale                   = [1, 1, 1, 1, 1, 0.15, 1];
+config.nidaq.ai.offset                  = [0.004, 0.005, -0.014, 0.0077, -0.0004, 0.0, 0];  % 5.0
+config.nidaq.ai.scale                   = [1, 1, 1, 1, 1, 0.6, 1];  % -1.6
 
 config.offsets.enable                   = false;
 config.offsets.error_mtx                = [];
@@ -123,7 +123,7 @@ config.ensemble.speed_limits            = [0.0001, 100];    % Speed limits [min 
 
 config.ensemble.ai_offset               = [-0.00095 0.5];   % The offset applied to the Ensemble analog input (mV). Run 'calibrate_zero' function in 'Ensemble' class to get the value (ai_offset = -offset_error).
 config.ensemble.gear_scale              = [2870 2150]/3*1.75;      % A scaling factor applied to the Ensemble analog input when being driven in gear mode.  
-config.ensemble.all_axes                = [0, 1];           % The index of all controllable axes on the Ensemble. [central outer]
+config.ensemble.all_axes                = [0 1];           % The index of all controllable axes on the Ensemble. [central outer]. for central only, use [0 NaN]
 config.ensemble.target_axes             = [NaN NaN];        % The individual axis to be controlled by RC2.
 config.ensemble.ai_channel              = [0,0];            % The analog input channel that Ensemble will listen for waveforms on.
 config.ensemble.ao_channel              = [0,0];            % The analog output channel that Ensemble will replay servo feedback on.
@@ -160,8 +160,9 @@ config.lick_detect.n_consecutive_windows= 4;
 config.lick_detect.trigger_channel      = 4;
 % config.lick_detect.lick_channel         = 8;    % index of channel in "config.nidaq.ai.channel_names" not analog input channel ID  ie AI7，'lick' channel
 config.lick_detect.lick_channel         = 6;
+config.lick_detect.lickpower_channel    = 8;
 config.lick_detect.detection_trigger_type = 1;  % 1 = rewards given in window after trigger rise detected, 2 = rewards given when trigger is high  
-config.lick_detect.lick_threshold       = 1;
+config.lick_detect.lick_threshold       = [2 4];
 config.lick_detect.delay = 0;
 
 

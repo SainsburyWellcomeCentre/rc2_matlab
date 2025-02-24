@@ -54,8 +54,10 @@ classdef ProtocolSequence_DoubleRotation < handle
             obj.h_listener_ao = addlistener(obj.ctl.ni.ao.task, 'IsRunning', 'PostSet', @(src, evnt)obj.visual_stimuli(src, evnt, enable_vis_stim));     
 
             obj.ctl.reward.reset_n_rewards_counter();   
-
-            system('C:\Users\Margrie_Lab1\Documents\MATLAB\tools\nircmd.exe setsysvolume 5000');
+            try
+                system('C:\Users\Margrie_Lab1\Documents\MATLAB\tools\nircmd.exe setsysvolume 3000');
+            catch
+            end
             obj.ctl.play_sound(); 
             obj.ctl.ensemble_online(true);
             all_axes = obj.ctl.ensemble.all_axes;   % [0,1]
@@ -176,8 +178,10 @@ classdef ProtocolSequence_DoubleRotation < handle
                     abort_trial = obj.wait_for_trial_end();   % receive 'trial_end' from remote host to continue
                     if abort_trial; return; end
                 end
-                
-%                 system('C:\Users\Margrie_Lab1\Documents\MATLAB\tools\nircmd.exe setsysvolume 5000');
+%                 try
+%                 system('C:\Users\Margrie_Lab1\Documents\MATLAB\tools\nircmd.exe setsysvolume 3000');
+%                 catch
+%                 end
                 %%% trial protocol end %%%
                 
                 %% inter trial interval
@@ -218,7 +222,10 @@ classdef ProtocolSequence_DoubleRotation < handle
                 
                 
                 pause(interval);     % wait before reset stages
-                system('C:\Users\Margrie_Lab1\Documents\MATLAB\tools\nircmd.exe setsysvolume 5000');
+                try
+                    system('C:\Users\Margrie_Lab1\Documents\MATLAB\tools\nircmd.exe setsysvolume 3000');
+                catch
+                end
                 if obj.sequence{i}.stage.enable_motion      
                     obj.ctl.ensemble.stop_listen(ensembleHandle,true);      % Stop Ensemble listen
                 end

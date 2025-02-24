@@ -1,0 +1,18 @@
+Use MATLAB 2021a or newer version
+
+
+1. To start-up, run
+	>> RC2_startup();
+
+2. To run experiment, run
+   	>> ctl.start_experiment();
+
+3. To end experiment,
+	>> ctl.stop_experiment();
+
+4. To exit, 
+   on NIDAQ PC, run 
+	>> RC2_shutdown();
+
+
+

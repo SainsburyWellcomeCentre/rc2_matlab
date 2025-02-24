@@ -14,7 +14,7 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Stage2_e80(ctl,config,
     % config parameters to pass to the protocols
     % Here LickDetect trigger appears at rotation velosity peak time, lasts till rotation ends
     protocolconfig.lick_detect.enable                   = true;     
-    protocolconfig.lick_detect.lick_threshold           = 2.0;
+    protocolconfig.lick_detect.lick_threshold           = [2.0 4.0];
     protocolconfig.lick_detect.n_windows                = 25;      
     protocolconfig.lick_detect.window_size_ms           = 200;
     protocolconfig.lick_detect.n_consecutive_windows    = 1;

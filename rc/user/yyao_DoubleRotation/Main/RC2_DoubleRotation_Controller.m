@@ -62,7 +62,8 @@ classdef RC2_DoubleRotation_Controller < handle
             obj.vis_stim = VisStim_DoubleRotation(obj.ni, config);
 %             obj.trial_start = TrialStart_DoubleRotation(obj.ni, config);
             obj.waveform_peak = WaveformPeak_DoubleRotation(obj.ni, config);
-
+            
+            obj.lick_detector.power_on();
         end
         
         
@@ -163,7 +164,8 @@ classdef RC2_DoubleRotation_Controller < handle
 
         %% Protocol
         function h_preview_callback(obj, ~, evt)
-            
+
+
             % store the current data
             obj.data = evt.Data;
             
@@ -172,6 +174,7 @@ classdef RC2_DoubleRotation_Controller < handle
             
             % pass transformed data to plotter
             obj.plotting.ni_callback(obj.tdata);
+
         end
         
         
@@ -215,6 +218,7 @@ classdef RC2_DoubleRotation_Controller < handle
             obj.plotting.ni_callback(obj.tdata);  
 %             obj.position.integrate(obj.tdata(:, 1));
             obj.lick_detector.loop();    
+
         end
         
         

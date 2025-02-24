@@ -9,12 +9,12 @@ function [protocolconfig,seq] = LickTraining_Stage1(ctl,config,view)
 
     fullpath = mfilename('fullpath');
     [~,protocol_id.name] = fileparts(fullpath);
-    enableRotation = true;
+    enableRotation = false;
     enableVisStim = true;
     % config parameters to pass to the protocols
     % Here LickDetect trigger appears at rotation velosity peak time, lasts till rotation ends
     protocolconfig.lick_detect.enable                   = true;     
-    protocolconfig.lick_detect.lick_threshold           = 2.0;
+    protocolconfig.lick_detect.lick_threshold           = [2.0 4.0];
     protocolconfig.lick_detect.n_windows                = 4*60;      
     protocolconfig.lick_detect.window_size_ms           = 250;
     protocolconfig.lick_detect.n_consecutive_windows    = 1;
@@ -53,7 +53,7 @@ function [protocolconfig,seq] = LickTraining_Stage1(ctl,config,view)
     trial_order = trial_order(:);
 
     %% velocity array generator
-    distance = 90;
+    distance = 0;
     duration = 30;
     vmax_splus = 80;
     vmax_sminus = 10;

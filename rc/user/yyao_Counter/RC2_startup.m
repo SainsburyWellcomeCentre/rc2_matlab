@@ -10,7 +10,7 @@
 %       gui - main object for interfacing with the gui. unlikely there will
 %           be much use for using it other than debugging
 
-%% RC2_DoubleRotation_startup
+%% RC2_startup
 % requirements
 root_path = 'C:\Users\Margrie_Lab1\Documents\repos\swc\';
 addpath(genpath(fullfile(root_path,'rc2_matlab\rc\classes')));
@@ -25,15 +25,30 @@ addpath(genpath(path));
 clear path;
 
 % setup configuration
-config = config_yyao();
+config = config_Counter();
 if isempty(config), return, end
-config.connection.remote_ip = '172.24.242.80';
-config.connection.remote_port_prepare = 43054;
-config.connection.remote_port_stimulus = 43055;
 
 
 % main controller object
-ctl = RC2_DoubleRotation_Controller(config);    
+ctl = Controller(config);    
 
-% gui interface object
-gui = RC2_DoubleRotation_GUIController(ctl, config);
+
+%{
+
+Use MATLAB 2021a or newer version
+
+
+1. To start-up, run
+	>> RC2_startup();
+
+2. To run experiment, run
+   	>> ctl.start_experiment();
+
+3. To end experiment,
+	>> ctl.stop_experiment();
+
+4. To exit, 
+   on NIDAQ PC, run 
+	>> RC2_shutdown();
+
+%}

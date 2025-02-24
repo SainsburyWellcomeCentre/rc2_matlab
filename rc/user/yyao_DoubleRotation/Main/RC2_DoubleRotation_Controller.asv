@@ -29,7 +29,7 @@ classdef RC2_DoubleRotation_Controller < handle
         acquiring = false
         acquiring_preview = false;
         
-        version = '0.8'
+        version = '1.0'
     end
     
     
@@ -38,44 +38,31 @@ classdef RC2_DoubleRotation_Controller < handle
         
         function obj = RC2_DoubleRotation_Controller(config)
         %%obj = RC2_DoubleRotation_Controller(config)
-        %   Main class for interfacing with the rollercoaster setup.            用于与过山车设置接口的主类
-        %       config - configuration structure containing necessary           config-包含必要信息的配置结构
-        %           parameters for setup - usually this is created with         设置参数——通常这是用config_default创建的，但当然你可以定义自己的配置结构
+        %   Main class for interfacing with the rollercoaster setup.            
+        %       config - configuration structure containing necessary           
+        %           parameters for setup - usually this is created with         
         %           config_default, but of course you can define your own
         %           config structure
-        %   For information on each property see the related class.             有关每个属性的信息，请参见相关类。
+        %   For information on each property see the related class.             
             
             obj.communication = TCPIPcommunication_DoubleRotation (config);
-            obj.tic = tic;  % tic用来保存当前时间，随后使用toc来测量程序完成时间  
-            obj.ni = NI(config);   % 检查NIDAQ状态，创建 模拟输入输出，数字输入输出，和计数器输出 数据采集
-            obj.ensemble = Ensemble_DoubleRotation(config);   % 控制平台的旋转
-            obj.pump = Pump(obj.ni, config);   % 给水泵
-            obj.reward = Reward(obj.pump, config);  % 水奖励
-            obj.plotting = Plotting_DoubleRotation(config);   % 实时绘图模块初始配置，并开启实时绘图窗口
+            obj.tic = tic;  
+            obj.ni = NI(config);   
+            obj.ensemble = Ensemble_DoubleRotation(config);   % control stage rotation
+            obj.pump = Pump(obj.ni, config);   
+            obj.reward = Reward(obj.pump, config);  
+            obj.plotting = Plotting_DoubleRotation(config);   
             obj.sound = Sound_DoubleRotation(config);         
-            obj.saver = Saver_DoubleRotation(obj, config);    % 保存采样数据到.bin文件，配置信息到.cfg文件
+            obj.saver = Saver_DoubleRotation(obj, config);    
             obj.data_transform = DataTransform(config);
             obj.offsets = Offsets(obj, config);
             obj.lick_detector = LickDetect_DoubleRotation(obj, config);
-            
-
-%             obj.teensy = Teensy(config);  % 控制跑步机速度
-%             obj.soloist = Soloist(config);   % 控制平台的平移
-%             obj.treadmill = Treadmill(obj.ni, config);  % 跑步机
-%             obj.multiplexer = Multiplexer(obj.ni, config);
-%             obj.position = Position(config);
-%             obj.delayed_velocity = DelayedVelocity(obj.ni, config);
             
             % Triggers
             obj.vis_stim = VisStim_DoubleRotation(obj.ni, config);
 %             obj.trial_start = TrialStart_DoubleRotation(obj.ni, config);
             obj.waveform_peak = WaveformPeak_DoubleRotation(obj.ni, config);
 
-%             obj.zero_teensy = ZeroTeensy(obj.ni, config);
-%             obj.disable_teensy = DisableTeensy(obj.ni, config);
-%             obj.trigger_input = TriggerInput(obj.ni, config);
-%             obj.start_soloist = StartSoloist(obj.ni, config);
-%             obj.teensy_gain = TeensyGain(obj.ni, config);
         end
         
         
@@ -112,6 +99,11 @@ classdef RC2_DoubleRotation_Controller < handle
             val = obj.ni.ai_rate();  % 10000
         end
 
+        function abort_ao_task(obj)
+            obj.ni.ao.stop();
+%             obj.ni.ao.close();
+        end
+
         %% Stage (Ensemble)
         function move_to(obj, pos, speed, leave_enabled)
             
@@ -123,9 +115,9 @@ classdef RC2_DoubleRotation_Controller < handle
         end
         
         
-        function home_ensemble(obj,)
+        function home_ensemble(obj, leave_enabled)
 %             obj.ensemble.force_home();
-            obj.ensemble.home(false);
+            obj.ensemble.home(leave_enabled);
         end
         
         function set_target_axes(obj,axes)
@@ -171,7 +163,8 @@ classdef RC2_DoubleRotation_Controller < handle
 
         %% Protocol
         function h_preview_callback(obj, ~, evt)
-            
+            obj.lick_detector.power_on();
+
             % store the current data
             obj.data = evt.Data;
             
@@ -183,46 +176,46 @@ classdef RC2_DoubleRotation_Controller < handle
         end
         
         
-        function prepare_acq(obj)   % 实验开始前的准备
+        function prepare_acq(obj)   
             
             if obj.acquiring || obj.acquiring_preview
                 error('already acquiring data')
                 return %#ok<UNRCH>
             end
             
-            obj.saver.setup_logging();                        % 将NIDAQ采样配置信息config保存成.cfg文件。配置信息在config_sweiler.m中修改
-            obj.ni.prepare_acq(@(x, y)obj.h_callback(x, y))   % 侦听NIDAQ数据采集，数据可用则触发回调函数h_callback
-            obj.plotting.reset_vals();                        % 初始化实时绘图窗口变量
-            obj.lick_detector.reset();                        % 初始化舔检测器
+            obj.saver.setup_logging();                        
+            obj.ni.prepare_acq(@(x, y)obj.h_callback(x, y))   
+            obj.plotting.reset_vals();                        
+            obj.lick_detector.reset();                        
         end
         
         
-        function start_acq(obj)    % 开始实验
+        function start_acq(obj)    
             
             % if already acquiring don't do anything
             if obj.acquiring || obj.acquiring_preview; return; end
             
             % start the NI-DAQ device and set acquiring flag to true
-            obj.ni.start_acq()      % 开启CO和AI
+            obj.ni.start_acq()      
             obj.acquiring = true;
         end
         
         
-        function h_callback(obj, ~, evt)   % callbackfcn(src, evt)，其中src是发起回调的对象的句柄，而evt是关联的“事件数据”。evt数据类型有时为event.EventData或struct类。
-            
+        function h_callback(obj, ~, evt)   
+            obj.lick_detector.power_on();
             % store the data so others can use it
-            obj.data = evt.Data;   % 将NIDAQ采集的单位数据(数据量为5000)赋值给data属性
+            obj.data = evt.Data;   
             
             % log raw voltage
-            obj.saver.log(evt.Data);   % 将NIDAQ采集的单位数据转换为int16整型，并写入.bin文件
+            obj.saver.log(evt.Data);   
             
             % transform data
-            obj.tdata = obj.data_transform.transform(evt.Data);  % 数据变换，减去相应偏移量(offset)并乘以相应比例(scale)。此处offset=0, scale=1，相当于未作转换。
+            obj.tdata = obj.data_transform.transform(evt.Data);  
             
             % pass transformed data to callbacks
-            obj.plotting.ni_callback(obj.tdata);  % 使用变换后的数据更新实时绘图
+            obj.plotting.ni_callback(obj.tdata);  
 %             obj.position.integrate(obj.tdata(:, 1));
-            obj.lick_detector.loop();    % 按指定规则进行舔食检测，检测到符合要求的舔食事件则回调give_reward函数
+            obj.lick_detector.loop();    
         end
         
         
@@ -230,7 +223,7 @@ classdef RC2_DoubleRotation_Controller < handle
             if ~obj.acquiring; return; end
             if obj.acquiring_preview; return; end
             obj.acquiring = false;
-            obj.ni.stop_acq();             % 停止NIDAQ的AI和CounterOutput
+            obj.ni.stop_acq();             
             obj.saver.stop_logging();
         end
         
@@ -348,7 +341,7 @@ classdef RC2_DoubleRotation_Controller < handle
         
 
         %% Trigger
-        function visual_stimuli(obj, ~, ~, enable_vis_stim)
+        function visual_stimuli(obj, enable_vis_stim)
             if obj.ni.ao.task.IsRunning && enable_vis_stim
                 obj.vis_stim.on();      % sending TTL to miniDAQ to start visual stimuli 
             else

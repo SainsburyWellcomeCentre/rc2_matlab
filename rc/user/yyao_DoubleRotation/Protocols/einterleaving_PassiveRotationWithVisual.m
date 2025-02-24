@@ -1,4 +1,4 @@
-function [protocolconfig,seq] = PassiveRotationInDarkness_Stage2_einterleaving_4speeds(ctl,config,view)
+function [protocolconfig,seq] = einterleaving_PassiveRotationWithVisual(ctl,config,view)
     % Protocol type: passive rotation in darkness
     % central stage - enabled. 
     %       S+ trial, high max speed. 
@@ -10,7 +10,7 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Stage2_einterleaving_4
     fullpath = mfilename('fullpath');
     [~,protocol_id.name] = fileparts(fullpath);
     enableRotation = true;
-    enableVisStim = false;
+    enableVisStim = true;
     % config parameters to pass to the protocols
     % Here LickDetect trigger appears at rotation velosity peak time, lasts till rotation ends
     protocolconfig.lick_detect.enable                   = true;     
@@ -54,16 +54,16 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Stage2_einterleaving_4
     % number of trials in each block
     n_s_plusL80_trials    = 1;
     n_s_plusR80_trials    = 1;
-    n_s_plusL70_trials    = 0;
-    n_s_plusR70_trials    = 0;
+    n_s_plusL70_trials    = 1;
+    n_s_plusR70_trials    = 1;
     n_s_plusL60_trials    = 1;
     n_s_plusR60_trials    = 1;
-    n_s_plusL50_trials    = 0;
-    n_s_plusR50_trials    = 0;
+    n_s_plusL50_trials    = 1;
+    n_s_plusR50_trials    = 1;
     n_s_plusL40_trials    = 1;
     n_s_plusR40_trials    = 1;
-    n_s_plusL30_trials    = 0;
-    n_s_plusR30_trials    = 0;
+    n_s_plusL30_trials    = 1;
+    n_s_plusR30_trials    = 1;
     n_s_plusL20_trials    = 1;
     n_s_plusR20_trials    = 1;
     n_s_minusL_trials   = 1;

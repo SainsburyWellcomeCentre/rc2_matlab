@@ -1,20 +1,20 @@
-function [protocolconfig,seq] = PassiveRotationInDarkness_Training_Stage2(ctl,config,view)
-    % Protocol type: passive rotation in darkness
+function [protocolconfig,seq] = Training_Stage1_PassiveRotation(ctl,config,view)
+    % Protocol type: passive rotation with visual stimuli, 20 S+ trials
     % central stage - enabled. 
     %       S+ trial, high max speed. 
     %       S- trial, low max speed.
-    %       S+ & S- trials are of same speed peakwidth
+    %       S+ trials only
     % outer stage   - disabled
-    % vis_stim      - disabled. 
+    % vis_stim      - enabled. 
 
     fullpath = mfilename('fullpath');
     [~,protocol_id.name] = fileparts(fullpath);
     enableRotation = true;
-    enableVisStim = false;
+    enableVisStim = true;
     % config parameters to pass to the protocols
     % Here LickDetect trigger appears at rotation velosity peak time, lasts till rotation ends
     protocolconfig.lick_detect.enable                   = true;     
-    protocolconfig.lick_detect.lick_threshold           = 2.0;
+    protocolconfig.lick_detect.lick_threshold           = [2.0 4.0];
     protocolconfig.lick_detect.n_windows                = 25;      
     protocolconfig.lick_detect.window_size_ms           = 200;
     protocolconfig.lick_detect.n_consecutive_windows    = 1;
@@ -40,10 +40,10 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Training_Stage2(ctl,co
     n_blocks = 5;
     
     % number of trials in each block
-    n_s_plusL_trials    = 1;
-    n_s_plusR_trials    = 1;
-    n_s_minusL_trials   = 1;
-    n_s_minusR_trials   = 1;
+    n_s_plusL_trials    = 2;
+    n_s_plusR_trials    = 2;
+    n_s_minusL_trials   = 0;
+    n_s_minusR_trials   = 0;
     
     trial_order = [ones(n_s_plusL_trials, n_blocks); 2*ones(n_s_plusR_trials, n_blocks); 3*ones(n_s_minusL_trials, n_blocks); 4*ones(n_s_minusR_trials, n_blocks)];
     for i = 1 : n_blocks
@@ -51,7 +51,6 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Training_Stage2(ctl,co
         trial_order(:, i) = trial_order(I, i);
     end
     trial_order = trial_order(:);
-
 
     %% velocity array generator
     distance = 90;

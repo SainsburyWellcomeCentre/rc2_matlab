@@ -1,9 +1,8 @@
-function [protocolconfig,seq] = PassiveRotation_Training_Stage1(ctl,config,view)
-    % Protocol type: passive rotation with visual stimuli, 20 S+ trials
+function [protocolconfig,seq] = Training_Stage2_PassiveRotation(ctl,config,view)
+    % Protocol type: passive rotation with visual stimuli 10 S+ 10 S- in psudorandom order
     % central stage - enabled. 
     %       S+ trial, high max speed. 
     %       S- trial, low max speed.
-    %       S+ trials only
     % outer stage   - disabled
     % vis_stim      - enabled. 
 
@@ -14,7 +13,7 @@ function [protocolconfig,seq] = PassiveRotation_Training_Stage1(ctl,config,view)
     % config parameters to pass to the protocols
     % Here LickDetect trigger appears at rotation velosity peak time, lasts till rotation ends
     protocolconfig.lick_detect.enable                   = true;     
-    protocolconfig.lick_detect.lick_threshold           = 2.0;
+    protocolconfig.lick_detect.lick_threshold           = [2.0 4.0];
     protocolconfig.lick_detect.n_windows                = 25;      
     protocolconfig.lick_detect.window_size_ms           = 200;
     protocolconfig.lick_detect.n_consecutive_windows    = 1;
@@ -40,10 +39,10 @@ function [protocolconfig,seq] = PassiveRotation_Training_Stage1(ctl,config,view)
     n_blocks = 5;
     
     % number of trials in each block
-    n_s_plusL_trials    = 2;
-    n_s_plusR_trials    = 2;
-    n_s_minusL_trials   = 0;
-    n_s_minusR_trials   = 0;
+    n_s_plusL_trials    = 1;
+    n_s_plusR_trials    = 1;
+    n_s_minusL_trials   = 1;
+    n_s_minusR_trials   = 1;
     
     trial_order = [ones(n_s_plusL_trials, n_blocks); 2*ones(n_s_plusR_trials, n_blocks); 3*ones(n_s_minusL_trials, n_blocks); 4*ones(n_s_minusR_trials, n_blocks)];
     for i = 1 : n_blocks
