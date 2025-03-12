@@ -97,7 +97,7 @@ classdef RotationHabituation < handle
                 end
 
                 % load waveform
-                rate_speed_to_voltage = 0.05;
+                rate_speed_to_voltage = 0.05/1.75;
                 speed(1:15*10000,1) = -6; speed(15*10000+1:15*10000+15*10000*2,1) = 6; speed(15*10000*3+1:15*10000+15*10000*3,1) = -6;
                 speed(:,2) = speed(:,1);
                 waveform = speed * rate_speed_to_voltage;
@@ -128,7 +128,7 @@ classdef RotationHabituation < handle
                 
                 obj.ctl.play_velocity_waveform();
                 % refresh lick detector every 7.5 sec
-                for i= 1:8
+                for j= 1:8
 %                     obj.ctl.vis_stim.on();
                     obj.ctl.waveform_peak_trigger();
                     if obj.ctl.lick_detector.lick_detected == true
@@ -148,7 +148,7 @@ classdef RotationHabituation < handle
                 obj.ctl.set_target_axes(all_axes);
                 obj.ctl.home_ensemble(true);        % reset both stages to Homed position
 
-                fprintf('trial done\n');
+                fprintf('Trial %i done. ScansOutputByHardware %u\n', i, obj.ctl.ni.ao.task.ScansOutputByHardware);
             end     % trial end
 
             

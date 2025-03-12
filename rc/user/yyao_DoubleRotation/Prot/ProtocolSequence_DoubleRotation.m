@@ -235,7 +235,7 @@ classdef ProtocolSequence_DoubleRotation < handle
 
                 pause(0.5);     % wait after reset stages before next trial start
                 
-                fprintf('trial done\n');
+                fprintf('Trial %i done. ScansOutputByHardware %u\n', i, obj.ctl.ni.ao.task.ScansOutputByHardware);
             end     % trial end
 
             if enable_stage
