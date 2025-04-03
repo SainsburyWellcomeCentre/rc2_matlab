@@ -27,7 +27,7 @@ config.nidaq.ai.dev                     = 'Dev1';  % device name
 % config.nidaq.ai.channel_names           = {'stage_central', 'stage_outer', 'photodiode_left', 'photodiode_mid', 'photodiode_right', 'LickDetect_trigger', 'pump',  'lick',  'VisualStim_trigger'};  % nominal channel names (for reference)
 config.nidaq.ai.channel_names           = {'stage_central', 'stage_outer', 'photodiode_left', 'LickDetect_trigger', 'pump',  'lick',  'VisualStim_trigger'};  % nominal channel names (for reference)
 % config.nidaq.ai.channel_id              = [0:7 20]; 
-config.nidaq.ai.channel_id              = [0 1 2 4 5 3 20];
+config.nidaq.ai.channel_id              = [0 1 2 3 4 5 20];
 % config.nidaq.ai.offset                  = [0.004, 0.005, -0.014, -0.008, -0.102, 0.0077, -0.0004, 0, 0];
 config.nidaq.ai.offset                  = [0.004, 0.005, -0.014, 0.0077, -0.0004, 0.0, 0];  % 5.0
 config.nidaq.ai.scale                   = [1, 1, 1, 1, 1, 0.6, 1];  % -1.6
@@ -144,7 +144,12 @@ config.ensemble.default_homeSetup       = 0;                % HomeSetup Paramete
 config.reward.randomize                 = false;
 config.reward.min_time                  = 3;
 config.reward.max_time                  = 7;
-config.reward.duration                  = 500;
+config.reward.duration                  = 150;
+config.reward.habituation               = 150;
+config.reward.splusduration             = 5000;  % 5000 -- 0.25ml/session, 0.0125ml/trial
+config.reward.sminus1duration           = 5000;  % 5000 -- 0.25ml/session, 0.0156ml/trial
+config.reward.sminus2duration           = 6000;  % 6000 -- 0.3ml/session, 0.03ml/trial
+config.reward.interleavingduration      = 10000;  % 10000 -- 0.5ml/session, 0.0357ml/trial
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,4 +1,4 @@
-function [protocolconfig,seq] = Training_Stage2_PassiveRotation(ctl,config,view)
+function [protocolconfig,seq] = Training_Stage2_1_PassiveRotation(ctl,config,view)
     % Protocol type: passive rotation with visual stimuli 10 S+ 10 S- in psudorandom order
     % central stage - enabled. 
     %       S+ trial, high max speed. 
@@ -36,14 +36,16 @@ function [protocolconfig,seq] = Training_Stage2_PassiveRotation(ctl,config,view)
     protocol_id.s_minusR        = 4;
     
     % number of blocks
-    n_blocks = 5;
+    n_blocks = 2;
     
     % number of trials in each block
-    n_s_plusL_trials    = 1;
-    n_s_plusR_trials    = 1;
+    n_s_plusL_trials    = 4;
+    n_s_plusR_trials    = 4;
     n_s_minusL_trials   = 1;
     n_s_minusR_trials   = 1;
     
+    protocolconfig.reward.duration = floor(config.reward.sminus1duration/((n_s_plusL_trials+n_s_plusR_trials)*n_blocks));
+
     trial_order = [ones(n_s_plusL_trials, n_blocks); 2*ones(n_s_plusR_trials, n_blocks); 3*ones(n_s_minusL_trials, n_blocks); 4*ones(n_s_minusR_trials, n_blocks)];
     for i = 1 : n_blocks
         I = randperm(sum([n_s_plusL_trials,n_s_plusR_trials,n_s_minusL_trials,n_s_minusR_trials]));
@@ -51,6 +53,7 @@ function [protocolconfig,seq] = Training_Stage2_PassiveRotation(ctl,config,view)
     end
     trial_order = trial_order(:);
 
+    
     %% velocity array generator
     distance = 90;
     duration = 30;

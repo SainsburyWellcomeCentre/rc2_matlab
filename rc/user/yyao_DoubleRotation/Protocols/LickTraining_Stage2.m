@@ -22,6 +22,7 @@ function [protocolconfig,seq] = LickTraining_Stage2(ctl,config,view)
     protocolconfig.lick_detect.detection_trigger_type   = 1;
     protocolconfig.lick_detect.delay                    = 15;       % delay of LickDetect trigger from TrialStart (in sec)
     protocolconfig.enable_vis_stim = enableVisStim;
+    protocolconfig.reward.duration = config.reward.habituation;
     
     % create the protocol sequence
     seq = RotationHabituation(ctl,config,view);

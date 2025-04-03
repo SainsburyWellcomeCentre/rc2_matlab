@@ -50,7 +50,7 @@ classdef RC2_DoubleRotation_Controller < handle
             obj.ni = NI(config);   
             obj.ensemble = Ensemble_DoubleRotation(config);   % control stage rotation
             obj.pump = Pump(obj.ni, config);   
-            obj.reward = Reward(obj.pump, config);  
+            obj.reward = Reward_DoubleRotation(obj.pump, config);  
             obj.plotting = Plotting_DoubleRotation(config);   
             obj.sound = Sound_DoubleRotation(config);         
             obj.saver = Saver_DoubleRotation(obj, config);    

@@ -339,7 +339,10 @@ classdef RC2_DoubleRotation_GUIController < handle
                 obj.config.lick_detect.delay                    = protocolconfig.lick_detect.delay;
                 
                 % reinitialize the lick detection module....
-                obj.setup.lick_detector = LickDetect_DoubleRotation(obj.setup, obj.config);   
+                obj.setup.lick_detector = LickDetect_DoubleRotation(obj.setup, obj.config); 
+
+                % update reward module
+                obj.setup.reward.duration = protocolconfig.reward.duration; 
 
                 % start the Go/No-go gui... this seems to take a long time and is non-blocking
                 obj.protocol_gui = GoNogo_DoubleRotation_GUIController(obj.experiment_seq);  

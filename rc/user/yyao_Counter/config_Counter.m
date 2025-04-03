@@ -45,7 +45,7 @@ config.nidaq.co.channel_names           = {'camera'};
 config.nidaq.co.channel_id              = 1;  % PFI13
 config.nidaq.co.init_delay              = 0;
 config.nidaq.co.pulse_high              = 60;
-config.nidaq.co.pulse_dur               = 333;  % ms, e.g. 125 = 80Hz 333;%
+config.nidaq.co.pulse_dur               = 250;  % ms, e.g. 125 = 80Hz % 250 = 40 Hz
 config.nidaq.co.clock_src               = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
 
 

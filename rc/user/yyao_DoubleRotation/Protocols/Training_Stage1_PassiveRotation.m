@@ -44,6 +44,8 @@ function [protocolconfig,seq] = Training_Stage1_PassiveRotation(ctl,config,view)
     n_s_plusR_trials    = 2;
     n_s_minusL_trials   = 0;
     n_s_minusR_trials   = 0;
+
+    protocolconfig.reward.duration = floor(config.reward.splusduration/((n_s_plusL_trials+n_s_plusR_trials)*n_blocks));
     
     trial_order = [ones(n_s_plusL_trials, n_blocks); 2*ones(n_s_plusR_trials, n_blocks); 3*ones(n_s_minusL_trials, n_blocks); 4*ones(n_s_minusR_trials, n_blocks)];
     for i = 1 : n_blocks
