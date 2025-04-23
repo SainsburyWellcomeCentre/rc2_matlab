@@ -10,6 +10,7 @@ seq.randomize_reward = true;
 
 mismatch_duration = 0.2;
 
+%disp(order);
 
 for i = 1 : length(order)
 

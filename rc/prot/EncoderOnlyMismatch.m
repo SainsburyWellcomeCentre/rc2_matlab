@@ -164,6 +164,9 @@ classdef EncoderOnlyMismatch < handle
                 % make sure vis stim is off
                 obj.ctl.vis_stim.off();
                 
+                % vis stim gain on as default
+                obj.ctl.vis_stim_gain.on();             %CHECK THIS WITH AE
+                
                 % prevent output of the teensy until just before the trial
                 obj.ctl.disable_teensy.on();
                 

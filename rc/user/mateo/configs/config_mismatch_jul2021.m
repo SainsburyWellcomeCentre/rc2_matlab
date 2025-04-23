@@ -6,7 +6,8 @@ VariableDefault('use_calibration', true);
 
 % whether to use calibration file and its location
 config.use_calibration_file             = use_calibration;
-config.calibration_file                 = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\rc\main\calibration\calibration_20201029.mat';
+%config.calibration_file                 = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\rc\main\calibration\calibration_20201029.mat';
+config.calibration_file                 = 'C:\Users\Mateo\Documents\repos\rc2_matlab\rc\user\mateo\calibration\calibration_20201029.mat';
 
 
 %%%%%%%%%%%%
@@ -145,7 +146,8 @@ config.nidaq.di.channel_id      = {'port1/line0'};
 %%%%%%%%%%%%%%%%%%%%%%
 
 config.teensy.exe               = 'C:\Program Files (x86)\Arduino\arduino_debug.exe';
-config.teensy.dir               = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\teensy_ino';
+% config.teensy.dir               = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\teensy_ino';
+config.teensy.dir               = 'C:\Users\Mateo\Documents\repos\rc2_matlab\teensy_ino';
 config.teensy.start_script      = 'forward_only';
 
 
@@ -153,7 +155,8 @@ config.teensy.start_script      = 'forward_only';
 % SOLOIST parameters %
 %%%%%%%%%%%%%%%%%%%%%%
 
-config.soloist.dir              = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\soloist_c\exe';
+% config.soloist.dir              = 'C:\Users\Mateo\Documents\rc_version2_0\rc2_matlab\soloist_c\exe';
+config.soloist.dir              = 'C:\Users\Mateo\Documents\repos\rc2_matlab\soloist_c\exe';
 config.soloist.default_speed    = 200;
 config.soloist.v_per_cm_per_s   = 25/100;
 if config.use_calibration_file
@@ -213,6 +216,10 @@ config.start_soloist.do_name            = 'soloist';
 % name of digital output channel to use
 config.visual_stimulus.do_name          = 'visual_stimulus';
 config.visual_stimulus.init_state       = 1;
+
+% name of digital output channel to use
+config.vis_stim_gain.do_name            = 'vis_stim_gain';
+config.vis_stim_gain.init_state         = 1;
 
 % name of digital input channel to use
 config.trigger_input.init_source        = 'from_soloist'; % 'from_soloist' or 'from_teensy'

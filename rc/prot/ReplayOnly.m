@@ -162,6 +162,9 @@ classdef ReplayOnly < handle
                 % switch vis stim off
                 obj.ctl.vis_stim.off();
                 
+                % vis stim gain on as default
+                obj.ctl.vis_stim_gain.on();             %CHECK THIS WITH AE
+                
                 % get and save config for this protocol
                 cfg = obj.get_config();
                 obj.ctl.save_single_trial_config(cfg);

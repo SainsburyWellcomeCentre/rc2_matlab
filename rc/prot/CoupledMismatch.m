@@ -146,6 +146,9 @@ classdef CoupledMismatch < handle
                 % make sure vis stim is off
                 obj.ctl.vis_stim.off();
                 
+                % vis stim gain on as default
+                obj.ctl.vis_stim_gain.on();             %CHECK THIS WITH AE
+                
                 % load teensy
                 obj.ctl.teensy.load(obj.direction);
                 

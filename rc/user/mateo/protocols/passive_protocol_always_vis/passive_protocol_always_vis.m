@@ -2,11 +2,11 @@ function seq = passive_protocol_always_vis(ctl)
 
 load('passive_protocol_sequence.mat', 'trial_order', 'protocol_id', 'fnames');
 % "trial_order" is a 3xN matrix of protocol indices. Each column is a batch
-% of trials specifying a particular order (1-4 in some order that makes sense).
+% of trials specifying a particular order (1-3 in some order that makes sense).
 % "protocol_id" is a structure which relates the numbers in "trial_order"
 % to the protocol by name:
 %       vest_with_flow
-%       vest_darkness
+%       vest_darkness (in fact, Tvs)
 %       visual_flow
 
 
@@ -40,7 +40,7 @@ for i = 1 : length(trial_order)
         vest.initiate_trial = false;
         
         % increase start dwell time slightly
-        vest.start_dwell_time = 6;
+        vest.start_dwell_time = 4;
         
         vest.wave_fname = fnames{i};
         
@@ -60,7 +60,7 @@ for i = 1 : length(trial_order)
         vest.initiate_trial = false;
         
         % increase start dwell time slightly
-        vest.start_dwell_time = 6;
+        vest.start_dwell_time = 4;
         
         vest.wave_fname = fnames{i};
         
@@ -80,7 +80,7 @@ for i = 1 : length(trial_order)
         replay.initiate_trial = false;
         
         % increase start dwell time slightly
-        replay.start_dwell_time = 6;
+        replay.start_dwell_time = 4;
         
         replay.wave_fname = fnames{i};
         
