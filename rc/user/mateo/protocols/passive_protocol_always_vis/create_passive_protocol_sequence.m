@@ -2,7 +2,7 @@ function [trial_order, fnames, protocol_id] = create_passive_protocol_sequence()
 % Create trial sequence for the "passive" mice. This consists of:
 %
 %   1. vestibular motion with visual flow 
-%   2. vestibular motion in darkness
+%   2. vestibular motion in darkness (or with visual static Tvs)
 %   3. visual flow (no vestibular motion)
 %
 %   All motion comes from saved velocity profiles
@@ -22,7 +22,7 @@ function [trial_order, fnames, protocol_id] = create_passive_protocol_sequence()
 rng(1)
 
 % data location
-data_dir = fullfile(pwd, 'passive_waveforms');
+data_dir = fullfile(pwd, 'passive_waveforms_250423');
 
 track_fnames = dir(fullfile(data_dir, '*.bin'));
 track_fnames = {track_fnames(:).name};
@@ -55,3 +55,5 @@ fnames = track_fnames(file_id(:))';
 
 % create full path to file
 fnames = cellfun(@(x)(fullfile(data_dir, x)), fnames, 'uniformoutput', false);
+
+save('passive_protocol_sequence.mat', 'fnames', 'protocol_id', 'trial_order');
