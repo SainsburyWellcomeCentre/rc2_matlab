@@ -1,55 +1,78 @@
 function [trial_order, fnames, protocol_id] = create_passive_protocol_sequence_motion_clouds()
+% Create trial sequence for the "passive" mice. This consists of:
+%
+%   1. vestibular motion with visual flow 
+%   2. vestibular motion in darkness (or with visual static Tvs)
+%   3. visual flow (no vestibular motion)
+%
+%   All motion comes from saved velocity profiles
+%
+%   The sequence occurs in batches (i.e. each type of trial is played once,
+%   before the next batch)
+%   Within each batch the trials are randomized.
+%   
+%   Files are randomized across *all* trials.
+%
+%   trial_order - sequence of trials
+%   protocol_id - structure containing ID of each trial type
 
-% Parameters
-num_motion_clouds = 37;  % <--- Set this manually
-rng(1);  % For reproducibility
+% restart random number generator
+rng(1)
 
-% Directory containing speed profile .bin files
+% number of trials in each protocol
+n_trials = 37; % number of motion clouds
+
+% data location
 data_dir = fullfile(pwd, 'passive_waveforms_motion_clouds');
+
 track_fnames = dir(fullfile(data_dir, '*.bin'));
 track_fnames = {track_fnames(:).name};
+num_speed_profiles = length(track_fnames);  % Number of speed profiles
 
-if length(track_fnames) ~= 2
-    error('Expected exactly 2 speed profile .bin files.');
+% list of protocols
+protocol_id.vest_with_flow      = 1;
+protocol_id.visual_flow         = 2;
+protocol_id.vest_darkness       = 3;
+
+trial_order = [ones(1, n_trials); 2*ones(1, n_trials); 3*ones(1, n_trials)];
+
+for i = 1 : n_trials
+    I = randperm(3);
+    trial_order(:, i) = trial_order(I, i);
 end
 
-% Protocol IDs (unchanged)
-protocol_id.vest_with_flow = 1;
-protocol_id.visual_flow = 2;
-protocol_id.vest_darkness = 3;
-protocol_ids = [protocol_id.vest_with_flow, protocol_id.visual_flow, protocol_id.vest_darkness];
+% Step 2: Create the fnames matrix (size: num_speed_profiles x n_trials)
+fnames_matrix = cell(num_speed_profiles, n_trials);
 
-% Initialize
-trial_order_half = [];
-speed_profile_half = [];
-
-% Randomly assign speed profiles A or B to each motion cloud
-rand_assignment = randi([1, 2], 1, num_motion_clouds);  % 1 = A, 2 = B
-
-for i = 1:num_motion_clouds
-    % Randomize protocol order
-    randomized_protocols = protocol_ids(randperm(3));
-    
-    % Save triplet for this cloud
-    trial_order_half = [trial_order_half, randomized_protocols];
-    
-    % Repeat assigned speed profile 3 times (once per protocol)
-    speed_profile_half = [speed_profile_half, repmat(rand_assignment(i), 1, 3)];
+% Randomly shuffle the filenames for each row (instead of each column)
+for i = 1 : n_trials
+    fnames_matrix(:, i) = track_fnames(randperm(num_speed_profiles));
 end
 
-% Mirror speed profile assignment: flip speed profiles
-speed_profile_half_mirror = 3 - speed_profile_half;  % if 1->2, 2->1
+% Initialize an empty array to hold the reorganized filenames
+reorganized_fnames = {};
 
-% Full sequence
-trial_order = [trial_order_half, trial_order_half]';
-speed_profile_sequence = [speed_profile_half, speed_profile_half_mirror]';
+% Number of protocol IDs (3)
+num_protocols = numel(fieldnames(protocol_id));
 
-% Map to filenames
-fnames = track_fnames(speed_profile_sequence);
-fnames = cellfun(@(x)(fullfile(data_dir, x)), fnames, 'UniformOutput', false);
-fnames = fnames(:);  % column format
+% Loop through each row (speed profile)
+for row = 1 : num_speed_profiles
+    % Loop through each column (trial)
+    for col = 1 : n_trials
+        % Repeat the filename in fname_matrix(row, col) for 3 times
+        reorganized_fnames = [reorganized_fnames; repmat(fnames_matrix(row, col), num_protocols, 1)];
+    end
+end
 
-% Save
+% Convert the reorganized_fnames into a cell array if it's not already
+reorganized_fnames = reorganized_fnames(:); % ensures it's a column vector
+
+trial_order = trial_order(:);
+
+% Repeat the trial_order sequence for each speed profile
+trial_order = repmat(trial_order, num_speed_profiles, 1);
+
+% create full path to file
+fnames = cellfun(@(x)(fullfile(data_dir, x)), reorganized_fnames, 'uniformoutput', false);
+
 save('passive_protocol_sequence_motion_clouds.mat', 'fnames', 'protocol_id', 'trial_order');
-
-end
