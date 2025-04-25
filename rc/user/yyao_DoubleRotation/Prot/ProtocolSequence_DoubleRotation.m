@@ -9,6 +9,7 @@ classdef ProtocolSequence_DoubleRotation < handle
         current_sequence
         
         stimulus_type_list = {}
+        stimulus_typeid_list = []
         is_correct = []
         h_listener_reward
         h_listener_ao
@@ -137,6 +138,7 @@ classdef ProtocolSequence_DoubleRotation < handle
                 
                 % store stimulus type
                 obj.stimulus_type_list{obj.current_trial} = obj.sequence{i}.trial.stimulus_type;   % save trial type of current trial to sequence
+                obj.stimulus_typeid_list(obj.current_trial) = obj.sequence{i}.trial.stimulus_typeid;  
                 
                 fprintf('Trial %i: preperation done\n',i);
                 
@@ -331,6 +333,7 @@ classdef ProtocolSequence_DoubleRotation < handle
             protocol_name = obj.ctl.saver.index;
             n_trials = length(obj.stimulus_type_list);
             stimulus_type = obj.stimulus_type_list;
+            stimulus_typeid = obj.stimulus_typeid_list;
             response = obj.is_correct;
             n_rewards_given = obj.n_rewards_given;
             n_correct_s_plus_trials = obj.n_correct_s_plus_trials;
@@ -342,6 +345,7 @@ classdef ProtocolSequence_DoubleRotation < handle
             vars_to_save = {'protocol_name'
                 'n_trials'
                 'stimulus_type'
+                'stimulus_typeid'
                 'response'
                 'n_rewards_given'
                 'n_correct_s_plus_trials'

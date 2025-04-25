@@ -85,6 +85,7 @@ function [protocolconfig,seq] = einterleaving_PassiveRotationInDarkness(ctl,conf
         if trial_order(i) == protocol_id.s_plusL80
             
             trial.trial.stimulus_type = 's_plusL80';
+            trial.trial.stimulus_typeid = 1;
             trial.trial.enable_reward = true;
             
             trial.stage.enable_motion = enableRotation;
@@ -111,6 +112,7 @@ function [protocolconfig,seq] = einterleaving_PassiveRotationInDarkness(ctl,conf
         elseif trial_order(i) == protocol_id.s_plusR80
             
             trial.trial.stimulus_type = 's_plusR80';
+            trial.trial.stimulus_typeid = 2;
             trial.trial.enable_reward = true;
             
             trial.stage.enable_motion = enableRotation;
@@ -137,6 +139,7 @@ function [protocolconfig,seq] = einterleaving_PassiveRotationInDarkness(ctl,conf
          elseif trial_order(i) == protocol_id.s_plusL70
             
             trial.trial.stimulus_type = 's_plusL70';
+            trial.trial.stimulus_typeid = 3;
             trial.trial.enable_reward = true;
             
             trial.stage.enable_motion = enableRotation;
@@ -163,6 +166,7 @@ function [protocolconfig,seq] = einterleaving_PassiveRotationInDarkness(ctl,conf
         elseif trial_order(i) == protocol_id.s_plusR70
             
             trial.trial.stimulus_type = 's_plusR70';
+            trial.trial.stimulus_typeid = 4;
             trial.trial.enable_reward = true;
             
             trial.stage.enable_motion = enableRotation;
@@ -189,6 +193,7 @@ function [protocolconfig,seq] = einterleaving_PassiveRotationInDarkness(ctl,conf
         elseif trial_order(i) == protocol_id.s_plusL60
             
             trial.trial.stimulus_type = 's_plusL60';
+            trial.trial.stimulus_typeid = 5;
             trial.trial.enable_reward = true;
             
             trial.stage.enable_motion = enableRotation;
@@ -215,6 +220,7 @@ function [protocolconfig,seq] = einterleaving_PassiveRotationInDarkness(ctl,conf
         elseif trial_order(i) == protocol_id.s_plusR60
             
             trial.trial.stimulus_type = 's_plusR60';
+            trial.trial.stimulus_typeid = 6;
             trial.trial.enable_reward = true;
             
             trial.stage.enable_motion = enableRotation;
@@ -241,6 +247,7 @@ function [protocolconfig,seq] = einterleaving_PassiveRotationInDarkness(ctl,conf
         elseif trial_order(i) == protocol_id.s_plusL50
             
             trial.trial.stimulus_type = 's_plusL50';
+            trial.trial.stimulus_typeid = 7;
             trial.trial.enable_reward = true;
             
             trial.stage.enable_motion = enableRotation;
@@ -267,6 +274,7 @@ function [protocolconfig,seq] = einterleaving_PassiveRotationInDarkness(ctl,conf
         elseif trial_order(i) == protocol_id.s_plusR50
             
             trial.trial.stimulus_type = 's_plusR50';
+            trial.trial.stimulus_typeid = 8;
             trial.trial.enable_reward = true;
             
             trial.stage.enable_motion = enableRotation;
@@ -293,6 +301,7 @@ function [protocolconfig,seq] = einterleaving_PassiveRotationInDarkness(ctl,conf
         elseif trial_order(i) == protocol_id.s_plusL40
             
             trial.trial.stimulus_type = 's_plusL40';
+            trial.trial.stimulus_typeid = 9;
             trial.trial.enable_reward = true;
             
             trial.stage.enable_motion = enableRotation;
@@ -319,6 +328,7 @@ function [protocolconfig,seq] = einterleaving_PassiveRotationInDarkness(ctl,conf
         elseif trial_order(i) == protocol_id.s_plusR40
             
             trial.trial.stimulus_type = 's_plusR40';
+            trial.trial.stimulus_typeid = 10;
             trial.trial.enable_reward = true;
             
             trial.stage.enable_motion = enableRotation;
@@ -345,6 +355,7 @@ function [protocolconfig,seq] = einterleaving_PassiveRotationInDarkness(ctl,conf
         elseif trial_order(i) == protocol_id.s_plusL30
             
             trial.trial.stimulus_type = 's_plusL30';
+            trial.trial.stimulus_typeid = 11;
             trial.trial.enable_reward = true;
             
             trial.stage.enable_motion = enableRotation;
@@ -371,6 +382,7 @@ function [protocolconfig,seq] = einterleaving_PassiveRotationInDarkness(ctl,conf
         elseif trial_order(i) == protocol_id.s_plusR30
             
             trial.trial.stimulus_type = 's_plusR30';
+            trial.trial.stimulus_typeid = 12;
             trial.trial.enable_reward = true;
             
             trial.stage.enable_motion = enableRotation;
@@ -397,6 +409,7 @@ function [protocolconfig,seq] = einterleaving_PassiveRotationInDarkness(ctl,conf
         elseif trial_order(i) == protocol_id.s_plusL20
             
             trial.trial.stimulus_type = 's_plusL20';
+            trial.trial.stimulus_typeid = 13;
             trial.trial.enable_reward = true;
             
             trial.stage.enable_motion = enableRotation;
@@ -423,6 +436,7 @@ function [protocolconfig,seq] = einterleaving_PassiveRotationInDarkness(ctl,conf
         elseif trial_order(i) == protocol_id.s_plusR20
             
             trial.trial.stimulus_type = 's_plusR20';
+            trial.trial.stimulus_typeid = 14;
             trial.trial.enable_reward = true;
             
             trial.stage.enable_motion = enableRotation;
@@ -449,6 +463,7 @@ function [protocolconfig,seq] = einterleaving_PassiveRotationInDarkness(ctl,conf
         elseif trial_order(i) == protocol_id.s_minusL
 
             trial.trial.stimulus_type = 's_minusL';
+            trial.trial.stimulus_typeid = 15;
             trial.trial.enable_reward = false;
             
             trial.stage.enable_motion = enableRotation;
@@ -475,6 +490,7 @@ function [protocolconfig,seq] = einterleaving_PassiveRotationInDarkness(ctl,conf
         elseif trial_order(i) == protocol_id.s_minusR
 
             trial.trial.stimulus_type = 's_minusR';
+            trial.trial.stimulus_typeid = 16;
             trial.trial.enable_reward = false;
             
             trial.stage.enable_motion = enableRotation;

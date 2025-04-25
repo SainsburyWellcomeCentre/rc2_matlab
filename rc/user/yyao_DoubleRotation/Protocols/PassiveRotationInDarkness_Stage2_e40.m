@@ -66,6 +66,7 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Stage2_e40(ctl,config,
         if trial_order(i) == protocol_id.s_plusL
             
             trial.trial.stimulus_type = 's_plusL';
+            trial.trial.stimulus_typeid = 1;
             trial.trial.enable_reward = true;
             
             trial.stage.enable_motion = enableRotation;
@@ -92,6 +93,7 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Stage2_e40(ctl,config,
         elseif trial_order(i) == protocol_id.s_plusR
             
             trial.trial.stimulus_type = 's_plusR';
+            trial.trial.stimulus_typeid = 2;
             trial.trial.enable_reward = true;
             
             trial.stage.enable_motion = enableRotation;
@@ -118,6 +120,7 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Stage2_e40(ctl,config,
         elseif trial_order(i) == protocol_id.s_minusL
 
             trial.trial.stimulus_type = 's_minusL';
+            trial.trial.stimulus_typeid = 3;
             trial.trial.enable_reward = false;
             
             trial.stage.enable_motion = enableRotation;
@@ -144,6 +147,7 @@ function [protocolconfig,seq] = PassiveRotationInDarkness_Stage2_e40(ctl,config,
         elseif trial_order(i) == protocol_id.s_minusR
 
             trial.trial.stimulus_type = 's_minusR';
+            trial.trial.stimulus_typeid = 4;
             trial.trial.enable_reward = false;
             
             trial.stage.enable_motion = enableRotation;
