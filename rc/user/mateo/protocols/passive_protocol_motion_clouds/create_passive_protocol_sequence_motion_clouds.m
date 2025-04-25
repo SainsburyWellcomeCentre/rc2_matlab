@@ -15,6 +15,7 @@ function [trial_order, fnames, protocol_id] = create_passive_protocol_sequence_m
 %
 %   trial_order - sequence of trials
 %   protocol_id - structure containing ID of each trial type
+%   fname - sequence of speed profiles 
 
 % restart random number generator
 rng(1)
@@ -41,10 +42,10 @@ for i = 1 : n_trials
     trial_order(:, i) = trial_order(I, i);
 end
 
-% Step 2: Create the fnames matrix (size: num_speed_profiles x n_trials)
+% Create the fnames matrix
 fnames_matrix = cell(num_speed_profiles, n_trials);
 
-% Randomly shuffle the filenames for each row (instead of each column)
+% Randomly shuffle the filenames for each row 
 for i = 1 : n_trials
     fnames_matrix(:, i) = track_fnames(randperm(num_speed_profiles));
 end
@@ -52,14 +53,14 @@ end
 % Initialize an empty array to hold the reorganized filenames
 reorganized_fnames = {};
 
-% Number of protocol IDs (3)
+% Number of protocol IDs
 num_protocols = numel(fieldnames(protocol_id));
 
 % Loop through each row (speed profile)
 for row = 1 : num_speed_profiles
     % Loop through each column (trial)
     for col = 1 : n_trials
-        % Repeat the filename in fname_matrix(row, col) for 3 times
+        % Repeat the filename in fname_matrix(row, col) for number of protocols
         reorganized_fnames = [reorganized_fnames; repmat(fnames_matrix(row, col), num_protocols, 1)];
     end
 end
@@ -67,9 +68,8 @@ end
 % Convert the reorganized_fnames into a cell array if it's not already
 reorganized_fnames = reorganized_fnames(:); % ensures it's a column vector
 
+% Flatten trial_order and repeat sequence for each speed profile
 trial_order = trial_order(:);
-
-% Repeat the trial_order sequence for each speed profile
 trial_order = repmat(trial_order, num_speed_profiles, 1);
 
 % create full path to file
