@@ -18,7 +18,7 @@ function [trial_order, fnames, protocol_id] = create_passive_protocol_sequence_m
 %   fname - sequence of speed profiles 
 
 % restart random number generator
-rng(1)
+rng(1);
 
 % number of trials in each protocol
 n_trials = 37; % number of motion clouds
