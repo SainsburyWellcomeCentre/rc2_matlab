@@ -18,3 +18,7 @@ docs/doxygen/latex/
 docs/doxygen/xml/
 
 *.exe
+
+!/rc/user/mateo/protocols/passive_protocol_motion_clouds/passive_waveforms_motion_clouds/
+!/rc/user/mateo/protocols/passive_protocol_motion_clouds/passive_waveforms_motion_clouds/*.bin
+
