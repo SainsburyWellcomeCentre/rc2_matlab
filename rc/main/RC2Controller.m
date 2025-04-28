@@ -500,7 +500,8 @@ classdef RC2Controller < handle
                     'nidaq.ao.rate',            sprintf('%.1f', obj.ni.ao.task.Rate);
                     'nidaq.ao.channel_names',   strjoin(obj.ni.ao.channel_names, ',');
                     'nidaq.ao.channel_ids',     strjoin(obj.ni.ao.channel_ids, ',');
-                    'nidaq.ao.idle_offset',     sprintf('%.10f', obj.ni.ao.idle_offset);
+                    'nidaq.ao.idle_offset', strjoin(arrayfun(@(x) sprintf('%.10f', x), ...
+                                                obj.ni.ao.idle_offset, 'UniformOutput', false), ',');
                     
                     'nidaq.co.channel_names',   strjoin(obj.ni.co.channel_names, ',');
                     'nidaq.co.channel_ids',     strjoin(obj.ni.co.channel_ids, ',');
