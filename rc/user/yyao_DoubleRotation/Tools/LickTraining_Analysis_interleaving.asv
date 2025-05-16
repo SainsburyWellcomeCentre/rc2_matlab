@@ -5,7 +5,7 @@ if exist('analysis')
 end
 clear analysis
 
-analysis.bin_fname = 'C:\Users\Margrie_Lab1\Documents\raw_data\CAA-1122975\CAA-1122975_e37_einterleaving5pb_PassiveRotationWithVisual.bin';
+analysis.bin_fname = 'C:\Users\Margrie_Lab1\Documents\raw_data\CAA-1122976\CAA-1122976_e44_einterleaving5pb_PassiveRotationInDarkness.bin';
 
 [analysis.timebase,analysis.signal,analysis.online_data] = LickingData_Reading(analysis.bin_fname);
 analysis.sampling_rate = 10000;
@@ -99,12 +99,11 @@ try
         analysis.latencytable.stimulus_type{i,1} = analysis.online_data.stimulus_type{analysis.temp.typeididx(i)};
         analysis.latencytable.latency(i,1) = analysis.trial.latency(analysis.temp.typeididx(i));
     end
-    splus_type = analysis.latencytable.stimulus_type(1:analysis.output.n_trials/2);
-    sminus_type = analysis.latencytable.stimulus_type(analysis.output.n_trials/2+1:end);
-    latency_splus = analysis.latencytable.latency(1:analysis.output.n_trials/2);
-    latency_sminus = analysis.latencytable.latency(analysis.output.n_trials/2+1:end);
-    analysis.output.latencytable = table(splus_type,latency_splus,sminus_type,latency_sminus);
-    clear splus_type sminus_type latency_splus latency_sminus
+    s_plus_type = analysis.latencytable.stimulus_type(1:analysis.output.n_trials/2);
+    s_minus_type = analysis.latencytable.stimulus_type(analysis.output.n_trials/2+1:end);
+    latency = analysis.latencytable.latency;
+    analysis.output.latencytable = table(s_plus_type,latency(1:analysis.output.n_trials/2),);
+    clear stimulus_type latency
 catch
 %     %{
     if isfield(analysis.online_data,'response') & isfield(analysis.online_data,'stimulus_type')
