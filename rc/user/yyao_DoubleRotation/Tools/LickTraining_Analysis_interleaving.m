@@ -5,7 +5,7 @@ if exist('analysis')
 end
 clear analysis
 
-analysis.bin_fname = 'C:\Users\Margrie_Lab1\Documents\raw_data\CAA-1122975\CAA-1122975_e37_einterleaving5pb_PassiveRotationWithVisual.bin';
+analysis.bin_fname = 'C:\Users\Margrie_Lab1\Documents\raw_data\CAA-1122749\CAA-1122749_e62_einterleaving5pb_VisualOnly.bin';
 
 [analysis.timebase,analysis.signal,analysis.online_data] = LickingData_Reading(analysis.bin_fname);
 analysis.sampling_rate = 10000;
