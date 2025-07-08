@@ -25,12 +25,12 @@ config.nidaq.log_every                  = 1000;  % log data every number of samp
 config.nidaq.ai.enable                  = true;
 config.nidaq.ai.dev                     = 'Dev1';  % device name
 % config.nidaq.ai.channel_names           = {'stage_central', 'stage_outer', 'photodiode_left', 'photodiode_mid', 'photodiode_right', 'LickDetect_trigger', 'pump',  'lick',  'VisualStim_trigger'};  % nominal channel names (for reference)
-config.nidaq.ai.channel_names           = {'stage_central', 'stage_outer', 'photodiode_left', 'LickDetect_trigger', 'pump',  'lick',  'VisualStim_trigger'};  % nominal channel names (for reference)
+config.nidaq.ai.channel_names           = {'stage_central', 'stage_outer', 'photodiode_left', 'LickDetect_trigger', 'pump',  'lick',  'VisualStim_trigger', 'latency_trigger'};  % nominal channel names (for reference)
 % config.nidaq.ai.channel_id              = [0:7 20]; 
-config.nidaq.ai.channel_id              = [0 1 2 3 4 5 20];
+config.nidaq.ai.channel_id              = [0 1 2 3 4 5 20 21];
 % config.nidaq.ai.offset                  = [0.004, 0.005, -0.014, -0.008, -0.102, 0.0077, -0.0004, 0, 0];
-config.nidaq.ai.offset                  = [0.004, 0.005, -0.014, 0.0077, -0.0004, 0.0, 0];  % 5.0
-config.nidaq.ai.scale                   = [1, 1, 1, 1, 1, 0.6, 1];  % -1.6
+config.nidaq.ai.offset                  = [0.004, 0.005, -0.014, 0.0077, -0.0004, 0.0, 0, 0];  % 5.0
+config.nidaq.ai.scale                   = [1, 1, 1, 1, 1, 0.6, 1, 1];  % -1.6
 
 config.offsets.enable                   = false;
 config.offsets.error_mtx                = [];
@@ -67,8 +67,8 @@ config.nidaq.co.clock_src               = sprintf('/%s/ai/SampleClock', config.n
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 config.nidaq.do.enable                  = true;
 config.nidaq.do.dev                     = 'Dev1';
-config.nidaq.do.channel_names           = {'pump', 'visual_stimulus_start_trigger', 'waveform_peak_trigger'};
-config.nidaq.do.channel_id              = {'port0/line0', 'port0/line1', 'port0/line2'};
+config.nidaq.do.channel_names           = {'pump', 'visual_stimulus_start_trigger', 'waveform_peak_trigger', 'visual_stimulus_latency_trigger'};
+config.nidaq.do.channel_id              = {'port0/line0', 'port0/line1', 'port0/line2', 'port0/line3'};
 config.nidaq.do.clock_src               = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
 
 
@@ -93,6 +93,10 @@ config.pump.init_state                  = 0; % initial state of the pump (0=off,
 config.visual_stimulus.enable           = true;
 config.visual_stimulus.do_name          = 'visual_stimulus_start_trigger'; % name of digital output channel to use
 config.visual_stimulus.init_state       = 0;
+
+config.visual_stimulus_latency.enable       = true;
+config.visual_stimulus_latency.do_name      = 'visual_stimulus_latency_trigger'; % name of digital output channel to use
+config.visual_stimulus_latency.init_state   = 0;
 
 config.trailstart_trigger.enable        = true;
 config.trailstart_trigger.do_name       = 'trail_start_trigger'; % name of digital output channel to use

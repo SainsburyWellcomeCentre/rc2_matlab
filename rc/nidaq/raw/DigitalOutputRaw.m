@@ -3,6 +3,7 @@ classdef DigitalOutputRaw < handle
 
     properties
         enabled % Boolean specifying whether the module is used.
+        is_running = false; % Whether the DO task is running.
     end
     
     properties (SetAccess = private)
@@ -14,7 +15,7 @@ classdef DigitalOutputRaw < handle
         channel_ids {} % IDs of the DO channels.
         state % # channels x 1 vector indicating the state of each digital output.
         clock_src % The terminal determining the timebase.
-        is_running = false; % Whether the DO task is running.
+        
     end
     
     

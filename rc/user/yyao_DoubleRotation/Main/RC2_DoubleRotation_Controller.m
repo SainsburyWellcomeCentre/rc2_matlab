@@ -16,6 +16,7 @@ classdef RC2_DoubleRotation_Controller < handle
         lick_detector
 
         vis_stim
+        vis_stim_latency
 %         trial_start
         waveform_peak
 
@@ -60,6 +61,7 @@ classdef RC2_DoubleRotation_Controller < handle
             
             % Triggers
             obj.vis_stim = VisStim_DoubleRotation(obj.ni, config);
+            obj.vis_stim_latency = VisStimLatency_DoubleRotation(obj.ni, config);
 %             obj.trial_start = TrialStart_DoubleRotation(obj.ni, config);
             obj.waveform_peak = WaveformPeak_DoubleRotation(obj.ni, config);
             

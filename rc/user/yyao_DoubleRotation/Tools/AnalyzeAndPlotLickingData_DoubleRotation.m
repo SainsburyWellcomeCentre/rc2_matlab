@@ -24,6 +24,7 @@ LickDetect_trigger_chan_idx           = strcmp(channel_names, 'LickDetect_trigge
 lick_chan_idx               = strcmp(channel_names, 'lick');                               
 pump_chan_idx               = strcmp(channel_names, 'pump');  
 visstim_chan_idx               = strcmp(channel_names, 'VisualStim_trigger');
+latency_chan_idx               = strcmp(channel_names, 'latency_trigger');
 photodiodeL_idx             = strcmp(channel_names, 'photodiode_left'); 
 photodiodemid_idx           = strcmp(channel_names, 'photodiode_mid');
 photodiodeR_idx             = strcmp(channel_names, 'photodiode_right');  
@@ -41,6 +42,7 @@ photodiodeR_signal          = data(:, photodiodeR_idx);
 lick_signal                 = data(:, lick_chan_idx);
 pump_signal                 = data(:, pump_chan_idx);
 visstim_signal              = data(:, visstim_chan_idx);
+latency_signal              = data(:, latency_chan_idx);
 % photodiode_signal           = data(:, photodiode_idx);
 
 figure()
@@ -56,13 +58,15 @@ plot(timebase, lick_signal);
 hold on;
 plot(timebase, visstim_signal);
 hold on;
+plot(timebase, latency_signal);
+hold on;
 plot(timebase, photodiodeL_signal);
-hold on;
-plot(timebase, photodiodeMid_signal);
-hold on;
-plot(timebase, photodiodeR_signal);
+% hold on;
+% plot(timebase, photodiodeMid_signal);
+% hold on;
+% plot(timebase, photodiodeR_signal);
 hold off;
-legend('Central stage speed (deg/sec)','Outer stage speed (deg/sec)','LickDetect trigger','Pump','Lick','VisStim','Photodiode Left','Photodiode Mid','Photodiode Right');
+legend('Central stage speed (deg/sec)','Outer stage speed (deg/sec)','LickDetect trigger','Pump','Lick','VisStim','Latency','Photodiode Left');
 
 % look for stimulus on
 vis_stim_onset_flag         = diff(LickDetect_trigger_signal > vis_stim_threshold) == 1;
