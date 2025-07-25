@@ -366,8 +366,9 @@ classdef VisualContrast < handle
             
             save(fname, vars_to_save{:});  % save variables to .mat file
             
+            task = obj.config.task;
             try    
-                AnalyzeAndPlotLickingData_DoubleRotation(bin_fname);   % 
+                AnalyzeAndPlotLickingData_DoubleRotation(bin_fname,task);   % 
 %                 AnalyzeAndPlotRotationData_DoubleRotation(bin_fname);
             catch
             end

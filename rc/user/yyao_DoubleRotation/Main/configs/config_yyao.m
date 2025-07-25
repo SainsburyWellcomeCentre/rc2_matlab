@@ -1,5 +1,7 @@
 function config = config_yyao()
 
+task.contrast = true;
+config.task.contrast = task.contrast;
 %%%%%%%%%%%%
 % SAVING %%%
 %%%%%%%%%%%%
@@ -25,13 +27,19 @@ config.nidaq.log_every                  = 1000;  % log data every number of samp
 config.nidaq.ai.enable                  = true;
 config.nidaq.ai.dev                     = 'Dev1';  % device name
 % config.nidaq.ai.channel_names           = {'stage_central', 'stage_outer', 'photodiode_left', 'photodiode_mid', 'photodiode_right', 'LickDetect_trigger', 'pump',  'lick',  'VisualStim_trigger'};  % nominal channel names (for reference)
-config.nidaq.ai.channel_names           = {'stage_central', 'stage_outer', 'photodiode_left', 'LickDetect_trigger', 'pump',  'lick',  'VisualStim_trigger', 'latency_trigger'};  % nominal channel names (for reference)
 % config.nidaq.ai.channel_id              = [0:7 20]; 
-config.nidaq.ai.channel_id              = [0 1 2 3 4 5 20 21];
 % config.nidaq.ai.offset                  = [0.004, 0.005, -0.014, -0.008, -0.102, 0.0077, -0.0004, 0, 0];
-config.nidaq.ai.offset                  = [0.004, 0.005, -0.014, 0.0077, -0.0004, 0.0, 0, 0];  % 5.0
-config.nidaq.ai.scale                   = [1, 1, 1, 1, 1, 0.6, 1, 1];  % -1.6
+config.nidaq.ai.channel_names           = {'stage_central', 'stage_outer', 'photodiode_left', 'LickDetect_trigger', 'pump',  'lick',  'VisualStim_trigger'};  % nominal channel names (for reference)
+config.nidaq.ai.channel_id              = [0 1 2 3 4 5 20];
+config.nidaq.ai.offset                  = [0.004, 0.005, -0.014, 0.0077, -0.0004, 0.0, 0];  % 5.0
+config.nidaq.ai.scale                   = [1, 1, 2, 1, 1, 0.6, 1];  % -1.6
 
+if task.contrast
+config.nidaq.ai.channel_names           = {'LickDetect_trigger', 'pump',  'lick',  'VisualStim_trigger', 'latency_trigger','photodiode_left', 'photodiode_right'};  % nominal channel names (for reference)
+config.nidaq.ai.channel_id              = [3 4 5 20 21 2 22];
+config.nidaq.ai.offset                  = [0.0077, -0.0004, 0.0, 0, 0, -0.014, 0];  % 5.0
+config.nidaq.ai.scale                   = [1, 1, 0.6, 1, 1, 2, 2];  % -1.6
+end
 config.offsets.enable                   = false;
 config.offsets.error_mtx                = [];
 
@@ -153,6 +161,7 @@ config.reward.habituation               = 150;
 config.reward.splusduration             = 5000;  % 5000 -- 0.25ml/session, 0.0125ml/trial
 config.reward.sminus1duration           = 5000;  % 5000 -- 0.25ml/session, 0.0156ml/trial
 config.reward.sminus2duration           = 6000;  % 6000 -- 0.3ml/session, 0.03ml/trial
+config.reward.sminus3duration           = 8000;
 config.reward.interleavingduration      = 10000;  % 10000 -- 0.5ml/session, 0.0357ml/trial
 
 
@@ -184,9 +193,9 @@ config.sound.filename                   = 'C:\Users\Margrie_Lab1\Documents\MATLA
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 % Plotting configuration %
 %%%%%%%%%%%%%%%%%%%%%%%%%%
-config.plotting                         = plotting_config_yyao();  % get plotting configuration from a separate file
+config.plotting                         = plotting_config_yyao(task);  % get plotting configuration from a separate file
 
-
+clear task
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Checks on config structure %

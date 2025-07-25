@@ -1,4 +1,4 @@
-function AnalyzeAndPlotLickingData_DoubleRotation(bin_fname)
+function AnalyzeAndPlotLickingData_DoubleRotation(bin_fname,task)
 
 % padding around visual onset
 padding                     = [-3, 5];
@@ -46,6 +46,24 @@ latency_signal              = data(:, latency_chan_idx);
 % photodiode_signal           = data(:, photodiode_idx);
 
 figure()
+
+if task.contrast
+plot(timebase, LickDetect_trigger_signal);
+hold on;
+plot(timebase, visstim_signal);
+hold on;
+plot(timebase, latency_signal);
+hold on;
+plot(timebase, pump_signal);
+hold on;
+plot(timebase, lick_signal);
+hold on;
+plot(timebase, photodiodeL_signal);
+hold on;
+plot(timebase, photodiodeR_signal);
+hold off;
+legend('LickDetect trigger','VisStim','Latency','Pump','Lick','Photodiode Left','Photodiode Right');
+else
 plot(timebase, stage_central_signal);
 hold on;
 plot(timebase, stage_outer_signal);
@@ -58,15 +76,14 @@ plot(timebase, lick_signal);
 hold on;
 plot(timebase, visstim_signal);
 hold on;
-plot(timebase, latency_signal);
-hold on;
 plot(timebase, photodiodeL_signal);
 % hold on;
 % plot(timebase, photodiodeMid_signal);
 % hold on;
 % plot(timebase, photodiodeR_signal);
 hold off;
-legend('Central stage speed (deg/sec)','Outer stage speed (deg/sec)','LickDetect trigger','Pump','Lick','VisStim','Latency','Photodiode Left');
+legend('Central stage speed (deg/sec)','Outer stage speed (deg/sec)','LickDetect trigger','Pump','Lick','VisStim','Photodiode Left');
+end
 
 % look for stimulus on
 vis_stim_onset_flag         = diff(LickDetect_trigger_signal > vis_stim_threshold) == 1;
@@ -120,7 +137,7 @@ end
 
 
 %% PLOT
-
+%{
 % lick rasters
 figure();
 h_ax_s_plus             = subplot(2, 1, 1);
@@ -156,9 +173,9 @@ if online_data_exists
 else
     title(h_ax_s_plus, 'All trials');
 end
+%}
 
-
-
+end
 
 function plot_raster(h_ax, lick_times, vis_stim_duration)
 
@@ -172,7 +189,7 @@ line(h_ax, [2, 2], get(h_ax, 'ylim'), 'color', 'k', 'linestyle', '--');
 xlabel(h_ax, 'Time (s)');
 set(h_ax, 'ylim', [0, length(lick_times)+1], 'plotboxaspectratio', [2, 1, 1]);
 
-
+end
 
 function plot_histogram(h_ax, lick_times, edges, vis_stim_duration)
 
@@ -183,4 +200,4 @@ line(h_ax, [vis_stim_duration, vis_stim_duration], get(h_ax, 'ylim'), 'color', '
 set(h_ax, 'plotboxaspectratio', [2, 1, 1]);
 xlabel(h_ax, 'Time (s)');
 
-
+end

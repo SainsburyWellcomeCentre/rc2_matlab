@@ -14,7 +14,7 @@ classdef GoNogo_DoubleRotation_GUIView < handle
             obj.controller = controller;
             obj.gui = GoNogo_DoubleRotation_GUI(obj.controller);  
             
-            obj.gui.UIFigure.Position = [1200,70,470,400];
+            obj.gui.UIFigure.Position = [1200,70,560,400];
         end
         
         
