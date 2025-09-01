@@ -14,12 +14,12 @@ function [protocolconfig,seq] = ContrastExperiment(ctl,config,view)
     % Here LickDetect trigger appears at rotation velosity peak time, lasts till rotation ends
     protocolconfig.lick_detect.enable                   = true;     
     protocolconfig.lick_detect.lick_threshold           = [2.0 4.0];
-    protocolconfig.lick_detect.n_windows                = 20;      
+    protocolconfig.lick_detect.n_windows                = 23;      
     protocolconfig.lick_detect.window_size_ms           = 200;
     protocolconfig.lick_detect.n_consecutive_windows    = 1;
     protocolconfig.lick_detect.n_lick_windows           = protocolconfig.lick_detect.n_consecutive_windows;
     protocolconfig.lick_detect.detection_trigger_type   = 1;
-    protocolconfig.lick_detect.delay                    = 1;       % delay of LickDetect trigger from TrialStart (in sec)
+    protocolconfig.lick_detect.delay                    = 0.5;       % delay of LickDetect trigger from TrialStart (in sec)
     protocolconfig.enable_vis_stim = enableVisStim;
     
     % create the protocol sequence
@@ -29,12 +29,12 @@ function [protocolconfig,seq] = ContrastExperiment(ctl,config,view)
     % restart random number generator
     rng('shuffle');
 
-    protocol.labels = {'s_plusL_35_34','s_plusR_34_35','s_plusL_36_35','s_plusR_35_36',...
-        's_plusL_35_33','s_plusR_33_35','s_plusL_37_35','s_plusR_35_37',
-        's_plusL_35_25','s_plusR_25_35','s_plusL_45_35','s_plusR_35_45',...
-        's_plusL_85_35','s_plusR_35_85',...
-        's_plusL_65_55','s_plusR_55_65','s_plusL_75_65','s_plusR_65_75','s_plusL_65_10','s_plusR_10_65',...
-        's_minus_35','s_minus_50','s_minus_65'};
+    protocol.labels = {'s_plusL_1_7','s_plusR_1_7','s_plusL_1_6','s_plusR_1_6','s_plusL_1_5','s_plusR_1_5','s_plusL_1_4','s_plusR_1_4','s_plusL_1_3','s_plusR_1_3','s_plusL_1_2','s_plusR_1_2','s_plusL_1_1','s_plusR_1_1',...
+        's_plusL_2_7','s_plusR_2_7','s_plusL_2_6','s_plusR_2_6','s_plusL_2_5','s_plusR_2_5','s_plusL_2_4','s_plusR_2_4','s_plusL_2_3','s_plusR_2_3','s_plusL_2_2','s_plusR_2_2','s_plusL_2_1','s_plusR_2_1',...
+        's_plusL_3_7','s_plusR_3_7','s_plusL_3_6','s_plusR_3_6','s_plusL_3_5','s_plusR_3_5','s_plusL_3_4','s_plusR_3_4','s_plusL_3_3','s_plusR_3_3','s_plusL_3_2','s_plusR_3_2','s_plusL_3_1','s_plusR_3_1',...
+        's_plusL_4_7','s_plusR_4_7','s_plusL_4_6','s_plusR_4_6','s_plusL_4_5','s_plusR_4_5','s_plusL_4_4','s_plusR_4_4','s_plusL_4_3','s_plusR_4_3','s_plusL_4_2','s_plusR_4_2','s_plusL_4_1','s_plusR_4_1',...
+        's_plusL_5_7','s_plusR_5_7','s_plusL_5_6','s_plusR_5_6','s_plusL_5_5','s_plusR_5_5','s_plusL_5_4','s_plusR_5_4','s_plusL_5_3','s_plusR_5_3','s_plusL_5_2','s_plusR_5_2','s_plusL_5_1','s_plusR_5_1',...
+        's_minus_1','s_minus_2','s_minus_3','s_minus_4','s_minus_5'};
     
     for i = 1:length(protocol.labels)
         protocol.id(i) = i;
@@ -44,7 +44,12 @@ function [protocolconfig,seq] = ContrastExperiment(ctl,config,view)
     protocol.n_blocks = 1;
     
     % number of trials in each block
-    protocol.n_trials = [1 1  1 1  2 2  1 1  1 1  2 2  8 8];
+    protocol.n_trials = [1 1  1 1  1 1  1 1  1 1  1 1  1 1 ...
+        1 1  1 1  1 1  1 1  1 1  1 1  1 1 ...
+        1 1  1 1  1 1  1 1  1 1  1 1  1 1 ...
+        1 1  1 1  1 1  1 1  1 1  1 1  1 1 ...
+        1 1  1 1  1 1  1 1  1 1  1 1  1 1 ...
+        10  10  10  10  10];
 
     protocolconfig.reward.duration = floor(config.reward.interleavingduration/(sum(protocol.n_trials(1:end))*protocol.n_blocks));
     
@@ -83,7 +88,7 @@ function [protocolconfig,seq] = ContrastExperiment(ctl,config,view)
             trial.stage.central.max_vel = vmax_splus; 
             trial.stage.central.peakwidth = peakwidth_splus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
+            trial.stage.outer.enable = true;
             trial.stage.outer.distance = -distance;
             trial.stage.outer.max_vel = vmax_splus; 
             trial.stage.outer.peakwidth = peakwidth_splus;
@@ -112,7 +117,7 @@ function [protocolconfig,seq] = ContrastExperiment(ctl,config,view)
             trial.stage.central.max_vel = vmax_splus; 
             trial.stage.central.peakwidth = peakwidth_splus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
+            trial.stage.outer.enable = true;
             trial.stage.outer.distance = distance;
             trial.stage.outer.max_vel = vmax_splus; 
             trial.stage.outer.peakwidth = peakwidth_splus;
@@ -141,7 +146,7 @@ function [protocolconfig,seq] = ContrastExperiment(ctl,config,view)
             trial.stage.central.max_vel = vmax_splus; 
             trial.stage.central.peakwidth = peakwidth_splus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
+            trial.stage.outer.enable = true;
             trial.stage.outer.distance = -distance;
             trial.stage.outer.max_vel = vmax_splus; 
             trial.stage.outer.peakwidth = peakwidth_splus;
@@ -170,7 +175,7 @@ function [protocolconfig,seq] = ContrastExperiment(ctl,config,view)
             trial.stage.central.max_vel = vmax_splus; 
             trial.stage.central.peakwidth = peakwidth_splus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
+            trial.stage.outer.enable = true;
             trial.stage.outer.distance = distance;
             trial.stage.outer.max_vel = vmax_splus; 
             trial.stage.outer.peakwidth = peakwidth_splus;
@@ -195,12 +200,12 @@ function [protocolconfig,seq] = ContrastExperiment(ctl,config,view)
             trial.stage.enable_motion = enableRotation;
             trial.stage.motion_time = duration;
             trial.stage.central.enable = true;
-            trial.stage.central.distance = distance;
+            trial.stage.central.distance = -distance;
             trial.stage.central.max_vel = vmax_splus; 
             trial.stage.central.peakwidth = peakwidth_splus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
-            trial.stage.outer.distance = distance;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
             trial.stage.outer.max_vel = vmax_splus; 
             trial.stage.outer.peakwidth = peakwidth_splus;
             trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
@@ -228,7 +233,7 @@ function [protocolconfig,seq] = ContrastExperiment(ctl,config,view)
             trial.stage.central.max_vel = vmax_splus; 
             trial.stage.central.peakwidth = peakwidth_splus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
+            trial.stage.outer.enable = true;
             trial.stage.outer.distance = distance;
             trial.stage.outer.max_vel = vmax_splus; 
             trial.stage.outer.peakwidth = peakwidth_splus;
@@ -253,12 +258,12 @@ function [protocolconfig,seq] = ContrastExperiment(ctl,config,view)
             trial.stage.enable_motion = enableRotation;
             trial.stage.motion_time = duration;
             trial.stage.central.enable = true;
-            trial.stage.central.distance = distance;
+            trial.stage.central.distance = -distance;
             trial.stage.central.max_vel = vmax_splus; 
             trial.stage.central.peakwidth = peakwidth_splus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
-            trial.stage.outer.distance = distance;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
             trial.stage.outer.max_vel = vmax_splus; 
             trial.stage.outer.peakwidth = peakwidth_splus;
             trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
@@ -286,7 +291,7 @@ function [protocolconfig,seq] = ContrastExperiment(ctl,config,view)
             trial.stage.central.max_vel = vmax_splus; 
             trial.stage.central.peakwidth = peakwidth_splus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
+            trial.stage.outer.enable = true;
             trial.stage.outer.distance = distance;
             trial.stage.outer.max_vel = vmax_splus; 
             trial.stage.outer.peakwidth = peakwidth_splus;
@@ -311,12 +316,12 @@ function [protocolconfig,seq] = ContrastExperiment(ctl,config,view)
             trial.stage.enable_motion = enableRotation;
             trial.stage.motion_time = duration;
             trial.stage.central.enable = true;
-            trial.stage.central.distance = distance;
+            trial.stage.central.distance = -distance;
             trial.stage.central.max_vel = vmax_splus; 
             trial.stage.central.peakwidth = peakwidth_splus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
-            trial.stage.outer.distance = distance;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
             trial.stage.outer.max_vel = vmax_splus; 
             trial.stage.outer.peakwidth = peakwidth_splus;
             trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
@@ -344,7 +349,7 @@ function [protocolconfig,seq] = ContrastExperiment(ctl,config,view)
             trial.stage.central.max_vel = vmax_splus; 
             trial.stage.central.peakwidth = peakwidth_splus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
+            trial.stage.outer.enable = true;
             trial.stage.outer.distance = distance;
             trial.stage.outer.max_vel = vmax_splus; 
             trial.stage.outer.peakwidth = peakwidth_splus;
@@ -369,12 +374,12 @@ function [protocolconfig,seq] = ContrastExperiment(ctl,config,view)
             trial.stage.enable_motion = enableRotation;
             trial.stage.motion_time = duration;
             trial.stage.central.enable = true;
-            trial.stage.central.distance = distance;
+            trial.stage.central.distance = -distance;
             trial.stage.central.max_vel = vmax_splus; 
             trial.stage.central.peakwidth = peakwidth_splus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
-            trial.stage.outer.distance = distance;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
             trial.stage.outer.max_vel = vmax_splus; 
             trial.stage.outer.peakwidth = peakwidth_splus;
             trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
@@ -402,7 +407,7 @@ function [protocolconfig,seq] = ContrastExperiment(ctl,config,view)
             trial.stage.central.max_vel = vmax_splus; 
             trial.stage.central.peakwidth = peakwidth_splus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
+            trial.stage.outer.enable = true;
             trial.stage.outer.distance = distance;
             trial.stage.outer.max_vel = vmax_splus; 
             trial.stage.outer.peakwidth = peakwidth_splus;
@@ -418,6 +423,1778 @@ function [protocolconfig,seq] = ContrastExperiment(ctl,config,view)
             % add protocol to the sequence
             seq.add(trial);
         
+        elseif trial_order(i) == protocol.id(13)
+            
+            trial.trial.stimulus_type = protocol.labels{13};
+            trial.trial.stimulus_typeid = 13;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 13;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(14)
+            
+            trial.trial.stimulus_type = protocol.labels{14};
+            trial.trial.stimulus_typeid = 14;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 14;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(15)
+            
+            trial.trial.stimulus_type = protocol.labels{15};
+            trial.trial.stimulus_typeid = 15;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 15;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(16)
+            
+            trial.trial.stimulus_type = protocol.labels{16};
+            trial.trial.stimulus_typeid = 16;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 16;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(17)
+            
+            trial.trial.stimulus_type = protocol.labels{17};
+            trial.trial.stimulus_typeid = 17;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 17;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(18)
+            
+            trial.trial.stimulus_type = protocol.labels{18};
+            trial.trial.stimulus_typeid = 18;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 18;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(19)
+            
+            trial.trial.stimulus_type = protocol.labels{19};
+            trial.trial.stimulus_typeid = 19;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 19;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(20)
+            
+            trial.trial.stimulus_type = protocol.labels{20};
+            trial.trial.stimulus_typeid = 20;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 20;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(21)
+            
+            trial.trial.stimulus_type = protocol.labels{21};
+            trial.trial.stimulus_typeid = 21;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 21;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+        
+        elseif trial_order(i) == protocol.id(22)
+            
+            trial.trial.stimulus_type = protocol.labels{22};
+            trial.trial.stimulus_typeid = 22;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 22;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+        
+        elseif trial_order(i) == protocol.id(23)
+            
+            trial.trial.stimulus_type = protocol.labels{23};
+            trial.trial.stimulus_typeid = 23;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 23;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(24)
+            
+            trial.trial.stimulus_type = protocol.labels{24};
+            trial.trial.stimulus_typeid = 24;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 24;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(25)
+            
+            trial.trial.stimulus_type = protocol.labels{25};
+            trial.trial.stimulus_typeid = 25;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 25;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(26)
+            
+            trial.trial.stimulus_type = protocol.labels{26};
+            trial.trial.stimulus_typeid = 26;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 26;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(27)
+            
+            trial.trial.stimulus_type = protocol.labels{27};
+            trial.trial.stimulus_typeid = 27;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 27;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(28)
+            
+            trial.trial.stimulus_type = protocol.labels{28};
+            trial.trial.stimulus_typeid = 28;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 28;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(29)
+            
+            trial.trial.stimulus_type = protocol.labels{29};
+            trial.trial.stimulus_typeid = 29;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 29;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(30)
+            
+            trial.trial.stimulus_type = protocol.labels{30};
+            trial.trial.stimulus_typeid = 30;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 30;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(31)
+            
+            trial.trial.stimulus_type = protocol.labels{31};
+            trial.trial.stimulus_typeid = 31;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 31;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+        
+        elseif trial_order(i) == protocol.id(32)
+            
+            trial.trial.stimulus_type = protocol.labels{32};
+            trial.trial.stimulus_typeid = 32;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 32;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+        
+        elseif trial_order(i) == protocol.id(33)
+            
+            trial.trial.stimulus_type = protocol.labels{33};
+            trial.trial.stimulus_typeid = 33;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 33;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(34)
+            
+            trial.trial.stimulus_type = protocol.labels{34};
+            trial.trial.stimulus_typeid = 34;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 34;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(35)
+            
+            trial.trial.stimulus_type = protocol.labels{35};
+            trial.trial.stimulus_typeid = 35;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 35;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(36)
+            
+            trial.trial.stimulus_type = protocol.labels{36};
+            trial.trial.stimulus_typeid = 36;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 36;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(37)
+            
+            trial.trial.stimulus_type = protocol.labels{37};
+            trial.trial.stimulus_typeid = 37;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 37;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(38)
+            
+            trial.trial.stimulus_type = protocol.labels{38};
+            trial.trial.stimulus_typeid = 38;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 38;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(39)
+            
+            trial.trial.stimulus_type = protocol.labels{39};
+            trial.trial.stimulus_typeid = 39;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 39;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(40)
+            
+            trial.trial.stimulus_type = protocol.labels{40};
+            trial.trial.stimulus_typeid = 40;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 40;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(41)
+            
+            trial.trial.stimulus_type = protocol.labels{41};
+            trial.trial.stimulus_typeid = 41;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 41;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+        
+        elseif trial_order(i) == protocol.id(42)
+            
+            trial.trial.stimulus_type = protocol.labels{42};
+            trial.trial.stimulus_typeid = 42;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 42;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+        
+        elseif trial_order(i) == protocol.id(43)
+            
+            trial.trial.stimulus_type = protocol.labels{43};
+            trial.trial.stimulus_typeid = 43;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 43;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(44)
+            
+            trial.trial.stimulus_type = protocol.labels{44};
+            trial.trial.stimulus_typeid = 44;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 44;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(45)
+            
+            trial.trial.stimulus_type = protocol.labels{45};
+            trial.trial.stimulus_typeid = 45;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 45;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(46)
+            
+            trial.trial.stimulus_type = protocol.labels{46};
+            trial.trial.stimulus_typeid = 46;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 46;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(47)
+            
+            trial.trial.stimulus_type = protocol.labels{47};
+            trial.trial.stimulus_typeid = 47;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 47;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(48)
+            
+            trial.trial.stimulus_type = protocol.labels{48};
+            trial.trial.stimulus_typeid = 48;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 48;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(49)
+            
+            trial.trial.stimulus_type = protocol.labels{49};
+            trial.trial.stimulus_typeid = 49;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 49;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(50)
+            
+            trial.trial.stimulus_type = protocol.labels{50};
+            trial.trial.stimulus_typeid = 50;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 50;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(51)
+            
+            trial.trial.stimulus_type = protocol.labels{51};
+            trial.trial.stimulus_typeid = 51;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 51;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+        
+        elseif trial_order(i) == protocol.id(52)
+            
+            trial.trial.stimulus_type = protocol.labels{52};
+            trial.trial.stimulus_typeid = 52;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 52;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+        
+        elseif trial_order(i) == protocol.id(53)
+            
+            trial.trial.stimulus_type = protocol.labels{53};
+            trial.trial.stimulus_typeid = 53;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 53;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(54)
+            
+            trial.trial.stimulus_type = protocol.labels{54};
+            trial.trial.stimulus_typeid = 54;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 54;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(55)
+            
+            trial.trial.stimulus_type = protocol.labels{55};
+            trial.trial.stimulus_typeid = 55;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 55;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(56)
+            
+            trial.trial.stimulus_type = protocol.labels{56};
+            trial.trial.stimulus_typeid = 56;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 56;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(57)
+            
+            trial.trial.stimulus_type = protocol.labels{57};
+            trial.trial.stimulus_typeid = 57;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 57;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(58)
+            
+            trial.trial.stimulus_type = protocol.labels{58};
+            trial.trial.stimulus_typeid = 58;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 58;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(59)
+            
+            trial.trial.stimulus_type = protocol.labels{59};
+            trial.trial.stimulus_typeid = 59;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 59;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(60)
+            
+            trial.trial.stimulus_type = protocol.labels{60};
+            trial.trial.stimulus_typeid = 60;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 60;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(61)
+            
+            trial.trial.stimulus_type = protocol.labels{61};
+            trial.trial.stimulus_typeid = 61;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 61;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+        
+        elseif trial_order(i) == protocol.id(62)
+            
+            trial.trial.stimulus_type = protocol.labels{62};
+            trial.trial.stimulus_typeid = 62;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 62;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+        
+        elseif trial_order(i) == protocol.id(63)
+            
+            trial.trial.stimulus_type = protocol.labels{63};
+            trial.trial.stimulus_typeid = 63;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 63;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(64)
+            
+            trial.trial.stimulus_type = protocol.labels{64};
+            trial.trial.stimulus_typeid = 64;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 64;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(65)
+            
+            trial.trial.stimulus_type = protocol.labels{65};
+            trial.trial.stimulus_typeid = 65;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 65;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(66)
+            
+            trial.trial.stimulus_type = protocol.labels{66};
+            trial.trial.stimulus_typeid = 66;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 66;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(67)
+            
+            trial.trial.stimulus_type = protocol.labels{67};
+            trial.trial.stimulus_typeid = 67;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 67;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(68)
+            
+            trial.trial.stimulus_type = protocol.labels{68};
+            trial.trial.stimulus_typeid = 68;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 68;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(69)
+            
+            trial.trial.stimulus_type = protocol.labels{69};
+            trial.trial.stimulus_typeid = 69;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 69;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(70)
+            
+            trial.trial.stimulus_type = protocol.labels{70};
+            trial.trial.stimulus_typeid = 70;
+            trial.trial.enable_reward = true;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = distance;
+            trial.stage.central.max_vel = vmax_splus; 
+            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = distance;
+            trial.stage.outer.max_vel = vmax_splus; 
+            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 70;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        
+
+
+        elseif trial_order(i) == protocol.id(end-4)
+
+            trial.trial.stimulus_type = protocol.labels{end-4};
+            trial.trial.stimulus_typeid = length(protocol.labels)-4;
+            trial.trial.enable_reward = false;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_sminus; 
+            trial.stage.central.peakwidth = peakwidth_sminus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_sminus; 
+            trial.stage.outer.peakwidth = peakwidth_sminus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 71;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(end-3)
+
+            trial.trial.stimulus_type = protocol.labels{end-3};
+            trial.trial.stimulus_typeid = length(protocol.labels)-3;
+            trial.trial.enable_reward = false;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_sminus; 
+            trial.stage.central.peakwidth = peakwidth_sminus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_sminus; 
+            trial.stage.outer.peakwidth = peakwidth_sminus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 72;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
+        elseif trial_order(i) == protocol.id(end-2)
+
+            trial.trial.stimulus_type = protocol.labels{end-2};
+            trial.trial.stimulus_typeid = length(protocol.labels)-2;
+            trial.trial.enable_reward = false;
+            
+            trial.stage.enable_motion = enableRotation;
+            trial.stage.motion_time = duration;
+            trial.stage.central.enable = true;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_sminus; 
+            trial.stage.central.peakwidth = peakwidth_sminus;
+            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
+            trial.stage.outer.enable = true;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_sminus; 
+            trial.stage.outer.peakwidth = peakwidth_sminus;
+            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
+            
+            trial.vis.enable_vis_stim = enableVisStim;
+            trial.vis.vis_stim_lable = 73;
+            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
+
+%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
+            trial.waveform = zeros(duration*config.nidaq.rate,2);
+            
+            % add protocol to the sequence
+            seq.add(trial);
+
         elseif trial_order(i) == protocol.id(end-1)
 
             trial.trial.stimulus_type = protocol.labels{end-1};
@@ -431,14 +2208,14 @@ function [protocolconfig,seq] = ContrastExperiment(ctl,config,view)
             trial.stage.central.max_vel = vmax_sminus; 
             trial.stage.central.peakwidth = peakwidth_sminus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
+            trial.stage.outer.enable = true;
             trial.stage.outer.distance = -distance;
             trial.stage.outer.max_vel = vmax_sminus; 
             trial.stage.outer.peakwidth = peakwidth_sminus;
             trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
             
             trial.vis.enable_vis_stim = enableVisStim;
-            trial.vis.vis_stim_lable = 13;
+            trial.vis.vis_stim_lable = 74;
             trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
 
 %             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
@@ -460,14 +2237,14 @@ function [protocolconfig,seq] = ContrastExperiment(ctl,config,view)
             trial.stage.central.max_vel = vmax_sminus; 
             trial.stage.central.peakwidth = peakwidth_sminus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
+            trial.stage.outer.enable = true;
             trial.stage.outer.distance = -distance;
             trial.stage.outer.max_vel = vmax_sminus; 
             trial.stage.outer.peakwidth = peakwidth_sminus;
             trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
             
             trial.vis.enable_vis_stim = enableVisStim;
-            trial.vis.vis_stim_lable = 14;
+            trial.vis.vis_stim_lable = 75;
             trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
 
 %             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);

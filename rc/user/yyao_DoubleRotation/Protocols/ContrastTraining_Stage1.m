@@ -14,12 +14,12 @@ function [protocolconfig,seq] = ContrastTraining_Stage1(ctl,config,view)
     % Here LickDetect trigger appears at rotation velosity peak time, lasts till rotation ends
     protocolconfig.lick_detect.enable                   = true;     
     protocolconfig.lick_detect.lick_threshold           = [2.0 4.0];
-    protocolconfig.lick_detect.n_windows                = 20;      
+    protocolconfig.lick_detect.n_windows                = 23;      
     protocolconfig.lick_detect.window_size_ms           = 200;
     protocolconfig.lick_detect.n_consecutive_windows    = 1;
     protocolconfig.lick_detect.n_lick_windows           = protocolconfig.lick_detect.n_consecutive_windows;
     protocolconfig.lick_detect.detection_trigger_type   = 1;
-    protocolconfig.lick_detect.delay                    = 1;       % delay of LickDetect trigger from TrialStart (in sec)
+    protocolconfig.lick_detect.delay                    = 0.5;       % delay of LickDetect trigger from TrialStart (in sec)
     protocolconfig.enable_vis_stim = enableVisStim;
     
     % create the protocol sequence
@@ -54,7 +54,7 @@ function [protocolconfig,seq] = ContrastTraining_Stage1(ctl,config,view)
     
     %% velocity array generator
     distance = 0;
-    duration = 5;
+    duration = 3;
     vmax_splus = 0;
     vmax_sminus = 0;
     peakwidth_splus = 2;
@@ -76,7 +76,7 @@ function [protocolconfig,seq] = ContrastTraining_Stage1(ctl,config,view)
             trial.stage.central.max_vel = vmax_splus; 
             trial.stage.central.peakwidth = peakwidth_splus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
+            trial.stage.outer.enable = true;
             trial.stage.outer.distance = -distance;
             trial.stage.outer.max_vel = vmax_splus; 
             trial.stage.outer.peakwidth = peakwidth_splus;
@@ -105,7 +105,7 @@ function [protocolconfig,seq] = ContrastTraining_Stage1(ctl,config,view)
             trial.stage.central.max_vel = vmax_splus; 
             trial.stage.central.peakwidth = peakwidth_splus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
+            trial.stage.outer.enable = true;
             trial.stage.outer.distance = distance;
             trial.stage.outer.max_vel = vmax_splus; 
             trial.stage.outer.peakwidth = peakwidth_splus;
@@ -134,7 +134,7 @@ function [protocolconfig,seq] = ContrastTraining_Stage1(ctl,config,view)
             trial.stage.central.max_vel = vmax_sminus; 
             trial.stage.central.peakwidth = peakwidth_sminus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
+            trial.stage.outer.enable = true;
             trial.stage.outer.distance = -distance;
             trial.stage.outer.max_vel = vmax_sminus; 
             trial.stage.outer.peakwidth = peakwidth_sminus;

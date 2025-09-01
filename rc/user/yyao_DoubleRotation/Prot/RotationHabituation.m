@@ -251,7 +251,8 @@ classdef RotationHabituation < handle
             save(fname, 'protocol_name', 'n_rewards_given','lick_threshold');  % save variables to .mat file
             
             try    
-                AnalyzeAndPlotLickingData_DoubleRotation(bin_fname);   
+                AnalyzeAndPlotLickingData_DoubleRotation(bin_fname,task);   % 
+%                 AnalyzeAndPlotRotationData_DoubleRotation(bin_fname);
             catch
             end
             

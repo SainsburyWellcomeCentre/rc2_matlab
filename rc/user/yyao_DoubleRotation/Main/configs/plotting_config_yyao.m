@@ -8,7 +8,7 @@ config.fig.position = [1100, 550, 850, 400];  % GUI window size
 
 config.chans_to_plot = [1,2,4,5,6, 3,8,7];   % GUI AI channel index to plot
 config.xtick_chans = [5  length(config.chans_to_plot)];
-config.ylim = {[-10.1, 10.1] , [-10.1, 10.1], [-0.1, 5.1] ,[-0.1, 5.1], [-0.5, 5.1], [-0.1, 5.1], [-0.1, 5.1]};
+config.ylim = {[-10.1, 10.1] , [-10.1, 10.1], [-0.1, 5.1] ,[-0.1, 5.1], [-0.5, 5.1], [-0.1, 5.1], [-0.5, 5.1]};
 config.units = {'V', 'V', 'V', 'V', 'V', 'V', 'V'};
 config.ax_positions = {[0.04, 0.84, 0.44, 0.13], ...
                     [0.04, 0.65, 0.44, 0.13], ...
@@ -21,9 +21,9 @@ config.ax_positions = {[0.04, 0.84, 0.44, 0.13], ...
 %                     [0.54, 0.27, 0.44, 0.13]};
 
 if task.contrast
-config.chans_to_plot = [1,4,5,2,3,  6,7];   % GUI AI channel index to plot
+config.chans_to_plot = [5,4,1,2,3,  6,7];   % GUI AI channel index to plot
 config.xtick_chans = [5  length(config.chans_to_plot)];
-config.ylim = {[-0.1, 5.1] ,[-0.1, 5.1], [-0.5, 5.1], [-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1]};
+config.ylim = {[-0.1, 5.1] ,[-0.1, 5.1], [-0.5, 5.1], [-0.1, 5.1], [-0.5, 5.1], [-0.1, 5.1], [-0.1, 5.1]};
 config.units = {'V', 'V', 'V', 'V', 'V', 'V', 'V', 'V', 'V'};
 config.ax_positions = {[0.04, 0.84, 0.44, 0.13], ...
                     [0.04, 0.65, 0.44, 0.13], ...

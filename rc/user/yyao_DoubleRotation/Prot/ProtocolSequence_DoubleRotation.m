@@ -357,7 +357,7 @@ classdef ProtocolSequence_DoubleRotation < handle
             save(fname, vars_to_save{:});  % save variables to .mat file
             
             try    
-                AnalyzeAndPlotLickingData_DoubleRotation(bin_fname);   % 
+                AnalyzeAndPlotLickingData_DoubleRotation(bin_fname,task);   % 
 %                 AnalyzeAndPlotRotationData_DoubleRotation(bin_fname);
             catch
             end

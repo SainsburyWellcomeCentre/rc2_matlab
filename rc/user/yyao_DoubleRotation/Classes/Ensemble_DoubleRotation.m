@@ -149,8 +149,8 @@ classdef Ensemble_DoubleRotation < handle
 %             CurrentPosition(1) = EnsembleStatusGetItem  (obj.handle, obj.all_axes(1), EnsembleStatusItem.PositionFeedback);   % Get Program Position Feedback (ID = 1) of central axis.
 %             CurrentPosition(2) = EnsembleStatusGetItem  (obj.handle, obj.all_axes(2), EnsembleStatusItem.PositionFeedback);   % Get Program Position Feedback (ID = 1) of outer axis.
             CurrentPosition = rad2deg(wrapToPi(deg2rad(CurrentPosition)));
-            obj.homed(find(abs(CurrentPosition)<0.5)) = true;
-            obj.homed(find(abs(CurrentPosition)>=0.5)) = false;
+            obj.homed(find(abs(CurrentPosition)<0.3)) = true;
+            obj.homed(find(abs(CurrentPosition)>=0.3)) = false;
             for i = 1:length(obj.all_axes)
                 if ~isnan(obj.all_axes(i))
                     if CurrentPosition(i)<0

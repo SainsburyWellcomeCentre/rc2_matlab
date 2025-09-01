@@ -1,5 +1,5 @@
-function [protocolconfig,seq] = ContrastTraining_Stage2_2(ctl,config,view)
-    % Protocol type: visual slimuli with fixed contrast difference (S+) or same contrast (S-) in various brightness. 10 S+ 10 S- in psudorandom order
+function [protocolconfig,seq] = Contrast_LickHabituation(ctl,config,view)
+    % Protocol type: visual slimuli with fixed contrast difference (S+). 20 S+ trials
     % central stage - enabled. 
     %       S+ trial, fixed contrast difference. 
     %       S- trial, contrast same.
@@ -14,12 +14,12 @@ function [protocolconfig,seq] = ContrastTraining_Stage2_2(ctl,config,view)
     % Here LickDetect trigger appears at rotation velosity peak time, lasts till rotation ends
     protocolconfig.lick_detect.enable                   = true;     
     protocolconfig.lick_detect.lick_threshold           = [2.0 4.0];
-    protocolconfig.lick_detect.n_windows                = 20;      
+    protocolconfig.lick_detect.n_windows                = 25;      
     protocolconfig.lick_detect.window_size_ms           = 200;
     protocolconfig.lick_detect.n_consecutive_windows    = 1;
     protocolconfig.lick_detect.n_lick_windows           = protocolconfig.lick_detect.n_consecutive_windows;
     protocolconfig.lick_detect.detection_trigger_type   = 1;
-    protocolconfig.lick_detect.delay                    = 1;       % delay of LickDetect trigger from TrialStart (in sec)
+    protocolconfig.lick_detect.delay                    = 0;       % delay of LickDetect trigger from TrialStart (in sec)
     protocolconfig.enable_vis_stim = enableVisStim;
     
     % create the protocol sequence
@@ -29,30 +29,29 @@ function [protocolconfig,seq] = ContrastTraining_Stage2_2(ctl,config,view)
     % restart random number generator
     rng('shuffle');
 
-    protocol.labels = {'s_plusL_100_50','s_plusR_50_100','s_plusL_50_0','s_plusR_0_50','s_minus'};
-    for i = 1:length(protocol.labels)
-        protocol.id(i) = i;
-    end
+    % list of protocols
+    protocol_id.s_plusL         = 1;    % fixed contrast difference: L 100% R 50%, L 50% R 100%
+    protocol_id.s_plusR         = 2;
+    protocol_id.s_minus        = 3;    % contrast same: L 50% R 50%
     
     % number of blocks
-    protocol.n_blocks = 3;
+    n_blocks = 20;
     
     % number of trials in each block
-    protocol.n_trials = [1 1  1 1  4];
-
-    protocolconfig.reward.duration = floor(config.reward.sminus2duration/(sum(protocol.n_trials(1:end))*protocol.n_blocks));
+    n_s_plusL_trials    = 2;
+    n_s_plusR_trials    = 2;
+    n_s_minus_trials   = 0;
     
-    trial_order = [];
-    for i = 1:length(protocol.labels)
-        trial_order = vertcat(trial_order,protocol.id(i)*ones(protocol.n_trials(i), protocol.n_blocks));
-        total_trials(i) = protocol.n_trials(protocol.id(i));
-    end
-    for i = 1 : protocol.n_blocks
-        I = randperm(sum(total_trials));
+    protocolconfig.reward.duration = config.reward.habituation;
+
+    trial_order = [ones(n_s_plusL_trials, n_blocks); 2*ones(n_s_plusR_trials, n_blocks); 3*ones(n_s_minus_trials, n_blocks)];
+    for i = 1 : n_blocks
+        I = randperm(sum([n_s_plusL_trials,n_s_plusR_trials,n_s_minus_trials]));
         trial_order(:, i) = trial_order(I, i);
     end
     trial_order = trial_order(:);
 
+    
     %% velocity array generator
     distance = 0;
     duration = 5;
@@ -60,13 +59,13 @@ function [protocolconfig,seq] = ContrastTraining_Stage2_2(ctl,config,view)
     vmax_sminus = 0;
     peakwidth_splus = 2;
     peakwidth_sminus = 2;
-    latency_range = [1 3];
+    latency_range = [1 1];
     
     for i = 1 : length(trial_order)
     
-        if trial_order(i) == protocol.id(1)
+        if trial_order(i) == protocol_id.s_plusL
             
-            trial.trial.stimulus_type = protocol.labels{1};
+            trial.trial.stimulus_type = 's_plusL';
             trial.trial.stimulus_typeid = 1;
             trial.trial.enable_reward = true;
             
@@ -77,7 +76,7 @@ function [protocolconfig,seq] = ContrastTraining_Stage2_2(ctl,config,view)
             trial.stage.central.max_vel = vmax_splus; 
             trial.stage.central.peakwidth = peakwidth_splus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
+            trial.stage.outer.enable = true;
             trial.stage.outer.distance = -distance;
             trial.stage.outer.max_vel = vmax_splus; 
             trial.stage.outer.peakwidth = peakwidth_splus;
@@ -93,9 +92,9 @@ function [protocolconfig,seq] = ContrastTraining_Stage2_2(ctl,config,view)
             % add protocol to the sequence
             seq.add(trial);
 
-        elseif trial_order(i) == protocol.id(2)
+        elseif trial_order(i) == protocol_id.s_plusR
             
-            trial.trial.stimulus_type = protocol.labels{2};
+            trial.trial.stimulus_type = 's_plusR';
             trial.trial.stimulus_typeid = 2;
             trial.trial.enable_reward = true;
             
@@ -106,7 +105,7 @@ function [protocolconfig,seq] = ContrastTraining_Stage2_2(ctl,config,view)
             trial.stage.central.max_vel = vmax_splus; 
             trial.stage.central.peakwidth = peakwidth_splus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
+            trial.stage.outer.enable = true;
             trial.stage.outer.distance = distance;
             trial.stage.outer.max_vel = vmax_splus; 
             trial.stage.outer.peakwidth = peakwidth_splus;
@@ -122,68 +121,10 @@ function [protocolconfig,seq] = ContrastTraining_Stage2_2(ctl,config,view)
             % add protocol to the sequence
             seq.add(trial);
 
-        elseif trial_order(i) == protocol.id(3)
-            
-            trial.trial.stimulus_type = protocol.labels{3};
+        elseif trial_order(i) == protocol_id.s_minus
+
+            trial.trial.stimulus_type = 's_minus';
             trial.trial.stimulus_typeid = 3;
-            trial.trial.enable_reward = true;
-            
-            trial.stage.enable_motion = enableRotation;
-            trial.stage.motion_time = duration;
-            trial.stage.central.enable = true;
-            trial.stage.central.distance = -distance;
-            trial.stage.central.max_vel = vmax_splus; 
-            trial.stage.central.peakwidth = peakwidth_splus;
-            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
-            trial.stage.outer.distance = -distance;
-            trial.stage.outer.max_vel = vmax_splus; 
-            trial.stage.outer.peakwidth = peakwidth_splus;
-            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
-
-            trial.vis.enable_vis_stim = enableVisStim;
-            trial.vis.vis_stim_lable = 3;
-            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
-
-%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
-            trial.waveform = zeros(duration*config.nidaq.rate,2);
-            
-            % add protocol to the sequence
-            seq.add(trial);
-
-        elseif trial_order(i) == protocol.id(4)
-            
-            trial.trial.stimulus_type = protocol.labels{4};
-            trial.trial.stimulus_typeid = 4;
-            trial.trial.enable_reward = true;
-            
-            trial.stage.enable_motion = enableRotation;
-            trial.stage.motion_time = duration;
-            trial.stage.central.enable = true;
-            trial.stage.central.distance = distance;
-            trial.stage.central.max_vel = vmax_splus; 
-            trial.stage.central.peakwidth = peakwidth_splus;
-            trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
-            trial.stage.outer.distance = distance;
-            trial.stage.outer.max_vel = vmax_splus; 
-            trial.stage.outer.peakwidth = peakwidth_splus;
-            trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
-            
-            trial.vis.enable_vis_stim = enableVisStim;
-            trial.vis.vis_stim_lable = 4;
-            trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
-
-%             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);
-            trial.waveform = zeros(duration*config.nidaq.rate,2);
-            
-            % add protocol to the sequence
-            seq.add(trial);
-        
-        elseif trial_order(i) == protocol.id(end)
-
-            trial.trial.stimulus_type = protocol.labels{end};
-            trial.trial.stimulus_typeid = length(protocol.labels);
             trial.trial.enable_reward = false;
             
             trial.stage.enable_motion = enableRotation;
@@ -193,14 +134,14 @@ function [protocolconfig,seq] = ContrastTraining_Stage2_2(ctl,config,view)
             trial.stage.central.max_vel = vmax_sminus; 
             trial.stage.central.peakwidth = peakwidth_sminus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
-            trial.stage.outer.enable = false;
+            trial.stage.outer.enable = true;
             trial.stage.outer.distance = -distance;
             trial.stage.outer.max_vel = vmax_sminus; 
             trial.stage.outer.peakwidth = peakwidth_sminus;
             trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
             
             trial.vis.enable_vis_stim = enableVisStim;
-            trial.vis.vis_stim_lable = 5;
+            trial.vis.vis_stim_lable = 3;
             trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
 
 %             trial.waveform = voltagewaveform_generator_linear(trial.stage, config.nidaq.rate);

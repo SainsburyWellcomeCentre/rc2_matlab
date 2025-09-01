@@ -232,7 +232,7 @@ classdef VisualContrast < handle
 %                     obj.ctl.pump.pulse(300)
 %                 end
                 
-                
+                obj.ctl.stop_sound();
                 pause(interval);     % wait before reset stages
 %                 try
 %                     system('C:\Users\Margrie_Lab1\Documents\MATLAB\tools\nircmd.exe setsysvolume 3000');

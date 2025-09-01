@@ -5,7 +5,7 @@ if exist('analysis')
 end
 clear analysis
 
-analysis.bin_fname = 'C:\Users\Margrie_Lab1\Documents\raw_data\a001\a001_sc16_ContrastTraining_Stage3.bin';
+analysis.bin_fname = 'C:\Users\Margrie_Lab1\Documents\raw_data\CAA-1122977\CAA-1122977_t107_ContrastTraining_Stage2.bin';
 
 [analysis.timebase,analysis.signal,analysis.online_data] = LickingData_Reading(analysis.bin_fname);
 analysis.sampling_rate = 10000;

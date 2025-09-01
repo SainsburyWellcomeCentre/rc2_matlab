@@ -26,7 +26,7 @@ classdef LickDetect_DoubleRotation < handle
 
         delay
 
-        enable_punishment
+        task
     end
     
     properties (SetAccess = private, Hidden = true)
@@ -115,7 +115,7 @@ classdef LickDetect_DoubleRotation < handle
             obj.reset_window();
 
             % task
-            obj.enable_punishment = config.lick_detect.enable_punishment;
+            obj.task.contrast =config.task.contrast;
         end
         
         
@@ -239,8 +239,8 @@ classdef LickDetect_DoubleRotation < handle
                     if obj.enable_reward
                         obj.ctl.give_reward();
                     else
-                        if obj.enable_punishment    % punishment
-                            system('C:\Users\Margrie_Lab1\Documents\MATLAB\tools\nircmd.exe setsysvolume 5000');
+                        if obj.task.contrast
+                            system('C:\Users\Margrie_Lab1\Documents\MATLAB\tools\nircmd.exe setsysvolume 3000');
                             obj.ctl.play_sound();
                         end
                     end
