@@ -61,13 +61,11 @@ classdef VisualContrast < handle
 %             catch
 %             end
 %             obj.ctl.play_sound(); 
-            home_stage = true;
             obj.ctl.ensemble_online(true);
             all_axes = obj.ctl.ensemble.all_axes;   % [0,1]
-            if home_stage
+
             obj.ctl.set_target_axes(all_axes);
             obj.ctl.home_ensemble(false);        % home both motors
-            end
             pause(1);
             obj.ctl.prepare_acq();   
             obj.ctl.start_acq();     
@@ -184,8 +182,7 @@ classdef VisualContrast < handle
                         end
                     end                                 % when NIDAQ AO stops, stages stop moving and VisStim TTL is back to low to switch off VisStim on the VisStim PC
                     while obj.ctl.lick_detector.running
-                        pause(0.05)
-                    end
+                        pause(2)
 
 %                     obj.ctl.set_target_axes(target_axes);
 %                     if ~obj.sequence{i}.vis.enable_vis_stim     % if enable stage but disable VisStim (Rotation in Darkness task)
@@ -247,10 +244,8 @@ classdef VisualContrast < handle
                     obj.ctl.ensemble.stop_listen(ensembleHandle,true);      % Stop Ensemble listen
                 end
                 % reset stages
-                if home_stage
                 obj.ctl.set_target_axes(all_axes);
                 obj.ctl.home_ensemble(true);        % reset both stages to Homed position
-                end
 
                 pause(0.5);     % wait after reset stages before next trial start
                 

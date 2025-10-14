@@ -1,4 +1,4 @@
-function [protocolconfig,seq] = ContrastTraining_Stage2(ctl,config,view)
+function [protocolconfig,seq] = ContrastTraining_Stage2_16Splus(ctl,config,view)
     % Protocol type: visual slimuli with fixed contrast difference (S+) or same contrast (S-). 10 S+ 10 S- in psudorandom order
     % central stage - enabled. 
     %       S+ trial, fixed contrast difference. 
@@ -35,12 +35,12 @@ function [protocolconfig,seq] = ContrastTraining_Stage2(ctl,config,view)
     protocol_id.s_minus        = 3;    % contrast same: L 50% R 50%
     
     % number of blocks
-    n_blocks = 5;
+    n_blocks = 1;
     
     % number of trials in each block
-    n_s_plusL_trials    = 1;
-    n_s_plusR_trials    = 1;
-    n_s_minus_trials   = 2;
+    n_s_plusL_trials    = 8;
+    n_s_plusR_trials    = 8;
+    n_s_minus_trials   = 4;
     
     protocolconfig.reward.duration = floor(config.reward.sminus1duration/((n_s_plusL_trials+n_s_plusR_trials)*n_blocks));
 

@@ -56,7 +56,7 @@ function [protocolconfig,seq] = ContrastTraining_Stage4(ctl,config,view)
 
     %% velocity array generator
     distance = 0;
-    duration = 3;
+    duration = 4;
     vmax_splus = 0;
     vmax_sminus = 0;
     peakwidth_splus = 2;

@@ -5,7 +5,7 @@ if exist('analysis')
 end
 clear analysis
 
-analysis.bin_fname = 'C:\Users\Margrie_Lab1\Documents\raw_data\CAA-1123051\CAA-1123051_t108_ContrastTraining_Stage2_4Splus.bin';
+analysis.bin_fname = 'C:\Users\Margrie_Lab1\Documents\raw_data\CAA-1123049\CAA-1123049_t55_ContrastTraining_Stage2.bin';
 
 [analysis.timebase,analysis.signal,analysis.online_data] = LickingData_Reading(analysis.bin_fname);
 analysis.sampling_rate = 10000;
@@ -101,7 +101,7 @@ try
 catch
 end
 
-%{
+% %{
         % raster plotting
     %%%%%%%  Parameters for Rasters    %%%%%%%%%%%%%%%%%%%%
     analysis.rasters.spike_line_width=1;         %%%放电raster线条的宽度
@@ -174,8 +174,9 @@ end
     set(gca,'tickdir','out') % 坐标轴刻度向外
     
     analysis.output.analysis.n_lickingtrials = analysis.n_lickingtrials;
-%}
+
 
 clear i j k x;
 
 
+%}

@@ -100,7 +100,6 @@ classdef LickDetect_DoubleRotation < handle
             
             obj.ni = obj.ctl.ni;
 
-           
 
             % optional fields
             if isfield(config.lick_detect, 'trigger_channel_threshold')
@@ -214,7 +213,6 @@ classdef LickDetect_DoubleRotation < handle
             %       look for the trigger input to be high, give a reward
             %       upon licks
             if obj.detection_trigger_type == 1
-                
                 lick_detected_internal = false;
                 
                 % look for rise in trigger channel
@@ -252,7 +250,6 @@ classdef LickDetect_DoubleRotation < handle
                 end
                 
             elseif obj.detection_trigger_type == 2
-                
                 % trigger channel data
                 trigger_data = obj.ctl.tdata(:, obj.trigger_channel);       % obj.ctl.data
                 % append last trigger value
