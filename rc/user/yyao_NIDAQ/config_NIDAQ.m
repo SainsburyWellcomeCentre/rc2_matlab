@@ -1,19 +1,15 @@
-function config = config_Counter()
+function config = config_NIDAQ()
 
 
+%% NIDAQ
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % General NIDAQ parameters %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 config.nidaq.rate                       = 10000;  % sampling rate of nidaq
 config.nidaq.log_every                  = 1000;  % log data every number of samples
 
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ANALOG INPUT parameters %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 config.nidaq.ai.enable                  = true;
 config.nidaq.ai.dev                     = 'Dev1';  % device name
 config.nidaq.ai.channel_names           = {'0'};  % nominal channel names (for reference)
@@ -24,21 +20,15 @@ config.offsets.enable                   = false;
 config.offsets.error_mtx                = [];
 
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ANALOG OUTPUT parameters %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 config.nidaq.ao.enable                  = true;
 config.nidaq.ao.dev                     = 'Dev1';
-config.nidaq.ao.channel_names           = {'0'};
+config.nidaq.ao.channel_names           = {'laser'};
 config.nidaq.ao.channel_id              = [0];
 config.nidaq.ao.idle_offset             = [0];
 
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % COUNTER OUTPUT parameters %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 config.nidaq.co.enable                  = true;
 config.nidaq.co.dev                     = 'Dev1';
 config.nidaq.co.channel_names           = {'camera'};
@@ -49,10 +39,7 @@ config.nidaq.co.pulse_dur               = 250;  % ms, e.g. 125 = 80Hz % 250 = 40
 config.nidaq.co.clock_src               = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
 
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DIGITAL OUTPUT parameters %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 config.nidaq.do.enable                  = false;
 config.nidaq.do.dev                     = 'Dev1';
 config.nidaq.do.channel_names           = {'pump', 'visual_stimulus_start_trigger', 'waveform_peak_trigger'};
@@ -60,21 +47,25 @@ config.nidaq.do.channel_id              = {'port0/line0', 'port0/line1', 'port0/
 config.nidaq.do.clock_src               = sprintf('/%s/ai/SampleClock', config.nidaq.ai.dev);
 
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % DIGITAL INPUT parameters %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 config.nidaq.di.enable                  = false;
 config.nidaq.di.dev                     = '';
 config.nidaq.di.channel_names           = {};
 config.nidaq.di.channel_id              = {};
 
 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Checks on config structure %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 assert(length(config.nidaq.ai.channel_names) == length(config.nidaq.ai.channel_id));
 assert(length(config.nidaq.ai.channel_names) == length(config.nidaq.ai.offset));
 assert(length(config.nidaq.ai.channel_names) == length(config.nidaq.ai.scale));
+
+
+%% Laser
+config.laser.enable             = true;
+config.laser.ao_name            = 'laser';
+config.laser.init_laser_state   = false;
+config.laser.pulse_width        = 30;
+config.laser_pulse_duration     = 4*config.laser.pulse_width;
+config.laser.voltage_range      = [0 5];
+config.laser.voltage            = 3;
+

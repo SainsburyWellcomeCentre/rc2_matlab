@@ -3,12 +3,7 @@
 %% RC2_DoubleRotation_shutdown
 
 try
-    gui.view.handles.delete;
-catch
-end
-
-try
-    delete(gui);
+    delete(ctl.gui.gui);
 catch
 end
 
@@ -18,4 +13,4 @@ catch
 end
 
 close all;
-clear config ctl gui;
+clear config ctl;

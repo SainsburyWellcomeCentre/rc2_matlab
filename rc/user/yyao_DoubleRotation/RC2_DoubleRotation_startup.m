@@ -16,6 +16,7 @@ root_path = 'C:\Users\Margrie_Lab1\Documents\repos\swc\';
 addpath(genpath(fullfile(root_path,'rc2_matlab\rc\classes')));
 addpath(genpath(fullfile(root_path,'rc2_matlab\rc\nidaq')));
 addpath(genpath(fullfile(root_path,'rc2_matlab\rc\util')));
+rmpath(genpath(fullfile(root_path,'rc2_matlab\rc\user')));
 % addpath(genpath(fullfile(root_path,'rc2_matlab\rc\user\yyao_DoubleRotation')));
 clear root_path;
 

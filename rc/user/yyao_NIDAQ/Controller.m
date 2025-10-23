@@ -5,6 +5,8 @@ classdef Controller < handle
         
         tic
         ni
+        laser
+        gui
         
     end
     
@@ -33,6 +35,8 @@ classdef Controller < handle
             
             obj.tic = tic;  
             obj.ni = NI(config); 
+            obj.laser = Laser(obj.ni, config);
+            obj.gui = GUIview(obj);
             
         end
         
