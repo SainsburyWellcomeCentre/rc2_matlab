@@ -11,7 +11,7 @@ classdef AnalogOutput < handle
         channel_names = {} % Names of the AO channels.
         channel_ids = {} % IDs of the AO channels.
         chan = {} % Cell array with the handle to the channel objects.
-        max_voltage = 3.3; % Maximum absolute voltage to apply on the analog outputs.
+        max_voltage = 5; % Maximum absolute voltage to apply on the analog outputs.
     end
     
 

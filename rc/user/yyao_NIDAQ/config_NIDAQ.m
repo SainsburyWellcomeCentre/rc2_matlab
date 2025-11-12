@@ -24,7 +24,7 @@ config.offsets.error_mtx                = [];
 config.nidaq.ao.enable                  = true;
 config.nidaq.ao.dev                     = 'Dev1';
 config.nidaq.ao.channel_names           = {'laser'};
-config.nidaq.ao.channel_id              = [0];
+config.nidaq.ao.channel_id              = [2];
 config.nidaq.ao.idle_offset             = [0];
 
 
@@ -65,7 +65,8 @@ config.laser.enable             = true;
 config.laser.ao_name            = 'laser';
 config.laser.init_laser_state   = false;
 config.laser.pulse_width        = 30;
-config.laser_pulse_duration     = 4*config.laser.pulse_width;
+config.laser.pulse_recover      = 90;
+config.laser.pulse_duration     = 30;
 config.laser.voltage_range      = [0 5];
-config.laser.voltage            = 3;
+config.laser.voltage            = 2.5;  % 2.5V=15mW, Coherent Connection
 

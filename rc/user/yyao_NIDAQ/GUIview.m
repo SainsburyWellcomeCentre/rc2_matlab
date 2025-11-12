@@ -20,13 +20,18 @@ classdef GUIview < handle
 
             % Laser Panel
             obj.handles.pulsewidthsEditField.Value = num2str(obj.ctrl.laser.pulse_width);
-            obj.handles.durationsEditField.Value = num2str(obj.ctrl.laser.pulse_duration);
+            obj.handles.recoversEditField.Value = num2str(obj.ctrl.laser.pulse_recover);
+%             obj.handles.durationsEditField.Value = num2str(obj.ctrl.laser.pulse_duration);
             obj.update_laser_state();
             obj.update_laser_pulse_width();
-            obj.update_laser_pulse_duration();
+%             obj.update_laser_pulse_duration();
+            obj.update_laser_pulse_recover();
             addlistener(obj.ctrl.laser,'laser_state','PostSet',@(src,evnt)obj.update_laser_state(src,evnt));
             addlistener(obj.ctrl.laser,'pulse_width','PostSet',@(src,evnt)obj.update_laser_pulse_width(src,evnt));
-            addlistener(obj.ctrl.laser,'pulse_duration','PostSet',@(src,evnt)obj.update_laser_pulse_duration(src,evnt));
+%             addlistener(obj.ctrl.laser,'pulse_duration','PostSet',@(src,evnt)obj.update_laser_pulse_duration(src,evnt));
+            addlistener(obj.ctrl.laser,'pulse_recover','PostSet',@(src,evnt)obj.update_laser_pulse_recover(src,evnt));
+            addlistener(obj.handles,'RepeatedPulseButtonValue','PostSet',@(src,evnt)obj.update_gui_RepeatedPulseButton(src,evnt));
+            addlistener(obj.ctrl.laser,'repeat_state','PostSet',@(src,evnt)obj.update_gui_RepeatedPulseButton(src,evnt));
             
         end
         
@@ -55,6 +60,24 @@ classdef GUIview < handle
 
         function update_laser_pulse_duration(obj,~,~)
             obj.handles.durationsEditField.Value = num2str(obj.ctrl.laser.pulse_duration);
+        end
+
+        function update_laser_pulse_recover(obj,~,~)
+            obj.handles.recoversEditField.Value = num2str(obj.ctrl.laser.pulse_recover);
+        end
+
+        function update_gui_RepeatedPulseButton(obj,~,~)
+            if obj.handles.RepeatedPulseButtonValue == 1
+                obj.handles.laserstateLamp.Color = [0,1,0];
+                obj.handles.RepeatedPulseButton.Text = 'Abort';
+            else
+                obj.handles.laserstateLamp.Color = [0.9,0.9,0.9];
+                obj.handles.RepeatedPulseButton.Text = 'Repeated Pulse';
+            end
+            if obj.ctrl.laser.repeat_state ~=1
+                obj.handles.laserstateLamp.Color = [0.9,0.9,0.9];
+                obj.handles.RepeatedPulseButton.Text = 'Repeated Pulse';
+            end
         end
 
         % Stage Panel
