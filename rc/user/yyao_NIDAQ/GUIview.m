@@ -20,16 +20,16 @@ classdef GUIview < handle
 
             % Laser Panel
             obj.handles.pulsewidthsEditField.Value = num2str(obj.ctrl.laser.pulse_width);
-            obj.handles.recoversEditField.Value = num2str(obj.ctrl.laser.pulse_recover);
+            obj.handles.intervalsEditField.Value = num2str(obj.ctrl.laser.pulse_interval);
 %             obj.handles.durationsEditField.Value = num2str(obj.ctrl.laser.pulse_duration);
             obj.update_laser_state();
             obj.update_laser_pulse_width();
 %             obj.update_laser_pulse_duration();
-            obj.update_laser_pulse_recover();
+            obj.update_laser_pulse_interval();
             addlistener(obj.ctrl.laser,'laser_state','PostSet',@(src,evnt)obj.update_laser_state(src,evnt));
             addlistener(obj.ctrl.laser,'pulse_width','PostSet',@(src,evnt)obj.update_laser_pulse_width(src,evnt));
 %             addlistener(obj.ctrl.laser,'pulse_duration','PostSet',@(src,evnt)obj.update_laser_pulse_duration(src,evnt));
-            addlistener(obj.ctrl.laser,'pulse_recover','PostSet',@(src,evnt)obj.update_laser_pulse_recover(src,evnt));
+            addlistener(obj.ctrl.laser,'pulse_interval','PostSet',@(src,evnt)obj.update_laser_pulse_interval(src,evnt));
             addlistener(obj.handles,'RepeatedPulseButtonValue','PostSet',@(src,evnt)obj.update_gui_RepeatedPulseButton(src,evnt));
             addlistener(obj.ctrl.laser,'repeat_state','PostSet',@(src,evnt)obj.update_gui_RepeatedPulseButton(src,evnt));
             
@@ -62,8 +62,8 @@ classdef GUIview < handle
             obj.handles.durationsEditField.Value = num2str(obj.ctrl.laser.pulse_duration);
         end
 
-        function update_laser_pulse_recover(obj,~,~)
-            obj.handles.recoversEditField.Value = num2str(obj.ctrl.laser.pulse_recover);
+        function update_laser_pulse_interval(obj,~,~)
+            obj.handles.intervalsEditField.Value = num2str(obj.ctrl.laser.pulse_interval);
         end
 
         function update_gui_RepeatedPulseButton(obj,~,~)

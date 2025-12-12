@@ -14,7 +14,7 @@ classdef Laser < handle
     properties (SetObservable = true)
 %         pulse_duration
         pulse_width
-        pulse_recover
+        pulse_interval
     end
     
     properties (SetAccess = private, SetObservable = true)
@@ -41,7 +41,7 @@ classdef Laser < handle
             
 %             obj.pulse_duration = config.laser.pulse_duration;
             obj.pulse_width = config.laser.pulse_width;
-            obj.pulse_recover = config.laser.pulse_recover;
+            obj.pulse_interval = config.laser.pulse_interval;
 
             obj.high_range = config.laser.voltage_range(1);
             obj.low_range = config.laser.voltage_range(2);
@@ -96,7 +96,7 @@ classdef Laser < handle
                     break
                 end
                 clear signal
-                signal(:,obj.ao_chan) = [ones(1, obj.pulse_width*obj.ni.ao.task.Rate) zeros(1,(obj.pulse_recover-obj.pulse_width)*obj.ni.ao.task.Rate)]*obj.voltage;
+                signal(:,obj.ao_chan) = [ones(1, obj.pulse_width*obj.ni.ao.task.Rate) zeros(1,(obj.pulse_interval-obj.pulse_width)*obj.ni.ao.task.Rate)]*obj.voltage;
                 signal(end,obj.ao_chan) = 0;
                 obj.ni.ao_write(signal);
                 obj.laser_state = true;
