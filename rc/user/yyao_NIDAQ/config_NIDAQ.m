@@ -71,6 +71,10 @@ config.laser.voltage_range      = [0 5];
 config.laser.voltage            = 2.5;  % 2.5V=15mW, Coherent Connection
 %{
 https://web.stanford.edu/group/dlab/cgi-bin/graph/chart.php
-Fiber NA 0.37, Fiber core radius 0.2mm: 2.5V=19mW, 3V=25mW, Coherent Connection
+Fiber NA 0.37, Fiber core radius 0.2mm: 5V=, 2.5V=19mW(default), 3V=25mW, Coherent Connection
+Fiber NA 0.37, Fiber core radius 0.1mm: 5V=42mW, 4V=34mW, 2.5V=15mW, 1.8V=10mW(default), 1.5V=7mW, Coherent Connection
+
+laser Coherent 473-200C (serial S251215017)
+
 %}
 

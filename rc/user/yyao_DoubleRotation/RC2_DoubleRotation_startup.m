@@ -28,7 +28,7 @@ clear path;
 % setup configuration
 config = config_yyao();
 if isempty(config), return, end
-config.connection.remote_ip = '172.24.243.47';
+config.connection.remote_ip = '172.24.243.99';
 config.connection.remote_port_prepare = 43054;
 config.connection.remote_port_stimulus = 43055;
 fprintf('remote ip: %s\n', config.connection.remote_ip);

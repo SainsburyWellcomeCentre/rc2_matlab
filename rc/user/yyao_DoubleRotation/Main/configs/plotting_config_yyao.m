@@ -6,7 +6,7 @@ config.fig.position = [1100, 550, 850, 400];  % GUI window size
 % config.chans_to_plot = [1,2,6,7,8, 3,4,5,9];   % GUI AI channel index to plot
 % config.ylim = {[-5.1, 5.1] , [-5.1, 5.1], [-0.1, 5.1] ,[-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1], [-0.1, 5.1]};
 
-config.chans_to_plot = [1,2,4,5,6, 3,8,7];   % GUI AI channel index to plot
+config.chans_to_plot = [1,2,4,5,6, 3,7];   % GUI AI channel index to plot
 config.xtick_chans = [5  length(config.chans_to_plot)];
 config.ylim = {[-10.1, 10.1] , [-10.1, 10.1], [-0.1, 5.1] ,[-0.1, 5.1], [-0.5, 5.1], [-0.1, 5.1], [-0.5, 5.1]};
 config.units = {'V', 'V', 'V', 'V', 'V', 'V', 'V'};

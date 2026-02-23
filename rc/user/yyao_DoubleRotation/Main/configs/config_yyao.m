@@ -1,6 +1,6 @@
 function config = config_yyao()
 
-task.contrast = true;
+task.contrast = false;
 config.task.contrast = task.contrast;
 %%%%%%%%%%%%
 % SAVING %%%
@@ -26,9 +26,6 @@ config.nidaq.log_every                  = 1000;  % log data every number of samp
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 config.nidaq.ai.enable                  = true;
 config.nidaq.ai.dev                     = 'Dev1';  % device name
-% config.nidaq.ai.channel_names           = {'stage_central', 'stage_outer', 'photodiode_left', 'photodiode_mid', 'photodiode_right', 'LickDetect_trigger', 'pump',  'lick',  'VisualStim_trigger'};  % nominal channel names (for reference)
-% config.nidaq.ai.channel_id              = [0:7 20]; 
-% config.nidaq.ai.offset                  = [0.004, 0.005, -0.014, -0.008, -0.102, 0.0077, -0.0004, 0, 0];
 config.nidaq.ai.channel_names           = {'stage_central', 'stage_outer', 'photodiode_left', 'LickDetect_trigger', 'pump',  'lick',  'VisualStim_trigger'};  % nominal channel names (for reference)
 config.nidaq.ai.channel_id              = [0 1 2 3 4 5 20];
 config.nidaq.ai.offset                  = [0.004, 0.005, -0.014, 0.0077, -0.0004, 0.0, 0];  % 5.0
