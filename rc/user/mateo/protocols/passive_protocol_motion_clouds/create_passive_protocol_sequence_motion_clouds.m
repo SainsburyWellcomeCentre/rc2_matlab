@@ -21,7 +21,7 @@ function [trial_order, fnames, protocol_id] = create_passive_protocol_sequence_m
 rng(1);
 
 % number of trials in each protocol
-n_trials = 37; % number of motion clouds
+n_trials = 36; % number of motion clouds
 
 % data location
 data_dir = fullfile(pwd, 'passive_waveforms_motion_clouds');
@@ -75,4 +75,4 @@ trial_order = repmat(trial_order, num_speed_profiles, 1);
 % create full path to file
 fnames = cellfun(@(x)(fullfile(data_dir, x)), reorganized_fnames, 'uniformoutput', false);
 
-save('passive_protocol_sequence_motion_clouds.mat', 'fnames', 'protocol_id', 'trial_order');
+save('passive_protocol_sequence_motion_clouds_goggles.mat', 'fnames', 'protocol_id', 'trial_order');
