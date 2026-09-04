@@ -47,3 +47,5 @@ for i = 1 : n_batches
     end
     trial_order(:, i) = perm;
 end
+
+save('four_way_sequence_motion_clouds.mat', 'trial_order', 'protocol_id');
