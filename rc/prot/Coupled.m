@@ -15,7 +15,7 @@ classdef Coupled < handle
         log_trial = false % Boolean specifying whether to log the velocity data for this trial.
         log_fname = '' % Name of the file in which to log the single trial data.
         
-        solenoid_correction = 1.55 % How much to correct for voltage differences when solenoid is up or down (mV).
+        solenoid_correction = 6.63 % How much to correct for voltage differences when solenoid is up or down (mV).
     end
     
     properties (SetAccess = private)
