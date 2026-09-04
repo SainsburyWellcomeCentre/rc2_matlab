@@ -22,7 +22,7 @@ for i = 1 : n_batches
         batch_conditions = [1, 2, 3, 5];
     else
         % even batches: conditions 1, 2, 4 (vest_replay_loco), 6 (replay_only_loco)
-        % rules: batch starts with 1 or 2; 3 and 5 must come after 1; 4 and 6 must come after 2
+        % rules: batch starts with 1 or 2; 4 and 6 must come after 2
         batch_conditions = [1, 2, 4, 6];
     end
     
