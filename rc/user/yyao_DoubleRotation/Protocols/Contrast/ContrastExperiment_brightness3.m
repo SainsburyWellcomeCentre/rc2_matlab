@@ -1,4 +1,4 @@
-function [protocolconfig,seq] = ContrastExperiment_brightness5(ctl,config,view)
+function [protocolconfig,seq] = ContrastExperiment_brightness3(ctl,config,view)
     % Protocol type: visual slimuli with fixed contrast difference (S+) or same contrast (S-) in various brightness. 10 S+ 10 S- in psudorandom order
     % central stage - enabled. 
     %       S+ trial, fixed contrast difference. 
@@ -23,14 +23,14 @@ function [protocolconfig,seq] = ContrastExperiment_brightness5(ctl,config,view)
     protocolconfig.enable_vis_stim = enableVisStim;
     
     % create the protocol sequence
-    seq = VisualContrast(ctl,config,view);
+    seq = Visual_task(ctl,config,view);
     
     %%
     % restart random number generator
     rng('shuffle');
 
-    protocol.labels = {'s_plusL_5_7','s_plusR_5_7','s_plusL_5_6','s_plusR_5_6','s_plusL_5_5','s_plusR_5_5','s_plusL_5_4','s_plusR_5_4',...
-        's_plusL_5_3','s_plusR_5_3','s_plusL_5_2','s_plusR_5_2','s_plusL_5_1','s_plusR_5_1','s_minus_5'};
+    protocol.labels = {'s_plusL_3_7','s_plusR_3_7','s_plusL_3_6','s_plusR_3_6','s_plusL_3_5','s_plusR_3_5','s_plusL_3_4','s_plusR_3_4',...
+        's_plusL_3_3','s_plusR_3_3','s_plusL_3_2','s_plusR_3_2','s_plusL_3_1','s_plusR_3_1','s_minus_3'};
     
     for i = 1:length(protocol.labels)
         protocol.id(i) = i;

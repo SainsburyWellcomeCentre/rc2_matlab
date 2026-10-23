@@ -1,4 +1,4 @@
-classdef VisualContrast < handle
+classdef Visual_task < handle
     
     properties
         ctl
@@ -31,7 +31,7 @@ classdef VisualContrast < handle
     end
     
     methods
-        function obj = VisualContrast(ctl, config, view)
+        function obj = Visual_task(ctl, config, view)
             obj.ctl = ctl; 
             obj.config = config;
             obj.h_listener_reward = addlistener(obj.ctl.reward, 'n_rewards_counter', 'PostSet', @obj.n_rewards_given_updated); 

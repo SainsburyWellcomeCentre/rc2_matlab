@@ -47,7 +47,7 @@ latency_signal              = data(:, latency_chan_idx);
 
 figure()
 
-if task.contrast
+if task.visual
 plot(timebase, LickDetect_trigger_signal);
 hold on;
 plot(timebase, visstim_signal);

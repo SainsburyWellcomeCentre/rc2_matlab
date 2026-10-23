@@ -1,4 +1,4 @@
-function [protocolconfig,seq] = ContrastTraining_Stage2_8Splus(ctl,config,view)
+function [protocolconfig,seq] = ContrastTraining_Stage2_16Splus(ctl,config,view)
     % Protocol type: visual slimuli with fixed contrast difference (S+) or same contrast (S-). 10 S+ 10 S- in psudorandom order
     % central stage - enabled. 
     %       S+ trial, fixed contrast difference. 
@@ -23,7 +23,7 @@ function [protocolconfig,seq] = ContrastTraining_Stage2_8Splus(ctl,config,view)
     protocolconfig.enable_vis_stim = enableVisStim;
     
     % create the protocol sequence
-    seq = VisualContrast(ctl,config,view);
+    seq = Visual_task(ctl,config,view);
     
     %%
     % restart random number generator
@@ -38,9 +38,9 @@ function [protocolconfig,seq] = ContrastTraining_Stage2_8Splus(ctl,config,view)
     n_blocks = 1;
     
     % number of trials in each block
-    n_s_plusL_trials    = 4;
-    n_s_plusR_trials    = 4;
-    n_s_minus_trials   = 12;
+    n_s_plusL_trials    = 8;
+    n_s_plusR_trials    = 8;
+    n_s_minus_trials   = 4;
     
     protocolconfig.reward.duration = floor(config.reward.sminus1duration/((n_s_plusL_trials+n_s_plusR_trials)*n_blocks));
 

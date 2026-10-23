@@ -1,5 +1,5 @@
-function [protocolconfig,seq] = ContrastExperiment_brightness2(ctl,config,view)
-    % Protocol type: visual slimuli with fixed contrast difference (S+) or same contrast (S-) in various brightness. 10 S+ 10 S- in psudorandom order
+function [protocolconfig,seq] = ContrastTraining_Stage4(ctl,config,view)
+    % Protocol type: visual slimuli with various contrast difference (S+) or same contrast (S-) in various brightness. 10 S+ 10 S- in psudorandom order
     % central stage - enabled. 
     %       S+ trial, fixed contrast difference. 
     %       S- trial, contrast same.
@@ -23,14 +23,13 @@ function [protocolconfig,seq] = ContrastExperiment_brightness2(ctl,config,view)
     protocolconfig.enable_vis_stim = enableVisStim;
     
     % create the protocol sequence
-    seq = VisualContrast(ctl,config,view);
+    seq = Visual_task(ctl,config,view);
     
     %%
     % restart random number generator
     rng('shuffle');
 
-    protocol.labels = {'s_plusL_2_7','s_plusR_2_7','s_plusL_2_6','s_plusR_2_6','s_plusL_2_5','s_plusR_2_5','s_plusL_2_4','s_plusR_2_4',...
-        's_plusL_2_3','s_plusR_2_3','s_plusL_2_2','s_plusR_2_2','s_plusL_2_1','s_plusR_2_1','s_minus_2'};
+    protocol.labels = {'s_plusL_65_15','s_plusR_15_65','s_plusL_50_30','s_plusR_30_50','s_plusL_75_25','s_plusR_25_75','s_plusL_60_40','s_plusR_40_60','s_plusL_85_35','s_plusR_35_80','s_plusL_70_50','s_plusR_50_70','s_minus_40','s_minus_50','s_minus_60'};
     
     for i = 1:length(protocol.labels)
         protocol.id(i) = i;
@@ -40,9 +39,9 @@ function [protocolconfig,seq] = ContrastExperiment_brightness2(ctl,config,view)
     protocol.n_blocks = 1;
     
     % number of trials in each block
-    protocol.n_trials = [1 1  1 1  1 1  1 1  1 1  1 1  1 1  14];
+    protocol.n_trials = [1 1 1 1  1 1 1 1  1 1 1 1  4 4 4];
 
-    protocolconfig.reward.duration = floor(config.reward.interleavingduration/(sum(protocol.n_trials(1:end))*protocol.n_blocks));
+    protocolconfig.reward.duration = floor(config.reward.sminus3duration/(sum(protocol.n_trials(1:end))*protocol.n_blocks));
     
     trial_order = [];
     for i = 1:length(protocol.labels)
@@ -57,7 +56,7 @@ function [protocolconfig,seq] = ContrastExperiment_brightness2(ctl,config,view)
 
     %% velocity array generator
     distance = 0;
-    duration = 3;
+    duration = 4;
     vmax_splus = 0;
     vmax_sminus = 0;
     peakwidth_splus = 2;
@@ -414,25 +413,25 @@ function [protocolconfig,seq] = ContrastExperiment_brightness2(ctl,config,view)
             % add protocol to the sequence
             seq.add(trial);
         
-        elseif trial_order(i) == protocol.id(13)
-            
-            trial.trial.stimulus_type = protocol.labels{13};
-            trial.trial.stimulus_typeid = 13;
-            trial.trial.enable_reward = true;
+        elseif trial_order(i) == protocol.id(end-2)
+
+            trial.trial.stimulus_type = protocol.labels{end-2};
+            trial.trial.stimulus_typeid = length(protocol.labels)-2;
+            trial.trial.enable_reward = false;
             
             trial.stage.enable_motion = enableRotation;
             trial.stage.motion_time = duration;
             trial.stage.central.enable = true;
             trial.stage.central.distance = -distance;
-            trial.stage.central.max_vel = vmax_splus; 
-            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.max_vel = vmax_sminus; 
+            trial.stage.central.peakwidth = peakwidth_sminus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
             trial.stage.outer.enable = true;
             trial.stage.outer.distance = -distance;
-            trial.stage.outer.max_vel = vmax_splus; 
-            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.max_vel = vmax_sminus; 
+            trial.stage.outer.peakwidth = peakwidth_sminus;
             trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
-
+            
             trial.vis.enable_vis_stim = enableVisStim;
             trial.vis.vis_stim_lable = 13;
             trial.vis.latency = (latency_range(2)-latency_range(1)).*rand(1,1)+latency_range(1);
@@ -443,23 +442,23 @@ function [protocolconfig,seq] = ContrastExperiment_brightness2(ctl,config,view)
             % add protocol to the sequence
             seq.add(trial);
 
-        elseif trial_order(i) == protocol.id(14)
-            
-            trial.trial.stimulus_type = protocol.labels{14};
-            trial.trial.stimulus_typeid = 14;
-            trial.trial.enable_reward = true;
+        elseif trial_order(i) == protocol.id(end-1)
+
+            trial.trial.stimulus_type = protocol.labels{end-1};
+            trial.trial.stimulus_typeid = length(protocol.labels)-1;
+            trial.trial.enable_reward = false;
             
             trial.stage.enable_motion = enableRotation;
             trial.stage.motion_time = duration;
             trial.stage.central.enable = true;
-            trial.stage.central.distance = distance;
-            trial.stage.central.max_vel = vmax_splus; 
-            trial.stage.central.peakwidth = peakwidth_splus;
+            trial.stage.central.distance = -distance;
+            trial.stage.central.max_vel = vmax_sminus; 
+            trial.stage.central.peakwidth = peakwidth_sminus;
             trial.stage.central.mean_vel = abs(trial.stage.central.distance)/trial.stage.motion_time;
             trial.stage.outer.enable = true;
-            trial.stage.outer.distance = distance;
-            trial.stage.outer.max_vel = vmax_splus; 
-            trial.stage.outer.peakwidth = peakwidth_splus;
+            trial.stage.outer.distance = -distance;
+            trial.stage.outer.max_vel = vmax_sminus; 
+            trial.stage.outer.peakwidth = peakwidth_sminus;
             trial.stage.outer.mean_vel = abs(trial.stage.outer.distance)/trial.stage.motion_time;
             
             trial.vis.enable_vis_stim = enableVisStim;
@@ -471,7 +470,6 @@ function [protocolconfig,seq] = ContrastExperiment_brightness2(ctl,config,view)
             
             % add protocol to the sequence
             seq.add(trial);
-
 
         elseif trial_order(i) == protocol.id(end)
 

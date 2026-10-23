@@ -1,7 +1,7 @@
 function config = config_yyao()
-
-task.contrast = false;
-config.task.contrast = task.contrast;
+   
+task.visual = true;
+config.task.visual = task.visual; % for plotting_config_yyao.m
 %%%%%%%%%%%%
 % SAVING %%%
 %%%%%%%%%%%%
@@ -31,7 +31,7 @@ config.nidaq.ai.channel_id              = [0 1 2 3 4 5 20];
 config.nidaq.ai.offset                  = [0.004, 0.005, -0.014, 0.0077, -0.0004, 0.0, 0];  % 5.0
 config.nidaq.ai.scale                   = [1, 1, 2, 1, 1, 0.6, 1];  % -1.6
 
-if task.contrast
+if task.visual
 config.nidaq.ai.channel_names           = {'LickDetect_trigger', 'pump',  'lick',  'VisualStim_trigger', 'latency_trigger','photodiode_left', 'photodiode_right'};  % nominal channel names (for reference)
 config.nidaq.ai.channel_id              = [3 4 5 20 21 2 22];
 config.nidaq.ai.offset                  = [0.0077, -0.0004, 0.0, 0, 0, 0.214, 0.33];  % 5.0
@@ -140,7 +140,7 @@ config.ensemble.ao_servo_value          = 4;                % The servo loop val
 config.ensemble.ao_scale_factor         = [0.00275 , 0.00370]*3;              % A scaling factor that scales the servo loop value replayed on ao_channel for display in RC2. 
 config.ensemble.gearcam_source          = 2;                % The input source for gearing and camming motion on the Ensemble (0 = OpenLoop, 1 = ExternalPosition, 2 = Analog Input 0, 3 = Analog Input 1)
 config.ensemble.deadband                = 0.005;            % The value (in volts) of the deadband to send to the controller.  
-if task.contrast
+if task.visual
     config.ensemble.deadband                = 0.1;
 end
 config.ensemble.default_gearsource      = 1;                % Default value for the gearcam_source.
@@ -156,21 +156,21 @@ config.ensemble.default_homeSetup       = 0;                % HomeSetup Paramete
 config.reward.randomize                 = false;
 config.reward.min_time                  = 3;
 config.reward.max_time                  = 7;
-config.reward.duration                  = 150;
-config.reward.habituation               = 350;
-config.reward.splusduration             = 5000;  % 5000 -- 0.25ml/session, 0.0125ml/trial
-config.reward.sminus1duration           = 5000;  % 5000 -- 0.25ml/session, 0.0156ml/trial
-config.reward.sminus2duration           = 6000;  % 6000 -- 0.3ml/session, 0.03ml/trial
-config.reward.sminus3duration           = 8000;
-config.reward.interleavingduration      = 10000;  % 10000 -- 0.5ml/session, 0.0357ml/trial
-if task.contrast
-    config.reward.duration                  = 250;
-    config.reward.habituation               = 450;
-    config.reward.splusduration             = 5000;  % 8000
-    config.reward.sminus1duration           = 5000;  % 8000
-    config.reward.sminus2duration           = 6000;  % 9000
-    config.reward.sminus3duration           = 8000;  % 10000
-    config.reward.interleavingduration      = 10000;  % 12000
+config.reward.duration                  = 350;
+config.reward.habituation               = 500;
+config.reward.splusduration             = 6000;  % 5000 -- 0.25ml/session, 0.0125ml/trial
+config.reward.sminus1duration           = 6000;  % 5000 -- 0.25ml/session, 0.0156ml/trial
+config.reward.sminus2duration           = 8000;  % 6000 -- 0.3ml/session, 0.03ml/trial
+config.reward.sminus3duration           = 10000;
+config.reward.interleavingduration      = 12000;  % 10000 -- 0.5ml/session, 0.0357ml/trial
+if task.visual
+    config.reward.duration                  = 350;
+    config.reward.habituation               = 500;
+    config.reward.splusduration             = 500*20;  % 8000
+    config.reward.sminus1duration           = 500*20;  % 8000
+%     config.reward.sminus2duration           = 600*20;  % 9000
+%     config.reward.sminus3duration           = 10000;  % 10000
+%     config.reward.interleavingduration      = 12000;  % 12000
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -193,7 +193,7 @@ config.lick_detect.detection_trigger_type = 1;  % 1 = rewards given in window af
 config.lick_detect.lick_threshold       = [2 4];
 config.lick_detect.delay = 0;
 config.lick_detect.enable_punishment = false;
-% if task.contrast
+% if task.visual
 %     config.lick_detect.enable_punishment = true;
 % end
 
@@ -203,6 +203,9 @@ config.lick_detect.enable_punishment = false;
 % SOUND %%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 config.sound.enable                     = true;
+if task.visual
+    config.sound.enable                 = false;
+end
 config.sound.filename                   = 'C:\Users\Margrie_Lab1\Documents\MATLAB\audio\white_noise.wav';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%

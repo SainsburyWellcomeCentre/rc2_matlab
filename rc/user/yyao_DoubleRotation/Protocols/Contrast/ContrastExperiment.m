@@ -23,7 +23,7 @@ function [protocolconfig,seq] = ContrastExperiment(ctl,config,view)
     protocolconfig.enable_vis_stim = enableVisStim;
     
     % create the protocol sequence
-    seq = VisualContrast(ctl,config,view);
+    seq = Visual_task(ctl,config,view);
     
     %%
     % restart random number generator
