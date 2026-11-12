@@ -10,7 +10,8 @@ classdef EncoderOnly < handle
         handle_acquisition = true % Boolean specifying whether we are running this as a single trial (true) or as part of a :class:`rc.prot.ProtocolSequence` (false).
         wait_for_reward = true % Boolean specifying whether to wait for the reward to be given before ending the trial (true) or end the trial immediately (false).
         enable_vis_stim = true % Boolean specifying whether to sent a digital output to the visual stimulus computer to enable the display.
-        
+        enable_vis_stim_gain = true % Boolean specifying whether to sent a digital output to the visual stimulus computer to enable closed loop with motion (false = static visual stimulus).
+
         log_trial = false % Boolean specifying whether to log the velocity data for this trial.
         log_fname = '' % Name of the file in which to log the single trial data.
         
@@ -84,7 +85,7 @@ classdef EncoderOnly < handle
             % 8. If this is being run as a single trial, play the sound and start NIDAQ acqusition (do not do this if being run as a sequence, as the ProtocolSequence object will handle acquisition and sound)
             % 9. Move the stage to the start position
             % 10. Pause, simulate amount of time in Coupled for calibrating the stage
-            % 11. Send signal to switch on the visual stimulus (if :attr:`enable_vis_stim` is true)
+            % 11. Send signal to switch on the visual stimulus (if :attr:`enable_vis_stim` is true), and set the visual stimulus gain according to :attr:`enable_vis_stim_gain`
             % 12. Wait for :attr:`start_dwell_time` seconds
             % 13. Send signal to the Teensy to enable velocity output
             % 14. Unblock the treadmill
@@ -198,8 +199,15 @@ classdef EncoderOnly < handle
                 else
                     obj.ctl.vis_stim.off();
                 end
-                
-                
+
+                % toggle vis stim gain (off = static visual stimulus)
+                if obj.enable_vis_stim_gain
+                    obj.ctl.vis_stim_gain.on();
+                else
+                    obj.ctl.vis_stim_gain.off();
+                end
+
+
                 % start integrating the position
                 obj.ctl.position.start();
                 
@@ -268,7 +276,10 @@ classdef EncoderOnly < handle
                 if obj.enable_vis_stim
                     obj.ctl.vis_stim.off();
                 end
-                
+
+                % vis stim gain on as default
+                obj.ctl.vis_stim_gain.on();
+
                 % stop integrating position
                 obj.ctl.position.stop();
                 
@@ -312,6 +323,7 @@ classdef EncoderOnly < handle
                 obj.ctl.soloist.stop();
                 obj.ctl.block_treadmill();
                 obj.ctl.vis_stim.off();
+                obj.ctl.vis_stim_gain.on();
                 obj.ctl.position.stop();
                 obj.ctl.stop_acq();
                 if obj.log_trial
@@ -356,6 +368,7 @@ classdef EncoderOnly < handle
                 'prot.integrate_using',     obj.integrate_using;
                 'prot.wave_fname',          '---';
                 'prot.enable_vis_stim',     sprintf('%i', obj.enable_vis_stim);
+                'prot.enable_vis_stim_gain', sprintf('%i', obj.enable_vis_stim_gain);
                 'prot.initiate_trial',      '---';
                 'prot.initiation_speed',    '---';
                 'prot.reward.randomize',    sprintf('%i', obj.ctl.reward.randomize);
@@ -380,8 +393,9 @@ classdef EncoderOnly < handle
             
             obj.ctl.block_treadmill();
             obj.ctl.vis_stim.off();
+            obj.ctl.vis_stim_gain.on();
             obj.ctl.position.stop();
-            
+
             if obj.handle_acquisition
                 obj.ctl.soloist.stop();
                 obj.ctl.stop_acq();
