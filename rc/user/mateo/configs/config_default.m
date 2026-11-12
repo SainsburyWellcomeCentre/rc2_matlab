@@ -6,7 +6,8 @@ VariableDefault('use_calibration', true);
 
 % whether to use calibration file and its location
 config.use_calibration_file             = use_calibration;
-config.calibration_file                 = 'C:\Users\Mateo\Documents\repos\rc2_matlab\rc\user\mateo\calibration\calibration_20200707_b.mat';
+% config.calibration_file                 = 'C:\Users\Mateo\Documents\repos\rc2_matlab\rc\user\mateo\calibration\calibration_20251013.mat';
+config.calibration_file                 = 'C:\Users\Mateo\Documents\repos\rc2_matlab\rc\user\mateo\calibration\calibration_20260914.mat';
 
 
 %%%%%%%%%%%%
@@ -59,9 +60,9 @@ config.nidaq.log_every                  = 1000;
 % device name
 config.nidaq.ai.dev                     = 'Dev2';
 % nominal channel names (for reference)
-config.nidaq.ai.channel_names           = {'filtered_teensy', 'filtered_teensy_2', 'stage', 'lick', 'pump', 'solenoid', 'photodiode', 'minidaq_ao0', 'multiplexer_output'};
+config.nidaq.ai.channel_names           = {'filtered_teensy', 'filtered_teensy_2', 'stage', 'lick', 'pump', 'solenoid', 'photodiode', 'minidaq_ao0', 'multiplexer_output', 'eyecam_0'};
 % 
-config.nidaq.ai.channel_id              = [0:7, 16];
+config.nidaq.ai.channel_id              = [0:7, 16, 18];
 
 
 % offsets and scales to apply to the 
@@ -78,8 +79,8 @@ if config.use_calibration_file
     config.nidaq.ai.scale                   = calibration.scale;
 else
     % default to use if no calibration file
-    config.nidaq.ai.offset                  = [0.5, 0, 0, 0, 0, 0, 0, 0]; % 
-    config.nidaq.ai.scale                   = [40, 40, -40, 1, 1, 1, 1, 1];
+    config.nidaq.ai.offset                  = [0.5, 0, 0, 0, 0, 0, 0, 0, 0]; % 
+    config.nidaq.ai.scale                   = [40, 40, -40, 1, 1, 1, 1, 1, 1];
 end
 
 
@@ -176,7 +177,7 @@ end
 config.reward.randomize                 = false;
 config.reward.min_time                  = 3;
 config.reward.max_time                  = 7;
-config.reward.duration                  = 50;
+config.reward.duration                  = 100;
 
 
 %%%%%%%%%%%%%%%%%%%%%%
