@@ -1,6 +1,6 @@
 function seq = passive_protocol_motion_clouds(ctl)
 
-load('passive_protocol_sequence_motion_clouds.mat', 'trial_order', 'protocol_id', 'fnames');
+load('passive_protocol_sequence_motion_clouds_goggles.mat', 'trial_order', 'protocol_id', 'fnames');
 % "trial_order" is a 3xN matrix of protocol indices. Each column is a batch
 % of trials specifying a particular order (1-3 in some order that makes sense).
 % "protocol_id" is a structure which relates the numbers in "trial_order"
