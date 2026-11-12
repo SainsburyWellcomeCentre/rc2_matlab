@@ -1,7 +1,8 @@
 function seq = four_way_protocol_motion_clouds(ctl)
 
 % load the order of trials
-load('four_way_sequence_motion_clouds.mat', 'trial_order', 'protocol_id');
+ load('four_way_sequence_motion_clouds.mat', 'trial_order', 'protocol_id');
+%load('locovest_only_motion_clouds.mat', 'trial_order', 'protocol_id');
 % "trial_order" is a 4xN matrix of protocol indices. Each column is a batch
 % of trials specifying a particular order. N batches alternate between two
 % sets of conditions:
@@ -15,7 +16,7 @@ load('four_way_sequence_motion_clouds.mat', 'trial_order', 'protocol_id');
 %       vest_replay_loco
 %       replay_only_locovest
 %       replay_only_loco
-
+% locovest_only_motion_clouds.mat is for training and only presents locovest.
 
 % positions along stage
 reward_position     = 250;
