@@ -660,7 +660,7 @@ soloist2ni_scale = target_velocity/(soloist2ni_max - stage2ni_offset1)/10;
 fprintf('Soloist scale:  %.6f cm/s\n', soloist2ni_scale);
 
 
-return
+% return
 
 % Insert values from Vis Stim computer here....
 
