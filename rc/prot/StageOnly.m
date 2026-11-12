@@ -35,7 +35,7 @@ classdef StageOnly < handle
         enable_vis_stim = true % Boolean specifying whether to sent a digital output to the visual stimulus computer to enable the display.
         enable_vis_stim_gain = true % Boolean specifying whether to sent a digital output to the visual stimulus computer to enable closed loop with motion.
         
-        initiate_trial = false; % Boolean specifying whether to let the treadmill velocity initiate the start of the trial.
+        initiate_trial = true; % Boolean specifying whether to let the treadmill velocity initiate the start of the trial.
         initiation_speed = 5; % Speed of the treadmill which initiates the trial (in cm/s).
         
         wave_fname % Full path to the .bin file containing the control waveform to play. Assumed that the .bin file contains a sequence of int16 values which have been transformed from a voltage with the equation int16 val = -2^15 + 2^16 * (voltage + 10)/20 . The int16 value are then transformed back into a voltage to be played on the analog output.
